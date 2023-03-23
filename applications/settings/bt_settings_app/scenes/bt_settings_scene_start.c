@@ -1,9 +1,11 @@
 #include "../bt_settings_app.h"
 #include <furi_hal_bt.h>
+#include <furi_hal_ohs.h>
 
 enum BtSetting {
     BtSettingOff,
     BtSettingOn,
+    BtSettingOhs,
     BtSettingNum,
 };
 
@@ -15,6 +17,7 @@ enum BtSettingIndex {
 const char* const bt_settings_text[BtSettingNum] = {
     "OFF",
     "ON",
+    "OHS",
 };
 
 static void bt_settings_scene_start_var_list_change_callback(VariableItem* item) {
@@ -46,9 +49,12 @@ void bt_settings_scene_start_on_enter(void* context) {
             BtSettingNum,
             bt_settings_scene_start_var_list_change_callback,
             app);
-        if(app->settings.enabled) {
+        if(app->settings.mode == BT_MODE_ON) {
             variable_item_set_current_value_index(item, BtSettingOn);
             variable_item_set_current_value_text(item, bt_settings_text[BtSettingOn]);
+        } else if(app->settings.mode == BT_MODE_OHS) {
+            variable_item_set_current_value_index(item, BtSettingOhs);
+            variable_item_set_current_value_text(item, bt_settings_text[BtSettingOhs]);
         } else {
             variable_item_set_current_value_index(item, BtSettingOff);
             variable_item_set_current_value_text(item, bt_settings_text[BtSettingOff]);
@@ -70,12 +76,20 @@ bool bt_settings_scene_start_on_event(void* context, SceneManagerEvent event) {
 
     if(event.type == SceneManagerEventTypeCustom) {
         if(event.event == BtSettingOn) {
+            furi_hal_ohs_stop();
             furi_hal_bt_start_advertising();
-            app->settings.enabled = true;
+            app->settings.mode = BT_MODE_ON;
             consumed = true;
         } else if(event.event == BtSettingOff) {
-            app->settings.enabled = false;
+            furi_hal_ohs_stop();
             furi_hal_bt_stop_advertising();
+            app->settings.mode = BT_MODE_OFF;
+            consumed = true;
+        } else if(event.event == BtSettingOhs) {
+            furi_hal_ohs_stop();
+            furi_hal_bt_stop_advertising();
+            furi_hal_ohs_start();
+            app->settings.mode = BT_MODE_OHS;
             consumed = true;
         } else if(event.event == BtSettingsCustomEventForgetDevices) {
             scene_manager_next_scene(app->scene_manager, BtSettingsAppSceneForgetDevConfirm);

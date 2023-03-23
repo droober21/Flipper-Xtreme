@@ -1,6 +1,7 @@
 #include "bt_i.h"
 #include "battery_service.h"
 #include "bt_keys_storage.h"
+#include "furi_hal_ohs.h"
 
 #include <notification/notification_messages.h>
 #include <gui/elements.h>
@@ -19,6 +20,8 @@ static void bt_draw_statusbar_callback(Canvas* canvas, void* context) {
     Bt* bt = context;
     if(bt->status == BtStatusAdvertising) {
         canvas_draw_icon(canvas, 0, 0, &I_Bluetooth_Idle_5x8);
+    } else if(bt->status == BtStatusOhs) {
+        canvas_draw_icon(canvas, 0, 0, &I_Openhaystack_5x8);
     } else if(bt->status == BtStatusConnected) {
         canvas_draw_icon(canvas, 0, 0, &I_Bluetooth_Connected_16x8);
     }
@@ -274,6 +277,11 @@ static bool bt_on_gap_event_callback(GapEvent event, void* context) {
         furi_check(
             furi_message_queue_put(bt->message_queue, &message, FuriWaitForever) == FuriStatusOk);
         ret = true;
+    } else if(event.type == GapEventTypeStartOhs) {
+        bt->status = BtStatusOhs;
+        BtMessage message = {.type = BtMessageTypeUpdateStatus};
+        furi_check(
+            furi_message_queue_put(bt->message_queue, &message, FuriWaitForever) == FuriStatusOk);
     } else if(event.type == GapEventTypeStopAdvertising) {
         bt->status = BtStatusOff;
         BtMessage message = {.type = BtMessageTypeUpdateStatus};
@@ -315,6 +323,9 @@ static void bt_statusbar_update(Bt* bt) {
     } else if(bt->status == BtStatusConnected) {
         view_port_set_width(bt->statusbar_view_port, icon_get_width(&I_Bluetooth_Connected_16x8));
         view_port_enabled_set(bt->statusbar_view_port, true);
+    } else if(bt->status == BtStatusOhs) {
+        view_port_set_width(bt->statusbar_view_port, icon_get_width(&I_Openhaystack_5x8));
+        view_port_enabled_set(bt->statusbar_view_port, true);
     } else {
         view_port_enabled_set(bt->statusbar_view_port, false);
     }
@@ -352,7 +363,7 @@ static void bt_change_profile(Bt* bt, BtMessage* message) {
 
         if(furi_hal_bt_change_app(furi_profile, bt_on_gap_event_callback, bt)) {
             FURI_LOG_I(TAG, "Bt App started");
-            if(bt->bt_settings.enabled) {
+            if(bt->bt_settings.mode == BT_MODE_ON) {
                 furi_hal_bt_start_advertising();
             }
             furi_hal_bt_set_key_storage_change_callback(bt_on_key_storage_change_callback, bt);
@@ -486,8 +497,10 @@ int32_t bt_srv(void* p) {
         if(!furi_hal_bt_start_app(FuriHalBtProfileSerial, bt_on_gap_event_callback, bt)) {
             FURI_LOG_E(TAG, "BLE App start failed");
         } else {
-            if(bt->bt_settings.enabled) {
+            if(bt->bt_settings.mode == BT_MODE_ON) {
                 furi_hal_bt_start_advertising();
+            } else if(bt->bt_settings.mode == BT_MODE_OHS) {
+                furi_hal_ohs_start();
             }
             furi_hal_bt_set_key_storage_change_callback(bt_on_key_storage_change_callback, bt);
         }

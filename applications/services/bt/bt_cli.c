@@ -218,7 +218,7 @@ static void bt_cli(Cli* cli, FuriString* args, void* context) {
         bt_cli_print_usage();
     } while(false);
 
-    if(bt_settings.enabled) {
+    if(bt_settings.mode == BT_MODE_ON) {
         furi_hal_bt_start_advertising();
     }
 

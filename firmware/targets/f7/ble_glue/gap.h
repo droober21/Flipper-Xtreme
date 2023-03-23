@@ -15,6 +15,7 @@ typedef enum {
     GapEventTypeConnected,
     GapEventTypeDisconnected,
     GapEventTypeStartAdvertising,
+    GapEventTypeStartOhs,
     GapEventTypeStopAdvertising,
     GapEventTypePinCodeShow,
     GapEventTypePinCodeVerify,
@@ -74,6 +75,8 @@ typedef struct {
 bool gap_init(GapConfig* config, GapEventCallback on_event_cb, void* context);
 
 void gap_start_advertising();
+
+void gap_notify_ohs_start();
 
 void gap_stop_advertising();
 

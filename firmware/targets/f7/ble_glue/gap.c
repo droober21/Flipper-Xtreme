@@ -404,6 +404,11 @@ static void gap_init_svc(Gap* gap) {
     aci_gap_configure_whitelist();
 }
 
+void gap_notify_ohs_start() {
+    GapEvent event = {.type = GapEventTypeStartOhs};
+    gap->on_event_cb(event, gap->context);
+}
+
 static void gap_advertise_start(GapState new_state) {
     tBleStatus status;
     uint16_t min_interval;
@@ -483,6 +488,7 @@ void gap_start_advertising() {
         gap->state = GapStateStartingAdv;
         FURI_LOG_I(TAG, "Start advertising");
         gap->enable_adv = true;
+        gap_init_svc(gap);
         GapCommand command = GapCommandAdvFast;
         furi_check(furi_message_queue_put(gap->command_queue, &command, 0) == FuriStatusOk);
     }

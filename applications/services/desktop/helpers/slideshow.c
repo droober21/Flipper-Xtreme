@@ -45,7 +45,7 @@ void slideshow_free(Slideshow* slideshow) {
 }
 
 bool slideshow_load(Slideshow* slideshow, const char* fspath) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     File* slideshow_file = storage_file_alloc(storage);
     slideshow->loaded = false;
     do {
@@ -59,9 +59,9 @@ bool slideshow_load(Slideshow* slideshow, const char* fspath) {
             break;
         }
         Icon* icon = &slideshow->icon;
-        FURI_CONST_ASSIGN(icon->frame_count, header.frame_count);
-        FURI_CONST_ASSIGN(icon->width, header.width);
-        FURI_CONST_ASSIGN(icon->height, header.height);
+        FURRY_CONST_ASSIGN(icon->frame_count, header.frame_count);
+        FURRY_CONST_ASSIGN(icon->width, header.width);
+        FURRY_CONST_ASSIGN(icon->height, header.height);
         icon->frames = malloc(header.frame_count * sizeof(uint8_t*));
         for(int frame_idx = 0; frame_idx < header.frame_count; ++frame_idx) {
             SlideshowFrameHeader frame_header;
@@ -69,7 +69,7 @@ bool slideshow_load(Slideshow* slideshow, const char* fspath) {
                sizeof(frame_header)) {
                 break;
             }
-            FURI_CONST_ASSIGN_PTR(icon->frames[frame_idx], malloc(frame_header.size));
+            FURRY_CONST_ASSIGN_PTR(icon->frames[frame_idx], malloc(frame_header.size));
             uint8_t* frame_data = (uint8_t*)icon->frames[frame_idx];
             if(storage_file_read(slideshow_file, frame_data, frame_header.size) !=
                frame_header.size) {
@@ -79,7 +79,7 @@ bool slideshow_load(Slideshow* slideshow, const char* fspath) {
         }
     } while(false);
     storage_file_free(slideshow_file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     return slideshow->loaded;
 }
 
@@ -107,7 +107,7 @@ void slideshow_goback(Slideshow* slideshow) {
 }
 
 void slideshow_draw(Slideshow* slideshow, Canvas* canvas, uint8_t x, uint8_t y) {
-    furi_assert(slideshow->current_frame < slideshow->icon.frame_count);
+    furry_assert(slideshow->current_frame < slideshow->icon.frame_count);
     canvas_draw_bitmap(
         canvas,
         x,

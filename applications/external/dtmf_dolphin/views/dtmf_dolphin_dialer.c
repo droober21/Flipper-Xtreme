@@ -138,34 +138,34 @@ static void dtmf_dolphin_dialer_draw_callback(Canvas* canvas, void* _model) {
 
     draw_dialer(canvas, model);
 
-    FuriString* output = furi_string_alloc();
+    FurryString* output = furry_string_alloc();
 
     if(model->freq1 && model->freq2) {
-        furi_string_cat_printf(
+        furry_string_cat_printf(
             output,
             "Dual Tone\nF1: %u Hz\nF2: %u Hz\n",
             (unsigned int)model->freq1,
             (unsigned int)model->freq2);
     } else if(model->freq1) {
-        furi_string_cat_printf(output, "Single Tone\nF: %u Hz\n", (unsigned int)model->freq1);
+        furry_string_cat_printf(output, "Single Tone\nF: %u Hz\n", (unsigned int)model->freq1);
     }
 
     canvas_set_font(canvas, FontSecondary);
     canvas_set_color(canvas, ColorBlack);
     if(model->pulse_ms) {
-        furi_string_cat_printf(output, "P: %u * %u ms\n", model->pulses, model->pulse_ms);
+        furry_string_cat_printf(output, "P: %u * %u ms\n", model->pulses, model->pulse_ms);
     }
     if(model->gap_ms) {
-        furi_string_cat_printf(output, "Gaps: %u ms\n", model->gap_ms);
+        furry_string_cat_printf(output, "Gaps: %u ms\n", model->gap_ms);
     }
     elements_multiline_text(
-        canvas, (max_span * DTMF_DOLPHIN_BUTTON_WIDTH) + 4, 21, furi_string_get_cstr(output));
+        canvas, (max_span * DTMF_DOLPHIN_BUTTON_WIDTH) + 4, 21, furry_string_get_cstr(output));
 
-    furi_string_free(output);
+    furry_string_free(output);
 }
 
 static bool dtmf_dolphin_dialer_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DTMFDolphinDialer* dtmf_dolphin_dialer = context;
     bool consumed = false;
 
@@ -294,7 +294,7 @@ static bool
 }
 
 static void dtmf_dolphin_dialer_enter_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DTMFDolphinDialer* dtmf_dolphin_dialer = context;
 
     with_view_model(
@@ -339,12 +339,12 @@ DTMFDolphinDialer* dtmf_dolphin_dialer_alloc() {
 }
 
 void dtmf_dolphin_dialer_free(DTMFDolphinDialer* dtmf_dolphin_dialer) {
-    furi_assert(dtmf_dolphin_dialer);
+    furry_assert(dtmf_dolphin_dialer);
     view_free(dtmf_dolphin_dialer->view);
     free(dtmf_dolphin_dialer);
 }
 
 View* dtmf_dolphin_dialer_get_view(DTMFDolphinDialer* dtmf_dolphin_dialer) {
-    furi_assert(dtmf_dolphin_dialer);
+    furry_assert(dtmf_dolphin_dialer);
     return dtmf_dolphin_dialer->view;
 }

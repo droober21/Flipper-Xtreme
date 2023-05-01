@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 
 uint8_t zombie_array[2][8][5] = {
     {

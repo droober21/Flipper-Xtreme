@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <storage/storage.h>
 #include <lib/flipper_format/flipper_format.h>
 #include <lib/nfc/protocols/nfca.h>
@@ -41,13 +41,13 @@ static NfcTest* nfc_test = NULL;
 static void nfc_test_alloc() {
     nfc_test = malloc(sizeof(NfcTest));
     nfc_test->signal = nfca_signal_alloc();
-    nfc_test->storage = furi_record_open(RECORD_STORAGE);
+    nfc_test->storage = furry_record_open(RECORD_STORAGE);
 }
 
 static void nfc_test_free() {
-    furi_assert(nfc_test);
+    furry_assert(nfc_test);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     nfca_signal_free(nfc_test->signal);
     free(nfc_test);
     nfc_test = NULL;
@@ -57,14 +57,14 @@ static bool nfc_test_read_signal_from_file(const char* file_name) {
     bool success = false;
 
     FlipperFormat* file = flipper_format_file_alloc(nfc_test->storage);
-    FuriString* file_type;
-    file_type = furi_string_alloc();
+    FurryString* file_type;
+    file_type = furry_string_alloc();
     uint32_t file_version = 0;
 
     do {
         if(!flipper_format_file_open_existing(file, file_name)) break;
         if(!flipper_format_read_header(file, file_type, &file_version)) break;
-        if(furi_string_cmp_str(file_type, nfc_test_file_type) ||
+        if(furry_string_cmp_str(file_type, nfc_test_file_type) ||
            file_version != nfc_test_file_version)
             break;
         if(!flipper_format_read_uint32(file, "Data length", &nfc_test->test_data_len, 1)) break;
@@ -81,7 +81,7 @@ static bool nfc_test_read_signal_from_file(const char* file_name) {
         success = true;
     } while(false);
 
-    furi_string_free(file_type);
+    furry_string_free(file_type);
     flipper_format_free(file);
 
     return success;
@@ -92,7 +92,7 @@ static bool nfc_test_digital_signal_test_encode(
     uint32_t encode_max_time,
     uint32_t timing_tolerance,
     uint32_t timings_sum_tolerance) {
-    furi_assert(nfc_test);
+    furry_assert(nfc_test);
 
     bool success = false;
     uint32_t time = 0;
@@ -103,29 +103,29 @@ static bool nfc_test_digital_signal_test_encode(
     do {
         // Read test data
         if(!nfc_test_read_signal_from_file(file_name)) {
-            FURI_LOG_E(TAG, "Failed to read signal from file");
+            FURRY_LOG_E(TAG, "Failed to read signal from file");
             break;
         }
 
         // Encode signal
-        FURI_CRITICAL_ENTER();
+        FURRY_CRITICAL_ENTER();
         time = DWT->CYCCNT;
         nfca_signal_encode(
             nfc_test->signal, nfc_test->test_data, nfc_test->test_data_len * 8, parity);
         digital_signal_prepare_arr(nfc_test->signal->tx_signal);
-        time = (DWT->CYCCNT - time) / furi_hal_cortex_instructions_per_microsecond();
-        FURI_CRITICAL_EXIT();
+        time = (DWT->CYCCNT - time) / furry_hal_cortex_instructions_per_microsecond();
+        FURRY_CRITICAL_EXIT();
 
         // Check timings
         if(time > encode_max_time) {
-            FURI_LOG_E(
+            FURRY_LOG_E(
                 TAG, "Encoding time: %ld us while accepted value: %ld us", time, encode_max_time);
             break;
         }
 
         // Check data
         if(nfc_test->signal->tx_signal->edge_cnt != nfc_test->test_timings_len) {
-            FURI_LOG_E(TAG, "Not equal timings buffers length");
+            FURRY_LOG_E(TAG, "Not equal timings buffers length");
             break;
         }
 
@@ -138,7 +138,7 @@ static bool nfc_test_digital_signal_test_encode(
             dut_timings_sum += dut[i];
             ref_timings_sum += ref[i];
             if(timings_diff > timing_tolerance) {
-                FURI_LOG_E(
+                FURRY_LOG_E(
                     TAG, "Too big difference in %d timings. Ref: %ld, DUT: %ld", i, ref[i], dut[i]);
                 timing_check_success = false;
                 break;
@@ -148,7 +148,7 @@ static bool nfc_test_digital_signal_test_encode(
         uint32_t sum_diff = dut_timings_sum > ref_timings_sum ? dut_timings_sum - ref_timings_sum :
                                                                 ref_timings_sum - dut_timings_sum;
         if(sum_diff > timings_sum_tolerance) {
-            FURI_LOG_E(
+            FURRY_LOG_E(
                 TAG,
                 "Too big difference in timings sum. Ref: %ld, DUT: %ld",
                 ref_timings_sum,
@@ -156,8 +156,8 @@ static bool nfc_test_digital_signal_test_encode(
             break;
         }
 
-        FURI_LOG_I(TAG, "Encoding time: %ld us. Acceptable time: %ld us", time, encode_max_time);
-        FURI_LOG_I(
+        FURRY_LOG_I(TAG, "Encoding time: %ld us. Acceptable time: %ld us", time, encode_max_time);
+        FURRY_LOG_I(
             TAG,
             "Timings sum difference: %ld [1/64MHZ]. Acceptable difference: %ld [1/64MHz]",
             sum_diff,
@@ -182,8 +182,8 @@ MU_TEST(nfc_digital_signal_test) {
 MU_TEST(mf_classic_dict_test) {
     MfClassicDict* instance = NULL;
     uint64_t key = 0;
-    FuriString* temp_str;
-    temp_str = furi_string_alloc();
+    FurryString* temp_str;
+    temp_str = furry_string_alloc();
 
     instance = mf_classic_dict_alloc(MfClassicDictTypeUnitTest);
     mu_assert(instance != NULL, "mf_classic_dict_alloc\r\n");
@@ -192,7 +192,7 @@ MU_TEST(mf_classic_dict_test) {
         mf_classic_dict_get_total_keys(instance) == 0,
         "mf_classic_dict_get_total_keys == 0 assert failed\r\n");
 
-    furi_string_set(temp_str, "2196FAD8115B");
+    furry_string_set(temp_str, "2196FAD8115B");
     mu_assert(
         mf_classic_dict_add_key_str(instance, temp_str),
         "mf_classic_dict_add_key == true assert failed\r\n");
@@ -207,7 +207,7 @@ MU_TEST(mf_classic_dict_test) {
         mf_classic_dict_get_key_at_index_str(instance, temp_str, 0),
         "mf_classic_dict_get_key_at_index_str == true assert failed\r\n");
     mu_assert(
-        furi_string_cmp(temp_str, "2196FAD8115B") == 0,
+        furry_string_cmp(temp_str, "2196FAD8115B") == 0,
         "string_cmp(temp_str, \"2196FAD8115B\") == 0 assert failed\r\n");
 
     mu_assert(mf_classic_dict_rewind(instance), "mf_classic_dict_rewind == 1 assert failed\r\n");
@@ -224,11 +224,11 @@ MU_TEST(mf_classic_dict_test) {
         "mf_classic_dict_delete_index == true assert failed\r\n");
 
     mf_classic_dict_free(instance);
-    furi_string_free(temp_str);
+    furry_string_free(temp_str);
 }
 
 MU_TEST(mf_classic_dict_load_test) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     mu_assert(storage != NULL, "storage != NULL assert failed\r\n");
 
     // Delete unit test dict file if exists
@@ -263,17 +263,17 @@ MU_TEST(mf_classic_dict_load_test) {
     // Read key
     uint64_t key_ref = 0xa0a1a2a3a4a5;
     uint64_t key_dut = 0;
-    FuriString* temp_str = furi_string_alloc();
+    FurryString* temp_str = furry_string_alloc();
     mu_assert(
         mf_classic_dict_get_next_key_str(instance, temp_str),
         "get_next_key_str == true assert failed\r\n");
-    mu_assert(furi_string_cmp_str(temp_str, key_str) == 0, "invalid key loaded\r\n");
+    mu_assert(furry_string_cmp_str(temp_str, key_str) == 0, "invalid key loaded\r\n");
     mu_assert(mf_classic_dict_rewind(instance), "mf_classic_dict_rewind == 1 assert failed\r\n");
     mu_assert(
         mf_classic_dict_get_next_key(instance, &key_dut),
         "get_next_key == true assert failed\r\n");
     mu_assert(key_dut == key_ref, "invalid key loaded\r\n");
-    furi_string_free(temp_str);
+    furry_string_free(temp_str);
     mf_classic_dict_free(instance);
 
     // Check that MfClassicDict added new line to the end of the file
@@ -290,7 +290,7 @@ MU_TEST(mf_classic_dict_load_test) {
     mu_assert(
         storage_simply_remove(storage, NFC_TEST_DICT_PATH), "remove == true assert failed\r\n");
     stream_free(file_stream);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 MU_TEST(nfca_file_test) {
@@ -306,7 +306,7 @@ MU_TEST(nfca_file_test) {
     nfc->dev_data.nfc_data.sak = 0x08;
     nfc->dev_data.nfc_data.atqa[0] = 0x00;
     nfc->dev_data.nfc_data.atqa[1] = 0x04;
-    nfc->dev_data.nfc_data.type = FuriHalNfcTypeA;
+    nfc->dev_data.nfc_data.type = FurryHalNfcTypeA;
 
     // Save the NFC device data to the file
     mu_assert(
@@ -327,8 +327,8 @@ MU_TEST(nfca_file_test) {
     mu_assert(
         nfc_validate->dev_data.nfc_data.atqa[1] == 0x04, "atqa[1] == 0x04 assert failed\r\n");
     mu_assert(
-        nfc_validate->dev_data.nfc_data.type == FuriHalNfcTypeA,
-        "type == FuriHalNfcTypeA assert failed\r\n");
+        nfc_validate->dev_data.nfc_data.type == FurryHalNfcTypeA,
+        "type == FurryHalNfcTypeA assert failed\r\n");
     nfc_device_free(nfc_validate);
 }
 
@@ -419,14 +419,14 @@ static void mf_classic_generator_test(uint8_t uid_len, MfClassicType type) {
         nfc_device_save(nfc_dev, NFC_TEST_NFC_DEV_PATH),
         "nfc_device_save == true assert failed\r\n");
     // Verify that key cache is saved
-    FuriString* key_cache_name = furi_string_alloc();
-    furi_string_set_str(key_cache_name, "/ext/nfc/.cache/");
+    FurryString* key_cache_name = furry_string_alloc();
+    furry_string_set_str(key_cache_name, "/ext/nfc/.cache/");
     for(size_t i = 0; i < uid_len; i++) {
-        furi_string_cat_printf(key_cache_name, "%02X", uid[i]);
+        furry_string_cat_printf(key_cache_name, "%02X", uid[i]);
     }
-    furi_string_cat_printf(key_cache_name, ".keys");
+    furry_string_cat_printf(key_cache_name, ".keys");
     mu_assert(
-        storage_common_stat(nfc_dev->storage, furi_string_get_cstr(key_cache_name), NULL) ==
+        storage_common_stat(nfc_dev->storage, furry_string_get_cstr(key_cache_name), NULL) ==
             FSE_OK,
         "Key cache file save failed");
     nfc_device_free(nfc_dev);
@@ -447,8 +447,8 @@ static void mf_classic_generator_test(uint8_t uid_len, MfClassicType type) {
         memcmp(nfc_validate->dev_data.nfc_data.atqa, atqa, 2) == 0,
         "atqa compare assert failed\r\n");
     mu_assert(
-        nfc_validate->dev_data.nfc_data.type == FuriHalNfcTypeA,
-        "type == FuriHalNfcTypeA assert failed\r\n");
+        nfc_validate->dev_data.nfc_data.type == FurryHalNfcTypeA,
+        "type == FurryHalNfcTypeA assert failed\r\n");
 
     // Check the manufacturer block
     mu_assert(
@@ -484,9 +484,9 @@ static void mf_classic_generator_test(uint8_t uid_len, MfClassicType type) {
 
     // Delete key cache file
     mu_assert(
-        storage_common_remove(nfc_keys->storage, furi_string_get_cstr(key_cache_name)) == FSE_OK,
+        storage_common_remove(nfc_keys->storage, furry_string_get_cstr(key_cache_name)) == FSE_OK,
         "Failed to remove key cache file");
-    furi_string_free(key_cache_name);
+    furry_string_free(key_cache_name);
     nfc_device_free(nfc_keys);
 }
 

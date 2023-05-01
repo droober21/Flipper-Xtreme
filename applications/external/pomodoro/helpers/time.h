@@ -1,7 +1,7 @@
 #pragma once
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 extern const int TIME_SECONDS_IN_MINUTE;
 extern const int TIME_MINUTES_IN_HOUR;

@@ -9,7 +9,7 @@
  *  - x27: https://github.com/x27/flipperzero-game15
  */
 
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <storage/storage.h>
@@ -33,7 +33,7 @@ typedef enum {
 } State;
 
 typedef struct {
-    FuriMutex* mutex;
+    FurryMutex* mutex;
     State state;
     uint8_t table[CELLS_COUNT][CELLS_COUNT];
     uint32_t score;
@@ -51,9 +51,9 @@ typedef struct {
 static const char* popup_menu_strings[] = {"Resume", "New Game"};
 
 static void input_callback(InputEvent* input_event, void* ctx) {
-    furi_assert(ctx);
-    FuriMessageQueue* event_queue = ctx;
-    furi_message_queue_put(event_queue, input_event, FuriWaitForever);
+    furry_assert(ctx);
+    FurryMessageQueue* event_queue = ctx;
+    furry_message_queue_put(event_queue, input_event, FurryWaitForever);
 }
 
 static void draw_frame(Canvas* canvas) {
@@ -104,9 +104,9 @@ static void gray_canvas(Canvas* const canvas) {
 }
 
 static void draw_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     const GameState* game_state = ctx;
-    furi_mutex_acquire(game_state->mutex, FuriWaitForever);
+    furry_mutex_acquire(game_state->mutex, FurryWaitForever);
 
     canvas_clear(canvas);
 
@@ -182,7 +182,7 @@ static void draw_callback(Canvas* const canvas, void* ctx) {
         canvas_draw_str_aligned(canvas, 64, 48, AlignCenter, AlignBottom, buf);
     }
 
-    furi_mutex_release(game_state->mutex);
+    furry_mutex_release(game_state->mutex);
 }
 
 void calculate_move_to_left(uint8_t arr[], MoveResult* const move_result) {
@@ -299,7 +299,7 @@ void init_game(GameState* const game_state, bool clear_top_score) {
 }
 
 bool load_game(GameState* game_state) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     File* file = storage_file_alloc(storage);
     uint16_t bytes_readed = 0;
@@ -309,13 +309,13 @@ bool load_game(GameState* game_state) {
     storage_file_close(file);
     storage_file_free(file);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return bytes_readed == sizeof(GameState);
 }
 
 void save_game(GameState* game_state) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     if(storage_common_stat(storage, SAVING_DIRECTORY, NULL) == FSE_NOT_EXIST) {
         if(!storage_simply_mkdir(storage, SAVING_DIRECTORY)) {
@@ -330,22 +330,22 @@ void save_game(GameState* game_state) {
     storage_file_close(file);
     storage_file_free(file);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 bool is_game_over(GameState* const game_state) {
-    FURI_LOG_I("is_game_over", "====check====");
+    FURRY_LOG_I("is_game_over", "====check====");
 
     // check if table contains at least one empty cell
     for(uint8_t i = 0; i < CELLS_COUNT; i++) {
         for(u_int8_t j = 0; j < CELLS_COUNT; j++) {
             if(game_state->table[i][j] == 0) {
-                FURI_LOG_I("is_game_over", "has empty cells");
+                FURRY_LOG_I("is_game_over", "has empty cells");
                 return false;
             }
         }
     }
-    FURI_LOG_I("is_game_over", "no empty cells");
+    FURRY_LOG_I("is_game_over", "no empty cells");
 
     uint8_t tmp_table[CELLS_COUNT][CELLS_COUNT];
     MoveResult* tmp_move_result = malloc(sizeof(MoveResult));
@@ -354,22 +354,22 @@ bool is_game_over(GameState* const game_state) {
     memcpy(tmp_table, game_state->table, CELLS_COUNT * CELLS_COUNT * sizeof(uint8_t));
     move_left(tmp_table, tmp_move_result);
     if(tmp_move_result->is_table_updated) return false;
-    FURI_LOG_I("is_game_over", "can't move left");
+    FURRY_LOG_I("is_game_over", "can't move left");
 
     memcpy(tmp_table, game_state->table, CELLS_COUNT * CELLS_COUNT * sizeof(uint8_t));
     move_right(tmp_table, tmp_move_result);
     if(tmp_move_result->is_table_updated) return false;
-    FURI_LOG_I("is_game_over", "can't move right");
+    FURRY_LOG_I("is_game_over", "can't move right");
 
     memcpy(tmp_table, game_state->table, CELLS_COUNT * CELLS_COUNT * sizeof(uint8_t));
     move_up(tmp_table, tmp_move_result);
     if(tmp_move_result->is_table_updated) return false;
-    FURI_LOG_I("is_game_over", "can't move up");
+    FURRY_LOG_I("is_game_over", "can't move up");
 
     memcpy(tmp_table, game_state->table, CELLS_COUNT * CELLS_COUNT * sizeof(uint8_t));
     move_down(tmp_table, tmp_move_result);
     if(tmp_move_result->is_table_updated) return false;
-    FURI_LOG_I("is_game_over", "can't move down");
+    FURRY_LOG_I("is_game_over", "can't move down");
 
     return true;
 }
@@ -382,31 +382,31 @@ int32_t game_2048_app() {
 
     MoveResult* move_result = malloc(sizeof(MoveResult));
 
-    game_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    game_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!game_state->mutex) {
-        FURI_LOG_E("2048Game", "cannot create mutex\r\n");
+        FURRY_LOG_E("2048Game", "cannot create mutex\r\n");
         free(game_state);
         return 255;
     }
 
     InputEvent input;
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
 
     ViewPort* view_port = view_port_alloc();
     view_port_draw_callback_set(view_port, draw_callback, game_state);
     view_port_input_callback_set(view_port, input_callback, event_queue);
 
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     bool is_finished = false;
     while(!is_finished) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &input, FuriWaitForever);
-        if(event_status == FuriStatusOk) {
+        FurryStatus event_status = furry_message_queue_get(event_queue, &input, FurryWaitForever);
+        if(event_status == FurryStatusOk) {
             // handle only press event, ignore repeat/release events
             if(input.type != InputTypePress) continue;
 
-            furi_mutex_acquire(game_state->mutex, FuriWaitForever);
+            furry_mutex_acquire(game_state->mutex, FurryWaitForever);
 
             switch(game_state->state) {
             case GameStateMenu:
@@ -491,18 +491,18 @@ int32_t game_2048_app() {
             }
 
             view_port_update(view_port);
-            furi_mutex_release(game_state->mutex);
+            furry_mutex_release(game_state->mutex);
         }
     }
 
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
     view_port_free(view_port);
 
-    furi_message_queue_free(event_queue);
+    furry_message_queue_free(event_queue);
 
-    furi_mutex_free(game_state->mutex);
+    furry_mutex_free(game_state->mutex);
 
     free(game_state);
     free(move_result);

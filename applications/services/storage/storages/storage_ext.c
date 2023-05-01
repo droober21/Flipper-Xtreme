@@ -1,9 +1,9 @@
 #include "fatfs.h"
 #include "../filesystem_api_internal.h"
 #include "storage_ext.h"
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include "sd_notify.h"
-#include <furi_hal_sd.h>
+#include <furry_hal_sd.h>
 
 typedef FIL SDFile;
 typedef DIR SDDir;
@@ -32,9 +32,9 @@ static bool sd_mount_card(StorageData* storage, bool notify) {
 
     while(result == false && counter > 0 && hal_sd_detect()) {
         if(notify) {
-            NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+            NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
             sd_notify_wait(notification);
-            furi_record_close(RECORD_NOTIFICATION);
+            furry_record_close(RECORD_NOTIFICATION);
         }
 
         if((counter % 2) == 0) {
@@ -51,7 +51,7 @@ static bool sd_mount_card(StorageData* storage, bool notify) {
             SDError status = f_mount(sd_data->fs, sd_data->path, 1);
 
             if(status == FR_OK || status == FR_NO_FILESYSTEM) {
-#ifndef FURI_RAM_EXEC
+#ifndef FURRY_RAM_EXEC
                 FATFS* fs;
                 uint32_t free_clusters;
 
@@ -75,14 +75,14 @@ static bool sd_mount_card(StorageData* storage, bool notify) {
         }
 
         if(notify) {
-            NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+            NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
             sd_notify_wait_off(notification);
-            furi_record_close(RECORD_NOTIFICATION);
+            furry_record_close(RECORD_NOTIFICATION);
         }
 
         if(!result) {
-            furi_delay_ms(1000);
-            FURI_LOG_E(
+            furry_delay_ms(1000);
+            FURRY_LOG_E(
                 TAG, "init cycle %d, error: %s", counter, storage_data_status_text(storage));
             counter--;
         }
@@ -107,7 +107,7 @@ FS_Error sd_unmount_card(StorageData* storage) {
 }
 
 FS_Error sd_format_card(StorageData* storage) {
-#ifdef FURI_RAM_EXEC
+#ifdef FURRY_RAM_EXEC
     UNUSED(storage);
     return FSE_NOT_READY;
 #else
@@ -136,7 +136,7 @@ FS_Error sd_format_card(StorageData* storage) {
 }
 
 FS_Error sd_card_info(StorageData* storage, SDInfo* sd_info) {
-#ifndef FURI_RAM_EXEC
+#ifndef FURRY_RAM_EXEC
     uint32_t free_clusters, free_sectors, total_sectors;
     FATFS* fs;
 #endif
@@ -149,14 +149,14 @@ FS_Error sd_card_info(StorageData* storage, SDInfo* sd_info) {
     // get fs info
     error = f_getlabel(sd_data->path, sd_info->label, NULL);
     if(error == FR_OK) {
-#ifndef FURI_RAM_EXEC
+#ifndef FURRY_RAM_EXEC
         error = f_getfree(sd_data->path, &free_clusters, &fs);
 #endif
     }
 
     if(error == FR_OK) {
         // calculate size
-#ifndef FURI_RAM_EXEC
+#ifndef FURRY_RAM_EXEC
         total_sectors = (fs->n_fatent - 2) * fs->csize;
         free_sectors = free_clusters * fs->csize;
 #endif
@@ -166,7 +166,7 @@ FS_Error sd_card_info(StorageData* storage, SDInfo* sd_info) {
         sector_size = fs->ssize;
 #endif
 
-#ifdef FURI_RAM_EXEC
+#ifdef FURRY_RAM_EXEC
         sd_info->fs_type = 0;
         sd_info->kb_total = 0;
         sd_info->kb_free = 0;
@@ -221,43 +221,43 @@ static void storage_ext_tick_internal(StorageData* storage, bool notify) {
 
     if(sd_data->sd_was_present) {
         if(hal_sd_detect()) {
-            FURI_LOG_I(TAG, "card detected");
+            FURRY_LOG_I(TAG, "card detected");
             sd_mount_card(storage, notify);
 
             if(storage->status != StorageStatusOK) {
-                FURI_LOG_E(TAG, "sd init error: %s", storage_data_status_text(storage));
+                FURRY_LOG_E(TAG, "sd init error: %s", storage_data_status_text(storage));
                 if(notify) {
-                    NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+                    NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
                     sd_notify_error(notification);
-                    furi_record_close(RECORD_NOTIFICATION);
+                    furry_record_close(RECORD_NOTIFICATION);
                 }
             } else {
-                FURI_LOG_I(TAG, "card mounted");
+                FURRY_LOG_I(TAG, "card mounted");
                 if(notify) {
-                    NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+                    NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
                     sd_notify_success(notification);
-                    furi_record_close(RECORD_NOTIFICATION);
+                    furry_record_close(RECORD_NOTIFICATION);
                 }
             }
 
             sd_data->sd_was_present = false;
 
             if(!hal_sd_detect()) {
-                FURI_LOG_I(TAG, "card removed while mounting");
+                FURRY_LOG_I(TAG, "card removed while mounting");
                 sd_unmount_card(storage);
                 sd_data->sd_was_present = true;
             }
         }
     } else {
         if(!hal_sd_detect()) {
-            FURI_LOG_I(TAG, "card removed");
+            FURRY_LOG_I(TAG, "card removed");
             sd_data->sd_was_present = true;
 
             sd_unmount_card(storage);
             if(notify) {
-                NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+                NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
                 sd_notify_eject(notification);
-                furi_record_close(RECORD_NOTIFICATION);
+                furry_record_close(RECORD_NOTIFICATION);
             }
         }
     }
@@ -352,7 +352,7 @@ static uint16_t
 
 static uint16_t
     storage_ext_file_write(void* ctx, File* file, const void* buff, uint16_t const bytes_to_write) {
-#ifdef FURI_RAM_EXEC
+#ifdef FURRY_RAM_EXEC
     UNUSED(ctx);
     UNUSED(file);
     UNUSED(buff);
@@ -396,7 +396,7 @@ static uint64_t storage_ext_file_tell(void* ctx, File* file) {
 }
 
 static bool storage_ext_file_truncate(void* ctx, File* file) {
-#ifdef FURI_RAM_EXEC
+#ifdef FURRY_RAM_EXEC
     UNUSED(ctx);
     UNUSED(file);
     return FSE_NOT_READY;
@@ -411,7 +411,7 @@ static bool storage_ext_file_truncate(void* ctx, File* file) {
 }
 
 static bool storage_ext_file_sync(void* ctx, File* file) {
-#ifdef FURI_RAM_EXEC
+#ifdef FURRY_RAM_EXEC
     UNUSED(ctx);
     UNUSED(file);
     return FSE_NOT_READY;
@@ -525,7 +525,7 @@ static FS_Error storage_ext_common_stat(void* ctx, const char* path, FileInfo* f
 
 static FS_Error storage_ext_common_remove(void* ctx, const char* path) {
     UNUSED(ctx);
-#ifdef FURI_RAM_EXEC
+#ifdef FURRY_RAM_EXEC
     UNUSED(path);
     return FSE_NOT_READY;
 #else
@@ -536,7 +536,7 @@ static FS_Error storage_ext_common_remove(void* ctx, const char* path) {
 
 static FS_Error storage_ext_common_mkdir(void* ctx, const char* path) {
     UNUSED(ctx);
-#ifdef FURI_RAM_EXEC
+#ifdef FURRY_RAM_EXEC
     UNUSED(path);
     return FSE_NOT_READY;
 #else
@@ -551,7 +551,7 @@ static FS_Error storage_ext_common_fs_info(
     uint64_t* total_space,
     uint64_t* free_space) {
     UNUSED(fs_path);
-#ifdef FURI_RAM_EXEC
+#ifdef FURRY_RAM_EXEC
     UNUSED(ctx);
     UNUSED(total_space);
     UNUSED(free_space);

@@ -48,7 +48,7 @@ void totp_cli_command_details_docopt_usage() {
         " | " TOTP_CLI_COMMAND_DETAILS_ALT) " " DOCOPT_ARGUMENT(TOTP_CLI_COMMAND_ARG_INDEX) "\r\n");
 }
 
-void totp_cli_command_details_handle(PluginState* plugin_state, FuriString* args, Cli* cli) {
+void totp_cli_command_details_handle(PluginState* plugin_state, FurryString* args, Cli* cli) {
     if(!totp_cli_ensure_authenticated(plugin_state, cli)) {
         return;
     }
@@ -74,7 +74,7 @@ void totp_cli_command_details_handle(PluginState* plugin_state, FuriString* args
         TOTP_CLI_PRINTF("+----------------------+------------------------------+\r\n");
         TOTP_CLI_PRINTF("| %-20s | %-28d |\r\n", "Index", token_number);
         TOTP_CLI_PRINTF(
-            "| %-20s | %-28.28s |\r\n", "Name", furi_string_get_cstr(token_info->name));
+            "| %-20s | %-28.28s |\r\n", "Name", furry_string_get_cstr(token_info->name));
         TOTP_CLI_PRINTF(
             "| %-20s | %-28s |\r\n", "Hashing algorithm", token_info_get_algo_as_cstr(token_info));
         TOTP_CLI_PRINTF("| %-20s | %-28" PRIu8 " |\r\n", "Number of digits", token_info->digits);

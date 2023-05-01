@@ -95,7 +95,7 @@ static uint32_t mj_ducky_get_command_len(const char* line) {
 }
 
 static bool mj_get_ducky_key(char* key, size_t keylen, MJDuckyKey* dk) {
-    //FURI_LOG_D(TAG, "looking up key %s with length %d", key, keylen);
+    //FURRY_LOG_D(TAG, "looking up key %s with length %d", key, keylen);
     for(uint i = 0; i < sizeof(mj_ducky_keys) / sizeof(MJDuckyKey); i++) {
         if(strlen(mj_ducky_keys[i].name) == keylen &&
            !strncmp(mj_ducky_keys[i].name, key, keylen)) {
@@ -117,7 +117,7 @@ static void checksum(uint8_t* payload, uint len) {
 }
 
 static void inject_packet(
-    FuriHalSpiBusHandle* handle,
+    FurryHalSpiBusHandle* handle,
     uint8_t* addr,
     uint8_t addr_size,
     uint8_t rate,
@@ -147,7 +147,7 @@ static void inject_packet(
                    true) > LOGITECH_MAX_CHANNEL) {
                 return; // fail
             }
-            //FURI_LOG_D("mj", "find channel passed, %d", tessst);
+            //FURRY_LOG_D("mj", "find channel passed, %d", tessst);
 
             rt_count = 0;
         }
@@ -162,7 +162,7 @@ static void build_hid_packet(uint8_t mod, uint8_t hid, uint8_t* payload) {
 }
 
 static void release_key(
-    FuriHalSpiBusHandle* handle,
+    FurryHalSpiBusHandle* handle,
     uint8_t* addr,
     uint8_t addr_size,
     uint8_t rate,
@@ -186,7 +186,7 @@ static void release_key(
 }
 
 static void send_hid_packet(
-    FuriHalSpiBusHandle* handle,
+    FurryHalSpiBusHandle* handle,
     uint8_t* addr,
     uint8_t addr_size,
     uint8_t rate,
@@ -203,7 +203,7 @@ static void send_hid_packet(
         hid_payload);
     inject_packet(
         handle, addr, addr_size, rate, hid_payload, LOGITECH_HID_TEMPLATE_SIZE, plugin_state);
-    furi_delay_ms(12);
+    furry_delay_ms(12);
 }
 
 static bool ducky_end_line(const char chr) {
@@ -212,7 +212,7 @@ static bool ducky_end_line(const char chr) {
 
 // returns false if there was an error processing script line
 static bool mj_process_ducky_line(
-    FuriHalSpiBusHandle* handle,
+    FurryHalSpiBusHandle* handle,
     uint8_t* addr,
     uint8_t addr_size,
     uint8_t rate,
@@ -234,7 +234,7 @@ static bool mj_process_ducky_line(
         if(i == line_len - 1) return true; // Skip empty lines
     }
 
-    FURI_LOG_D(TAG, "line: %s", line_tmp);
+    FURRY_LOG_D(TAG, "line: %s", line_tmp);
 
     // General commands
     if(strncmp(line_tmp, ducky_cmd_comment, strlen(ducky_cmd_comment)) == 0) {
@@ -268,7 +268,7 @@ static bool mj_process_ducky_line(
                     LOGITECH_KEEPALIVE,
                     LOGITECH_KEEPALIVE_SIZE,
                     plugin_state);
-                furi_delay_ms(10);
+                furry_delay_ms(10);
             }
             return true;
         }
@@ -300,7 +300,7 @@ static bool mj_process_ducky_line(
                 char pad_num[5] = {'N', 'U', 'M', ' ', alt_code[j]};
                 if(!mj_get_ducky_key(pad_num, 5, &dk)) return false;
                 holding_alt = true;
-                FURI_LOG_D(TAG, "Sending %s", pad_num);
+                FURRY_LOG_D(TAG, "Sending %s", pad_num);
                 send_hid_packet(handle, addr, addr_size, rate, dk.mod, dk.hid, plugin_state);
                 j++;
             }
@@ -318,7 +318,7 @@ static bool mj_process_ducky_line(
         repeat_cnt = atoi(line_tmp);
         if(repeat_cnt < 2) return false;
 
-        FURI_LOG_D(TAG, "repeating %s %ld times", prev_line, repeat_cnt);
+        FURRY_LOG_D(TAG, "repeating %s %ld times", prev_line, repeat_cnt);
         for(uint32_t i = 0; i < repeat_cnt; i++)
             mj_process_ducky_line(handle, addr, addr_size, rate, prev_line, NULL, plugin_state);
 
@@ -427,7 +427,7 @@ static bool mj_process_ducky_line(
 }
 
 void mj_process_ducky_script(
-    FuriHalSpiBusHandle* handle,
+    FurryHalSpiBusHandle* handle,
     uint8_t* addr,
     uint8_t addr_size,
     uint8_t rate,
@@ -443,7 +443,7 @@ void mj_process_ducky_script(
         if(strcmp(&line[strlen(line) - 1], "\r") == 0) line[strlen(line) - 1] = (char)0;
 
         if(!mj_process_ducky_line(handle, addr, addr_size, rate, line, prev_line, plugin_state))
-            FURI_LOG_D(TAG, "unable to process ducky script line: %s", line);
+            FURRY_LOG_D(TAG, "unable to process ducky script line: %s", line);
 
         prev_line = line;
         line = strtok(NULL, "\n");

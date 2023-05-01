@@ -1,6 +1,6 @@
 #include "../usb_uart_bridge.h"
 #include "../gpio_app_i.h"
-#include "furi_hal.h"
+#include "furry_hal.h"
 
 typedef enum {
     UsbUartLineIndexVcp,
@@ -27,7 +27,7 @@ static const uint32_t baudrate_list[] = {
 
 bool gpio_scene_usb_uart_cfg_on_event(void* context, SceneManagerEvent event) {
     GpioApp* app = context;
-    furi_assert(app);
+    furry_assert(app);
     if(event.type == SceneManagerEventTypeCustom) {
         if(event.event == GpioUsbUartEventConfigSet) {
             usb_uart_set_config(app->usb_uart_bridge, app->usb_uart_cfg);
@@ -42,7 +42,7 @@ void line_ensure_flow_invariant(GpioApp* app) {
     // selected. This function enforces that invariant by resetting flow_pins
     // to None if it is configured to 16,15 when LPUART is selected.
 
-    uint8_t available_flow_pins = app->usb_uart_cfg->uart_ch == FuriHalUartIdLPUART1 ? 3 : 4;
+    uint8_t available_flow_pins = app->usb_uart_cfg->uart_ch == FurryHalUartIdLPUART1 ? 3 : 4;
     VariableItem* item = app->var_item_flow;
     variable_item_set_values_count(item, available_flow_pins);
 
@@ -56,7 +56,7 @@ void line_ensure_flow_invariant(GpioApp* app) {
 
 static void line_vcp_cb(VariableItem* item) {
     GpioApp* app = variable_item_get_context(item);
-    furi_assert(app);
+    furry_assert(app);
     uint8_t index = variable_item_get_current_value_index(item);
 
     variable_item_set_current_value_text(item, vcp_ch[index]);
@@ -67,15 +67,15 @@ static void line_vcp_cb(VariableItem* item) {
 
 static void line_port_cb(VariableItem* item) {
     GpioApp* app = variable_item_get_context(item);
-    furi_assert(app);
+    furry_assert(app);
     uint8_t index = variable_item_get_current_value_index(item);
 
     variable_item_set_current_value_text(item, uart_ch[index]);
 
     if(index == 0)
-        app->usb_uart_cfg->uart_ch = FuriHalUartIdUSART1;
+        app->usb_uart_cfg->uart_ch = FurryHalUartIdUSART1;
     else if(index == 1)
-        app->usb_uart_cfg->uart_ch = FuriHalUartIdLPUART1;
+        app->usb_uart_cfg->uart_ch = FurryHalUartIdLPUART1;
 
     line_ensure_flow_invariant(app);
     view_dispatcher_send_custom_event(app->view_dispatcher, GpioUsbUartEventConfigSet);
@@ -83,7 +83,7 @@ static void line_port_cb(VariableItem* item) {
 
 static void line_flow_cb(VariableItem* item) {
     GpioApp* app = variable_item_get_context(item);
-    furi_assert(app);
+    furry_assert(app);
     uint8_t index = variable_item_get_current_value_index(item);
 
     variable_item_set_current_value_text(item, flow_pins[index]);
@@ -94,7 +94,7 @@ static void line_flow_cb(VariableItem* item) {
 
 static void line_baudrate_cb(VariableItem* item) {
     GpioApp* app = variable_item_get_context(item);
-    furi_assert(app);
+    furry_assert(app);
     uint8_t index = variable_item_get_current_value_index(item);
 
     char br_text[8];
@@ -113,7 +113,7 @@ static void line_baudrate_cb(VariableItem* item) {
 
 void gpio_scene_usb_uart_cfg_on_enter(void* context) {
     GpioApp* app = context;
-    furi_assert(app);
+    furry_assert(app);
     VariableItemList* var_item_list = app->var_item_list;
 
     app->usb_uart_cfg = malloc(sizeof(UsbUartConfig));

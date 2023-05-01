@@ -31,9 +31,9 @@ static void xtreme_app_scene_interface_common_left_handed_changed(VariableItem* 
     bool value = variable_item_get_current_value_index(item);
     variable_item_set_current_value_text(item, value ? "ON" : "OFF");
     if(value) {
-        furi_hal_rtc_set_flag(FuriHalRtcFlagHandOrient);
+        furry_hal_rtc_set_flag(FurryHalRtcFlagHandOrient);
     } else {
-        furi_hal_rtc_reset_flag(FuriHalRtcFlagHandOrient);
+        furry_hal_rtc_reset_flag(FurryHalRtcFlagHandOrient);
     }
 }
 
@@ -63,7 +63,7 @@ void xtreme_app_scene_interface_common_on_enter(void* context) {
         2,
         xtreme_app_scene_interface_common_left_handed_changed,
         app);
-    bool value = furi_hal_rtc_is_flag_set(FuriHalRtcFlagHandOrient);
+    bool value = furry_hal_rtc_is_flag_set(FurryHalRtcFlagHandOrient);
     variable_item_set_current_value_index(item, value);
     variable_item_set_current_value_text(item, value ? "ON" : "OFF");
 

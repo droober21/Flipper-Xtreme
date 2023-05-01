@@ -9,7 +9,7 @@ enum {
 
 bool nfc_scene_nfcv_emulate_worker_callback(NfcWorkerEvent event, void* context) {
     UNUSED(event);
-    furi_assert(context);
+    furry_assert(context);
     Nfc* nfc = context;
 
     switch(event) {
@@ -26,7 +26,7 @@ bool nfc_scene_nfcv_emulate_worker_callback(NfcWorkerEvent event, void* context)
 }
 
 void nfc_scene_nfcv_emulate_widget_callback(GuiButtonType result, InputType type, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Nfc* nfc = context;
     if(type == InputTypeShort) {
         view_dispatcher_send_custom_event(nfc->view_dispatcher, result);
@@ -34,32 +34,32 @@ void nfc_scene_nfcv_emulate_widget_callback(GuiButtonType result, InputType type
 }
 
 void nfc_scene_nfcv_emulate_textbox_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Nfc* nfc = context;
     view_dispatcher_send_custom_event(nfc->view_dispatcher, NfcCustomEventViewExit);
 }
 
 static void nfc_scene_nfcv_emulate_widget_config(Nfc* nfc, bool data_received) {
-    FuriHalNfcDevData* data = &nfc->dev->dev_data.nfc_data;
+    FurryHalNfcDevData* data = &nfc->dev->dev_data.nfc_data;
     Widget* widget = nfc->widget;
     widget_reset(widget);
-    FuriString* info_str;
-    info_str = furi_string_alloc();
+    FurryString* info_str;
+    info_str = furry_string_alloc();
 
     widget_add_icon_element(widget, 0, 3, &I_RFIDDolphinSend_97x61);
     widget_add_string_element(
         widget, 89, 32, AlignCenter, AlignTop, FontPrimary, "Emulating NfcV");
     if(strcmp(nfc->dev->dev_name, "")) {
-        furi_string_printf(info_str, "%s", nfc->dev->dev_name);
+        furry_string_printf(info_str, "%s", nfc->dev->dev_name);
     } else {
         for(uint8_t i = 0; i < data->uid_len; i++) {
-            furi_string_cat_printf(info_str, "%02X ", data->uid[i]);
+            furry_string_cat_printf(info_str, "%02X ", data->uid[i]);
         }
     }
-    furi_string_trim(info_str);
+    furry_string_trim(info_str);
     widget_add_text_box_element(
-        widget, 56, 43, 70, 21, AlignCenter, AlignTop, furi_string_get_cstr(info_str), true);
-    furi_string_free(info_str);
+        widget, 56, 43, 70, 21, AlignCenter, AlignTop, furry_string_get_cstr(info_str), true);
+    furry_string_free(info_str);
     if(data_received) {
         widget_add_button_element(
             widget, GuiButtonTypeCenter, "Log", nfc_scene_nfcv_emulate_widget_callback, nfc);
@@ -76,7 +76,7 @@ void nfc_scene_nfcv_emulate_on_enter(void* context) {
     text_box_set_font(text_box, TextBoxFontHex);
     text_box_set_focus(text_box, TextBoxFocusEnd);
     text_box_set_text(text_box, "");
-    furi_string_reset(nfc->text_box_store);
+    furry_string_reset(nfc->text_box_store);
 
     // Set Widget state and view
     scene_manager_set_scene_state(
@@ -104,26 +104,26 @@ bool nfc_scene_nfcv_emulate_on_event(void* context, SceneManagerEvent event) {
         if(event.event == NfcCustomEventUpdateLog) {
             // Add data button to widget if data is received for the first time
             if(strlen(nfcv_data->last_command) > 0) {
-                if(!furi_string_size(nfc->text_box_store)) {
+                if(!furry_string_size(nfc->text_box_store)) {
                     nfc_scene_nfcv_emulate_widget_config(nfc, true);
                 }
                 /* use the last n bytes from the log so there's enough space for the new log entry */
                 size_t maxSize =
                     NFC_SCENE_EMULATE_NFCV_LOG_SIZE_MAX - (strlen(nfcv_data->last_command) + 1);
-                if(furi_string_size(nfc->text_box_store) >= maxSize) {
-                    furi_string_right(nfc->text_box_store, (strlen(nfcv_data->last_command) + 1));
+                if(furry_string_size(nfc->text_box_store) >= maxSize) {
+                    furry_string_right(nfc->text_box_store, (strlen(nfcv_data->last_command) + 1));
                 }
-                furi_string_cat_printf(nfc->text_box_store, "%s", nfcv_data->last_command);
-                furi_string_push_back(nfc->text_box_store, '\n');
-                text_box_set_text(nfc->text_box, furi_string_get_cstr(nfc->text_box_store));
+                furry_string_cat_printf(nfc->text_box_store, "%s", nfcv_data->last_command);
+                furry_string_push_back(nfc->text_box_store, '\n');
+                text_box_set_text(nfc->text_box, furry_string_get_cstr(nfc->text_box_store));
 
                 /* clear previously logged command */
                 strcpy(nfcv_data->last_command, "");
             }
             consumed = true;
         } else if(event.event == NfcCustomEventSaveShadow) {
-            if(furi_string_size(nfc->dev->load_path)) {
-                nfc_device_save_shadow(nfc->dev, furi_string_get_cstr(nfc->dev->load_path));
+            if(furry_string_size(nfc->dev->load_path)) {
+                nfc_device_save_shadow(nfc->dev, furry_string_get_cstr(nfc->dev->load_path));
             }
             consumed = true;
         } else if(event.event == GuiButtonTypeCenter && state == NfcSceneNfcVEmulateStateWidget) {
@@ -158,7 +158,7 @@ void nfc_scene_nfcv_emulate_on_exit(void* context) {
     // Clear view
     widget_reset(nfc->widget);
     text_box_reset(nfc->text_box);
-    furi_string_reset(nfc->text_box_store);
+    furry_string_reset(nfc->text_box_store);
 
     nfc_blink_stop(nfc);
 }

@@ -1,4 +1,4 @@
 #pragma once
-#include <furi.h>
+#include <furry.h>
 
-#define err(...) FURI_LOG_E("Heatshrink", "Error: %d-%s", __VA_ARGS__)
+#define err(...) FURRY_LOG_E("Heatshrink", "Error: %d-%s", __VA_ARGS__)

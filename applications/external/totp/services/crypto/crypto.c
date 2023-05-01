@@ -1,7 +1,7 @@
 #include "crypto.h"
-#include <furi_hal_crypto.h>
-#include <furi_hal_random.h>
-#include <furi_hal_version.h>
+#include <furry_hal_crypto.h>
+#include <furry_hal_random.h>
+#include <furry_hal_version.h>
 #include "../../types/common.h"
 #include "memset_s.h"
 
@@ -20,28 +20,28 @@ uint8_t* totp_crypto_encrypt(
     if(remain) {
         size_t plain_data_aligned_length = plain_data_length - remain + CRYPTO_ALIGNMENT_FACTOR;
         uint8_t* plain_data_aligned = malloc(plain_data_aligned_length);
-        furi_check(plain_data_aligned != NULL);
+        furry_check(plain_data_aligned != NULL);
         memset(plain_data_aligned, 0, plain_data_aligned_length);
         memcpy(plain_data_aligned, plain_data, plain_data_length);
 
         encrypted_data = malloc(plain_data_aligned_length);
-        furi_check(encrypted_data != NULL);
+        furry_check(encrypted_data != NULL);
         *encrypted_data_length = plain_data_aligned_length;
 
-        furi_hal_crypto_store_load_key(CRYPTO_KEY_SLOT, iv);
-        furi_hal_crypto_encrypt(plain_data_aligned, encrypted_data, plain_data_aligned_length);
-        furi_hal_crypto_store_unload_key(CRYPTO_KEY_SLOT);
+        furry_hal_crypto_store_load_key(CRYPTO_KEY_SLOT, iv);
+        furry_hal_crypto_encrypt(plain_data_aligned, encrypted_data, plain_data_aligned_length);
+        furry_hal_crypto_store_unload_key(CRYPTO_KEY_SLOT);
 
         memset_s(plain_data_aligned, plain_data_aligned_length, 0, plain_data_aligned_length);
         free(plain_data_aligned);
     } else {
         encrypted_data = malloc(plain_data_length);
-        furi_check(encrypted_data != NULL);
+        furry_check(encrypted_data != NULL);
         *encrypted_data_length = plain_data_length;
 
-        furi_hal_crypto_store_load_key(CRYPTO_KEY_SLOT, iv);
-        furi_hal_crypto_encrypt(plain_data, encrypted_data, plain_data_length);
-        furi_hal_crypto_store_unload_key(CRYPTO_KEY_SLOT);
+        furry_hal_crypto_store_load_key(CRYPTO_KEY_SLOT, iv);
+        furry_hal_crypto_encrypt(plain_data, encrypted_data, plain_data_length);
+        furry_hal_crypto_store_unload_key(CRYPTO_KEY_SLOT);
     }
 
     return encrypted_data;
@@ -54,10 +54,10 @@ uint8_t* totp_crypto_decrypt(
     size_t* decrypted_data_length) {
     *decrypted_data_length = encrypted_data_length;
     uint8_t* decrypted_data = malloc(*decrypted_data_length);
-    furi_check(decrypted_data != NULL);
-    furi_hal_crypto_store_load_key(CRYPTO_KEY_SLOT, iv);
-    furi_hal_crypto_decrypt(encrypted_data, decrypted_data, encrypted_data_length);
-    furi_hal_crypto_store_unload_key(CRYPTO_KEY_SLOT);
+    furry_check(decrypted_data != NULL);
+    furry_hal_crypto_store_load_key(CRYPTO_KEY_SLOT, iv);
+    furry_hal_crypto_decrypt(encrypted_data, decrypted_data, encrypted_data_length);
+    furry_hal_crypto_store_unload_key(CRYPTO_KEY_SLOT);
     return decrypted_data;
 }
 
@@ -65,8 +65,8 @@ CryptoSeedIVResult
     totp_crypto_seed_iv(PluginState* plugin_state, const uint8_t* pin, uint8_t pin_length) {
     CryptoSeedIVResult result;
     if(plugin_state->crypto_verify_data == NULL) {
-        FURI_LOG_I(LOGGING_TAG, "Generating new IV");
-        furi_hal_random_fill_buf(&plugin_state->base_iv[0], TOTP_IV_SIZE);
+        FURRY_LOG_I(LOGGING_TAG, "Generating new IV");
+        furry_hal_random_fill_buf(&plugin_state->base_iv[0], TOTP_IV_SIZE);
     }
 
     memcpy(&plugin_state->iv[0], &plugin_state->base_iv[0], TOTP_IV_SIZE);
@@ -83,14 +83,14 @@ CryptoSeedIVResult
         }
     } else {
         uint8_t max_i;
-        size_t uid_size = furi_hal_version_uid_size();
+        size_t uid_size = furry_hal_version_uid_size();
         if(uid_size > TOTP_IV_SIZE) {
             max_i = TOTP_IV_SIZE;
         } else {
             max_i = uid_size;
         }
 
-        const uint8_t* uid = furi_hal_version_uid();
+        const uint8_t* uid = furry_hal_version_uid();
         for(uint8_t i = 0; i < max_i; i++) {
             plugin_state->iv[i] = plugin_state->iv[i] ^ uid[i];
         }
@@ -98,9 +98,9 @@ CryptoSeedIVResult
 
     result = CryptoSeedIVResultFlagSuccess;
     if(plugin_state->crypto_verify_data == NULL) {
-        FURI_LOG_I(LOGGING_TAG, "Generating crypto verify data");
+        FURRY_LOG_I(LOGGING_TAG, "Generating crypto verify data");
         plugin_state->crypto_verify_data = malloc(CRYPTO_VERIFY_KEY_LENGTH);
-        furi_check(plugin_state->crypto_verify_data != NULL);
+        furry_check(plugin_state->crypto_verify_data != NULL);
         plugin_state->crypto_verify_data_length = CRYPTO_VERIFY_KEY_LENGTH;
 
         plugin_state->crypto_verify_data = totp_crypto_encrypt(

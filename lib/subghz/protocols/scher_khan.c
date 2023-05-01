@@ -86,19 +86,19 @@ void* subghz_protocol_decoder_scher_khan_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_scher_khan_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderScherKhan* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_scher_khan_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderScherKhan* instance = context;
     instance->decoder.parser_step = ScherKhanDecoderStepReset;
 }
 
 void subghz_protocol_decoder_scher_khan_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderScherKhan* instance = context;
 
     switch(instance->decoder.parser_step) {
@@ -273,7 +273,7 @@ static void subghz_protocol_scher_khan_check_remote_controller(
 }
 
 uint8_t subghz_protocol_decoder_scher_khan_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderScherKhan* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -283,26 +283,26 @@ SubGhzProtocolStatus subghz_protocol_decoder_scher_khan_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderScherKhan* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_scher_khan_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderScherKhan* instance = context;
     return subghz_block_generic_deserialize(&instance->generic, flipper_format);
 }
 
-void subghz_protocol_decoder_scher_khan_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_scher_khan_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderScherKhan* instance = context;
 
     subghz_protocol_scher_khan_check_remote_controller(
         &instance->generic, &instance->protocol_name);
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %dbit\r\n"
         "Key:0x%lX%08lX\r\n"

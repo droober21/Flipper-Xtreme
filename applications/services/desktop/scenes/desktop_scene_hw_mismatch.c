@@ -1,5 +1,5 @@
 #include <gui/scene_manager.h>
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 #include "desktop_scene.h"
 #include "../desktop_i.h"
@@ -13,7 +13,7 @@ void desktop_scene_hw_mismatch_callback(void* context) {
 
 void desktop_scene_hw_mismatch_on_enter(void* context) {
     Desktop* desktop = (Desktop*)context;
-    furi_assert(desktop);
+    furry_assert(desktop);
     Popup* popup = desktop->hw_mismatch_popup;
 
     char* text_buffer = malloc(256);
@@ -24,7 +24,7 @@ void desktop_scene_hw_mismatch_on_enter(void* context) {
         text_buffer,
         256,
         "HW target: %d\nFW target: %d",
-        furi_hal_version_get_hw_target(),
+        furry_hal_version_get_hw_target(),
         version_get_target(NULL));
     popup_set_context(popup, desktop);
     popup_set_header(
@@ -54,7 +54,7 @@ bool desktop_scene_hw_mismatch_on_event(void* context, SceneManagerEvent event) 
 
 void desktop_scene_hw_mismatch_on_exit(void* context) {
     Desktop* desktop = (Desktop*)context;
-    furi_assert(desktop);
+    furry_assert(desktop);
     Popup* popup = desktop->hw_mismatch_popup;
     popup_set_header(popup, NULL, 0, 0, AlignCenter, AlignBottom);
     popup_set_text(popup, NULL, 0, 0, AlignCenter, AlignTop);

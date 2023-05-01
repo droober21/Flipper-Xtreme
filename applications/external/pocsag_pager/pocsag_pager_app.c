@@ -1,25 +1,25 @@
 #include "pocsag_pager_app_i.h"
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <lib/flipper_format/flipper_format.h>
 #include "protocols/protocol_items.h"
 #include <dolphin/dolphin.h>
 
 static bool pocsag_pager_app_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     POCSAGPagerApp* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool pocsag_pager_app_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     POCSAGPagerApp* app = context;
     return scene_manager_handle_back_event(app->scene_manager);
 }
 
 static void pocsag_pager_app_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     POCSAGPagerApp* app = context;
     scene_manager_handle_tick_event(app->scene_manager);
 }
@@ -28,7 +28,7 @@ POCSAGPagerApp* pocsag_pager_app_alloc() {
     POCSAGPagerApp* app = malloc(sizeof(POCSAGPagerApp));
 
     // GUI
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
 
     // View Dispatcher
     app->view_dispatcher = view_dispatcher_alloc();
@@ -46,7 +46,7 @@ POCSAGPagerApp* pocsag_pager_app_alloc() {
     view_dispatcher_attach_to_gui(app->view_dispatcher, app->gui, ViewDispatcherTypeFullscreen);
 
     // Open Notification record
-    app->notifications = furi_record_open(RECORD_NOTIFICATION);
+    app->notifications = furry_record_open(RECORD_NOTIFICATION);
 
     // Variable Item List
     app->variable_item_list = variable_item_list_alloc();
@@ -90,7 +90,7 @@ POCSAGPagerApp* pocsag_pager_app_alloc() {
     app->lock = PCSGLockOff;
     app->txrx = malloc(sizeof(POCSAGPagerTxRx));
     app->txrx->preset = malloc(sizeof(SubGhzRadioPreset));
-    app->txrx->preset->name = furi_string_alloc();
+    app->txrx->preset->name = furry_string_alloc();
 
     // Custom Presets load without using config file
 
@@ -124,15 +124,15 @@ POCSAGPagerApp* pocsag_pager_app_alloc() {
     subghz_worker_set_context(app->txrx->worker, app->txrx->receiver);
 
     // Enable power for External CC1101 if it is connected
-    furi_hal_subghz_enable_ext_power();
+    furry_hal_subghz_enable_ext_power();
     // Auto switch to internal radio if external radio is not available
-    furi_delay_ms(15);
-    if(!furi_hal_subghz_check_radio()) {
-        furi_hal_subghz_select_radio_type(SubGhzRadioInternal);
-        furi_hal_subghz_init_radio_type(SubGhzRadioInternal);
+    furry_delay_ms(15);
+    if(!furry_hal_subghz_check_radio()) {
+        furry_hal_subghz_select_radio_type(SubGhzRadioInternal);
+        furry_hal_subghz_init_radio_type(SubGhzRadioInternal);
     }
 
-    furi_hal_power_suppress_charge_enter();
+    furry_hal_power_suppress_charge_enter();
 
     scene_manager_next_scene(app->scene_manager, POCSAGPagerSceneStart);
 
@@ -140,15 +140,15 @@ POCSAGPagerApp* pocsag_pager_app_alloc() {
 }
 
 void pocsag_pager_app_free(POCSAGPagerApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     //CC1101 off
     pcsg_sleep(app);
 
     // Disable power for External CC1101 if it was enabled and module is connected
-    furi_hal_subghz_disable_ext_power();
+    furry_hal_subghz_disable_ext_power();
     // Reinit SPI handles for internal radio / nfc
-    furi_hal_subghz_init_radio_type(SubGhzRadioInternal);
+    furry_hal_subghz_init_radio_type(SubGhzRadioInternal);
 
     // Submenu
     view_dispatcher_remove_view(app->view_dispatcher, POCSAGPagerViewSubmenu);
@@ -178,7 +178,7 @@ void pocsag_pager_app_free(POCSAGPagerApp* app) {
     subghz_environment_free(app->txrx->environment);
     pcsg_history_free(app->txrx->history);
     subghz_worker_free(app->txrx->worker);
-    furi_string_free(app->txrx->preset->name);
+    furry_string_free(app->txrx->preset->name);
     free(app->txrx->preset);
     free(app->txrx);
 
@@ -187,13 +187,13 @@ void pocsag_pager_app_free(POCSAGPagerApp* app) {
     scene_manager_free(app->scene_manager);
 
     // Notifications
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
     app->notifications = NULL;
 
     // Close records
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
-    furi_hal_power_suppress_charge_exit();
+    furry_hal_power_suppress_charge_exit();
 
     free(app);
 }

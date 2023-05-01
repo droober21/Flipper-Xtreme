@@ -1,6 +1,6 @@
 #include "../storage_settings.h"
 #include <power/power_service/power.h>
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 #define STORAGE_SETTINGS_SCENE_FACTORY_RESET_CONFIRM_COUNT 5
 
@@ -49,13 +49,13 @@ bool storage_settings_scene_factory_reset_on_event(void* context, SceneManagerEv
         case DialogExResultRight:
             counter++;
             if(counter < STORAGE_SETTINGS_SCENE_FACTORY_RESET_CONFIRM_COUNT) {
-                furi_string_printf(
+                furry_string_printf(
                     app->text_string,
                     "%ld presses left",
                     STORAGE_SETTINGS_SCENE_FACTORY_RESET_CONFIRM_COUNT - counter);
                 dialog_ex_set_text(
                     app->dialog_ex,
-                    furi_string_get_cstr(app->text_string),
+                    furry_string_get_cstr(app->text_string),
                     64,
                     32,
                     AlignCenter,
@@ -63,7 +63,7 @@ bool storage_settings_scene_factory_reset_on_event(void* context, SceneManagerEv
                 scene_manager_set_scene_state(
                     app->scene_manager, StorageSettingsFactoryReset, counter);
             } else {
-                furi_hal_rtc_set_flag(FuriHalRtcFlagFactoryReset);
+                furry_hal_rtc_set_flag(FurryHalRtcFlagFactoryReset);
                 power_reboot(PowerBootModeNormal);
             }
 
@@ -83,5 +83,5 @@ void storage_settings_scene_factory_reset_on_exit(void* context) {
 
     dialog_ex_reset(dialog_ex);
 
-    furi_string_reset(app->text_string);
+    furry_string_reset(app->text_string);
 }

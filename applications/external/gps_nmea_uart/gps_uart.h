@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include <notification/notification_messages.h>
 
 #define RX_BUF_SIZE 1024
@@ -24,9 +24,9 @@ typedef struct {
 } GpsStatus;
 
 typedef struct {
-    FuriMutex* mutex;
-    FuriThread* thread;
-    FuriStreamBuffer* rx_stream;
+    FurryMutex* mutex;
+    FurryThread* thread;
+    FurryStreamBuffer* rx_stream;
     uint8_t rx_buf[RX_BUF_SIZE];
 
     NotificationApp* notifications;

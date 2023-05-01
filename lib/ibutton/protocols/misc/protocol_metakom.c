@@ -1,10 +1,10 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #include "protocol_metakom.h"
 
 #define METAKOM_DATA_SIZE sizeof(uint32_t)
-#define METAKOM_PERIOD (125 * furi_hal_cortex_instructions_per_microsecond())
+#define METAKOM_PERIOD (125 * furry_hal_cortex_instructions_per_microsecond())
 #define METAKOM_0_LOW (METAKOM_PERIOD * 0.33f)
 #define METAKOM_0_HI (METAKOM_PERIOD * 0.66f)
 #define METAKOM_1_LOW (METAKOM_PERIOD * 0.66f)
@@ -301,9 +301,9 @@ static LevelDuration protocol_metakom_encoder_yield(ProtocolMetakom* proto) {
     return result;
 }
 
-static void protocol_metakom_render_brief_data(ProtocolMetakom* proto, FuriString* result) {
+static void protocol_metakom_render_brief_data(ProtocolMetakom* proto, FurryString* result) {
     for(size_t i = 0; i < METAKOM_DATA_SIZE; ++i) {
-        furi_string_cat_printf(result, "%02X ", ((uint8_t*)&proto->data)[i]);
+        furry_string_cat_printf(result, "%02X ", ((uint8_t*)&proto->data)[i]);
     }
 }
 

@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include "fsk_demod.h"
 
 struct FSKDemod {

@@ -5,8 +5,8 @@
 #include <stddef.h>
 
 #include <lib/flipper_format/flipper_format.h>
-#include "furi.h"
-#include <furi_hal.h>
+#include "furry.h"
+#include <furry_hal.h>
 #include <lib/subghz/types.h>
 #include <locale/locale.h>
 
@@ -41,7 +41,7 @@ struct WSBlockGeneric {
  * @param preset_name name preset
  * @param preset_str Output name preset
  */
-void ws_block_generic_get_preset_name(const char* preset_name, FuriString* preset_str);
+void ws_block_generic_get_preset_name(const char* preset_name, FurryString* preset_str);
 
 /**
  * Serialize data WSBlockGeneric.

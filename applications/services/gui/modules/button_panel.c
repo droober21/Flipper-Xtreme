@@ -3,8 +3,8 @@
 #include <gui/canvas.h>
 #include <gui/elements.h>
 
-#include <furi.h>
-#include <furi_hal_resources.h>
+#include <furry.h>
+#include <furry_hal_resources.h>
 #include <stdint.h>
 
 #include <m-array.h>
@@ -100,8 +100,8 @@ void button_panel_reset_selection(ButtonPanel* button_panel) {
 }
 
 void button_panel_reserve(ButtonPanel* button_panel, size_t reserve_x, size_t reserve_y) {
-    furi_check(reserve_x > 0);
-    furi_check(reserve_y > 0);
+    furry_check(reserve_x > 0);
+    furry_check(reserve_y > 0);
 
     with_view_model(
         button_panel->view,
@@ -122,7 +122,7 @@ void button_panel_reserve(ButtonPanel* button_panel, size_t reserve_x, size_t re
 }
 
 void button_panel_free(ButtonPanel* button_panel) {
-    furi_assert(button_panel);
+    furry_assert(button_panel);
 
     button_panel_reset(button_panel);
 
@@ -140,7 +140,7 @@ void button_panel_free(ButtonPanel* button_panel) {
 }
 
 void button_panel_reset(ButtonPanel* button_panel) {
-    furi_assert(button_panel);
+    furry_assert(button_panel);
 
     with_view_model(
         button_panel->view,
@@ -164,10 +164,10 @@ void button_panel_reset(ButtonPanel* button_panel) {
 }
 
 static ButtonItem** button_panel_get_item(ButtonPanelModel* model, size_t x, size_t y) {
-    furi_assert(model);
+    furry_assert(model);
 
-    furi_check(x < model->reserve_x);
-    furi_check(y < model->reserve_y);
+    furry_check(x < model->reserve_x);
+    furry_check(y < model->reserve_y);
     ButtonArray_t* button_array = ButtonMatrix_safe_get(model->button_matrix, x);
     ButtonItem** button_item = ButtonArray_safe_get(*button_array, y);
     return button_item;
@@ -184,7 +184,7 @@ void button_panel_add_item(
     const Icon* icon_name_selected,
     ButtonItemCallback callback,
     void* callback_context) {
-    furi_assert(button_panel);
+    furry_assert(button_panel);
 
     with_view_model( //-V773
         button_panel->view,
@@ -192,7 +192,7 @@ void button_panel_add_item(
         {
             ButtonItem** button_item_ptr =
                 button_panel_get_item(model, matrix_place_x, matrix_place_y);
-            furi_check(*button_item_ptr == NULL);
+            furry_check(*button_item_ptr == NULL);
             *button_item_ptr = malloc(sizeof(ButtonItem));
             ButtonItem* button_item = *button_item_ptr;
             button_item->callback = callback;
@@ -207,13 +207,13 @@ void button_panel_add_item(
 }
 
 View* button_panel_get_view(ButtonPanel* button_panel) {
-    furi_assert(button_panel);
+    furry_assert(button_panel);
     return button_panel->view;
 }
 
 static void button_panel_view_draw_callback(Canvas* canvas, void* _model) {
-    furi_assert(canvas);
-    furi_assert(_model);
+    furry_assert(canvas);
+    furry_assert(_model);
 
     ButtonPanelModel* model = _model;
 
@@ -365,7 +365,7 @@ void button_panel_process_ok(ButtonPanel* button_panel) {
 
 static bool button_panel_view_input_callback(InputEvent* event, void* context) {
     ButtonPanel* button_panel = context;
-    furi_assert(button_panel);
+    furry_assert(button_panel);
     bool consumed = false;
 
     if(event->type == InputTypeShort) {
@@ -404,7 +404,7 @@ void button_panel_add_label(
     uint16_t y,
     Font font,
     const char* label_str) {
-    furi_assert(button_panel);
+    furry_assert(button_panel);
 
     with_view_model(
         button_panel->view,

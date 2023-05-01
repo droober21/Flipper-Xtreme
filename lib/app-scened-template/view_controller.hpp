@@ -16,7 +16,7 @@ template <typename TApp, typename... TViewModules>
 class ViewController {
 public:
     ViewController() {
-        event_queue = furi_message_queue_alloc(10, sizeof(typename TApp::Event));
+        event_queue = furry_message_queue_alloc(10, sizeof(typename TApp::Event));
 
         view_dispatcher = view_dispatcher_alloc();
         previous_view_callback_pointer = cbc::obtain_connector(
@@ -26,7 +26,7 @@ public:
         }((this->add_view(ext::make_type_index<TViewModules>().hash_code(), new TViewModules()),
            0)...);
 
-        gui = static_cast<Gui*>(furi_record_open("gui"));
+        gui = static_cast<Gui*>(furry_record_open("gui"));
     };
 
     ~ViewController() {
@@ -36,7 +36,7 @@ public:
         }
 
         view_dispatcher_free(view_dispatcher);
-        furi_message_queue_free(event_queue);
+        furry_message_queue_free(event_queue);
     }
 
     /**
@@ -48,7 +48,7 @@ public:
     template <typename T>
     T* get() {
         uint32_t view_index = ext::make_type_index<T>().hash_code();
-        furi_check(holder.count(view_index) != 0);
+        furry_check(holder.count(view_index) != 0);
         return static_cast<T*>(holder[view_index]);
     }
 
@@ -61,7 +61,7 @@ public:
     template <typename T>
     operator T*() {
         uint32_t view_index = ext::make_type_index<T>().hash_code();
-        furi_check(holder.count(view_index) != 0);
+        furry_check(holder.count(view_index) != 0);
         return static_cast<T*>(holder[view_index]);
     }
 
@@ -74,7 +74,7 @@ public:
     template <typename T>
     void switch_to() {
         uint32_t view_index = ext::make_type_index<T>().hash_code();
-        furi_check(holder.count(view_index) != 0);
+        furry_check(holder.count(view_index) != 0);
         view_dispatcher_switch_to_view(view_dispatcher, view_index);
     }
 
@@ -84,7 +84,7 @@ public:
      * @param event event pointer
      */
     void receive_event(typename TApp::Event* event) {
-        if(furi_message_queue_get(event_queue, event, 100) != FuriStatusOk) {
+        if(furry_message_queue_get(event_queue, event, 100) != FurryStatusOk) {
             event->type = TApp::EventType::Tick;
         }
     }
@@ -95,8 +95,8 @@ public:
      * @param event event pointer
      */
     void send_event(typename TApp::Event* event) {
-        FuriStatus result = furi_message_queue_put(event_queue, event, FuriWaitForever);
-        furi_check(result == FuriStatusOk);
+        FurryStatus result = furry_message_queue_put(event_queue, event, FurryWaitForever);
+        furry_check(result == FurryStatusOk);
     }
 
     void attach_to_gui(ViewDispatcherType type) {
@@ -114,7 +114,7 @@ private:
      * @brief App event queue
      * 
      */
-    FuriMessageQueue* event_queue;
+    FurryMessageQueue* event_queue;
 
     /**
      * @brief Main ViewDispatcher pointer
@@ -160,7 +160,7 @@ private:
      * @param view_module view module pointer
      */
     void add_view(size_t view_index, GenericViewModule* view_module) {
-        furi_check(holder.count(view_index) == 0);
+        furry_check(holder.count(view_index) == 0);
         holder[view_index] = view_module;
 
         View* view = view_module->get_view();

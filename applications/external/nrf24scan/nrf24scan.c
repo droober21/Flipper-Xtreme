@@ -3,8 +3,8 @@
 //
 #include "nrf24scan.h"
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <gui/gui.h>
 #include <dialogs/dialogs.h>
 #include <input/input.h>
@@ -144,10 +144,10 @@ static void add_to_str_hex_bytes(char* out, char* arr, int bytes) {
     } while(--bytes);
 }
 
-static void add_to_furi_str_hex_bytes(FuriString* str, char* arr, int bytes) {
+static void add_to_furry_str_hex_bytes(FurryString* str, char* arr, int bytes) {
     if(!bytes) return;
     do {
-        furi_string_cat_printf(str, "%02X", *arr++);
+        furry_string_cat_printf(str, "%02X", *arr++);
     } while(--bytes);
 }
 
@@ -173,38 +173,38 @@ void clear_log() {
 void write_to_log_file(Storage* storage, bool f_settings) {
     if(log_arr_idx == 0 && !f_settings) return;
     Stream* file_stream = file_stream_alloc(storage);
-    FuriString* str = furi_string_alloc();
-    furi_string_set(str, SCAN_APP_PATH_FOLDER);
-    furi_string_cat(str, "/");
+    FurryString* str = furry_string_alloc();
+    furry_string_set(str, SCAN_APP_PATH_FOLDER);
+    furry_string_cat(str, "/");
     bool fl;
     if(f_settings) {
-        furi_string_cat(str, SETTINGS_FILENAME);
+        furry_string_cat(str, SETTINGS_FILENAME);
         fl = file_stream_open(
-            file_stream, furi_string_get_cstr(str), FSAM_READ_WRITE, FSOM_CREATE_ALWAYS);
+            file_stream, furry_string_get_cstr(str), FSAM_READ_WRITE, FSOM_CREATE_ALWAYS);
         if(!fl) file_stream_close(file_stream);
     } else {
-        furi_string_cat(str, LOG_FILENAME);
-        furi_string_cat(str, LOG_FILEEXT);
+        furry_string_cat(str, LOG_FILENAME);
+        furry_string_cat(str, LOG_FILEEXT);
         if(save_to_new_log) {
             int cnt = 1;
             do {
                 fl = file_stream_open(
-                    file_stream, furi_string_get_cstr(str), FSAM_READ_WRITE, FSOM_CREATE_NEW);
+                    file_stream, furry_string_get_cstr(str), FSAM_READ_WRITE, FSOM_CREATE_NEW);
                 if(fl) break;
                 file_stream_close(file_stream);
-                furi_string_set(str, SCAN_APP_PATH_FOLDER);
-                furi_string_cat(str, "/");
-                furi_string_cat(str, LOG_FILENAME);
-                furi_string_cat_printf(str, "-%02d", cnt);
-                furi_string_cat(str, LOG_FILEEXT);
+                furry_string_set(str, SCAN_APP_PATH_FOLDER);
+                furry_string_cat(str, "/");
+                furry_string_cat(str, LOG_FILENAME);
+                furry_string_cat_printf(str, "-%02d", cnt);
+                furry_string_cat(str, LOG_FILEEXT);
             } while(++cnt < 100);
             if(!fl) {
-                FURI_LOG_E(TAG, "Failed to create new log file");
+                FURRY_LOG_E(TAG, "Failed to create new log file");
                 notification_message(APP->notification, &sequence_blink_red_100);
             }
         } else {
             fl = file_stream_open(
-                file_stream, furi_string_get_cstr(str), FSAM_READ_WRITE, FSOM_OPEN_APPEND);
+                file_stream, furry_string_get_cstr(str), FSAM_READ_WRITE, FSOM_OPEN_APPEND);
             if(fl) {
                 if(stream_size(file_stream) == 0) save_to_new_log = true;
             } else
@@ -212,13 +212,13 @@ void write_to_log_file(Storage* storage, bool f_settings) {
         }
     }
     if(fl) {
-        FURI_LOG_D(TAG, "Save to %s", furi_string_get_cstr(str));
+        FURRY_LOG_D(TAG, "Save to %s", furry_string_get_cstr(str));
         if(save_to_new_log || f_settings) {
             if(what_to_do == 1)
-                furi_string_printf(str, "%s\n", SettingsFld_Sniff);
+                furry_string_printf(str, "%s\n", SettingsFld_Sniff);
             else
-                furi_string_reset(str);
-            furi_string_cat_printf(
+                furry_string_reset(str);
+            furry_string_cat_printf(
                 str,
                 "%s %d\n%s %d\n%s %d\n",
                 SettingsFld_Rate,
@@ -227,7 +227,7 @@ void write_to_log_file(Storage* storage, bool f_settings) {
                 NRF_channel,
                 SettingsFld_ESB,
                 NRF_ESB);
-            furi_string_cat_printf(
+            furry_string_cat_printf(
                 str,
                 "%s %d\n%s %d\n%s %d\n",
                 SettingsFld_DPL,
@@ -237,33 +237,33 @@ void write_to_log_file(Storage* storage, bool f_settings) {
                 SettingsFld_Payload,
                 what_to_do == 1 ? NRF_Payload_sniff_min : NRF_Payload);
             if(addrs.addr_count > 0) {
-                furi_string_cat_printf(str, "P0: ");
-                add_to_furi_str_hex_bytes(str, (char*)addrs.addr_P0, addrs.addr_len);
-                furi_string_cat(str, "\n");
+                furry_string_cat_printf(str, "P0: ");
+                add_to_furry_str_hex_bytes(str, (char*)addrs.addr_P0, addrs.addr_len);
+                furry_string_cat(str, "\n");
             }
             if(addrs.addr_count > 1) {
-                furi_string_cat_printf(str, "P1: ");
-                add_to_furi_str_hex_bytes(str, (char*)addrs.addr_P1, addrs.addr_len);
-                furi_string_cat(str, "\n");
+                furry_string_cat_printf(str, "P1: ");
+                add_to_furry_str_hex_bytes(str, (char*)addrs.addr_P1, addrs.addr_len);
+                furry_string_cat(str, "\n");
             }
             if(addrs.addr_count > 2) {
-                furi_string_cat_printf(str, "P2: ");
-                furi_string_cat_printf(str, "%02X\n", addrs.addr_P2);
+                furry_string_cat_printf(str, "P2: ");
+                furry_string_cat_printf(str, "%02X\n", addrs.addr_P2);
             }
             if(addrs.addr_count > 3) {
-                furi_string_cat_printf(str, "P3: ");
-                furi_string_cat_printf(str, "%02X\n", addrs.addr_P3);
+                furry_string_cat_printf(str, "P3: ");
+                furry_string_cat_printf(str, "%02X\n", addrs.addr_P3);
             }
             if(addrs.addr_count > 4) {
-                furi_string_cat_printf(str, "P4: ");
-                furi_string_cat_printf(str, "%02X\n", addrs.addr_P4);
+                furry_string_cat_printf(str, "P4: ");
+                furry_string_cat_printf(str, "%02X\n", addrs.addr_P4);
             }
             if(addrs.addr_count > 5) {
-                furi_string_cat_printf(str, "P5: ");
-                furi_string_cat_printf(str, "%02X\n", addrs.addr_P5);
+                furry_string_cat_printf(str, "P5: ");
+                furry_string_cat_printf(str, "%02X\n", addrs.addr_P5);
             }
-            if(!(fl = stream_write_string(file_stream, str) == furi_string_size(str))) {
-                FURI_LOG_E(TAG, "Failed to write header to file!");
+            if(!(fl = stream_write_string(file_stream, str) == furry_string_size(str))) {
+                FURRY_LOG_E(TAG, "Failed to write header to file!");
                 notification_message(APP->notification, &sequence_blink_red_100);
             }
         }
@@ -274,7 +274,7 @@ void write_to_log_file(Storage* storage, bool f_settings) {
             } else {
                 int i = 0;
                 for(; i < log_arr_idx; i++) {
-                    furi_string_reset(str);
+                    furry_string_reset(str);
                     uint8_t* ptr = APP->log_arr + i * LOG_REC_SIZE;
                     int len;
                     if(ptr[0] & 0x80) { // RAW
@@ -285,35 +285,35 @@ void write_to_log_file(Storage* storage, bool f_settings) {
                         if(len == 0) len = 32;
                     }
                     //if(len < NRF_Payload) len = NRF_Payload;
-                    add_to_furi_str_hex_bytes(str, (char*)ptr, len + 2);
-                    furi_string_cat(str, "\n");
-                    if(stream_write_string(file_stream, str) != furi_string_size(str)) {
-                        FURI_LOG_E(TAG, "Failed to write to file!");
+                    add_to_furry_str_hex_bytes(str, (char*)ptr, len + 2);
+                    furry_string_cat(str, "\n");
+                    if(stream_write_string(file_stream, str) != furry_string_size(str)) {
+                        FURRY_LOG_E(TAG, "Failed to write to file!");
                         break;
                     }
                 }
                 if(i == log_arr_idx) {
                     notification_message(APP->notification, &sequence_blink_yellow_100);
-                    FURI_LOG_D(TAG, "File saved");
+                    FURRY_LOG_D(TAG, "File saved");
                 }
                 save_to_new_log = false;
             }
         }
         file_stream_close(file_stream);
     } else {
-        FURI_LOG_E(TAG, "Failed to open file %s", furi_string_get_cstr(str));
+        FURRY_LOG_E(TAG, "Failed to open file %s", furry_string_get_cstr(str));
         notification_message(APP->notification, &sequence_blink_red_100);
     }
     stream_free(file_stream);
-    furi_string_free(str);
+    furry_string_free(str);
 }
 
 static bool select_settings_file(Stream* stream) {
-    DialogsApp* dialogs = furi_record_open("dialogs");
+    DialogsApp* dialogs = furry_record_open("dialogs");
     bool result = false;
-    FuriString* path;
-    path = furi_string_alloc();
-    furi_string_set(path, SCAN_APP_PATH_FOLDER);
+    FurryString* path;
+    path = furry_string_alloc();
+    furry_string_set(path, SCAN_APP_PATH_FOLDER);
 
     DialogsFileBrowserOptions browser_options;
     dialog_file_browser_set_basic_options(&browser_options, ".txt", NULL);
@@ -321,21 +321,21 @@ static bool select_settings_file(Stream* stream) {
 
     bool ret = dialog_file_browser_show(dialogs, path, path, &browser_options);
 
-    furi_record_close("dialogs");
+    furry_record_close("dialogs");
     if(ret) {
-        if(!file_stream_open(stream, furi_string_get_cstr(path), FSAM_READ, FSOM_OPEN_EXISTING)) {
-            FURI_LOG_D(TAG, "Cannot open file \"%s\"", furi_string_get_cstr(path));
+        if(!file_stream_open(stream, furry_string_get_cstr(path), FSAM_READ, FSOM_OPEN_EXISTING)) {
+            FURRY_LOG_D(TAG, "Cannot open file \"%s\"", furry_string_get_cstr(path));
             file_stream_close(stream);
         } else {
-            FURI_LOG_D(TAG, "Open file \"%s\"", furi_string_get_cstr(path));
+            FURRY_LOG_D(TAG, "Open file \"%s\"", furry_string_get_cstr(path));
             strncpy(
                 addr_file_name,
-                furi_string_get_cstr(path) + sizeof(SCAN_APP_PATH_FOLDER),
+                furry_string_get_cstr(path) + sizeof(SCAN_APP_PATH_FOLDER),
                 sizeof(addr_file_name));
             result = true;
         }
     }
-    furi_string_free(path);
+    furry_string_free(path);
     return result;
 }
 
@@ -346,18 +346,18 @@ static uint8_t load_settings_file(Stream* file_stream) {
     uint8_t err = 5;
     file_size = stream_size(file_stream);
     if(file_size == (size_t)0) {
-        FURI_LOG_D(TAG, "load failed. file_size: %d", file_size);
+        FURRY_LOG_D(TAG, "load failed. file_size: %d", file_size);
         return 1;
     }
     file_size = MIN(file_size, (size_t)LOG_REC_SIZE * MAX_LOG_RECORDS * 2 + 100);
     file_buf = malloc(file_size + 1);
     if(file_buf == NULL) {
-        FURI_LOG_D(TAG, "Memory low, need: %d", file_size);
+        FURRY_LOG_D(TAG, "Memory low, need: %d", file_size);
         return 2;
     }
     memset(file_buf, 0, file_size + 1);
     if(stream_read(file_stream, (uint8_t*)file_buf, file_size) == file_size) {
-        FURI_LOG_D(TAG, "Loading settings file");
+        FURRY_LOG_D(TAG, "Loading settings file");
         char* line_ptr = file_buf;
         int16_t line_num = 0;
         what_to_do = 2;
@@ -378,7 +378,7 @@ static uint8_t load_settings_file(Stream* file_stream) {
                 *(end_ptr - 1) = '\0';
                 line_len--;
             }
-            //FURI_LOG_D(TAG, " L#%d: [%d]%s", line_num, line_len, line_ptr);
+            //FURRY_LOG_D(TAG, " L#%d: [%d]%s", line_num, line_len, line_ptr);
             if(strncmp(line_ptr, SettingsFld_Rate, sizeof(SettingsFld_Rate) - 1) == 0) {
                 NRF_rate = atoi(line_ptr + sizeof(SettingsFld_Rate));
             } else if(strncmp(line_ptr, SettingsFld_Ch, sizeof(SettingsFld_Ch) - 1) == 0) {
@@ -450,17 +450,17 @@ static uint8_t load_settings_file(Stream* file_stream) {
             line_num++;
         }
     } else {
-        FURI_LOG_D(TAG, "load failed. file size: %d", file_size);
+        FURRY_LOG_D(TAG, "load failed. file size: %d", file_size);
         err = 4;
     }
     free(file_buf);
     return err;
 }
 
-static void input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
     PluginEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 void check_add_addr(uint8_t* pkt) {
@@ -589,7 +589,7 @@ static void prepare_nrf24(bool fsend_packet) {
             tmp[adr->addr_len - i - 1] = tb;
         }
         NRF_ERROR = memcmp(adr->addr_P0, tmp, adr->addr_len) != 0;
-        FURI_LOG_D(TAG, "Payload: %d", payload);
+        FURRY_LOG_D(TAG, "Payload: %d", payload);
         nrf24_write_reg(nrf24_HANDLE, RX_PW_P0, payload);
         if(adr->addr_count > 1) {
             nrf24_set_mac(REG_RX_ADDR_P1, adr->addr_P1, adr->addr_len);
@@ -634,7 +634,7 @@ void correct_NRF_Payload_sniff_min() {
 }
 
 static void start_scanning() {
-    FURI_LOG_D(TAG, "Start proc-%d: Ch=%d Rate=%d", what_to_do, NRF_channel, NRF_rate);
+    FURRY_LOG_D(TAG, "Start proc-%d: Ch=%d Rate=%d", what_to_do, NRF_channel, NRF_rate);
     if(what_to_do == 1) { // SNIFF
         correct_NRF_Payload_sniff_min();
         view_log_decode_CRC = NRF_CRC;
@@ -643,11 +643,11 @@ static void start_scanning() {
     }
     prepare_nrf24(false);
     if(NRF_ERROR) {
-        FURI_LOG_E(TAG, "NRF R/W ERROR!");
+        FURRY_LOG_E(TAG, "NRF R/W ERROR!");
         return;
     }
     nrf24_set_rx_mode(nrf24_HANDLE);
-    start_time = furi_get_tick();
+    start_time = furry_get_tick();
 }
 
 // start bitnum = 7
@@ -712,7 +712,7 @@ bool check_packet(uint8_t* pkt, uint16_t size) {
                 crc = calc_crc(crc, p, 7, 9 + _payload * 8);
                 if(crc == get_shifted_crc(p + _payload + 1)) {
                     *(pkt - 1) = ((_payload & 0x1F) << 3) + 0b100 + (addr_size - 2);
-                    FURI_LOG_D(
+                    FURRY_LOG_D(
                         TAG, "VALID CRC %X: dpl: %d, addr: %d", (uint16_t)crc, _payload, addr_size);
                     found = true;
                     break;
@@ -734,7 +734,7 @@ bool check_packet(uint8_t* pkt, uint16_t size) {
                 }
                 if(found) {
                     *(pkt - 1) = ((_payload & 0x1F) << 3) + 0b100 + (addr_size - 2);
-                    FURI_LOG_D(
+                    FURRY_LOG_D(
                         TAG, "VALID CRC %X: pl: %d, addr: %d", (uint16_t)crc, _payload, addr_size);
                     break;
                 }
@@ -756,7 +756,7 @@ bool check_packet(uint8_t* pkt, uint16_t size) {
             if((view_log_decode_CRC == 1 && crc == *p) ||
                (view_log_decode_CRC == 2 && crc == (uint32_t)((*p << 8) | *(p + 1)))) {
                 *(pkt - 1) = ((0 & 0x1F) << 3) + 0b000 + (addr_size - 2);
-                FURI_LOG_D(TAG, "VALID CRC %X: pl: %d, addr: %d", (uint16_t)crc, 0, addr_size);
+                FURRY_LOG_D(TAG, "VALID CRC %X: pl: %d, addr: %d", (uint16_t)crc, 0, addr_size);
                 found = true;
                 break;
             }
@@ -765,7 +765,7 @@ bool check_packet(uint8_t* pkt, uint16_t size) {
                 if((view_log_decode_CRC == 1 && crc == *p) ||
                    (view_log_decode_CRC == 2 && crc == (uint32_t)((*p << 8) | *(p + 1)))) {
                     *(pkt - 1) = ((i & 0x1F) << 3) + 0b000 + (addr_size - 2);
-                    FURI_LOG_D(TAG, "VALID CRC %X: pl: %d, addr: %d", (uint16_t)crc, i, addr_size);
+                    FURRY_LOG_D(TAG, "VALID CRC %X: pl: %d, addr: %d", (uint16_t)crc, i, addr_size);
                     found = true;
                     break;
                 }
@@ -774,11 +774,11 @@ bool check_packet(uint8_t* pkt, uint16_t size) {
         }
     }
     if(found) {
-        if(furi_log_get_level() == FuriLogLevelDebug) {
+        if(furry_log_get_level() == FurryLogLevelDebug) {
             char dbuf[65];
             dbuf[0] = 0;
             add_to_str_hex_bytes(dbuf, (char*)pkt, size);
-            FURI_LOG_D(TAG, "PKT%02X: %s (%d)", *(pkt - 1), dbuf, size);
+            FURRY_LOG_D(TAG, "PKT%02X: %s (%d)", *(pkt - 1), dbuf, size);
         }
         int16_t i = 0;
         for(; i < found_total; i++) {
@@ -884,7 +884,7 @@ bool nrf24_read_newpacket() {
                 memmove(APP->log_arr, APP->log_arr + LOG_REC_SIZE, log_arr_idx * LOG_REC_SIZE);
             }
         }
-        FURI_LOG_D(TAG, "Found packet #%d pipe %d", log_arr_idx, st);
+        FURRY_LOG_D(TAG, "Found packet #%d pipe %d", log_arr_idx, st);
         notification_message(APP->notification, &sequence_blink_white_100);
         found = true;
     }
@@ -957,7 +957,7 @@ bool nrf24_send_packet() {
 static void render_callback(Canvas* const canvas, void* ctx) {
     const PluginState* plugin_state = ctx;
     if(plugin_state == NULL) return;
-    if(furi_mutex_acquire(plugin_state->mutex, 25) != FuriStatusOk) return;
+    if(furry_mutex_acquire(plugin_state->mutex, 25) != FurryStatusOk) return;
     //canvas_draw_frame(canvas, 0, 0, 128, 64); // border around the edge of the screen
     if(what_doing == 0) {
         canvas_set_font(canvas, FontSecondary); // 8x10 font, 6 lines
@@ -1326,40 +1326,40 @@ static void render_callback(Canvas* const canvas, void* ctx) {
             canvas_draw_str(canvas, 0, 64, screen_buf);
         }
     }
-    furi_mutex_release(plugin_state->mutex);
+    furry_mutex_release(plugin_state->mutex);
 }
 
 int32_t nrf24scan_app(void* p) {
     UNUSED(p);
     APP = malloc(sizeof(Nrf24Scan));
     DOLPHIN_DEED(DolphinDeedPluginStart);
-    APP->event_queue = furi_message_queue_alloc(8, sizeof(PluginEvent));
+    APP->event_queue = furry_message_queue_alloc(8, sizeof(PluginEvent));
     PluginState* plugin_state = malloc(sizeof(PluginState));
-    plugin_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    plugin_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!plugin_state->mutex) {
-        furi_message_queue_free(APP->event_queue);
-        FURI_LOG_E(TAG, "cannot create mutex");
+        furry_message_queue_free(APP->event_queue);
+        FURRY_LOG_E(TAG, "cannot create mutex");
         free(plugin_state);
         return 255;
     }
     APP->log_arr = malloc(LOG_REC_SIZE * MAX_LOG_RECORDS);
     if(APP->log_arr == NULL) {
-        FURI_LOG_E(TAG, "Not enouch memory: %d", LOG_REC_SIZE * MAX_LOG_RECORDS);
+        FURRY_LOG_E(TAG, "Not enouch memory: %d", LOG_REC_SIZE * MAX_LOG_RECORDS);
         strcpy(addr_file_name, "MEMORY LOW!");
     }
     clear_log();
     APP->found = malloc(sizeof(struct FOUND) * MAX_FOUND_RECORDS);
     if(APP->found == NULL) {
-        FURI_LOG_E(TAG, "Not enouch memory: %d", sizeof(struct FOUND) * MAX_FOUND_RECORDS);
+        FURRY_LOG_E(TAG, "Not enouch memory: %d", sizeof(struct FOUND) * MAX_FOUND_RECORDS);
         strcpy(addr_file_name, "MEMORY LOW!!");
     }
 
     memset((uint8_t*)&addrs, 0, sizeof(addrs));
     memset((uint8_t*)&addrs_sniff, 0, sizeof(addrs_sniff));
-    if(!furi_hal_power_is_otg_enabled()) {
-        furi_hal_power_enable_otg();
+    if(!furry_hal_power_is_otg_enabled()) {
+        furry_hal_power_enable_otg();
         NRF_BOARD_POWER_5V = true;
-        furi_delay_ms(100);
+        furry_delay_ms(100);
     }
     nrf24_init();
 
@@ -1369,22 +1369,22 @@ int32_t nrf24scan_app(void* p) {
     view_port_input_callback_set(APP->view_port, input_callback, APP->event_queue);
 
     // Open GUI and register view_port
-    APP->gui = furi_record_open(RECORD_GUI);
+    APP->gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(APP->gui, APP->view_port, GuiLayerFullscreen);
-    APP->notification = furi_record_open(RECORD_NOTIFICATION);
-    APP->storage = furi_record_open(RECORD_STORAGE);
+    APP->notification = furry_record_open(RECORD_NOTIFICATION);
+    APP->storage = furry_record_open(RECORD_STORAGE);
     storage_common_mkdir(APP->storage, SCAN_APP_PATH_FOLDER);
     Stream* file_stream = file_stream_alloc(APP->storage);
-    FuriString* path = furi_string_alloc();
-    furi_string_set(path, SCAN_APP_PATH_FOLDER);
-    furi_string_cat(path, "/");
-    furi_string_cat(path, SNIFF_FILENAME);
-    if(file_stream_open(file_stream, furi_string_get_cstr(path), FSAM_READ, FSOM_OPEN_EXISTING)) {
+    FurryString* path = furry_string_alloc();
+    furry_string_set(path, SCAN_APP_PATH_FOLDER);
+    furry_string_cat(path, "/");
+    furry_string_cat(path, SNIFF_FILENAME);
+    if(file_stream_open(file_stream, furry_string_get_cstr(path), FSAM_READ, FSOM_OPEN_EXISTING)) {
         uint8_t err = load_settings_file(file_stream);
         if(!err)
             strncpy(
                 addr_file_name,
-                furi_string_get_cstr(path) + sizeof(SCAN_APP_PATH_FOLDER),
+                furry_string_get_cstr(path) + sizeof(SCAN_APP_PATH_FOLDER),
                 sizeof(addr_file_name));
         else
             snprintf(addr_file_name, sizeof(addr_file_name), "LOAD ERROR#%d", err);
@@ -1401,17 +1401,17 @@ int32_t nrf24scan_app(void* p) {
     }
     file_stream_close(file_stream);
     stream_free(file_stream);
-    furi_string_free(path);
+    furry_string_free(path);
 
     PluginEvent event;
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(APP->event_queue, &event, 100);
-        furi_mutex_acquire(plugin_state->mutex, FuriWaitForever);
+        FurryStatus event_status = furry_message_queue_get(APP->event_queue, &event, 100);
+        furry_mutex_acquire(plugin_state->mutex, FurryWaitForever);
 
-        if(event_status == FuriStatusOk) {
+        if(event_status == FurryStatusOk) {
             // press events
             if(event.type == EventTypeKey) {
-                //FURI_LOG_D(TAG, "Key: %d Type: %d Sec: %u", event.input.key, event.input.type, event.input.sequence);
+                //FURRY_LOG_D(TAG, "Key: %d Type: %d Sec: %u", event.input.key, event.input.type, event.input.sequence);
                 switch(event.input.key) {
                 case InputKeyUp:
                     if(event.input.type == InputTypeShort || event.input.type == InputTypeRepeat) {
@@ -1626,32 +1626,32 @@ int32_t nrf24scan_app(void* p) {
         if(what_doing && what_to_do) {
             nrf24_read_newpacket();
             if(find_channel_period &&
-               furi_get_tick() - start_time >= (uint32_t)find_channel_period * 1000UL) {
+               furry_get_tick() - start_time >= (uint32_t)find_channel_period * 1000UL) {
                 if(++NRF_channel > MAX_CHANNEL) NRF_channel = 0;
                 start_scanning();
             }
         }
 
         view_port_update(APP->view_port);
-        furi_mutex_release(plugin_state->mutex);
+        furry_mutex_release(plugin_state->mutex);
     }
     nrf24_set_idle(nrf24_HANDLE);
     if(log_arr_idx && (log_to_file == 1 || log_to_file == 2)) {
         write_to_log_file(APP->storage, false);
     }
     nrf24_deinit();
-    if(NRF_BOARD_POWER_5V) furi_hal_power_disable_otg();
+    if(NRF_BOARD_POWER_5V) furry_hal_power_disable_otg();
 
     view_port_enabled_set(APP->view_port, false);
     gui_remove_view_port(APP->gui, APP->view_port);
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_STORAGE);
     view_port_free(APP->view_port);
-    furi_message_queue_free(APP->event_queue);
+    furry_message_queue_free(APP->event_queue);
     if(APP->log_arr) free(APP->log_arr);
     if(APP->found) free(APP->found);
-    furi_mutex_free(plugin_state->mutex);
+    furry_mutex_free(plugin_state->mutex);
     free(plugin_state);
     free(APP);
     return 0;

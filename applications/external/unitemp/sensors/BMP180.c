@@ -73,12 +73,12 @@ bool unitemp_BMP180_init(Sensor* sensor) {
 
     //Перезагрузка
     if(!unitemp_i2c_writeReg(i2c_sensor, 0xE0, 0xB6)) return false;
-    furi_delay_ms(100);
+    furry_delay_ms(100);
 
     //Проверка ID
     uint8_t id = unitemp_i2c_readReg(i2c_sensor, 0xD0);
     if(id != 0x55) {
-        FURI_LOG_E(
+        FURRY_LOG_E(
             APP_NAME, "Sensor %s returned wrong ID 0x%02X, expected 0x55", sensor->name, id);
         return false;
     }
@@ -130,7 +130,7 @@ UnitempStatus unitemp_BMP180_I2C_update(Sensor* sensor) {
 
     //Чтение температуры
     if(!unitemp_i2c_writeReg(i2c_sensor, 0xF4, 0x2E)) return UT_SENSORSTATUS_TIMEOUT;
-    furi_delay_ms(5);
+    furry_delay_ms(5);
     uint8_t buff[3] = {0};
     if(!unitemp_i2c_readRegArray(i2c_sensor, 0xF6, 2, buff)) return UT_SENSORSTATUS_TIMEOUT;
     int32_t UT = ((uint16_t)buff[0] << 8) + buff[1];
@@ -141,7 +141,7 @@ UnitempStatus unitemp_BMP180_I2C_update(Sensor* sensor) {
 
     //Чтение давления
     if(!unitemp_i2c_writeReg(i2c_sensor, 0xF4, 0x34 + (0b11 << 6))) return UT_SENSORSTATUS_TIMEOUT;
-    furi_delay_ms(26);
+    furry_delay_ms(26);
     if(!unitemp_i2c_readRegArray(i2c_sensor, 0xF6, 3, buff)) return UT_SENSORSTATUS_TIMEOUT;
     uint32_t UP = ((buff[0] << 16) + (buff[1] << 8) + buff[2]) >> (8 - 0b11);
 

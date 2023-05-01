@@ -32,7 +32,7 @@ typedef struct {
     Submenu* submenu;
     Widget* widget;
     TextInput* text_input;
-    FuriString* file_path;
+    FurryString* file_path;
     char file_name_tmp[AVR_ISP_MAX_LEN_NAME];
     AvrIspProgrammerView* avr_isp_programmer_view;
     AvrIspReaderView* avr_isp_reader_view;

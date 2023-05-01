@@ -14,7 +14,7 @@ ValidatorIsFile* validator_is_file_alloc_init(
 
 void validator_is_file_free(ValidatorIsFile* instance);
 
-bool validator_is_file_callback(const char* text, FuriString* error, void* context);
+bool validator_is_file_callback(const char* text, FurryString* error, void* context);
 
 #ifdef __cplusplus
 }

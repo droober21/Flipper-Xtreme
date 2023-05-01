@@ -1,8 +1,8 @@
 #include "cli_commands.h"
 #include "cli_command_gpio.h"
 
-#include <furi_hal.h>
-#include <furi_hal_info.h>
+#include <furry_hal.h>
+#include <furry_hal_info.h>
 #include <task_control_block.h>
 #include <time.h>
 #include <notification/notification_messages.h>
@@ -31,26 +31,26 @@ void cli_command_info_callback(const char* key, const char* value, bool last, vo
  * @param      args     The arguments
  * @param      context  The context
  */
-void cli_command_info(Cli* cli, FuriString* args, void* context) {
+void cli_command_info(Cli* cli, FurryString* args, void* context) {
     UNUSED(cli);
 
     if(context) {
-        furi_hal_info_get(cli_command_info_callback, '_', NULL);
+        furry_hal_info_get(cli_command_info_callback, '_', NULL);
         return;
     }
 
-    if(!furi_string_cmp(args, "device")) {
-        furi_hal_info_get(cli_command_info_callback, '.', NULL);
-    } else if(!furi_string_cmp(args, "power")) {
-        furi_hal_power_info_get(cli_command_info_callback, '.', NULL);
-    } else if(!furi_string_cmp(args, "power_debug")) {
-        furi_hal_power_debug_get(cli_command_info_callback, NULL);
+    if(!furry_string_cmp(args, "device")) {
+        furry_hal_info_get(cli_command_info_callback, '.', NULL);
+    } else if(!furry_string_cmp(args, "power")) {
+        furry_hal_power_info_get(cli_command_info_callback, '.', NULL);
+    } else if(!furry_string_cmp(args, "power_debug")) {
+        furry_hal_power_debug_get(cli_command_info_callback, NULL);
     } else {
-        cli_print_usage("info", "<device|power|power_debug>", furi_string_get_cstr(args));
+        cli_print_usage("info", "<device|power|power_debug>", furry_string_get_cstr(args));
     }
 }
 
-void cli_command_help(Cli* cli, FuriString* args, void* context) {
+void cli_command_help(Cli* cli, FurryString* args, void* context) {
     UNUSED(args);
     UNUSED(context);
     printf("Commands available:");
@@ -71,34 +71,34 @@ void cli_command_help(Cli* cli, FuriString* args, void* context) {
         printf("\r\n");
         // Left Column
         if(!CliCommandTree_end_p(it_left)) {
-            printf("%-30s", furi_string_get_cstr(*CliCommandTree_ref(it_left)->key_ptr));
+            printf("%-30s", furry_string_get_cstr(*CliCommandTree_ref(it_left)->key_ptr));
             CliCommandTree_next(it_left);
         }
         // Right Column
         if(!CliCommandTree_end_p(it_right)) {
-            printf("%s", furi_string_get_cstr(*CliCommandTree_ref(it_right)->key_ptr));
+            printf("%s", furry_string_get_cstr(*CliCommandTree_ref(it_right)->key_ptr));
             CliCommandTree_next(it_right);
         }
     };
 
-    if(furi_string_size(args) > 0) {
+    if(furry_string_size(args) > 0) {
         cli_nl();
         printf("`");
-        printf("%s", furi_string_get_cstr(args));
+        printf("%s", furry_string_get_cstr(args));
         printf("` command not found");
     }
 }
 
-void cli_command_date(Cli* cli, FuriString* args, void* context) {
+void cli_command_date(Cli* cli, FurryString* args, void* context) {
     UNUSED(cli);
     UNUSED(context);
 
-    FuriHalRtcDateTime datetime = {0};
+    FurryHalRtcDateTime datetime = {0};
 
-    if(furi_string_size(args) > 0) {
+    if(furry_string_size(args) > 0) {
         uint16_t hours, minutes, seconds, month, day, year, weekday;
         int ret = sscanf(
-            furi_string_get_cstr(args),
+            furry_string_get_cstr(args),
             "%hu-%hu-%hu %hu:%hu:%hu %hu",
             &year,
             &month,
@@ -123,18 +123,18 @@ void cli_command_date(Cli* cli, FuriString* args, void* context) {
                 "Invalid datetime format, use `%s`. sscanf %d %s",
                 "%Y-%m-%d %H:%M:%S %u",
                 ret,
-                furi_string_get_cstr(args));
+                furry_string_get_cstr(args));
             return;
         }
 
-        if(!furi_hal_rtc_validate_datetime(&datetime)) {
+        if(!furry_hal_rtc_validate_datetime(&datetime)) {
             printf("Invalid datetime data");
             return;
         }
 
-        furi_hal_rtc_set_datetime(&datetime);
+        furry_hal_rtc_set_datetime(&datetime);
         // Verification
-        furi_hal_rtc_get_datetime(&datetime);
+        furry_hal_rtc_get_datetime(&datetime);
         printf(
             "New datetime is: " CLI_DATE_FORMAT,
             datetime.year,
@@ -145,7 +145,7 @@ void cli_command_date(Cli* cli, FuriString* args, void* context) {
             datetime.second,
             datetime.weekday);
     } else {
-        furi_hal_rtc_get_datetime(&datetime);
+        furry_hal_rtc_get_datetime(&datetime);
         printf(
             CLI_DATE_FORMAT,
             datetime.year,
@@ -158,7 +158,7 @@ void cli_command_date(Cli* cli, FuriString* args, void* context) {
     }
 }
 
-void cli_command_src(Cli* cli, FuriString* args, void* context) {
+void cli_command_src(Cli* cli, FurryString* args, void* context) {
     // Quality of life feature for people exploring CLI on lab.flipper.net/cli
     // By Yousef AK
     UNUSED(cli);
@@ -172,94 +172,94 @@ void cli_command_src(Cli* cli, FuriString* args, void* context) {
 #define CLI_COMMAND_LOG_BUFFER_SIZE 64
 
 void cli_command_log_tx_callback(const uint8_t* buffer, size_t size, void* context) {
-    furi_stream_buffer_send(context, buffer, size, 0);
+    furry_stream_buffer_send(context, buffer, size, 0);
 }
 
-void cli_command_log_level_set_from_string(FuriString* level) {
-    if(furi_string_cmpi_str(level, "default") == 0) {
-        furi_log_set_level(FuriLogLevelDefault);
-    } else if(furi_string_cmpi_str(level, "none") == 0) {
-        furi_log_set_level(FuriLogLevelNone);
-    } else if(furi_string_cmpi_str(level, "error") == 0) {
-        furi_log_set_level(FuriLogLevelError);
-    } else if(furi_string_cmpi_str(level, "warn") == 0) {
-        furi_log_set_level(FuriLogLevelWarn);
-    } else if(furi_string_cmpi_str(level, "info") == 0) {
-        furi_log_set_level(FuriLogLevelInfo);
-    } else if(furi_string_cmpi_str(level, "debug") == 0) {
-        furi_log_set_level(FuriLogLevelDebug);
-    } else if(furi_string_cmpi_str(level, "trace") == 0) {
-        furi_log_set_level(FuriLogLevelTrace);
+void cli_command_log_level_set_from_string(FurryString* level) {
+    if(furry_string_cmpi_str(level, "default") == 0) {
+        furry_log_set_level(FurryLogLevelDefault);
+    } else if(furry_string_cmpi_str(level, "none") == 0) {
+        furry_log_set_level(FurryLogLevelNone);
+    } else if(furry_string_cmpi_str(level, "error") == 0) {
+        furry_log_set_level(FurryLogLevelError);
+    } else if(furry_string_cmpi_str(level, "warn") == 0) {
+        furry_log_set_level(FurryLogLevelWarn);
+    } else if(furry_string_cmpi_str(level, "info") == 0) {
+        furry_log_set_level(FurryLogLevelInfo);
+    } else if(furry_string_cmpi_str(level, "debug") == 0) {
+        furry_log_set_level(FurryLogLevelDebug);
+    } else if(furry_string_cmpi_str(level, "trace") == 0) {
+        furry_log_set_level(FurryLogLevelTrace);
     } else {
         printf("Unknown log level\r\n");
     }
 }
 
-void cli_command_log(Cli* cli, FuriString* args, void* context) {
+void cli_command_log(Cli* cli, FurryString* args, void* context) {
     UNUSED(context);
-    FuriStreamBuffer* ring = furi_stream_buffer_alloc(CLI_COMMAND_LOG_RING_SIZE, 1);
+    FurryStreamBuffer* ring = furry_stream_buffer_alloc(CLI_COMMAND_LOG_RING_SIZE, 1);
     uint8_t buffer[CLI_COMMAND_LOG_BUFFER_SIZE];
-    FuriLogLevel previous_level = furi_log_get_level();
+    FurryLogLevel previous_level = furry_log_get_level();
     bool restore_log_level = false;
 
-    if(furi_string_size(args) > 0) {
+    if(furry_string_size(args) > 0) {
         cli_command_log_level_set_from_string(args);
         restore_log_level = true;
     }
 
-    furi_hal_console_set_tx_callback(cli_command_log_tx_callback, ring);
+    furry_hal_console_set_tx_callback(cli_command_log_tx_callback, ring);
 
     printf("Press CTRL+C to stop...\r\n");
     while(!cli_cmd_interrupt_received(cli)) {
-        size_t ret = furi_stream_buffer_receive(ring, buffer, CLI_COMMAND_LOG_BUFFER_SIZE, 50);
+        size_t ret = furry_stream_buffer_receive(ring, buffer, CLI_COMMAND_LOG_BUFFER_SIZE, 50);
         cli_write(cli, buffer, ret);
     }
 
-    furi_hal_console_set_tx_callback(NULL, NULL);
+    furry_hal_console_set_tx_callback(NULL, NULL);
 
     if(restore_log_level) {
         // There will be strange behaviour if log level is set from settings while log command is running
-        furi_log_set_level(previous_level);
+        furry_log_set_level(previous_level);
     }
 
-    furi_stream_buffer_free(ring);
+    furry_stream_buffer_free(ring);
 }
 
-void cli_command_sysctl_debug(Cli* cli, FuriString* args, void* context) {
+void cli_command_sysctl_debug(Cli* cli, FurryString* args, void* context) {
     UNUSED(cli);
     UNUSED(context);
-    if(!furi_string_cmp(args, "0")) {
-        furi_hal_rtc_reset_flag(FuriHalRtcFlagDebug);
+    if(!furry_string_cmp(args, "0")) {
+        furry_hal_rtc_reset_flag(FurryHalRtcFlagDebug);
         loader_update_menu();
         printf("Debug disabled.");
-    } else if(!furi_string_cmp(args, "1")) {
-        furi_hal_rtc_set_flag(FuriHalRtcFlagDebug);
+    } else if(!furry_string_cmp(args, "1")) {
+        furry_hal_rtc_set_flag(FurryHalRtcFlagDebug);
         loader_update_menu();
         printf("Debug enabled.");
     } else {
-        cli_print_usage("sysctl debug", "<1|0>", furi_string_get_cstr(args));
+        cli_print_usage("sysctl debug", "<1|0>", furry_string_get_cstr(args));
     }
 }
 
-void cli_command_sysctl_heap_track(Cli* cli, FuriString* args, void* context) {
+void cli_command_sysctl_heap_track(Cli* cli, FurryString* args, void* context) {
     UNUSED(cli);
     UNUSED(context);
-    if(!furi_string_cmp(args, "none")) {
-        furi_hal_rtc_set_heap_track_mode(FuriHalRtcHeapTrackModeNone);
+    if(!furry_string_cmp(args, "none")) {
+        furry_hal_rtc_set_heap_track_mode(FurryHalRtcHeapTrackModeNone);
         printf("Heap tracking disabled");
-    } else if(!furi_string_cmp(args, "main")) {
-        furi_hal_rtc_set_heap_track_mode(FuriHalRtcHeapTrackModeMain);
+    } else if(!furry_string_cmp(args, "main")) {
+        furry_hal_rtc_set_heap_track_mode(FurryHalRtcHeapTrackModeMain);
         printf("Heap tracking enabled for application main thread");
-#if FURI_DEBUG
-    } else if(!furi_string_cmp(args, "tree")) {
-        furi_hal_rtc_set_heap_track_mode(FuriHalRtcHeapTrackModeTree);
+#if FURRY_DEBUG
+    } else if(!furry_string_cmp(args, "tree")) {
+        furry_hal_rtc_set_heap_track_mode(FurryHalRtcHeapTrackModeTree);
         printf("Heap tracking enabled for application main and child threads");
-    } else if(!furi_string_cmp(args, "all")) {
-        furi_hal_rtc_set_heap_track_mode(FuriHalRtcHeapTrackModeAll);
+    } else if(!furry_string_cmp(args, "all")) {
+        furry_hal_rtc_set_heap_track_mode(FurryHalRtcHeapTrackModeAll);
         printf("Heap tracking enabled for all threads");
 #endif
     } else {
-        cli_print_usage("sysctl heap_track", "<none|main|tree|all>", furi_string_get_cstr(args));
+        cli_print_usage("sysctl heap_track", "<none|main|tree|all>", furry_string_get_cstr(args));
     }
 }
 
@@ -269,16 +269,16 @@ void cli_command_sysctl_print_usage() {
     printf("Cmd list:\r\n");
 
     printf("\tdebug <0|1>\t - Enable or disable system debug\r\n");
-#if FURI_DEBUG
+#if FURRY_DEBUG
     printf("\theap_track <none|main|tree|all>\t - Set heap allocation tracking mode\r\n");
 #else
     printf("\theap_track <none|main>\t - Set heap allocation tracking mode\r\n");
 #endif
 }
 
-void cli_command_sysctl(Cli* cli, FuriString* args, void* context) {
-    FuriString* cmd;
-    cmd = furi_string_alloc();
+void cli_command_sysctl(Cli* cli, FurryString* args, void* context) {
+    FurryString* cmd;
+    cmd = furry_string_alloc();
 
     do {
         if(!args_read_string_and_trim(args, cmd)) {
@@ -286,12 +286,12 @@ void cli_command_sysctl(Cli* cli, FuriString* args, void* context) {
             break;
         }
 
-        if(furi_string_cmp_str(cmd, "debug") == 0) {
+        if(furry_string_cmp_str(cmd, "debug") == 0) {
             cli_command_sysctl_debug(cli, args, context);
             break;
         }
 
-        if(furi_string_cmp_str(cmd, "heap_track") == 0) {
+        if(furry_string_cmp_str(cmd, "heap_track") == 0) {
             cli_command_sysctl_heap_track(cli, args, context);
             break;
         }
@@ -299,62 +299,62 @@ void cli_command_sysctl(Cli* cli, FuriString* args, void* context) {
         cli_command_sysctl_print_usage();
     } while(false);
 
-    furi_string_free(cmd);
+    furry_string_free(cmd);
 }
 
-void cli_command_vibro(Cli* cli, FuriString* args, void* context) {
+void cli_command_vibro(Cli* cli, FurryString* args, void* context) {
     UNUSED(cli);
     UNUSED(context);
-    if(!furi_string_cmp(args, "0")) {
-        NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+    if(!furry_string_cmp(args, "0")) {
+        NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
         notification_message_block(notification, &sequence_reset_vibro);
-        furi_record_close(RECORD_NOTIFICATION);
-    } else if(!furi_string_cmp(args, "1")) {
-        NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+        furry_record_close(RECORD_NOTIFICATION);
+    } else if(!furry_string_cmp(args, "1")) {
+        NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
         notification_message_block(notification, &sequence_set_vibro_on);
-        furi_record_close(RECORD_NOTIFICATION);
+        furry_record_close(RECORD_NOTIFICATION);
     } else {
-        cli_print_usage("vibro", "<1|0>", furi_string_get_cstr(args));
+        cli_print_usage("vibro", "<1|0>", furry_string_get_cstr(args));
     }
 }
 
-void cli_command_led(Cli* cli, FuriString* args, void* context) {
+void cli_command_led(Cli* cli, FurryString* args, void* context) {
     UNUSED(cli);
     UNUSED(context);
     // Get first word as light name
     NotificationMessage notification_led_message;
-    FuriString* light_name;
-    light_name = furi_string_alloc();
-    size_t ws = furi_string_search_char(args, ' ');
-    if(ws == FURI_STRING_FAILURE) {
-        cli_print_usage("led", "<r|g|b|bl> <0-255>", furi_string_get_cstr(args));
-        furi_string_free(light_name);
+    FurryString* light_name;
+    light_name = furry_string_alloc();
+    size_t ws = furry_string_search_char(args, ' ');
+    if(ws == FURRY_STRING_FAILURE) {
+        cli_print_usage("led", "<r|g|b|bl> <0-255>", furry_string_get_cstr(args));
+        furry_string_free(light_name);
         return;
     } else {
-        furi_string_set_n(light_name, args, 0, ws);
-        furi_string_right(args, ws);
-        furi_string_trim(args);
+        furry_string_set_n(light_name, args, 0, ws);
+        furry_string_right(args, ws);
+        furry_string_trim(args);
     }
     // Check light name
-    if(!furi_string_cmp(light_name, "r")) {
+    if(!furry_string_cmp(light_name, "r")) {
         notification_led_message.type = NotificationMessageTypeLedRed;
-    } else if(!furi_string_cmp(light_name, "g")) {
+    } else if(!furry_string_cmp(light_name, "g")) {
         notification_led_message.type = NotificationMessageTypeLedGreen;
-    } else if(!furi_string_cmp(light_name, "b")) {
+    } else if(!furry_string_cmp(light_name, "b")) {
         notification_led_message.type = NotificationMessageTypeLedBlue;
-    } else if(!furi_string_cmp(light_name, "bl")) {
+    } else if(!furry_string_cmp(light_name, "bl")) {
         notification_led_message.type = NotificationMessageTypeLedDisplayBacklight;
     } else {
-        cli_print_usage("led", "<r|g|b|bl> <0-255>", furi_string_get_cstr(args));
-        furi_string_free(light_name);
+        cli_print_usage("led", "<r|g|b|bl> <0-255>", furry_string_get_cstr(args));
+        furry_string_free(light_name);
         return;
     }
-    furi_string_free(light_name);
+    furry_string_free(light_name);
     // Read light value from the rest of the string
     char* end_ptr;
-    uint32_t value = strtoul(furi_string_get_cstr(args), &end_ptr, 0);
+    uint32_t value = strtoul(furry_string_get_cstr(args), &end_ptr, 0);
     if(!(value < 256 && *end_ptr == '\0')) {
-        cli_print_usage("led", "<r|g|b|bl> <0-255>", furi_string_get_cstr(args));
+        cli_print_usage("led", "<r|g|b|bl> <0-255>", furry_string_get_cstr(args));
         return;
     }
 
@@ -368,19 +368,19 @@ void cli_command_led(Cli* cli, FuriString* args, void* context) {
     };
 
     // Send notification
-    NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+    NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
     notification_internal_message_block(notification, &notification_sequence);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
 }
 
-void cli_command_ps(Cli* cli, FuriString* args, void* context) {
+void cli_command_ps(Cli* cli, FurryString* args, void* context) {
     UNUSED(cli);
     UNUSED(args);
     UNUSED(context);
 
     const uint8_t threads_num_max = 32;
-    FuriThreadId threads_ids[threads_num_max];
-    uint8_t thread_num = furi_thread_enumerate(threads_ids, threads_num_max);
+    FurryThreadId threads_ids[threads_num_max];
+    uint8_t thread_num = furry_thread_enumerate(threads_ids, threads_num_max);
     printf(
         "%-20s %-20s %-14s %-8s %-8s %s\r\n",
         "AppID",
@@ -393,17 +393,17 @@ void cli_command_ps(Cli* cli, FuriString* args, void* context) {
         TaskControlBlock* tcb = (TaskControlBlock*)threads_ids[i];
         printf(
             "%-20s %-20s 0x%-12lx %-8zu %-8lu %-8lu\r\n",
-            furi_thread_get_appid(threads_ids[i]),
-            furi_thread_get_name(threads_ids[i]),
+            furry_thread_get_appid(threads_ids[i]),
+            furry_thread_get_name(threads_ids[i]),
             (uint32_t)tcb->pxStack,
             memmgr_heap_get_thread_memory(threads_ids[i]),
             (uint32_t)(tcb->pxEndOfStack - tcb->pxStack + 1) * sizeof(StackType_t),
-            furi_thread_get_stack_space(threads_ids[i]));
+            furry_thread_get_stack_space(threads_ids[i]));
     }
     printf("\r\nTotal: %d", thread_num);
 }
 
-void cli_command_free(Cli* cli, FuriString* args, void* context) {
+void cli_command_free(Cli* cli, FurryString* args, void* context) {
     UNUSED(cli);
     UNUSED(args);
     UNUSED(context);
@@ -417,7 +417,7 @@ void cli_command_free(Cli* cli, FuriString* args, void* context) {
     printf("Maximum pool block: %zu\r\n", memmgr_pool_get_max_block());
 }
 
-void cli_command_free_blocks(Cli* cli, FuriString* args, void* context) {
+void cli_command_free_blocks(Cli* cli, FurryString* args, void* context) {
     UNUSED(cli);
     UNUSED(args);
     UNUSED(context);
@@ -425,12 +425,12 @@ void cli_command_free_blocks(Cli* cli, FuriString* args, void* context) {
     memmgr_heap_printf_free_blocks();
 }
 
-void cli_command_i2c(Cli* cli, FuriString* args, void* context) {
+void cli_command_i2c(Cli* cli, FurryString* args, void* context) {
     UNUSED(cli);
     UNUSED(args);
     UNUSED(context);
 
-    furi_hal_i2c_acquire(&furi_hal_i2c_handle_external);
+    furry_hal_i2c_acquire(&furry_hal_i2c_handle_external);
     printf("Scanning external i2c on PC0(SCL)/PC1(SDA)\r\n"
            "Clock: 100khz, 7bit address\r\n"
            "\r\n");
@@ -439,13 +439,13 @@ void cli_command_i2c(Cli* cli, FuriString* args, void* context) {
     for(uint8_t row = 0; row < 0x8; row++) {
         printf("%x | ", row);
         for(uint8_t column = 0; column <= 0xF; column++) {
-            bool ret = furi_hal_i2c_is_device_ready(
-                &furi_hal_i2c_handle_external, ((row << 4) + column) << 1, 2);
+            bool ret = furry_hal_i2c_is_device_ready(
+                &furry_hal_i2c_handle_external, ((row << 4) + column) << 1, 2);
             printf("%c ", ret ? '#' : '-');
         }
         printf("\r\n");
     }
-    furi_hal_i2c_release(&furi_hal_i2c_handle_external);
+    furry_hal_i2c_release(&furry_hal_i2c_handle_external);
 }
 
 void cli_commands_init(Cli* cli) {

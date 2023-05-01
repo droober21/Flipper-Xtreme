@@ -5,7 +5,7 @@
  */
 
 #pragma once
-#include <furi.h>
+#include <furry.h>
 #include "lfrfid_worker.h"
 #include "lfrfid_raw_worker.h"
 #include "protocols/lfrfid_protocols.h"
@@ -33,8 +33,8 @@ struct LFRFIDWorker {
     LFRFIDWorkerMode mode_index;
     void* mode_storage;
 
-    FuriEventFlag* events;
-    FuriThread* thread;
+    FurryEventFlag* events;
+    FurryThread* thread;
 
     LFRFIDWorkerReadType read_type;
 

@@ -9,7 +9,7 @@ static void wifi_marauder_scene_script_select_callback(void* context, uint32_t i
         sizeof(script_path),
         "%s/%s.json",
         MARAUDER_APP_FOLDER_SCRIPTS,
-        furi_string_get_cstr(app->script_list[index]));
+        furry_string_get_cstr(app->script_list[index]));
 
     app->script = wifi_marauder_script_parse_json(app->storage, script_path);
     if(app->script) {
@@ -43,17 +43,17 @@ void wifi_marauder_scene_script_select_on_enter(void* context) {
         }
         if(app->script_list_count > 0) {
             submenu_set_header(submenu, "Select a script:");
-            app->script_list = malloc(app->script_list_count * sizeof(FuriString*));
+            app->script_list = malloc(app->script_list_count * sizeof(FurryString*));
             storage_dir_close(dir_scripts);
             storage_dir_open(dir_scripts, MARAUDER_APP_FOLDER_SCRIPTS);
             // Read the files again from the beginning, adding the scripts in the list
             int script_index = 0;
             while(storage_dir_read(dir_scripts, &file_info, file_path, 255)) {
-                app->script_list[script_index] = furi_string_alloc();
+                app->script_list[script_index] = furry_string_alloc();
                 path_extract_filename_no_ext(file_path, app->script_list[script_index]);
                 submenu_add_item(
                     submenu,
-                    furi_string_get_cstr(app->script_list[script_index]),
+                    furry_string_get_cstr(app->script_list[script_index]),
                     script_index,
                     wifi_marauder_scene_script_select_callback,
                     app);
@@ -84,7 +84,7 @@ void wifi_marauder_scene_script_select_on_exit(void* context) {
     submenu_reset(app->submenu);
 
     for(int i = 0; i < app->script_list_count; i++) {
-        furi_string_free(app->script_list[i]);
+        furry_string_free(app->script_list[i]);
     }
     free(app->script_list);
 }

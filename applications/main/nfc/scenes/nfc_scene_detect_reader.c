@@ -11,14 +11,14 @@ static const NotificationSequence sequence_detect_reader = {
 
 bool nfc_detect_reader_worker_callback(NfcWorkerEvent event, void* context) {
     UNUSED(event);
-    furi_assert(context);
+    furry_assert(context);
     Nfc* nfc = context;
     view_dispatcher_send_custom_event(nfc->view_dispatcher, event);
     return true;
 }
 
 void nfc_scene_detect_reader_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Nfc* nfc = context;
     view_dispatcher_send_custom_event(nfc->view_dispatcher, NfcCustomEventViewExit);
 }

@@ -54,7 +54,7 @@ struct WifiMarauderApp {
     SceneManager* scene_manager;
 
     char text_input_store[WIFI_MARAUDER_TEXT_INPUT_STORE_SIZE + 1];
-    FuriString* text_box_store;
+    FurryString* text_box_store;
     size_t text_box_store_strlen;
     TextBox* text_box;
     WIFI_TextInput* text_input;
@@ -99,7 +99,7 @@ struct WifiMarauderApp {
     // Automation script
     WifiMarauderScript* script;
     WifiMarauderScriptWorker* script_worker;
-    FuriString** script_list;
+    FurryString** script_list;
     int script_list_count;
     WifiMarauderScriptStage* script_edit_selected_stage;
     WifiMarauderScriptStageMenu* script_stage_menu;

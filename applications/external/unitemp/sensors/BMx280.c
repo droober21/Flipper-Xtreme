@@ -228,7 +228,7 @@ static bool bmx280_readCalValues(I2CSensor* i2c_sensor) {
             bmx280_instance->hum_cal.dig_H6);
     }
 
-    bmx280_instance->last_cal_update_time = furi_get_tick();
+    bmx280_instance->last_cal_update_time = furry_get_tick();
     return true;
 }
 static bool bmp280_isMeasuring(Sensor* sensor) {
@@ -241,7 +241,7 @@ bool unitemp_BMx280_alloc(Sensor* sensor, char* args) {
     I2CSensor* i2c_sensor = (I2CSensor*)sensor->instance;
     BMx280_instance* bmx280_instance = malloc(sizeof(BMx280_instance));
     if(bmx280_instance == NULL) {
-        FURI_LOG_E(APP_NAME, "Failed to allocation sensor %s instance", sensor->name);
+        FURRY_LOG_E(APP_NAME, "Failed to allocation sensor %s instance", sensor->name);
         return false;
     }
 
@@ -262,7 +262,7 @@ bool unitemp_BMx280_init(Sensor* sensor) {
     //Чтение ID датчика
     uint8_t id = unitemp_i2c_readReg(i2c_sensor, 0xD0);
     if(id != BMP280_ID && id != BME280_ID) {
-        FURI_LOG_E(
+        FURRY_LOG_E(
             APP_NAME,
             "Sensor %s returned wrong ID 0x%02X, expected 0x%02X or 0x%02X",
             sensor->name,
@@ -289,7 +289,7 @@ bool unitemp_BMx280_init(Sensor* sensor) {
         BMx280_STANDBY_TIME_500 | BMx280_FILTER_COEFF_16 | BMx280_SPI_3W_DISABLE);
     //Чтение калибровочных значений
     if(!bmx280_readCalValues(i2c_sensor)) {
-        FURI_LOG_E(APP_NAME, "Failed to read calibration values sensor %s", sensor->name);
+        FURRY_LOG_E(APP_NAME, "Failed to read calibration values sensor %s", sensor->name);
         return false;
     }
     return true;
@@ -306,23 +306,23 @@ UnitempStatus unitemp_BMx280_update(Sensor* sensor) {
     I2CSensor* i2c_sensor = (I2CSensor*)sensor->instance;
     BMx280_instance* instance = i2c_sensor->sensorInstance;
 
-    uint32_t t = furi_get_tick();
+    uint32_t t = furry_get_tick();
 
     uint8_t buff[3];
     //Проверка инициализированности датчика
     unitemp_i2c_readRegArray(i2c_sensor, 0xF4, 2, buff);
     if(buff[0] == 0) {
-        FURI_LOG_W(APP_NAME, "Sensor %s is not initialized!", sensor->name);
+        FURRY_LOG_W(APP_NAME, "Sensor %s is not initialized!", sensor->name);
         return UT_SENSORSTATUS_ERROR;
     }
 
     while(bmp280_isMeasuring(sensor)) {
-        if(furi_get_tick() - t > 100) {
+        if(furry_get_tick() - t > 100) {
             return UT_SENSORSTATUS_TIMEOUT;
         }
     }
 
-    if(furi_get_tick() - instance->last_cal_update_time > BOSCH_CAL_UPDATE_INTERVAL) {
+    if(furry_get_tick() - instance->last_cal_update_time > BOSCH_CAL_UPDATE_INTERVAL) {
         bmx280_readCalValues(i2c_sensor);
     }
 

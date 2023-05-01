@@ -41,7 +41,7 @@ typedef struct {
     TokenHashAlgo algo;
     uint8_t digits_count_index;
     uint8_t duration;
-    FuriString* duration_text;
+    FurryString* duration_text;
 } SceneState;
 
 struct TotpAddContext {
@@ -70,7 +70,7 @@ static void on_token_secret_user_comitted(InputTextSceneCallbackResult* result) 
 }
 
 static void update_duration_text(SceneState* scene_state) {
-    furi_string_printf(scene_state->duration_text, "%d sec.", scene_state->duration);
+    furry_string_printf(scene_state->duration_text, "%d sec.", scene_state->duration);
 }
 
 static TotpIteratorUpdateTokenResult add_token_handler(TokenInfo* tokenInfo, const void* context) {
@@ -84,7 +84,7 @@ static TotpIteratorUpdateTokenResult add_token_handler(TokenInfo* tokenInfo, con
         return TotpIteratorUpdateTokenResultInvalidSecret;
     }
 
-    furi_string_set_strn(
+    furry_string_set_strn(
         tokenInfo->name,
         context_t->scene_state->token_name,
         context_t->scene_state->token_name_length + 1);
@@ -97,7 +97,7 @@ static TotpIteratorUpdateTokenResult add_token_handler(TokenInfo* tokenInfo, con
 
 void totp_scene_add_new_token_activate(PluginState* plugin_state) {
     SceneState* scene_state = malloc(sizeof(SceneState));
-    furi_check(scene_state != NULL);
+    furry_check(scene_state != NULL);
     plugin_state->current_scene_state = scene_state;
     scene_state->token_name = "Name";
     scene_state->token_name_length = strlen(scene_state->token_name);
@@ -105,13 +105,13 @@ void totp_scene_add_new_token_activate(PluginState* plugin_state) {
     scene_state->token_secret_length = strlen(scene_state->token_secret);
 
     scene_state->token_name_input_context = malloc(sizeof(InputTextSceneContext));
-    furi_check(scene_state->token_name_input_context != NULL);
+    furry_check(scene_state->token_name_input_context != NULL);
     scene_state->token_name_input_context->header_text = "Enter token name";
     scene_state->token_name_input_context->callback_data = scene_state;
     scene_state->token_name_input_context->callback = on_token_name_user_comitted;
 
     scene_state->token_secret_input_context = malloc(sizeof(InputTextSceneContext));
-    furi_check(scene_state->token_secret_input_context != NULL);
+    furry_check(scene_state->token_secret_input_context != NULL);
     scene_state->token_secret_input_context->header_text = "Enter token secret";
     scene_state->token_secret_input_context->callback_data = scene_state;
     scene_state->token_secret_input_context->callback = on_token_secret_user_comitted;
@@ -122,7 +122,7 @@ void totp_scene_add_new_token_activate(PluginState* plugin_state) {
 
     scene_state->input_state = NULL;
     scene_state->duration = TOTP_TOKEN_DURATION_DEFAULT;
-    scene_state->duration_text = furi_string_alloc();
+    scene_state->duration_text = furry_string_alloc();
     update_duration_text(scene_state);
 }
 
@@ -163,7 +163,7 @@ void totp_scene_add_new_token_render(Canvas* const canvas, PluginState* plugin_s
         0,
         78 - scene_state->screen_y_offset,
         SCREEN_WIDTH,
-        furi_string_get_cstr(scene_state->duration_text),
+        furry_string_get_cstr(scene_state->duration_text),
         scene_state->selected_control == TokenDurationSelect);
 
     ui_control_button_render(
@@ -202,7 +202,7 @@ bool totp_scene_add_new_token_handle_event(PluginEvent* const event, PluginState
 
     SceneState* scene_state = (SceneState*)plugin_state->current_scene_state;
     if(scene_state->input_started_at > 0 &&
-       furi_get_tick() - scene_state->input_started_at > 300) {
+       furry_get_tick() - scene_state->input_started_at > 300) {
         return totp_input_text_handle_event(event, scene_state->input_state);
     }
 
@@ -264,7 +264,7 @@ bool totp_scene_add_new_token_handle_event(PluginEvent* const event, PluginState
             }
             scene_state->input_state =
                 totp_input_text_activate(scene_state->token_name_input_context);
-            scene_state->input_started_at = furi_get_tick();
+            scene_state->input_started_at = furry_get_tick();
             break;
         case TokenSecretTextBox:
             if(scene_state->input_state != NULL) {
@@ -272,7 +272,7 @@ bool totp_scene_add_new_token_handle_event(PluginEvent* const event, PluginState
             }
             scene_state->input_state =
                 totp_input_text_activate(scene_state->token_secret_input_context);
-            scene_state->input_started_at = furi_get_tick();
+            scene_state->input_started_at = furry_get_tick();
             break;
         case TokenAlgoSelect:
             break;
@@ -336,7 +336,7 @@ void totp_scene_add_new_token_deactivate(PluginState* plugin_state) {
     free(scene_state->token_secret_input_context->header_text);
     free(scene_state->token_secret_input_context);
 
-    furi_string_free(scene_state->duration_text);
+    furry_string_free(scene_state->duration_text);
 
     if(scene_state->input_state != NULL) {
         totp_input_text_free(scene_state->input_state);

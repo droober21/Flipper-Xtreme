@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 
 #include <gui/gui.h>
 #include <input/input.h>
@@ -30,9 +30,9 @@
 
 typedef struct {
     uint32_t frequency;
-    FuriString* name;
+    FurryString* name;
 
-    FuriString* protocol;
+    FurryString* protocol;
     uint32_t repeat;
 
     uint8_t* data;
@@ -42,9 +42,9 @@ typedef struct {
 } SubRemotePreset;
 
 typedef struct {
-    FuriMutex* model_mutex;
+    FurryMutex* model_mutex;
 
-    FuriMessageQueue* input_queue;
+    FurryMessageQueue* input_queue;
 
     ViewPort* view_port;
     Gui* gui;
@@ -55,13 +55,13 @@ typedef struct {
     NotificationApp* notification;
     SubRemotePreset* txpreset;
 
-    FuriString* up_file;
-    FuriString* down_file;
-    FuriString* left_file;
-    FuriString* right_file;
-    FuriString* ok_file;
+    FurryString* up_file;
+    FurryString* down_file;
+    FurryString* left_file;
+    FurryString* right_file;
+    FurryString* ok_file;
 
-    FuriString* file_path;
+    FurryString* file_path;
 
     char* up_label;
     char* down_label;
@@ -87,20 +87,20 @@ typedef struct {
     int file_result;
     bool tx_not_allowed;
 
-    FuriString* signal;
+    FurryString* signal;
 } SubGHzRemote;
 
 SubRemotePreset* subghz_remote_preset_alloc(void) {
     SubRemotePreset* preset = malloc(sizeof(SubRemotePreset));
-    preset->name = furi_string_alloc();
-    preset->protocol = furi_string_alloc();
+    preset->name = furry_string_alloc();
+    preset->protocol = furry_string_alloc();
     preset->repeat = 200;
     return preset;
 }
 
 void subghz_remote_preset_free(SubRemotePreset* preset) {
-    furi_string_free(preset->name);
-    furi_string_free(preset->protocol);
+    furry_string_free(preset->name);
+    furry_string_free(preset->protocol);
     free(preset);
 }
 
@@ -115,28 +115,28 @@ static char* char_to_str(char* str, int i) {
 
 //get filename without path
 static char* extract_filename(const char* name, int len) {
-    FuriString* tmp;
-    tmp = furi_string_alloc();
+    FurryString* tmp;
+    tmp = furry_string_alloc();
 
     //remove path
     path_extract_filename_no_ext(name, tmp);
 
-    return char_to_str((char*)furi_string_get_cstr(tmp), len);
+    return char_to_str((char*)furry_string_get_cstr(tmp), len);
 }
 
 static void cfg_read_file_path(
     FlipperFormat* fff_file,
-    FuriString* text_file_path,
+    FurryString* text_file_path,
     char** text_file_label,
     const char* read_key,
     int* is_enabled) {
     if(!flipper_format_read_string(fff_file, read_key, text_file_path)) {
-        FURI_LOG_W(TAG, "Could not read %s string", read_key);
+        FURRY_LOG_W(TAG, "Could not read %s string", read_key);
         *text_file_label = "N/A";
         *is_enabled = 0;
     } else {
-        *text_file_label = extract_filename(furi_string_get_cstr(text_file_path), 16);
-        //FURI_LOG_D(TAG, "%s file: %s", read_key, furi_string_get_cstr(text_file_path));
+        *text_file_label = extract_filename(furry_string_get_cstr(text_file_path), 16);
+        //FURRY_LOG_D(TAG, "%s file: %s", read_key, furry_string_get_cstr(text_file_path));
         *is_enabled = 1;
     }
     flipper_format_rewind(fff_file);
@@ -147,18 +147,18 @@ static void cfg_read_file_label(
     char** text_file_label,
     const char* read_key,
     bool is_enabled) {
-    FuriString* temp_label = furi_string_alloc();
+    FurryString* temp_label = furry_string_alloc();
 
     if(!flipper_format_read_string(fff_file, read_key, temp_label)) {
-        FURI_LOG_W(TAG, "Could not read %s string", read_key);
+        FURRY_LOG_W(TAG, "Could not read %s string", read_key);
     } else {
         if(is_enabled == 1) {
-            *text_file_label = char_to_str((char*)furi_string_get_cstr(temp_label), 16);
+            *text_file_label = char_to_str((char*)furry_string_get_cstr(temp_label), 16);
         }
-        //FURI_LOG_D(TAG, "%s label: %s", read_key, *text_file_label);
+        //FURRY_LOG_D(TAG, "%s label: %s", read_key, *text_file_label);
     }
     flipper_format_rewind(fff_file);
-    furi_string_free(temp_label);
+    furry_string_free(temp_label);
 }
 
 /*
@@ -170,8 +170,8 @@ static void cfg_read_file_label(
  * set error flag if missing map file
  */
 
-void subghz_remote_cfg_set_check(SubGHzRemote* app, FuriString* file_name) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+void subghz_remote_cfg_set_check(SubGHzRemote* app, FurryString* file_name) {
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* fff_data_file = flipper_format_file_alloc(storage);
 
     app->file_result = 1;
@@ -183,8 +183,8 @@ void subghz_remote_cfg_set_check(SubGHzRemote* app, FuriString* file_name) {
     app->ok_enabled = 0;
 
     //check that map file exists
-    if(!flipper_format_file_open_existing(fff_data_file, furi_string_get_cstr(file_name))) {
-        FURI_LOG_E(TAG, "Could not open MAP file %s", furi_string_get_cstr(file_name));
+    if(!flipper_format_file_open_existing(fff_data_file, furry_string_get_cstr(file_name))) {
+        FURRY_LOG_E(TAG, "Could not open MAP file %s", furry_string_get_cstr(file_name));
     } else {
         //Filename Assignment/Check Start
 
@@ -227,11 +227,11 @@ void subghz_remote_cfg_set_check(SubGHzRemote* app, FuriString* file_name) {
 
     //if button is still enabled, check that file exists
     if(app->up_enabled == 1) {
-        furi_string_set(file_name, app->up_file);
+        furry_string_set(file_name, app->up_file);
         fff_data_file = flipper_format_file_alloc(storage);
 
-        if(!flipper_format_file_open_existing(fff_data_file, furi_string_get_cstr(file_name))) {
-            FURI_LOG_W(TAG, "Could not open UP file %s", furi_string_get_cstr(file_name));
+        if(!flipper_format_file_open_existing(fff_data_file, furry_string_get_cstr(file_name))) {
+            FURRY_LOG_W(TAG, "Could not open UP file %s", furry_string_get_cstr(file_name));
 
             //disable button, and set label to "N/A"
             app->up_enabled = 0;
@@ -244,11 +244,11 @@ void subghz_remote_cfg_set_check(SubGHzRemote* app, FuriString* file_name) {
     }
 
     if(app->down_enabled == 1) {
-        furi_string_set(file_name, app->down_file);
+        furry_string_set(file_name, app->down_file);
         fff_data_file = flipper_format_file_alloc(storage);
 
-        if(!flipper_format_file_open_existing(fff_data_file, furi_string_get_cstr(file_name))) {
-            FURI_LOG_W(TAG, "Could not open DOWN file %s", furi_string_get_cstr(file_name));
+        if(!flipper_format_file_open_existing(fff_data_file, furry_string_get_cstr(file_name))) {
+            FURRY_LOG_W(TAG, "Could not open DOWN file %s", furry_string_get_cstr(file_name));
 
             app->down_enabled = 0;
             app->down_label = "N/A";
@@ -259,11 +259,11 @@ void subghz_remote_cfg_set_check(SubGHzRemote* app, FuriString* file_name) {
     }
 
     if(app->left_enabled == 1) {
-        furi_string_set(file_name, app->left_file);
+        furry_string_set(file_name, app->left_file);
         fff_data_file = flipper_format_file_alloc(storage);
 
-        if(!flipper_format_file_open_existing(fff_data_file, furi_string_get_cstr(file_name))) {
-            FURI_LOG_W(TAG, "Could not open LEFT file %s", furi_string_get_cstr(file_name));
+        if(!flipper_format_file_open_existing(fff_data_file, furry_string_get_cstr(file_name))) {
+            FURRY_LOG_W(TAG, "Could not open LEFT file %s", furry_string_get_cstr(file_name));
 
             app->left_enabled = 0;
             app->left_label = "N/A";
@@ -274,11 +274,11 @@ void subghz_remote_cfg_set_check(SubGHzRemote* app, FuriString* file_name) {
     }
 
     if(app->right_enabled == 1) {
-        furi_string_set(file_name, app->right_file);
+        furry_string_set(file_name, app->right_file);
         fff_data_file = flipper_format_file_alloc(storage);
 
-        if(!flipper_format_file_open_existing(fff_data_file, furi_string_get_cstr(file_name))) {
-            FURI_LOG_W(TAG, "Could not open RIGHT file %s", furi_string_get_cstr(file_name));
+        if(!flipper_format_file_open_existing(fff_data_file, furry_string_get_cstr(file_name))) {
+            FURRY_LOG_W(TAG, "Could not open RIGHT file %s", furry_string_get_cstr(file_name));
 
             app->right_enabled = 0;
             app->right_label = "N/A";
@@ -289,11 +289,11 @@ void subghz_remote_cfg_set_check(SubGHzRemote* app, FuriString* file_name) {
     }
 
     if(app->ok_enabled == 1) {
-        furi_string_set(file_name, app->ok_file);
+        furry_string_set(file_name, app->ok_file);
         fff_data_file = flipper_format_file_alloc(storage);
 
-        if(!flipper_format_file_open_existing(fff_data_file, furi_string_get_cstr(file_name))) {
-            FURI_LOG_W(TAG, "Could not open OK file %s", furi_string_get_cstr(file_name));
+        if(!flipper_format_file_open_existing(fff_data_file, furry_string_get_cstr(file_name))) {
+            FURRY_LOG_W(TAG, "Could not open OK file %s", furry_string_get_cstr(file_name));
 
             app->ok_enabled = 0;
             app->ok_label = "N/A";
@@ -303,7 +303,7 @@ void subghz_remote_cfg_set_check(SubGHzRemote* app, FuriString* file_name) {
         flipper_format_free(fff_data_file);
     }
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     if(app->up_enabled == 0 && app->down_enabled == 0 && app->left_enabled == 0 &&
        app->right_enabled == 0 && app->ok_enabled == 0) {
@@ -318,20 +318,20 @@ static void subghz_remote_end_send(SubGHzRemote* app) {
 }
 
 bool subghz_remote_set_preset(SubRemotePreset* p, const char* preset) {
-    if(!strcmp(preset, "FuriHalSubGhzPresetOok270Async")) {
-        furi_string_set(p->name, "AM270");
-    } else if(!strcmp(preset, "FuriHalSubGhzPresetOok650Async")) {
-        furi_string_set(p->name, "AM650");
-    } else if(!strcmp(preset, "FuriHalSubGhzPreset2FSKDev238Async")) {
-        furi_string_set(p->name, "FM238");
-    } else if(!strcmp(preset, "FuriHalSubGhzPreset2FSKDev476Async")) {
-        furi_string_set(p->name, "FM476");
-    } else if(!strcmp(preset, "FuriHalSubGhzPresetCustom")) {
-        FURI_LOG_E(TAG, "Custom preset unsupported now");
+    if(!strcmp(preset, "FurryHalSubGhzPresetOok270Async")) {
+        furry_string_set(p->name, "AM270");
+    } else if(!strcmp(preset, "FurryHalSubGhzPresetOok650Async")) {
+        furry_string_set(p->name, "AM650");
+    } else if(!strcmp(preset, "FurryHalSubGhzPreset2FSKDev238Async")) {
+        furry_string_set(p->name, "FM238");
+    } else if(!strcmp(preset, "FurryHalSubGhzPreset2FSKDev476Async")) {
+        furry_string_set(p->name, "FM476");
+    } else if(!strcmp(preset, "FurryHalSubGhzPresetCustom")) {
+        FURRY_LOG_E(TAG, "Custom preset unsupported now");
         return false;
-        // furi_string_set(p->name, "CUSTOM");
+        // furry_string_set(p->name, "CUSTOM");
     } else {
-        FURI_LOG_E(TAG, "Unsupported preset");
+        FURRY_LOG_E(TAG, "Unsupported preset");
         return false;
     }
     return true;
@@ -346,12 +346,12 @@ bool subghz_remote_key_load(
     const char* path) {
     //
     if(!flipper_format_rewind(fff_file)) {
-        FURI_LOG_E(TAG, "Rewind error");
+        FURRY_LOG_E(TAG, "Rewind error");
         return false;
     }
 
-    FuriString* temp_str;
-    temp_str = furi_string_alloc();
+    FurryString* temp_str;
+    temp_str = furry_string_alloc();
 
     bool res = false;
 
@@ -362,44 +362,44 @@ bool subghz_remote_key_load(
     do {
         // load frequency from file
         if(!flipper_format_read_uint32(fff_file, "Frequency", &preset->frequency, 1)) {
-            FURI_LOG_W(TAG, "Cannot read frequency. Defaulting to 433.92 MHz");
+            FURRY_LOG_W(TAG, "Cannot read frequency. Defaulting to 433.92 MHz");
             preset->frequency = 433920000;
         }
 
         // load preset from file
         if(!flipper_format_read_string(fff_file, "Preset", temp_str)) {
-            FURI_LOG_W(TAG, "Could not read Preset. Defaulting to Ook650Async");
-            furi_string_set(temp_str, "FuriHalSubGhzPresetOok650Async");
+            FURRY_LOG_W(TAG, "Could not read Preset. Defaulting to Ook650Async");
+            furry_string_set(temp_str, "FurryHalSubGhzPresetOok650Async");
         }
-        if(!subghz_remote_set_preset(preset, furi_string_get_cstr(temp_str))) {
-            FURI_LOG_E(TAG, "Could not set preset");
+        if(!subghz_remote_set_preset(preset, furry_string_get_cstr(temp_str))) {
+            FURRY_LOG_E(TAG, "Could not set preset");
             break;
         }
-        if(!strcmp(furi_string_get_cstr(temp_str), "FuriHalSubGhzPresetCustom")) {
+        if(!strcmp(furry_string_get_cstr(temp_str), "FurryHalSubGhzPresetCustom")) {
             // TODO: check if preset is custom
-            FURI_LOG_E(TAG, "Could not use custom preset");
+            FURRY_LOG_E(TAG, "Could not use custom preset");
             break;
         }
         size_t preset_index =
-            subghz_setting_get_inx_preset_by_name(setting, furi_string_get_cstr(preset->name));
+            subghz_setting_get_inx_preset_by_name(setting, furry_string_get_cstr(preset->name));
         preset->data = subghz_setting_get_preset_data(setting, preset_index);
         preset->data_size = subghz_setting_get_preset_data_size(setting, preset_index);
 
         // load protocol from file
         if(!flipper_format_read_string(fff_file, "Protocol", preset->protocol)) {
-            FURI_LOG_E(TAG, "Could not read Protocol.");
+            FURRY_LOG_E(TAG, "Could not read Protocol.");
             break;
         }
         if(!flipper_format_rewind(fff_data)) {
-            FURI_LOG_E(TAG, "Rewind error");
+            FURRY_LOG_E(TAG, "Rewind error");
             return false;
         }
 
-        if(!furi_string_cmp_str(preset->protocol, "RAW")) {
+        if(!furry_string_cmp_str(preset->protocol, "RAW")) {
             subghz_protocol_raw_gen_fff_data(fff_data, path);
             // repeat
             if(!flipper_format_insert_or_update_uint32(fff_data, "Repeat", &preset->repeat, 1)) {
-                FURI_LOG_E(TAG, "Unable to insert or update Repeat");
+                FURRY_LOG_E(TAG, "Unable to insert or update Repeat");
                 break;
             }
 
@@ -408,33 +408,33 @@ bool subghz_remote_key_load(
                 flipper_format_get_raw_stream(fff_file), flipper_format_get_raw_stream(fff_data));
             // repeat
             if(!flipper_format_insert_or_update_uint32(fff_data, "Repeat", &preset->repeat, 1)) {
-                FURI_LOG_E(TAG, "Unable to insert or update Repeat");
+                FURRY_LOG_E(TAG, "Unable to insert or update Repeat");
                 break;
             }
         }
 
         if(!flipper_format_rewind(fff_file)) {
-            FURI_LOG_E(TAG, "Rewind error");
+            FURRY_LOG_E(TAG, "Rewind error");
             return false;
         }
 
         preset->decoder = subghz_receiver_search_decoder_base_by_name(
-            receiver, furi_string_get_cstr(preset->protocol));
+            receiver, furry_string_get_cstr(preset->protocol));
         if(preset->decoder) {
             SubGhzProtocolStatus status =
                 subghz_protocol_decoder_base_deserialize(preset->decoder, fff_data);
             if(status != SubGhzProtocolStatusOk) {
-                FURI_LOG_E(TAG, "Protocol deserialize failed, status = %d", status);
+                FURRY_LOG_E(TAG, "Protocol deserialize failed, status = %d", status);
                 break;
             }
         } else {
-            FURI_LOG_E(TAG, "Protocol %s not found", furi_string_get_cstr(temp_str));
+            FURRY_LOG_E(TAG, "Protocol %s not found", furry_string_get_cstr(temp_str));
         }
 
         res = true;
     } while(0);
 
-    furi_string_free(temp_str);
+    furry_string_free(temp_str);
 
     return res;
 }
@@ -442,25 +442,25 @@ bool subghz_remote_key_load(
 // method modified from subghz_i.c
 // https://github.com/flipperdevices/flipperzero-firmware/blob/b0daa601ad5b87427a45f9089c8b403a01f72c2a/applications/subghz/subghz_i.c#L417-L456
 bool subghz_remote_save_protocol_to_file(FlipperFormat* fff_file, const char* dev_file_name) {
-    furi_assert(fff_file);
-    furi_assert(dev_file_name);
+    furry_assert(fff_file);
+    furry_assert(dev_file_name);
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     Stream* flipper_format_stream = flipper_format_get_raw_stream(fff_file);
 
     bool saved = false;
-    FuriString* file_dir;
-    file_dir = furi_string_alloc();
+    FurryString* file_dir;
+    file_dir = furry_string_alloc();
 
     path_extract_dirname(dev_file_name, file_dir);
     do {
-        if(!storage_simply_mkdir(storage, furi_string_get_cstr(file_dir))) {
-            FURI_LOG_E(TAG, "(save) Cannot mkdir");
+        if(!storage_simply_mkdir(storage, furry_string_get_cstr(file_dir))) {
+            FURRY_LOG_E(TAG, "(save) Cannot mkdir");
             break;
         }
 
         if(!storage_simply_remove(storage, dev_file_name)) {
-            FURI_LOG_E(TAG, "(save) Cannot remove");
+            FURRY_LOG_E(TAG, "(save) Cannot remove");
             break;
         }
 
@@ -468,10 +468,10 @@ bool subghz_remote_save_protocol_to_file(FlipperFormat* fff_file, const char* de
         stream_save_to_file(flipper_format_stream, storage, dev_file_name, FSOM_CREATE_ALWAYS);
 
         saved = true;
-        //FURI_LOG_D(TAG, "(save) OK Save");
+        //FURRY_LOG_D(TAG, "(save) OK Save");
     } while(0);
-    furi_string_free(file_dir);
-    furi_record_close(RECORD_STORAGE);
+    furry_string_free(file_dir);
+    furry_record_close(RECORD_STORAGE);
     return saved;
 }
 
@@ -480,26 +480,26 @@ void subghz_remote_tx_stop(SubGHzRemote* app) {
         return;
     }
 
-    if(!furi_string_cmp_str(app->txpreset->protocol, "RAW")) {
-        while(!furi_hal_subghz_is_async_tx_complete()) {
-            furi_delay_ms(15);
+    if(!furry_string_cmp_str(app->txpreset->protocol, "RAW")) {
+        while(!furry_hal_subghz_is_async_tx_complete()) {
+            furry_delay_ms(15);
         }
     }
 
     //Stop TX
-    furi_hal_subghz_stop_async_tx();
-    //FURI_LOG_I(TAG, "TX Done!");
+    furry_hal_subghz_stop_async_tx();
+    //FURRY_LOG_I(TAG, "TX Done!");
     subghz_transmitter_stop(app->tx_transmitter);
 
-    //FURI_LOG_D(TAG, "Checking if protocol is dynamic");
+    //FURRY_LOG_D(TAG, "Checking if protocol is dynamic");
     const SubGhzProtocolRegistry* protocol_registry_items =
         subghz_environment_get_protocol_registry(app->environment);
     const SubGhzProtocol* proto = subghz_protocol_registry_get_by_name(
-        protocol_registry_items, furi_string_get_cstr(app->txpreset->protocol));
-    //FURI_LOG_D(TAG, "Protocol-TYPE %d", proto->type);
+        protocol_registry_items, furry_string_get_cstr(app->txpreset->protocol));
+    //FURRY_LOG_D(TAG, "Protocol-TYPE %d", proto->type);
 
     if(proto && proto->type == SubGhzProtocolTypeDynamic) {
-        //FURI_LOG_D(TAG, "Protocol is dynamic. Saving key");
+        //FURRY_LOG_D(TAG, "Protocol is dynamic. Saving key");
         // Remove repeat if it was present
         flipper_format_delete_key(app->tx_fff_data, "Repeat");
 
@@ -514,7 +514,7 @@ void subghz_remote_tx_stop(SubGHzRemote* app) {
     }
 
     subghz_transmitter_free(app->tx_transmitter);
-    furi_hal_subghz_idle();
+    furry_hal_subghz_idle();
 
     notification_message(app->notification, &sequence_blink_stop);
 
@@ -527,8 +527,8 @@ static bool subghz_remote_send_sub(SubGHzRemote* app, FlipperFormat* fff_data) {
     //
     bool res = false;
     do {
-        if(!furi_hal_subghz_is_tx_allowed(app->txpreset->frequency)) {
-            FURI_LOG_E(
+        if(!furry_hal_subghz_is_tx_allowed(app->txpreset->frequency)) {
+            FURRY_LOG_E(
                 TAG,
                 "In your settings, only reception on this frequency (%lu) is allowed,\r\n"
                 "the actual operation of the subghz remote app is not possible\r\n ",
@@ -541,38 +541,38 @@ static bool subghz_remote_send_sub(SubGHzRemote* app, FlipperFormat* fff_data) {
         }
 
         app->tx_transmitter = subghz_transmitter_alloc_init(
-            app->environment, furi_string_get_cstr(app->txpreset->protocol));
+            app->environment, furry_string_get_cstr(app->txpreset->protocol));
         if(!app->tx_transmitter) {
             break;
         }
 
         if(subghz_transmitter_deserialize(app->tx_transmitter, fff_data) !=
            SubGhzProtocolStatusOk) {
-            FURI_LOG_E(TAG, "Deserialize error!");
+            FURRY_LOG_E(TAG, "Deserialize error!");
             break;
         }
 
-        furi_hal_subghz_reset();
-        furi_hal_subghz_idle();
-        furi_hal_subghz_load_custom_preset(app->txpreset->data);
-        furi_hal_gpio_init(furi_hal_subghz.cc1101_g0_pin, GpioModeInput, GpioPullNo, GpioSpeedLow);
+        furry_hal_subghz_reset();
+        furry_hal_subghz_idle();
+        furry_hal_subghz_load_custom_preset(app->txpreset->data);
+        furry_hal_gpio_init(furry_hal_subghz.cc1101_g0_pin, GpioModeInput, GpioPullNo, GpioSpeedLow);
 
-        furi_hal_subghz_idle();
+        furry_hal_subghz_idle();
 
-        furi_hal_subghz_set_frequency_and_path(app->txpreset->frequency);
-        furi_hal_gpio_write(furi_hal_subghz.cc1101_g0_pin, false);
-        furi_hal_gpio_init(
-            furi_hal_subghz.cc1101_g0_pin, GpioModeOutputPushPull, GpioPullNo, GpioSpeedLow);
+        furry_hal_subghz_set_frequency_and_path(app->txpreset->frequency);
+        furry_hal_gpio_write(furry_hal_subghz.cc1101_g0_pin, false);
+        furry_hal_gpio_init(
+            furry_hal_subghz.cc1101_g0_pin, GpioModeOutputPushPull, GpioPullNo, GpioSpeedLow);
 
-        if(!furi_hal_subghz_tx()) {
-            FURI_LOG_E(TAG, "Sending not allowed");
+        if(!furry_hal_subghz_tx()) {
+            FURRY_LOG_E(TAG, "Sending not allowed");
             break;
         }
 
-        //FURI_LOG_I(TAG, "Sending...");
+        //FURRY_LOG_I(TAG, "Sending...");
         notification_message(app->notification, &sequence_blink_start_magenta);
 
-        furi_hal_subghz_start_async_tx(subghz_transmitter_yield, app->tx_transmitter);
+        furry_hal_subghz_start_async_tx(subghz_transmitter_yield, app->tx_transmitter);
 
         res = true;
     } while(0);
@@ -581,7 +581,7 @@ static bool subghz_remote_send_sub(SubGHzRemote* app, FlipperFormat* fff_data) {
 }
 
 static void subghz_remote_send_signal(SubGHzRemote* app, Storage* storage, const char* path) {
-    //FURI_LOG_D(TAG, "Sending: %s", path);
+    //FURRY_LOG_D(TAG, "Sending: %s", path);
 
     app->tx_file_path = path;
 
@@ -594,7 +594,7 @@ static void subghz_remote_send_signal(SubGHzRemote* app, Storage* storage, const
     bool open_ok = false;
     do {
         if(!flipper_format_file_open_existing(fff_file, path)) {
-            FURI_LOG_E(TAG, "Could not open file %s", path);
+            FURRY_LOG_E(TAG, "Could not open file %s", path);
             break;
         }
         if(!subghz_remote_key_load(
@@ -604,37 +604,37 @@ static void subghz_remote_send_signal(SubGHzRemote* app, Storage* storage, const
                app->setting,
                app->subghz_receiver,
                path)) {
-            FURI_LOG_E(TAG, "Could not load key");
+            FURRY_LOG_E(TAG, "Could not load key");
             break;
         }
         open_ok = true;
     } while(0);
     flipper_format_free(fff_file);
     if(!open_ok) {
-        FURI_LOG_E(TAG, "Could not load file!");
+        FURRY_LOG_E(TAG, "Could not load file!");
         return;
     }
 
     subghz_remote_send_sub(app, app->tx_fff_data);
 }
 
-static void subghz_remote_process_signal(SubGHzRemote* app, FuriString* signal) {
+static void subghz_remote_process_signal(SubGHzRemote* app, FurryString* signal) {
     view_port_update(app->view_port);
 
-    //FURI_LOG_D(TAG, "signal = %s", furi_string_get_cstr(signal));
+    //FURRY_LOG_D(TAG, "signal = %s", furry_string_get_cstr(signal));
 
-    if(strlen(furi_string_get_cstr(signal)) > 12) {
-        Storage* storage = furi_record_open(RECORD_STORAGE);
-        subghz_remote_send_signal(app, storage, furi_string_get_cstr(signal));
-        furi_record_close(RECORD_STORAGE);
-    } else if(strlen(furi_string_get_cstr(signal)) < 10) {
+    if(strlen(furry_string_get_cstr(signal)) > 12) {
+        Storage* storage = furry_record_open(RECORD_STORAGE);
+        subghz_remote_send_signal(app, storage, furry_string_get_cstr(signal));
+        furry_record_close(RECORD_STORAGE);
+    } else if(strlen(furry_string_get_cstr(signal)) < 10) {
         subghz_remote_end_send(app);
     }
 }
 
 static void render_callback(Canvas* canvas, void* ctx) {
     SubGHzRemote* app = ctx;
-    furi_check(furi_mutex_acquire(app->model_mutex, FuriWaitForever) == FuriStatusOk);
+    furry_check(furry_mutex_acquire(app->model_mutex, FurryWaitForever) == FurryStatusOk);
 
     //setup different canvas settings
     if(app->file_result == 1) {
@@ -729,12 +729,12 @@ static void render_callback(Canvas* canvas, void* ctx) {
         //canvas_draw_str_aligned(canvas, 125, 62, AlignRight, AlignBottom, int_to_char(app->repeat));
     }
 
-    furi_mutex_release(app->model_mutex);
+    furry_mutex_release(app->model_mutex);
 }
 
 static void input_callback(InputEvent* input_event, void* ctx) {
     SubGHzRemote* app = ctx;
-    furi_message_queue_put(app->input_queue, input_event, 0);
+    furry_message_queue_put(app->input_queue, input_event, 0);
 }
 
 void subghz_remote_subghz_alloc(SubGHzRemote* app) {
@@ -762,67 +762,67 @@ SubGHzRemote* subghz_remote_alloc(void) {
     SubGHzRemote* app = malloc(sizeof(SubGHzRemote));
 
     // Enable power for External CC1101 if it is connected
-    furi_hal_subghz_enable_ext_power();
+    furry_hal_subghz_enable_ext_power();
     // Auto switch to internal radio if external radio is not available
-    furi_delay_ms(15);
-    if(!furi_hal_subghz_check_radio()) {
-        furi_hal_subghz_select_radio_type(SubGhzRadioInternal);
-        furi_hal_subghz_init_radio_type(SubGhzRadioInternal);
+    furry_delay_ms(15);
+    if(!furry_hal_subghz_check_radio()) {
+        furry_hal_subghz_select_radio_type(SubGhzRadioInternal);
+        furry_hal_subghz_init_radio_type(SubGhzRadioInternal);
     }
 
-    furi_hal_power_suppress_charge_enter();
+    furry_hal_power_suppress_charge_enter();
 
-    app->model_mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    app->model_mutex = furry_mutex_alloc(FurryMutexTypeNormal);
 
-    app->input_queue = furi_message_queue_alloc(32, sizeof(InputEvent));
+    app->input_queue = furry_message_queue_alloc(32, sizeof(InputEvent));
 
     app->view_port = view_port_alloc();
     view_port_draw_callback_set(app->view_port, render_callback, app);
     view_port_input_callback_set(app->view_port, input_callback, app);
 
     // Open GUI and register view_port
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(app->gui, app->view_port, GuiLayerFullscreen);
 
-    app->notification = furi_record_open(RECORD_NOTIFICATION);
+    app->notification = furry_record_open(RECORD_NOTIFICATION);
 
     return app;
 }
 
 void subghz_remote_free(SubGHzRemote* app, bool with_subghz) {
-    furi_hal_power_suppress_charge_exit();
+    furry_hal_power_suppress_charge_exit();
 
     // Disable power for External CC1101 if it was enabled and module is connected
-    furi_hal_subghz_disable_ext_power();
+    furry_hal_subghz_disable_ext_power();
     // Reinit SPI handles for internal radio / nfc
-    furi_hal_subghz_init_radio_type(SubGhzRadioInternal);
+    furry_hal_subghz_init_radio_type(SubGhzRadioInternal);
 
-    furi_string_free(app->up_file);
-    furi_string_free(app->down_file);
-    furi_string_free(app->left_file);
-    furi_string_free(app->right_file);
-    furi_string_free(app->ok_file);
+    furry_string_free(app->up_file);
+    furry_string_free(app->down_file);
+    furry_string_free(app->left_file);
+    furry_string_free(app->right_file);
+    furry_string_free(app->ok_file);
 
-    furi_string_free(app->file_path);
-    furi_string_free(app->signal);
+    furry_string_free(app->file_path);
+    furry_string_free(app->signal);
 
     gui_remove_view_port(app->gui, app->view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(app->view_port);
     app->gui = NULL;
 
-    furi_message_queue_free(app->input_queue);
+    furry_message_queue_free(app->input_queue);
 
-    furi_mutex_free(app->model_mutex);
+    furry_mutex_free(app->model_mutex);
 
     if(with_subghz) {
-        furi_hal_subghz_sleep();
+        furry_hal_subghz_sleep();
         subghz_setting_free(app->setting);
         subghz_receiver_free(app->subghz_receiver);
         subghz_environment_free(app->environment);
     }
 
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
     app->notification = NULL;
 
     free(app);
@@ -833,28 +833,28 @@ int32_t subghz_remote_app(void* p) {
     DOLPHIN_DEED(DolphinDeedPluginStart);
     SubGHzRemote* app = subghz_remote_alloc();
 
-    app->file_path = furi_string_alloc();
-    app->signal = furi_string_alloc();
+    app->file_path = furry_string_alloc();
+    app->signal = furry_string_alloc();
 
     //setup variables before population
-    app->up_file = furi_string_alloc();
-    app->down_file = furi_string_alloc();
-    app->left_file = furi_string_alloc();
-    app->right_file = furi_string_alloc();
-    app->ok_file = furi_string_alloc();
+    app->up_file = furry_string_alloc();
+    app->down_file = furry_string_alloc();
+    app->left_file = furry_string_alloc();
+    app->right_file = furry_string_alloc();
+    app->ok_file = furry_string_alloc();
 
     app->file_result = 3;
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     if(!storage_simply_mkdir(storage, SUBREMOTEMAP_FOLDER)) {
-        FURI_LOG_E(TAG, "Could not create folder %s", SUBREMOTEMAP_FOLDER);
+        FURRY_LOG_E(TAG, "Could not create folder %s", SUBREMOTEMAP_FOLDER);
     }
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
-    furi_string_set(app->file_path, SUBREMOTEMAP_FOLDER);
+    furry_string_set(app->file_path, SUBREMOTEMAP_FOLDER);
 
-    DialogsApp* dialogs = furi_record_open(RECORD_DIALOGS);
+    DialogsApp* dialogs = furry_record_open(RECORD_DIALOGS);
 
     DialogsFileBrowserOptions browser_options;
     dialog_file_browser_set_basic_options(&browser_options, SUBREMOTEMAP_EXTENSION, &I_sub1_10px);
@@ -862,9 +862,9 @@ int32_t subghz_remote_app(void* p) {
 
     bool res = dialog_file_browser_show(dialogs, app->file_path, app->file_path, &browser_options);
 
-    furi_record_close(RECORD_DIALOGS);
+    furry_record_close(RECORD_DIALOGS);
     if(!res) {
-        FURI_LOG_E(TAG, "No file selected");
+        FURRY_LOG_E(TAG, "No file selected");
         subghz_remote_free(app, false);
         return 255;
     } else {
@@ -878,14 +878,14 @@ int32_t subghz_remote_app(void* p) {
     bool exit_loop = false;
 
     if(app->file_result == 2) {
-        //FURI_LOG_D(
+        //FURRY_LOG_D(
         //TAG,
         //"U: %s - D: %s - L: %s - R: %s - O: %s ",
-        //furi_string_get_cstr(app->up_file),
-        //furi_string_get_cstr(app->down_file),
-        //furi_string_get_cstr(app->left_file),
-        //furi_string_get_cstr(app->right_file),
-        //furi_string_get_cstr(app->ok_file));
+        //furry_string_get_cstr(app->up_file),
+        //furry_string_get_cstr(app->down_file),
+        //furry_string_get_cstr(app->left_file),
+        //furry_string_get_cstr(app->right_file),
+        //furry_string_get_cstr(app->ok_file));
 
         //variables to control multiple button presses and status updates
         app->send_status = "Idle";
@@ -895,15 +895,15 @@ int32_t subghz_remote_app(void* p) {
         app->button = 0;
 
         //refresh screen to update variables before processing main screen or error screens
-        furi_mutex_release(app->model_mutex);
+        furry_mutex_release(app->model_mutex);
         view_port_update(app->view_port);
 
         //input detect loop start
         InputEvent input;
         while(1) {
-            furi_check(
-                furi_message_queue_get(app->input_queue, &input, FuriWaitForever) == FuriStatusOk);
-            //FURI_LOG_D(
+            furry_check(
+                furry_message_queue_get(app->input_queue, &input, FurryWaitForever) == FurryStatusOk);
+            //FURRY_LOG_D(
             //TAG,
             //"key: %s type: %s",
             //input_get_key_name(input.key),
@@ -914,8 +914,8 @@ int32_t subghz_remote_app(void* p) {
                 if(input.type == InputTypePress) {
                     if(app->up_enabled) {
                         if(app->processing == 0) {
-                            furi_string_reset(app->signal);
-                            furi_string_set(app->signal, app->up_file);
+                            furry_string_reset(app->signal);
+                            furry_string_set(app->signal, app->up_file);
                             app->button = 1;
                             app->processing = 1;
                         }
@@ -932,8 +932,8 @@ int32_t subghz_remote_app(void* p) {
                 if(input.type == InputTypePress) {
                     if(app->down_enabled) {
                         if(app->processing == 0) {
-                            furi_string_reset(app->signal);
-                            furi_string_set(app->signal, app->down_file);
+                            furry_string_reset(app->signal);
+                            furry_string_set(app->signal, app->down_file);
                             app->button = 2;
                             app->processing = 1;
                         }
@@ -950,8 +950,8 @@ int32_t subghz_remote_app(void* p) {
                 if(input.type == InputTypePress) {
                     if(app->right_enabled) {
                         if(app->processing == 0) {
-                            furi_string_reset(app->signal);
-                            furi_string_set(app->signal, app->right_file);
+                            furry_string_reset(app->signal);
+                            furry_string_set(app->signal, app->right_file);
                             app->button = 3;
                             app->processing = 1;
                         }
@@ -968,8 +968,8 @@ int32_t subghz_remote_app(void* p) {
                 if(input.type == InputTypePress) {
                     if(app->left_enabled) {
                         if(app->processing == 0) {
-                            furi_string_reset(app->signal);
-                            furi_string_set(app->signal, app->left_file);
+                            furry_string_reset(app->signal);
+                            furry_string_set(app->signal, app->left_file);
                             app->button = 4;
                             app->processing = 1;
                         }
@@ -986,8 +986,8 @@ int32_t subghz_remote_app(void* p) {
                 if(input.type == InputTypePress) {
                     if(app->ok_enabled) {
                         if(app->processing == 0) {
-                            furi_string_reset(app->signal);
-                            furi_string_set(app->signal, app->ok_file);
+                            furry_string_reset(app->signal);
+                            furry_string_set(app->signal, app->ok_file);
                             app->button = 5;
                             app->processing = 1;
                         }
@@ -1009,12 +1009,12 @@ int32_t subghz_remote_app(void* p) {
             }
 
             if(app->processing == 0) {
-                //FURI_LOG_D(TAG, "processing 0");
+                //FURRY_LOG_D(TAG, "processing 0");
                 app->send_status = "Idle";
                 app->send_status_c = 0;
                 app->button = 0;
             } else if(app->processing == 1) {
-                //FURI_LOG_D(TAG, "processing 1");
+                //FURRY_LOG_D(TAG, "processing 1");
 
                 app->send_status = "Send";
 
@@ -1042,11 +1042,11 @@ int32_t subghz_remote_app(void* p) {
             }
 
             if(exit_loop == true) {
-                furi_mutex_release(app->model_mutex);
+                furry_mutex_release(app->model_mutex);
                 break;
             }
 
-            furi_mutex_release(app->model_mutex);
+            furry_mutex_release(app->model_mutex);
             view_port_update(app->view_port);
         }
     } else if(app->file_result == 1 || app->file_result == 3) {
@@ -1055,9 +1055,9 @@ int32_t subghz_remote_app(void* p) {
 
         InputEvent input;
         while(1) {
-            furi_check(
-                furi_message_queue_get(app->input_queue, &input, FuriWaitForever) == FuriStatusOk);
-            //FURI_LOG_D(
+            furry_check(
+                furry_message_queue_get(app->input_queue, &input, FurryWaitForever) == FurryStatusOk);
+            //FURRY_LOG_D(
             //TAG,
             //"key: %s type: %s",
             //input_get_key_name(input.key),
@@ -1082,15 +1082,15 @@ int32_t subghz_remote_app(void* p) {
             }
 
             if(exit_loop == true) {
-                furi_mutex_release(app->model_mutex);
+                furry_mutex_release(app->model_mutex);
                 break;
             }
 
-            furi_mutex_release(app->model_mutex);
+            furry_mutex_release(app->model_mutex);
             view_port_update(app->view_port);
         }
     } else {
-        furi_mutex_release(app->model_mutex);
+        furry_mutex_release(app->model_mutex);
     }
 
     // remove & free all stuff created by app

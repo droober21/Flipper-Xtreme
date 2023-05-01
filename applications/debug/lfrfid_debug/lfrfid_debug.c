@@ -1,13 +1,13 @@
 #include "lfrfid_debug_i.h"
 
 static bool lfrfid_debug_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     LfRfidDebug* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool lfrfid_debug_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     LfRfidDebug* app = context;
     return scene_manager_handle_back_event(app->scene_manager);
 }
@@ -25,7 +25,7 @@ static LfRfidDebug* lfrfid_debug_alloc() {
         app->view_dispatcher, lfrfid_debug_back_event_callback);
 
     // Open GUI record
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
     view_dispatcher_attach_to_gui(app->view_dispatcher, app->gui, ViewDispatcherTypeFullscreen);
 
     // Submenu
@@ -44,7 +44,7 @@ static LfRfidDebug* lfrfid_debug_alloc() {
 }
 
 static void lfrfid_debug_free(LfRfidDebug* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // Submenu
     view_dispatcher_remove_view(app->view_dispatcher, LfRfidDebugViewSubmenu);
@@ -61,7 +61,7 @@ static void lfrfid_debug_free(LfRfidDebug* app) {
     scene_manager_free(app->scene_manager);
 
     // GUI
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     app->gui = NULL;
 
     free(app);

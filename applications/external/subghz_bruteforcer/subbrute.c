@@ -6,19 +6,19 @@
 #define TAG "SubBruteApp"
 
 static bool subbrute_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     SubBruteState* instance = context;
     return scene_manager_handle_custom_event(instance->scene_manager, event);
 }
 
 static bool subbrute_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubBruteState* instance = context;
     return scene_manager_handle_back_event(instance->scene_manager);
 }
 
 static void subbrute_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubBruteState* instance = context;
     scene_manager_handle_tick_event(instance->scene_manager);
 }
@@ -27,12 +27,12 @@ SubBruteState* subbrute_alloc() {
     SubBruteState* instance = malloc(sizeof(SubBruteState));
 
     memset(instance->text_store, 0, sizeof(instance->text_store));
-    instance->file_path = furi_string_alloc();
+    instance->file_path = furry_string_alloc();
 
     instance->scene_manager = scene_manager_alloc(&subbrute_scene_handlers, instance);
     instance->view_dispatcher = view_dispatcher_alloc();
 
-    instance->gui = furi_record_open(RECORD_GUI);
+    instance->gui = furry_record_open(RECORD_GUI);
 
     view_dispatcher_enable_queue(instance->view_dispatcher);
     view_dispatcher_set_event_callback_context(instance->view_dispatcher, instance);
@@ -44,10 +44,10 @@ SubBruteState* subbrute_alloc() {
         instance->view_dispatcher, subbrute_tick_event_callback, 100);
 
     //Dialog
-    instance->dialogs = furi_record_open(RECORD_DIALOGS);
+    instance->dialogs = furry_record_open(RECORD_DIALOGS);
 
     // Notifications
-    instance->notifications = furi_record_open(RECORD_NOTIFICATION);
+    instance->notifications = furry_record_open(RECORD_NOTIFICATION);
 
     // Devices
     instance->device = subbrute_device_alloc();
@@ -98,7 +98,7 @@ SubBruteState* subbrute_alloc() {
 }
 
 void subbrute_free(SubBruteState* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     // SubBruteWorker
     subbrute_worker_stop(instance->worker);
@@ -109,7 +109,7 @@ void subbrute_free(SubBruteState* instance) {
 
     // Notifications
     notification_message(instance->notifications, &sequence_blink_stop);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
     instance->notifications = NULL;
 
     // View Main
@@ -137,7 +137,7 @@ void subbrute_free(SubBruteState* instance) {
     view_stack_free(instance->view_stack);
 
     //Dialog
-    furi_record_close(RECORD_DIALOGS);
+    furry_record_close(RECORD_DIALOGS);
     instance->dialogs = NULL;
 
     // Scene manager
@@ -147,24 +147,24 @@ void subbrute_free(SubBruteState* instance) {
     view_dispatcher_free(instance->view_dispatcher);
 
     // GUI
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     instance->gui = NULL;
 
-    furi_string_free(instance->file_path);
+    furry_string_free(instance->file_path);
 
     // The rest
     free(instance);
 }
 
 void subbrute_text_input_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubBruteState* instance = context;
     view_dispatcher_send_custom_event(
         instance->view_dispatcher, SubBruteCustomEventTypeTextEditDone);
 }
 
 void subbrute_popup_closed_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubBruteState* instance = context;
     view_dispatcher_send_custom_event(
         instance->view_dispatcher, SubBruteCustomEventTypePopupClosed);
@@ -181,23 +181,23 @@ int32_t subbrute_app(void* p) {
     scene_manager_next_scene(instance->scene_manager, SubBruteSceneStart);
 
     // Enable power for External CC1101 if it is connected
-    furi_hal_subghz_enable_ext_power();
+    furry_hal_subghz_enable_ext_power();
     // Auto switch to internal radio if external radio is not available
-    furi_delay_ms(15);
-    if(!furi_hal_subghz_check_radio()) {
-        furi_hal_subghz_select_radio_type(SubGhzRadioInternal);
-        furi_hal_subghz_init_radio_type(SubGhzRadioInternal);
+    furry_delay_ms(15);
+    if(!furry_hal_subghz_check_radio()) {
+        furry_hal_subghz_select_radio_type(SubGhzRadioInternal);
+        furry_hal_subghz_init_radio_type(SubGhzRadioInternal);
     }
 
-    furi_hal_power_suppress_charge_enter();
+    furry_hal_power_suppress_charge_enter();
 
     notification_message(instance->notifications, &sequence_display_backlight_on);
     view_dispatcher_run(instance->view_dispatcher);
-    furi_hal_power_suppress_charge_exit();
+    furry_hal_power_suppress_charge_exit();
     // Disable power for External CC1101 if it was enabled and module is connected
-    furi_hal_subghz_disable_ext_power();
+    furry_hal_subghz_disable_ext_power();
     // Reinit SPI handles for internal radio / nfc
-    furi_hal_subghz_init_radio_type(SubGhzRadioInternal);
+    furry_hal_subghz_init_radio_type(SubGhzRadioInternal);
 
     subbrute_free(instance);
 

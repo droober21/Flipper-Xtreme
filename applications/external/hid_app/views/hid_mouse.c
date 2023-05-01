@@ -24,7 +24,7 @@ typedef struct {
 } HidMouseModel;
 
 static void hid_mouse_draw_callback(Canvas* canvas, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     HidMouseModel* model = context;
 
     // Header
@@ -185,7 +185,7 @@ static void hid_mouse_process(HidMouse* hid_mouse, InputEvent* event) {
 }
 
 static bool hid_mouse_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     HidMouse* hid_mouse = context;
     bool consumed = false;
 
@@ -215,18 +215,18 @@ HidMouse* hid_mouse_alloc(Hid* hid) {
 }
 
 void hid_mouse_free(HidMouse* hid_mouse) {
-    furi_assert(hid_mouse);
+    furry_assert(hid_mouse);
     view_free(hid_mouse->view);
     free(hid_mouse);
 }
 
 View* hid_mouse_get_view(HidMouse* hid_mouse) {
-    furi_assert(hid_mouse);
+    furry_assert(hid_mouse);
     return hid_mouse->view;
 }
 
 void hid_mouse_set_connected_status(HidMouse* hid_mouse, bool connected) {
-    furi_assert(hid_mouse);
+    furry_assert(hid_mouse);
     with_view_model(
         hid_mouse->view, HidMouseModel * model, { model->connected = connected; }, true);
 }

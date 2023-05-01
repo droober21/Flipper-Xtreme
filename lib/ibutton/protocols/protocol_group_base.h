@@ -16,7 +16,7 @@ typedef void (*iButtonProtocolGroupRenderFunc)(
     iButtonProtocolGroupData*,
     const iButtonProtocolData*,
     iButtonProtocolLocalId,
-    FuriString*);
+    FurryString*);
 
 typedef bool (*iButtonProtocolGroupIsValidFunc)(
     iButtonProtocolGroupData*,

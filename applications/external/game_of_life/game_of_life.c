@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 
 #include <input/input.h>
@@ -21,7 +21,7 @@ typedef struct {
 typedef struct {
     bool revive;
     int evo;
-    FuriMutex* mutex;
+    FurryMutex* mutex;
 } State;
 
 unsigned char new[TOTAL_PIXELS] = {};
@@ -85,17 +85,17 @@ static void update_field(State* state) {
     }
 }
 
-static void input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     AppEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, 0);
+    furry_message_queue_put(event_queue, &event, 0);
 }
 
 static void render_callback(Canvas* canvas, void* ctx) {
-    //furi_assert(ctx);
+    //furry_assert(ctx);
     State* state = ctx;
-    furi_mutex_acquire(state->mutex, FuriWaitForever);
+    furry_mutex_acquire(state->mutex, FurryWaitForever);
 
     canvas_clear(canvas);
 
@@ -104,22 +104,22 @@ static void render_callback(Canvas* canvas, void* ctx) {
         int y = (int)(i / SCREEN_WIDTH);
         if(fields[current][i] == 1) canvas_draw_dot(canvas, x, y);
     }
-    furi_mutex_release(state->mutex);
+    furry_mutex_release(state->mutex);
 }
 
 int32_t game_of_life_app(void* p) {
     UNUSED(p);
     srand(DWT->CYCCNT);
 
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(1, sizeof(AppEvent));
-    furi_check(event_queue);
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(1, sizeof(AppEvent));
+    furry_check(event_queue);
 
     State* _state = malloc(sizeof(State));
 
-    _state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    _state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!_state->mutex) {
         printf("cannot create mutex\r\n");
-        furi_message_queue_free(event_queue);
+        furry_message_queue_free(event_queue);
         free(_state);
         return 255;
     }
@@ -128,20 +128,20 @@ int32_t game_of_life_app(void* p) {
     view_port_draw_callback_set(view_port, render_callback, _state);
     view_port_input_callback_set(view_port, input_callback, event_queue);
 
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     AppEvent event;
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 25);
-        furi_mutex_acquire(_state->mutex, FuriWaitForever);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 25);
+        furry_mutex_acquire(_state->mutex, FurryWaitForever);
 
-        if(event_status == FuriStatusOk && event.type == EventTypeKey &&
+        if(event_status == FurryStatusOk && event.type == EventTypeKey &&
            event.input.type == InputTypePress) {
             if(event.input.key == InputKeyBack) {
-                // furiac_exit(NULL);
+                // furryac_exit(NULL);
                 processing = false;
-                furi_mutex_release(_state->mutex);
+                furry_mutex_release(_state->mutex);
                 break;
             }
         }
@@ -149,15 +149,15 @@ int32_t game_of_life_app(void* p) {
         update_field(_state);
 
         view_port_update(view_port);
-        furi_mutex_release(_state->mutex);
+        furry_mutex_release(_state->mutex);
     }
 
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_mutex_free(_state->mutex);
+    furry_message_queue_free(event_queue);
+    furry_mutex_free(_state->mutex);
     free(_state);
 
     return 0;

@@ -2,8 +2,8 @@
 
 #include "bt.h"
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #include <gui/gui.h>
 #include <gui/view_port.h>
@@ -60,7 +60,7 @@ struct Bt {
     BtKeysStorage* keys_storage;
     BtStatus status;
     BtProfile profile;
-    FuriMessageQueue* message_queue;
+    FurryMessageQueue* message_queue;
     NotificationApp* notification;
     Gui* gui;
     ViewPort* statusbar_view_port;
@@ -71,8 +71,8 @@ struct Bt {
     Power* power;
     Rpc* rpc;
     RpcSession* rpc_session;
-    FuriEventFlag* rpc_event;
-    FuriEventFlag* api_event;
+    FurryEventFlag* rpc_event;
+    FurryEventFlag* api_event;
     BtStatusChangedCallback status_changed_cb;
     void* status_changed_ctx;
     uint32_t pin;

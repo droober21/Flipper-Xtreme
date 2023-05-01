@@ -37,7 +37,7 @@ static void
 }
 
 static void hid_keynote_vertical_draw_callback(Canvas* canvas, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     HidKeynoteVerticalModel* model = context;
 
     // Header
@@ -172,7 +172,7 @@ static void
 }
 
 static bool hid_keynote_vertical_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     HidKeynoteVertical* hid_keynote_vertical = context;
     bool consumed = false;
 
@@ -206,20 +206,20 @@ HidKeynoteVertical* hid_keynote_vertical_alloc(Hid* hid) {
 }
 
 void hid_keynote_vertical_free(HidKeynoteVertical* hid_keynote_vertical) {
-    furi_assert(hid_keynote_vertical);
+    furry_assert(hid_keynote_vertical);
     view_free(hid_keynote_vertical->view);
     free(hid_keynote_vertical);
 }
 
 View* hid_keynote_vertical_get_view(HidKeynoteVertical* hid_keynote_vertical) {
-    furi_assert(hid_keynote_vertical);
+    furry_assert(hid_keynote_vertical);
     return hid_keynote_vertical->view;
 }
 
 void hid_keynote_vertical_set_connected_status(
     HidKeynoteVertical* hid_keynote_vertical,
     bool connected) {
-    furi_assert(hid_keynote_vertical);
+    furry_assert(hid_keynote_vertical);
     with_view_model(
         hid_keynote_vertical->view,
         HidKeynoteVerticalModel * model,

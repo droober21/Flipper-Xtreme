@@ -85,7 +85,7 @@ void* subghz_protocol_encoder_marantec_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_encoder_marantec_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderMarantec* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -113,7 +113,7 @@ static LevelDuration
         break;
 
     default:
-        furi_crash("SubGhz: ManchesterEncoderResult is incorrect.");
+        furry_crash("SubGhz: ManchesterEncoderResult is incorrect.");
         break;
     }
     return level_duration_make(data.level, data.duration);
@@ -124,7 +124,7 @@ static LevelDuration
  * @param instance Pointer to a SubGhzProtocolEncoderMarantec instance
  */
 static void subghz_protocol_encoder_marantec_get_upload(SubGhzProtocolEncoderMarantec* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     size_t index = 0;
 
     ManchesterEncoderState enc_state;
@@ -190,7 +190,7 @@ static void subghz_protocol_marantec_remote_controller(SubGhzBlockGeneric* insta
 
 SubGhzProtocolStatus
     subghz_protocol_encoder_marantec_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderMarantec* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -245,13 +245,13 @@ void* subghz_protocol_decoder_marantec_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_marantec_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderMarantec* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_marantec_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderMarantec* instance = context;
     manchester_advance(
         instance->manchester_saved_state,
@@ -261,7 +261,7 @@ void subghz_protocol_decoder_marantec_reset(void* context) {
 }
 
 void subghz_protocol_decoder_marantec_feed(void* context, bool level, volatile uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderMarantec* instance = context;
     ManchesterEvent event = ManchesterEventReset;
 
@@ -337,7 +337,7 @@ void subghz_protocol_decoder_marantec_feed(void* context, bool level, volatile u
 }
 
 uint8_t subghz_protocol_decoder_marantec_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderMarantec* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -347,14 +347,14 @@ SubGhzProtocolStatus subghz_protocol_decoder_marantec_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderMarantec* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_marantec_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderMarantec* instance = context;
     return subghz_block_generic_deserialize_check_count_bit(
         &instance->generic,
@@ -362,12 +362,12 @@ SubGhzProtocolStatus
         subghz_protocol_marantec_const.min_count_bit_for_found);
 }
 
-void subghz_protocol_decoder_marantec_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_marantec_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderMarantec* instance = context;
     subghz_protocol_marantec_remote_controller(&instance->generic);
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %db\r\n"
         "Key:0x%lX%08lX\r\n"

@@ -20,19 +20,19 @@
 #define IDLE_TIMEOUT (60000)
 
 static void render_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     PluginState* plugin_state = ctx;
-    if(furi_mutex_acquire(plugin_state->mutex, 25) == FuriStatusOk) {
+    if(furry_mutex_acquire(plugin_state->mutex, 25) == FurryStatusOk) {
         totp_scene_director_render(canvas, plugin_state);
-        furi_mutex_release(plugin_state->mutex);
+        furry_mutex_release(plugin_state->mutex);
     }
 }
 
-static void input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     PluginEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 static bool totp_activate_initial_scene(PluginState* const plugin_state) {
@@ -84,7 +84,7 @@ static bool totp_activate_initial_scene(PluginState* const plugin_state) {
         if(totp_crypto_verify_key(plugin_state)) {
             totp_scene_director_activate_scene(plugin_state, TotpSceneGenerateToken);
         } else {
-            FURI_LOG_E(
+            FURRY_LOG_E(
                 LOGGING_TAG,
                 "Digital signature verification failed. Looks like conf file was created on another flipper and can't be used on any other");
             DialogMessage* message = dialog_message_alloc();
@@ -106,9 +106,9 @@ static bool totp_activate_initial_scene(PluginState* const plugin_state) {
 }
 
 static bool totp_plugin_state_init(PluginState* const plugin_state) {
-    plugin_state->gui = furi_record_open(RECORD_GUI);
-    plugin_state->notification_app = furi_record_open(RECORD_NOTIFICATION);
-    plugin_state->dialogs_app = furi_record_open(RECORD_DIALOGS);
+    plugin_state->gui = furry_record_open(RECORD_GUI);
+    plugin_state->notification_app = furry_record_open(RECORD_NOTIFICATION);
+    plugin_state->dialogs_app = furry_record_open(RECORD_DIALOGS);
     memset(&plugin_state->iv[0], 0, TOTP_IV_SIZE);
 
     if(!totp_config_file_load(plugin_state)) {
@@ -116,7 +116,7 @@ static bool totp_plugin_state_init(PluginState* const plugin_state) {
         return false;
     }
 
-    plugin_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    plugin_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
 
 #ifdef TOTP_BADBT_TYPE_ENABLED
     if(plugin_state->automation_method & AutomationMethodBadBt) {
@@ -130,9 +130,9 @@ static bool totp_plugin_state_init(PluginState* const plugin_state) {
 }
 
 static void totp_plugin_state_free(PluginState* plugin_state) {
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_record_close(RECORD_DIALOGS);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_DIALOGS);
 
     totp_config_file_close(plugin_state);
 
@@ -147,17 +147,17 @@ static void totp_plugin_state_free(PluginState* plugin_state) {
     }
 #endif
 
-    furi_mutex_free(plugin_state->mutex);
+    furry_mutex_free(plugin_state->mutex);
     free(plugin_state);
 }
 
 int32_t totp_app() {
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(PluginEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(PluginEvent));
     PluginState* plugin_state = malloc(sizeof(PluginState));
-    furi_check(plugin_state != NULL);
+    furry_check(plugin_state != NULL);
 
     if(!totp_plugin_state_init(plugin_state)) {
-        FURI_LOG_E(LOGGING_TAG, "App state initialization failed\r\n");
+        FURRY_LOG_E(LOGGING_TAG, "App state initialization failed\r\n");
         totp_plugin_state_free(plugin_state);
         return 254;
     }
@@ -165,7 +165,7 @@ int32_t totp_app() {
     TotpCliContext* cli_context = totp_cli_register_command_handler(plugin_state, event_queue);
 
     if(!totp_activate_initial_scene(plugin_state)) {
-        FURI_LOG_E(LOGGING_TAG, "An error ocurred during activating initial scene\r\n");
+        FURRY_LOG_E(LOGGING_TAG, "An error ocurred during activating initial scene\r\n");
         totp_plugin_state_free(plugin_state);
         return 253;
     }
@@ -180,14 +180,14 @@ int32_t totp_app() {
 
     PluginEvent event;
     bool processing = true;
-    uint32_t last_user_interaction_time = furi_get_tick();
+    uint32_t last_user_interaction_time = furry_get_tick();
     while(processing) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 100);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 100);
 
-        if(furi_mutex_acquire(plugin_state->mutex, FuriWaitForever) == FuriStatusOk) {
-            if(event_status == FuriStatusOk) {
+        if(furry_mutex_acquire(plugin_state->mutex, FurryWaitForever) == FurryStatusOk) {
+            if(event_status == FurryStatusOk) {
                 if(event.type == EventTypeKey) {
-                    last_user_interaction_time = furi_get_tick();
+                    last_user_interaction_time = furry_get_tick();
                 }
 
                 if(event.type == EventForceCloseApp) {
@@ -198,12 +198,12 @@ int32_t totp_app() {
             } else if(
                 plugin_state->pin_set && plugin_state->current_scene != TotpSceneAuthentication &&
                 plugin_state->current_scene != TotpSceneStandby &&
-                furi_get_tick() - last_user_interaction_time > IDLE_TIMEOUT) {
+                furry_get_tick() - last_user_interaction_time > IDLE_TIMEOUT) {
                 totp_scene_director_activate_scene(plugin_state, TotpSceneAuthentication);
             }
 
             view_port_update(view_port);
-            furi_mutex_release(plugin_state->mutex);
+            furry_mutex_release(plugin_state->mutex);
         }
     }
 
@@ -213,7 +213,7 @@ int32_t totp_app() {
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(plugin_state->gui, view_port);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
+    furry_message_queue_free(event_queue);
     totp_plugin_state_free(plugin_state);
     return 0;
 }

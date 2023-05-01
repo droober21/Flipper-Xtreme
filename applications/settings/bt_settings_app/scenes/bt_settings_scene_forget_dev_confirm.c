@@ -1,9 +1,9 @@
 #include "../bt_settings_app.h"
-#include <furi_hal_bt.h>
+#include <furry_hal_bt.h>
 #include <applications/main/bad_kb/bad_kb_settings_filename.h>
 
 void bt_settings_scene_forget_dev_confirm_dialog_callback(DialogExResult result, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     BtSettingsApp* app = context;
     view_dispatcher_send_custom_event(app->view_dispatcher, result);
 }

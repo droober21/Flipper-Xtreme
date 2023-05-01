@@ -18,7 +18,7 @@ extern "C" {
  * @param [in] data_size input data size
  */
 void pretty_format_bytes_hex_canonical(
-    FuriString* result,
+    FurryString* result,
     size_t num_places,
     const char* line_prefix,
     const uint8_t* data,

@@ -11,23 +11,23 @@ void pocsag_pager_scene_about_widget_callback(GuiButtonType result, InputType ty
 void pocsag_pager_scene_about_on_enter(void* context) {
     POCSAGPagerApp* app = context;
 
-    FuriString* temp_str;
-    temp_str = furi_string_alloc();
-    furi_string_printf(temp_str, "\e#%s\n", "Information");
+    FurryString* temp_str;
+    temp_str = furry_string_alloc();
+    furry_string_printf(temp_str, "\e#%s\n", "Information");
 
-    furi_string_cat_printf(temp_str, "Version: %s\n", PCSG_VERSION_APP);
-    furi_string_cat_printf(temp_str, "Developed by:\n%s\n\n", PCSG_DEVELOPED);
-    furi_string_cat_printf(temp_str, "Github: %s\n\n", PCSG_GITHUB);
+    furry_string_cat_printf(temp_str, "Version: %s\n", PCSG_VERSION_APP);
+    furry_string_cat_printf(temp_str, "Developed by:\n%s\n\n", PCSG_DEVELOPED);
+    furry_string_cat_printf(temp_str, "Github: %s\n\n", PCSG_GITHUB);
 
-    furi_string_cat_printf(temp_str, "\e#%s\n", "Description");
-    furi_string_cat_printf(temp_str, "Receiving POCSAG Pager \nmessages\n\n");
+    furry_string_cat_printf(temp_str, "\e#%s\n", "Description");
+    furry_string_cat_printf(temp_str, "Receiving POCSAG Pager \nmessages\n\n");
 
-    furi_string_cat_printf(temp_str, "Supported protocols:\n");
+    furry_string_cat_printf(temp_str, "Supported protocols:\n");
     size_t i = 0;
     const char* protocol_name =
         subghz_environment_get_protocol_name_registry(app->txrx->environment, i++);
     do {
-        furi_string_cat_printf(temp_str, "%s\n", protocol_name);
+        furry_string_cat_printf(temp_str, "%s\n", protocol_name);
         protocol_name = subghz_environment_get_protocol_name_registry(app->txrx->environment, i++);
     } while(protocol_name != NULL);
 
@@ -51,8 +51,8 @@ void pocsag_pager_scene_about_on_enter(void* context) {
         AlignBottom,
         "\e#\e!        POCSAG Pager       \e!\n",
         false);
-    widget_add_text_scroll_element(app->widget, 0, 16, 128, 50, furi_string_get_cstr(temp_str));
-    furi_string_free(temp_str);
+    widget_add_text_scroll_element(app->widget, 0, 16, 128, 50, furry_string_get_cstr(temp_str));
+    furry_string_free(temp_str);
 
     view_dispatcher_switch_to_view(app->view_dispatcher, POCSAGPagerViewWidget);
 }

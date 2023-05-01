@@ -1,23 +1,23 @@
 #include "u2f_app_i.h"
 #include "u2f_data.h"
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <storage/storage.h>
 
 static bool u2f_app_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     U2fApp* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool u2f_app_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     U2fApp* app = context;
     return scene_manager_handle_back_event(app->scene_manager);
 }
 
 static void u2f_app_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     U2fApp* app = context;
     scene_manager_handle_tick_event(app->scene_manager);
 }
@@ -25,13 +25,13 @@ static void u2f_app_tick_event_callback(void* context) {
 U2fApp* u2f_app_alloc() {
     U2fApp* app = malloc(sizeof(U2fApp));
 
-    app->gui = furi_record_open(RECORD_GUI);
-    app->notifications = furi_record_open(RECORD_NOTIFICATION);
+    app->gui = furry_record_open(RECORD_GUI);
+    app->notifications = furry_record_open(RECORD_NOTIFICATION);
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     storage_common_copy(storage, U2F_CNT_OLD_FILE, U2F_CNT_FILE);
     storage_common_copy(storage, U2F_KEY_OLD_FILE, U2F_KEY_FILE);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     app->view_dispatcher = view_dispatcher_alloc();
     app->scene_manager = scene_manager_alloc(&u2f_scene_handlers, app);
@@ -54,7 +54,7 @@ U2fApp* u2f_app_alloc() {
     view_dispatcher_add_view(
         app->view_dispatcher, U2fAppViewMain, u2f_view_get_view(app->u2f_view));
 
-    if(furi_hal_usb_is_locked()) {
+    if(furry_hal_usb_is_locked()) {
         app->error = U2fAppErrorCloseRpc;
         scene_manager_next_scene(app->scene_manager, U2fSceneError);
     } else {
@@ -70,7 +70,7 @@ U2fApp* u2f_app_alloc() {
 }
 
 void u2f_app_free(U2fApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // Views
     view_dispatcher_remove_view(app->view_dispatcher, U2fAppViewMain);
@@ -85,8 +85,8 @@ void u2f_app_free(U2fApp* app) {
     scene_manager_free(app->scene_manager);
 
     // Close records
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
 
     free(app);
 }

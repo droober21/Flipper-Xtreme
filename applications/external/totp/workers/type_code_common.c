@@ -1,6 +1,6 @@
 #include "type_code_common.h"
-#include <furi_hal_usb_hid.h>
-#include <furi/core/kernel.h>
+#include <furry_hal_usb_hid.h>
+#include <furry/core/kernel.h>
 #include "../../services/convert/convert.h"
 
 static const uint8_t hid_number_keys[] = {
@@ -35,7 +35,7 @@ static void totp_type_code_worker_press_key(
     TOTP_AUTOMATION_KEY_HANDLER key_release_fn,
     TokenAutomationFeature features) {
     (*key_press_fn)(key);
-    furi_delay_ms(get_keypress_delay(features));
+    furry_delay_ms(get_keypress_delay(features));
     (*key_release_fn)(key);
 }
 
@@ -45,7 +45,7 @@ void totp_type_code_worker_execute_automation(
     const char* code_buffer,
     uint8_t code_buffer_size,
     TokenAutomationFeature features) {
-    furi_delay_ms(500);
+    furry_delay_ms(500);
     uint8_t i = 0;
     totp_type_code_worker_press_key(
         HID_KEYBOARD_CAPS_LOCK, key_press_fn, key_release_fn, features);
@@ -60,18 +60,18 @@ void totp_type_code_worker_execute_automation(
 
         uint8_t hid_kb_key = hid_number_keys[char_index];
         totp_type_code_worker_press_key(hid_kb_key, key_press_fn, key_release_fn, features);
-        furi_delay_ms(get_keystroke_delay(features));
+        furry_delay_ms(get_keystroke_delay(features));
         i++;
     }
 
     if(features & TokenAutomationFeatureEnterAtTheEnd) {
-        furi_delay_ms(get_keystroke_delay(features));
+        furry_delay_ms(get_keystroke_delay(features));
         totp_type_code_worker_press_key(
             HID_KEYBOARD_RETURN, key_press_fn, key_release_fn, features);
     }
 
     if(features & TokenAutomationFeatureTabAtTheEnd) {
-        furi_delay_ms(get_keystroke_delay(features));
+        furry_delay_ms(get_keystroke_delay(features));
         totp_type_code_worker_press_key(HID_KEYBOARD_TAB, key_press_fn, key_release_fn, features);
     }
 

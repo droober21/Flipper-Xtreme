@@ -1,22 +1,22 @@
 #include "gpio_app_i.h"
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 static bool gpio_app_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     GpioApp* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool gpio_app_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     GpioApp* app = context;
     return scene_manager_handle_back_event(app->scene_manager);
 }
 
 static void gpio_app_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     GpioApp* app = context;
     scene_manager_handle_tick_event(app->scene_manager);
 }
@@ -24,7 +24,7 @@ static void gpio_app_tick_event_callback(void* context) {
 GpioApp* gpio_app_alloc() {
     GpioApp* app = malloc(sizeof(GpioApp));
 
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
 
     app->view_dispatcher = view_dispatcher_alloc();
     app->scene_manager = scene_manager_alloc(&gpio_scene_handlers, app);
@@ -40,7 +40,7 @@ GpioApp* gpio_app_alloc() {
 
     view_dispatcher_attach_to_gui(app->view_dispatcher, app->gui, ViewDispatcherTypeFullscreen);
 
-    app->notifications = furi_record_open(RECORD_NOTIFICATION);
+    app->notifications = furry_record_open(RECORD_NOTIFICATION);
 
     app->var_item_list = variable_item_list_alloc();
     view_dispatcher_add_view(
@@ -73,7 +73,7 @@ GpioApp* gpio_app_alloc() {
 }
 
 void gpio_app_free(GpioApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // Views
     view_dispatcher_remove_view(app->view_dispatcher, GpioAppViewVarItemList);
@@ -93,8 +93,8 @@ void gpio_app_free(GpioApp* app) {
     scene_manager_free(app->scene_manager);
 
     // Close records
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
 
     free(app);
 }

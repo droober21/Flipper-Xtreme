@@ -48,23 +48,23 @@ bool file_stream_open(
     const char* path,
     FS_AccessMode access_mode,
     FS_OpenMode open_mode) {
-    furi_assert(_stream);
+    furry_assert(_stream);
     FileStream* stream = (FileStream*)_stream;
-    furi_check(stream->stream_base.vtable == &file_stream_vtable);
+    furry_check(stream->stream_base.vtable == &file_stream_vtable);
     return storage_file_open(stream->file, path, access_mode, open_mode);
 }
 
 bool file_stream_close(Stream* _stream) {
-    furi_assert(_stream);
+    furry_assert(_stream);
     FileStream* stream = (FileStream*)_stream;
-    furi_check(stream->stream_base.vtable == &file_stream_vtable);
+    furry_check(stream->stream_base.vtable == &file_stream_vtable);
     return storage_file_close(stream->file);
 }
 
 FS_Error file_stream_get_error(Stream* _stream) {
-    furi_assert(_stream);
+    furry_assert(_stream);
     FileStream* stream = (FileStream*)_stream;
-    furi_check(stream->stream_base.vtable == &file_stream_vtable);
+    furry_check(stream->stream_base.vtable == &file_stream_vtable);
     return storage_file_get_error(stream->file);
 }
 
@@ -173,18 +173,18 @@ static bool file_stream_delete_and_insert(
     Stream* scratch_stream = file_stream_alloc(_stream->storage);
 
     // TODO: we need something like "storage_open_tmpfile and storage_close_tmpfile"
-    FuriString* scratch_name;
-    FuriString* tmp_name;
-    tmp_name = furi_string_alloc();
+    FurryString* scratch_name;
+    FurryString* tmp_name;
+    tmp_name = furry_string_alloc();
     storage_get_next_filename(
         _stream->storage, STORAGE_ANY_PATH_PREFIX, ".scratch", ".pad", tmp_name, 255);
-    scratch_name = furi_string_alloc_printf(ANY_PATH("%s.pad"), furi_string_get_cstr(tmp_name));
-    furi_string_free(tmp_name);
+    scratch_name = furry_string_alloc_printf(ANY_PATH("%s.pad"), furry_string_get_cstr(tmp_name));
+    furry_string_free(tmp_name);
 
     do {
         if(!file_stream_open(
                scratch_stream,
-               furi_string_get_cstr(scratch_name),
+               furry_string_get_cstr(scratch_name),
                FSAM_READ_WRITE,
                FSOM_CREATE_NEW))
             break;
@@ -228,8 +228,8 @@ static bool file_stream_delete_and_insert(
     } while(false);
 
     stream_free(scratch_stream);
-    storage_common_remove(_stream->storage, furi_string_get_cstr(scratch_name));
-    furi_string_free(scratch_name);
+    storage_common_remove(_stream->storage, furry_string_get_cstr(scratch_name));
+    furry_string_free(scratch_name);
 
     return result;
 }

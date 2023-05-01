@@ -3,9 +3,9 @@
 #include "dolphin_i.h"
 #include "portmacro.h"
 #include "projdefs.h"
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include <stdint.h>
-#include <furi.h>
+#include <furry.h>
 #include <xtreme.h>
 #define DOLPHIN_LOCK_EVENT_FLAG (0x1)
 
@@ -15,7 +15,7 @@
 static void dolphin_update_clear_limits_timer_period(Dolphin* dolphin);
 
 void dolphin_deed(Dolphin* dolphin, DolphinDeed deed) {
-    furi_assert(dolphin);
+    furry_assert(dolphin);
     DolphinEvent event;
     event.type = DolphinEventTypeDeed;
     event.deed = deed;
@@ -23,7 +23,7 @@ void dolphin_deed(Dolphin* dolphin, DolphinDeed deed) {
 }
 
 DolphinStats dolphin_stats(Dolphin* dolphin) {
-    furi_assert(dolphin);
+    furry_assert(dolphin);
 
     DolphinStats stats;
     DolphinEvent event;
@@ -37,7 +37,7 @@ DolphinStats dolphin_stats(Dolphin* dolphin) {
 }
 
 void dolphin_flush(Dolphin* dolphin) {
-    furi_assert(dolphin);
+    furry_assert(dolphin);
 
     DolphinEvent event;
     event.type = DolphinEventTypeFlush;
@@ -47,7 +47,7 @@ void dolphin_flush(Dolphin* dolphin) {
 
 void dolphin_butthurt_timer_callback(TimerHandle_t xTimer) {
     Dolphin* dolphin = pvTimerGetTimerID(xTimer);
-    furi_assert(dolphin);
+    furry_assert(dolphin);
 
     DolphinEvent event;
     event.type = DolphinEventTypeIncreaseButthurt;
@@ -56,7 +56,7 @@ void dolphin_butthurt_timer_callback(TimerHandle_t xTimer) {
 
 void dolphin_flush_timer_callback(TimerHandle_t xTimer) {
     Dolphin* dolphin = pvTimerGetTimerID(xTimer);
-    furi_assert(dolphin);
+    furry_assert(dolphin);
 
     DolphinEvent event;
     event.type = DolphinEventTypeFlush;
@@ -65,7 +65,7 @@ void dolphin_flush_timer_callback(TimerHandle_t xTimer) {
 
 void dolphin_clear_limits_timer_callback(TimerHandle_t xTimer) {
     Dolphin* dolphin = pvTimerGetTimerID(xTimer);
-    furi_assert(dolphin);
+    furry_assert(dolphin);
 
     xTimerChangePeriod(dolphin->clear_limits_timer, HOURS_IN_TICKS(24), portMAX_DELAY);
 
@@ -78,8 +78,8 @@ Dolphin* dolphin_alloc() {
     Dolphin* dolphin = malloc(sizeof(Dolphin));
 
     dolphin->state = dolphin_state_alloc();
-    dolphin->event_queue = furi_message_queue_alloc(8, sizeof(DolphinEvent));
-    dolphin->pubsub = furi_pubsub_alloc();
+    dolphin->event_queue = furry_message_queue_alloc(8, sizeof(DolphinEvent));
+    dolphin->pubsub = furry_pubsub_alloc();
     int32_t butthurt = XTREME_SETTINGS()->butthurt_timer;
     dolphin->butthurt_timer = xTimerCreate(
         NULL,
@@ -96,55 +96,55 @@ Dolphin* dolphin_alloc() {
 }
 
 void dolphin_free(Dolphin* dolphin) {
-    furi_assert(dolphin);
+    furry_assert(dolphin);
 
     dolphin_state_free(dolphin->state);
-    furi_message_queue_free(dolphin->event_queue);
+    furry_message_queue_free(dolphin->event_queue);
 
     free(dolphin);
 }
 
 void dolphin_event_send_async(Dolphin* dolphin, DolphinEvent* event) {
-    furi_assert(dolphin);
-    furi_assert(event);
+    furry_assert(dolphin);
+    furry_assert(event);
     event->flag = NULL;
-    furi_check(
-        furi_message_queue_put(dolphin->event_queue, event, FuriWaitForever) == FuriStatusOk);
+    furry_check(
+        furry_message_queue_put(dolphin->event_queue, event, FurryWaitForever) == FurryStatusOk);
 }
 
 void dolphin_event_send_wait(Dolphin* dolphin, DolphinEvent* event) {
-    furi_assert(dolphin);
-    furi_assert(event);
-    event->flag = furi_event_flag_alloc();
-    furi_check(event->flag);
-    furi_check(
-        furi_message_queue_put(dolphin->event_queue, event, FuriWaitForever) == FuriStatusOk);
-    furi_check(
-        furi_event_flag_wait(
-            event->flag, DOLPHIN_LOCK_EVENT_FLAG, FuriFlagWaitAny, FuriWaitForever) ==
+    furry_assert(dolphin);
+    furry_assert(event);
+    event->flag = furry_event_flag_alloc();
+    furry_check(event->flag);
+    furry_check(
+        furry_message_queue_put(dolphin->event_queue, event, FurryWaitForever) == FurryStatusOk);
+    furry_check(
+        furry_event_flag_wait(
+            event->flag, DOLPHIN_LOCK_EVENT_FLAG, FurryFlagWaitAny, FurryWaitForever) ==
         DOLPHIN_LOCK_EVENT_FLAG);
-    furi_event_flag_free(event->flag);
+    furry_event_flag_free(event->flag);
 }
 
 void dolphin_event_release(Dolphin* dolphin, DolphinEvent* event) {
     UNUSED(dolphin);
     if(event->flag) {
-        furi_event_flag_set(event->flag, DOLPHIN_LOCK_EVENT_FLAG);
+        furry_event_flag_set(event->flag, DOLPHIN_LOCK_EVENT_FLAG);
     }
 }
 
-FuriPubSub* dolphin_get_pubsub(Dolphin* dolphin) {
+FurryPubSub* dolphin_get_pubsub(Dolphin* dolphin) {
     return dolphin->pubsub;
 }
 
 static void dolphin_update_clear_limits_timer_period(Dolphin* dolphin) {
-    furi_assert(dolphin);
+    furry_assert(dolphin);
     TickType_t now_ticks = xTaskGetTickCount();
     TickType_t timer_expires_at = xTimerGetExpiryTime(dolphin->clear_limits_timer);
 
     if((timer_expires_at - now_ticks) > HOURS_IN_TICKS(0.1)) {
-        FuriHalRtcDateTime date;
-        furi_hal_rtc_get_datetime(&date);
+        FurryHalRtcDateTime date;
+        furry_hal_rtc_get_datetime(&date);
         TickType_t now_time_in_ms = ((date.hour * 60 + date.minute) * 60 + date.second) * 1000;
         TickType_t time_to_clear_limits = 0;
 
@@ -161,13 +161,13 @@ static void dolphin_update_clear_limits_timer_period(Dolphin* dolphin) {
 int32_t dolphin_srv(void* p) {
     UNUSED(p);
 
-    if(!furi_hal_is_normal_boot()) {
-        FURI_LOG_W(TAG, "Skipping start in special boot mode");
+    if(!furry_hal_is_normal_boot()) {
+        FURRY_LOG_W(TAG, "Skipping start in special boot mode");
         return 0;
     }
 
     Dolphin* dolphin = dolphin_alloc();
-    furi_record_create(RECORD_DOLPHIN, dolphin);
+    furry_record_create(RECORD_DOLPHIN, dolphin);
 
     dolphin_state_load(dolphin->state);
     xTimerReset(dolphin->butthurt_timer, portMAX_DELAY);
@@ -176,12 +176,12 @@ int32_t dolphin_srv(void* p) {
 
     DolphinEvent event;
     while(1) {
-        if(furi_message_queue_get(dolphin->event_queue, &event, HOURS_IN_TICKS(1)) ==
-           FuriStatusOk) {
+        if(furry_message_queue_get(dolphin->event_queue, &event, HOURS_IN_TICKS(1)) ==
+           FurryStatusOk) {
             if(event.type == DolphinEventTypeDeed) {
                 dolphin_state_on_deed(dolphin->state, event.deed);
                 DolphinPubsubEvent event = DolphinPubsubEventUpdate;
-                furi_pubsub_publish(dolphin->pubsub, &event);
+                furry_pubsub_publish(dolphin->pubsub, &event);
                 xTimerReset(dolphin->butthurt_timer, portMAX_DELAY);
                 xTimerReset(dolphin->flush_timer, portMAX_DELAY);
             } else if(event.type == DolphinEventTypeStats) {
@@ -192,14 +192,14 @@ int32_t dolphin_srv(void* p) {
                 event.stats->level_up_is_pending =
                     !dolphin_state_xp_to_levelup(dolphin->state->data.icounter);
             } else if(event.type == DolphinEventTypeFlush) {
-                FURI_LOG_I(TAG, "Flush stats");
+                FURRY_LOG_I(TAG, "Flush stats");
                 dolphin_state_save(dolphin->state);
             } else if(event.type == DolphinEventTypeClearLimits) {
-                FURI_LOG_I(TAG, "Clear limits");
+                FURRY_LOG_I(TAG, "Clear limits");
                 dolphin_state_clear_limits(dolphin->state);
                 dolphin_state_save(dolphin->state);
             } else if(event.type == DolphinEventTypeIncreaseButthurt) {
-                FURI_LOG_I(TAG, "Increase butthurt");
+                FURRY_LOG_I(TAG, "Increase butthurt");
                 dolphin_state_butthurted(dolphin->state);
                 dolphin_state_save(dolphin->state);
             }

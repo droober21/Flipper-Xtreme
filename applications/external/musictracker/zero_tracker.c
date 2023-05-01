@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <gui/view_dispatcher.h>
 #include <notification/notification_messages.h>
@@ -475,18 +475,18 @@ Song song = {
 };
 
 void tracker_message(TrackerMessage message, void* context) {
-    FuriMessageQueue* queue = context;
-    furi_assert(queue);
-    furi_message_queue_put(queue, &message, 0);
+    FurryMessageQueue* queue = context;
+    furry_assert(queue);
+    furry_message_queue_put(queue, &message, 0);
 }
 
 int32_t zero_tracker_app(void* p) {
     UNUSED(p);
 
-    NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+    NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
     notification_message(notification, &sequence_display_backlight_enforce_on);
 
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     ViewDispatcher* view_dispatcher = view_dispatcher_alloc();
     TrackerView* tracker_view = tracker_view_alloc();
     tracker_view_set_song(tracker_view, &song);
@@ -494,7 +494,7 @@ int32_t zero_tracker_app(void* p) {
     view_dispatcher_attach_to_gui(view_dispatcher, gui, ViewDispatcherTypeFullscreen);
     view_dispatcher_switch_to_view(view_dispatcher, 0);
 
-    FuriMessageQueue* queue = furi_message_queue_alloc(8, sizeof(TrackerMessage));
+    FurryMessageQueue* queue = furry_message_queue_alloc(8, sizeof(TrackerMessage));
     Tracker* tracker = tracker_alloc();
     tracker_set_message_callback(tracker, tracker_message, queue);
     tracker_set_song(tracker, &song);
@@ -502,16 +502,16 @@ int32_t zero_tracker_app(void* p) {
 
     while(1) {
         TrackerMessage message;
-        FuriStatus status = furi_message_queue_get(queue, &message, portMAX_DELAY);
-        if(status == FuriStatusOk) {
+        FurryStatus status = furry_message_queue_get(queue, &message, portMAX_DELAY);
+        if(status == FurryStatusOk) {
             if(message.type == TrackerPositionChanged) {
                 uint8_t order_list_index = message.data.position.order_list_index;
                 uint8_t row = message.data.position.row;
                 uint8_t pattern = song.order_list[order_list_index];
                 tracker_view_set_position(tracker_view, order_list_index, row);
-                FURI_LOG_I("Tracker", "O:%d P:%d R:%d", order_list_index, pattern, row);
+                FURRY_LOG_I("Tracker", "O:%d P:%d R:%d", order_list_index, pattern, row);
             } else if(message.type == TrackerEndOfSong) {
-                FURI_LOG_I("Tracker", "End of song");
+                FURRY_LOG_I("Tracker", "End of song");
                 break;
             }
         }
@@ -519,9 +519,9 @@ int32_t zero_tracker_app(void* p) {
 
     tracker_stop(tracker);
     tracker_free(tracker);
-    furi_message_queue_free(queue);
+    furry_message_queue_free(queue);
 
-    furi_delay_ms(500);
+    furry_delay_ms(500);
 
     view_dispatcher_remove_view(view_dispatcher, 0);
     tracker_view_free(tracker_view);
@@ -529,8 +529,8 @@ int32_t zero_tracker_app(void* p) {
 
     notification_message(notification, &sequence_display_backlight_enforce_auto);
 
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_GUI);
 
     return 0;
 }

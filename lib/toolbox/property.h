@@ -17,8 +17,8 @@ extern "C" {
 typedef void (*PropertyValueCallback)(const char* key, const char* value, bool last, void* context);
 
 typedef struct {
-    FuriString* key; /**< key string buffer, must be initialised before use */
-    FuriString* value; /**< value string buffer, must be initialised before use */
+    FurryString* key; /**< key string buffer, must be initialised before use */
+    FurryString* value; /**< value string buffer, must be initialised before use */
     PropertyValueCallback out; /**< output callback function */
     char sep; /**< separator character between key parts */
     bool last; /**< flag to indicate last element */

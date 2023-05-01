@@ -2,7 +2,7 @@
 #include <xtreme.h>
 
 static void u2f_scene_error_event_callback(GuiButtonType result, InputType type, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     U2fApp* app = context;
 
     if((result == GuiButtonTypeLeft) && (type == InputTypeShort)) {

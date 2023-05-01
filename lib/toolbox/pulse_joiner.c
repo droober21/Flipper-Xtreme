@@ -1,5 +1,5 @@
 #include "pulse_joiner.h"
-#include <furi.h>
+#include <furry.h>
 
 #define PULSE_MAX_COUNT 6
 
@@ -31,7 +31,7 @@ void pulse_joiner_free(PulseJoiner* pulse_joiner) {
 
 bool pulse_joiner_push_pulse(PulseJoiner* pulse_joiner, bool polarity, size_t period, size_t pulse) {
     bool result = false;
-    furi_check((pulse_joiner->pulse_index + 1) < PULSE_MAX_COUNT);
+    furry_check((pulse_joiner->pulse_index + 1) < PULSE_MAX_COUNT);
 
     if(polarity == false && pulse_joiner->pulse_index == 0) {
         // first negative pulse is omitted
@@ -71,7 +71,7 @@ bool pulse_joiner_push_pulse(PulseJoiner* pulse_joiner, bool polarity, size_t pe
 }
 
 void pulse_joiner_pop_pulse(PulseJoiner* pulse_joiner, size_t* period, size_t* pulse) {
-    furi_check(pulse_joiner->pulse_index <= (PULSE_MAX_COUNT + 1));
+    furry_check(pulse_joiner->pulse_index <= (PULSE_MAX_COUNT + 1));
 
     uint16_t tmp_period = 0;
     uint16_t tmp_pulse = 0;

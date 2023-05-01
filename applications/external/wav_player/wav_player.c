@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <cli/cli.h>
 #include <gui/gui.h>
 #include <stm32wbxx_ll_dma.h>
@@ -19,11 +19,11 @@
 #define WAVPLAYER_FOLDER "/ext/wav_player"
 
 static bool open_wav_stream(Stream* stream) {
-    DialogsApp* dialogs = furi_record_open(RECORD_DIALOGS);
+    DialogsApp* dialogs = furry_record_open(RECORD_DIALOGS);
     bool result = false;
-    FuriString* path;
-    path = furi_string_alloc();
-    furi_string_set(path, WAVPLAYER_FOLDER);
+    FurryString* path;
+    path = furry_string_alloc();
+    furry_string_set(path, WAVPLAYER_FOLDER);
 
     DialogsFileBrowserOptions browser_options;
     dialog_file_browser_set_basic_options(&browser_options, ".wav", &I_music_10px);
@@ -32,15 +32,15 @@ static bool open_wav_stream(Stream* stream) {
 
     bool ret = dialog_file_browser_show(dialogs, path, path, &browser_options);
 
-    furi_record_close(RECORD_DIALOGS);
+    furry_record_close(RECORD_DIALOGS);
     if(ret) {
-        if(!file_stream_open(stream, furi_string_get_cstr(path), FSAM_READ, FSOM_OPEN_EXISTING)) {
-            FURI_LOG_E(TAG, "Cannot open file \"%s\"", furi_string_get_cstr(path));
+        if(!file_stream_open(stream, furry_string_get_cstr(path), FSAM_READ, FSOM_OPEN_EXISTING)) {
+            FURRY_LOG_E(TAG, "Cannot open file \"%s\"", furry_string_get_cstr(path));
         } else {
             result = true;
         }
     }
-    furi_string_free(path);
+    furry_string_free(path);
     return result;
 }
 
@@ -60,14 +60,14 @@ typedef struct {
 } WavPlayerEvent;
 
 static void wav_player_dma_isr(void* ctx) {
-    FuriMessageQueue* event_queue = ctx;
+    FurryMessageQueue* event_queue = ctx;
 
     // half of transfer
     if(LL_DMA_IsActiveFlag_HT1(DMA1)) {
         LL_DMA_ClearFlag_HT1(DMA1);
         // fill first half of buffer
         WavPlayerEvent event = {.type = WavPlayerEventHalfTransfer};
-        furi_message_queue_put(event_queue, &event, 0);
+        furry_message_queue_put(event_queue, &event, 0);
     }
 
     // transfer complete
@@ -75,7 +75,7 @@ static void wav_player_dma_isr(void* ctx) {
         LL_DMA_ClearFlag_TC1(DMA1);
         // fill second half of buffer
         WavPlayerEvent event = {.type = WavPlayerEventFullTransfer};
-        furi_message_queue_put(event_queue, &event, 0);
+        furry_message_queue_put(event_queue, &event, 0);
     }
 }
 
@@ -83,17 +83,17 @@ static WavPlayerApp* app_alloc() {
     WavPlayerApp* app = malloc(sizeof(WavPlayerApp));
     app->samples_count_half = 1024 * 4;
     app->samples_count = app->samples_count_half * 2;
-    app->storage = furi_record_open(RECORD_STORAGE);
+    app->storage = furry_record_open(RECORD_STORAGE);
     app->stream = file_stream_alloc(app->storage);
     app->parser = wav_parser_alloc();
     app->sample_buffer = malloc(sizeof(uint16_t) * app->samples_count);
     app->tmp_buffer = malloc(sizeof(uint8_t) * app->samples_count);
-    app->queue = furi_message_queue_alloc(10, sizeof(WavPlayerEvent));
+    app->queue = furry_message_queue_alloc(10, sizeof(WavPlayerEvent));
 
     app->volume = 10.0f;
     app->play = true;
 
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
     app->view_dispatcher = view_dispatcher_alloc();
     app->view = wav_player_view_alloc();
 
@@ -101,7 +101,7 @@ static WavPlayerApp* app_alloc() {
     view_dispatcher_attach_to_gui(app->view_dispatcher, app->gui, ViewDispatcherTypeFullscreen);
     view_dispatcher_switch_to_view(app->view_dispatcher, 0);
 
-    app->notification = furi_record_open(RECORD_NOTIFICATION);
+    app->notification = furry_record_open(RECORD_NOTIFICATION);
     notification_message(app->notification, &sequence_display_backlight_enforce_on);
 
     return app;
@@ -111,17 +111,17 @@ static void app_free(WavPlayerApp* app) {
     view_dispatcher_remove_view(app->view_dispatcher, 0);
     view_dispatcher_free(app->view_dispatcher);
     wav_player_view_free(app->view);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
-    furi_message_queue_free(app->queue);
+    furry_message_queue_free(app->queue);
     free(app->tmp_buffer);
     free(app->sample_buffer);
     wav_parser_free(app->parser);
     stream_free(app->stream);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     notification_message(app->notification, &sequence_display_backlight_enforce_auto);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
     free(app);
 }
 
@@ -308,33 +308,33 @@ static bool fill_data(WavPlayerApp* app, size_t index) {
 }
 
 static void ctrl_callback(WavPlayerCtrl ctrl, void* ctx) {
-    FuriMessageQueue* event_queue = ctx;
+    FurryMessageQueue* event_queue = ctx;
     WavPlayerEvent event;
 
     switch(ctrl) {
     case WavPlayerCtrlVolUp:
         event.type = WavPlayerEventCtrlVolUp;
-        furi_message_queue_put(event_queue, &event, 0);
+        furry_message_queue_put(event_queue, &event, 0);
         break;
     case WavPlayerCtrlVolDn:
         event.type = WavPlayerEventCtrlVolDn;
-        furi_message_queue_put(event_queue, &event, 0);
+        furry_message_queue_put(event_queue, &event, 0);
         break;
     case WavPlayerCtrlMoveL:
         event.type = WavPlayerEventCtrlMoveL;
-        furi_message_queue_put(event_queue, &event, 0);
+        furry_message_queue_put(event_queue, &event, 0);
         break;
     case WavPlayerCtrlMoveR:
         event.type = WavPlayerEventCtrlMoveR;
-        furi_message_queue_put(event_queue, &event, 0);
+        furry_message_queue_put(event_queue, &event, 0);
         break;
     case WavPlayerCtrlOk:
         event.type = WavPlayerEventCtrlOk;
-        furi_message_queue_put(event_queue, &event, 0);
+        furry_message_queue_put(event_queue, &event, 0);
         break;
     case WavPlayerCtrlBack:
         event.type = WavPlayerEventCtrlBack;
-        furi_message_queue_put(event_queue, &event, 0);
+        furry_message_queue_put(event_queue, &event, 0);
         break;
     default:
         break;
@@ -360,16 +360,16 @@ static void app_run(WavPlayerApp* app) {
     wav_player_speaker_init(app->sample_rate);
     wav_player_dma_init((uint32_t)app->sample_buffer, app->samples_count);
 
-    furi_hal_interrupt_set_isr(FuriHalInterruptIdDma1Ch1, wav_player_dma_isr, app->queue);
+    furry_hal_interrupt_set_isr(FurryHalInterruptIdDma1Ch1, wav_player_dma_isr, app->queue);
 
-    if(furi_hal_speaker_acquire(1000)) {
+    if(furry_hal_speaker_acquire(1000)) {
         wav_player_dma_start();
         wav_player_speaker_start();
 
         WavPlayerEvent event;
 
         while(1) {
-            if(furi_message_queue_get(app->queue, &event, FuriWaitForever) == FuriStatusOk) {
+            if(furry_message_queue_get(app->queue, &event, FurryWaitForever) == FurryStatusOk) {
                 if(event.type == WavPlayerEventHalfTransfer) {
                     wav_player_view_set_chans(app->view, app->num_channels);
                     wav_player_view_set_bits(app->view, app->bits_per_sample);
@@ -437,21 +437,21 @@ static void app_run(WavPlayerApp* app) {
 
         wav_player_speaker_stop();
         wav_player_dma_stop();
-        furi_hal_speaker_release();
+        furry_hal_speaker_release();
     }
 
-    furi_hal_interrupt_set_isr(FuriHalInterruptIdDma1Ch1, NULL, NULL);
+    furry_hal_interrupt_set_isr(FurryHalInterruptIdDma1Ch1, NULL, NULL);
 }
 
 int32_t wav_player_app(void* p) {
     UNUSED(p);
     WavPlayerApp* app = app_alloc();
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     if(!storage_simply_mkdir(storage, WAVPLAYER_FOLDER)) {
-        FURI_LOG_E(TAG, "Could not create folder %s", WAVPLAYER_FOLDER);
+        FURRY_LOG_E(TAG, "Could not create folder %s", WAVPLAYER_FOLDER);
     }
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     app_run(app);
     app_free(app);

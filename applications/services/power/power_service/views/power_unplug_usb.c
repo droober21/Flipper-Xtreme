@@ -1,5 +1,5 @@
 #include "power_unplug_usb.h"
-#include <furi.h>
+#include <furry.h>
 #include <gui/elements.h>
 #include <assets_icons.h>
 
@@ -33,12 +33,12 @@ PowerUnplugUsb* power_unplug_usb_alloc() {
 }
 
 void power_unplug_usb_free(PowerUnplugUsb* power_unplug_usb) {
-    furi_assert(power_unplug_usb);
+    furry_assert(power_unplug_usb);
     view_free(power_unplug_usb->view);
     free(power_unplug_usb);
 }
 
 View* power_unplug_usb_get_view(PowerUnplugUsb* power_unplug_usb) {
-    furi_assert(power_unplug_usb);
+    furry_assert(power_unplug_usb);
     return power_unplug_usb->view;
 }

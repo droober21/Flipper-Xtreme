@@ -1,7 +1,7 @@
 #pragma once
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #define AVR_ISP_VERSION_APP "0.1"
 #define AVR_ISP_DEVELOPED "SkorP"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi.h>
+#include <furry.h>
 #include "spi_mem_chip.h"
 
 typedef enum {

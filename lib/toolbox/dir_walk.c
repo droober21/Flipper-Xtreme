@@ -5,7 +5,7 @@ LIST_DEF(DirIndexList, uint32_t);
 
 struct DirWalk {
     File* file;
-    FuriString* path;
+    FurryString* path;
     DirIndexList_t index_list;
     uint32_t current_index;
     bool recursive;
@@ -15,7 +15,7 @@ struct DirWalk {
 
 DirWalk* dir_walk_alloc(Storage* storage) {
     DirWalk* dir_walk = malloc(sizeof(DirWalk));
-    dir_walk->path = furi_string_alloc();
+    dir_walk->path = furry_string_alloc();
     dir_walk->file = storage_file_alloc(storage);
     DirIndexList_init(dir_walk->index_list);
     dir_walk->recursive = true;
@@ -25,7 +25,7 @@ DirWalk* dir_walk_alloc(Storage* storage) {
 
 void dir_walk_free(DirWalk* dir_walk) {
     storage_file_free(dir_walk->file);
-    furi_string_free(dir_walk->path);
+    furry_string_free(dir_walk->path);
     DirIndexList_clear(dir_walk->index_list);
     free(dir_walk);
 }
@@ -40,7 +40,7 @@ void dir_walk_set_filter_cb(DirWalk* dir_walk, DirWalkFilterCb cb, void* context
 }
 
 bool dir_walk_open(DirWalk* dir_walk, const char* path) {
-    furi_string_set(dir_walk->path, path);
+    furry_string_set(dir_walk->path, path);
     dir_walk->current_index = 0;
     return storage_dir_open(dir_walk->file, path);
 }
@@ -54,7 +54,7 @@ static bool dir_walk_filter(DirWalk* dir_walk, const char* name, FileInfo* filei
 }
 
 static DirWalkResult
-    dir_walk_iter(DirWalk* dir_walk, FuriString* return_path, FileInfo* fileinfo) {
+    dir_walk_iter(DirWalk* dir_walk, FurryString* return_path, FileInfo* fileinfo) {
     DirWalkResult result = DirWalkError;
     char* name = malloc(256); // FIXME: remove magic number
     FileInfo info;
@@ -69,10 +69,10 @@ static DirWalkResult
 
             if(dir_walk_filter(dir_walk, name, &info)) {
                 if(return_path != NULL) {
-                    furi_string_printf( //-V576
+                    furry_string_printf( //-V576
                         return_path,
                         "%s/%s",
-                        furi_string_get_cstr(dir_walk->path),
+                        furry_string_get_cstr(dir_walk->path),
                         name);
                 }
 
@@ -89,8 +89,8 @@ static DirWalkResult
                 dir_walk->current_index = 0;
                 storage_dir_close(dir_walk->file);
 
-                furi_string_cat_printf(dir_walk->path, "/%s", name);
-                storage_dir_open(dir_walk->file, furi_string_get_cstr(dir_walk->path));
+                furry_string_cat_printf(dir_walk->path, "/%s", name);
+                storage_dir_open(dir_walk->file, furry_string_get_cstr(dir_walk->path));
             }
         } else if(storage_file_get_error(dir_walk->file) == FSE_NOT_EXIST) {
             if(DirIndexList_size(dir_walk->index_list) == 0) {
@@ -105,12 +105,12 @@ static DirWalkResult
 
                 storage_dir_close(dir_walk->file);
 
-                size_t last_char = furi_string_search_rchar(dir_walk->path, '/');
-                if(last_char != FURI_STRING_FAILURE) {
-                    furi_string_left(dir_walk->path, last_char);
+                size_t last_char = furry_string_search_rchar(dir_walk->path, '/');
+                if(last_char != FURRY_STRING_FAILURE) {
+                    furry_string_left(dir_walk->path, last_char);
                 }
 
-                storage_dir_open(dir_walk->file, furi_string_get_cstr(dir_walk->path));
+                storage_dir_open(dir_walk->file, furry_string_get_cstr(dir_walk->path));
 
                 // rewind
                 while(true) {
@@ -142,7 +142,7 @@ FS_Error dir_walk_get_error(DirWalk* dir_walk) {
     return storage_file_get_error(dir_walk->file);
 }
 
-DirWalkResult dir_walk_read(DirWalk* dir_walk, FuriString* return_path, FileInfo* fileinfo) {
+DirWalkResult dir_walk_read(DirWalk* dir_walk, FurryString* return_path, FileInfo* fileinfo) {
     return dir_walk_iter(dir_walk, return_path, fileinfo);
 }
 
@@ -152,6 +152,6 @@ void dir_walk_close(DirWalk* dir_walk) {
     }
 
     DirIndexList_reset(dir_walk->index_list);
-    furi_string_reset(dir_walk->path);
+    furry_string_reset(dir_walk->path);
     dir_walk->current_index = 0;
 }

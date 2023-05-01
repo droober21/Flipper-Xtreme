@@ -106,7 +106,7 @@ void process_input_settings(ProtoViewApp* app, InputEvent input) {
  * we need to restart the radio with the right frequency and modulation. */
 void view_exit_settings(ProtoViewApp* app) {
     if(app->txrx->freq_mod_changed) {
-        FURI_LOG_E(
+        FURRY_LOG_E(
             TAG,
             "Setting view, setting frequency/modulation to %lu %s",
             app->frequency,

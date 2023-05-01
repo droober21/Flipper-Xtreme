@@ -32,7 +32,7 @@ ViewHolder* view_holder_alloc() {
 }
 
 void view_holder_free(ViewHolder* view_holder) {
-    furi_assert(view_holder);
+    furry_assert(view_holder);
 
     if(view_holder->gui) {
         gui_remove_view_port(view_holder->gui, view_holder->view_port);
@@ -48,7 +48,7 @@ void view_holder_free(ViewHolder* view_holder) {
 }
 
 void view_holder_set_view(ViewHolder* view_holder, View* view) {
-    furi_assert(view_holder);
+    furry_assert(view_holder);
     if(view_holder->view) {
         if(view_holder->view->exit_callback) {
             view_holder->view->exit_callback(view_holder->view->context);
@@ -74,7 +74,7 @@ void view_holder_set_free_callback(
     ViewHolder* view_holder,
     FreeCallback free_callback,
     void* free_context) {
-    furi_assert(view_holder);
+    furry_assert(view_holder);
     view_holder->free_callback = free_callback;
     view_holder->free_context = free_context;
 }
@@ -87,14 +87,14 @@ void view_holder_set_back_callback(
     ViewHolder* view_holder,
     BackCallback back_callback,
     void* back_context) {
-    furi_assert(view_holder);
+    furry_assert(view_holder);
     view_holder->back_callback = back_callback;
     view_holder->back_context = back_context;
 }
 
 void view_holder_attach_to_gui(ViewHolder* view_holder, Gui* gui) {
-    furi_assert(gui);
-    furi_assert(view_holder);
+    furry_assert(gui);
+    furry_assert(view_holder);
     view_holder->gui = gui;
     gui_add_view_port(gui, view_holder->view_port, GuiLayerFullscreen);
 }
@@ -104,13 +104,13 @@ void view_holder_start(ViewHolder* view_holder) {
 }
 
 void view_holder_stop(ViewHolder* view_holder) {
-    while(view_holder->ongoing_input) furi_delay_tick(1);
+    while(view_holder->ongoing_input) furry_delay_tick(1);
     view_port_enabled_set(view_holder->view_port, false);
 }
 
 void view_holder_update(View* view, void* context) {
-    furi_assert(view);
-    furi_assert(context);
+    furry_assert(view);
+    furry_assert(context);
 
     ViewHolder* view_holder = context;
     if(view == view_holder->view) {
@@ -134,7 +134,7 @@ static void view_holder_input_callback(InputEvent* event, void* context) {
     } else if(event->type == InputTypeRelease) {
         view_holder->ongoing_input &= ~key_bit;
     } else if(!(view_holder->ongoing_input & key_bit)) {
-        FURI_LOG_W(
+        FURRY_LOG_W(
             TAG,
             "non-complementary input, discarding key: %s, type: %s",
             input_get_key_name(event->key),

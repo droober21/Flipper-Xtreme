@@ -78,4 +78,4 @@ SubGhzProtocolStatus ws_protocol_decoder_lacrosse_tx141thbv2_deserialize(
  * @param context Pointer to a WSProtocolDecoderLaCrosse_TX141THBv2 instance
  * @param output Resulting text
  */
-void ws_protocol_decoder_lacrosse_tx141thbv2_get_string(void* context, FuriString* output);
+void ws_protocol_decoder_lacrosse_tx141thbv2_get_string(void* context, FurryString* output);

@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #include <gui/gui.h>
 #include <gui/elements.h>
@@ -82,10 +82,10 @@ void handle_down() {
     set_backlight_brightness((float)(brightness / 100.f));
 }
 
-static void clock_input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void clock_input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
     PluginEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 //do you are have stupid?
@@ -95,8 +95,8 @@ void elements_progress_bar_vertical(
     uint8_t y,
     uint8_t height,
     float progress) {
-    furi_assert(canvas);
-    furi_assert((progress >= 0) && (progress <= 1.0));
+    furry_assert(canvas);
+    furry_assert((progress >= 0) && (progress <= 1.0));
     uint8_t width = 9;
 
     uint8_t progress_length = roundf((1.f - progress) * (height - 2));
@@ -124,16 +124,16 @@ static void clock_render_callback(Canvas* const canvas, void* ctx) {
     }
 
     ClockState* state = ctx;
-    if(furi_mutex_acquire(state->mutex, 200) != FuriStatusOk) {
-        //FURI_LOG_D(TAG, "Can't obtain mutex, requeue render");
+    if(furry_mutex_acquire(state->mutex, 200) != FurryStatusOk) {
+        //FURRY_LOG_D(TAG, "Can't obtain mutex, requeue render");
         PluginEvent event = {.type = EventTypeTick};
-        furi_message_queue_put(state->event_queue, &event, 0);
+        furry_message_queue_put(state->event_queue, &event, 0);
         return;
     }
 
-    FuriHalRtcDateTime curr_dt;
-    furi_hal_rtc_get_datetime(&curr_dt);
-    uint32_t curr_ts = furi_hal_rtc_datetime_to_timestamp(&curr_dt);
+    FurryHalRtcDateTime curr_dt;
+    furry_hal_rtc_get_datetime(&curr_dt);
+    uint32_t curr_ts = furry_hal_rtc_datetime_to_timestamp(&curr_dt);
 
     char time_string[TIME_LEN];
     char date_string[DATE_LEN];
@@ -176,7 +176,7 @@ static void clock_render_callback(Canvas* const canvas, void* ctx) {
     uint32_t timer_start_timestamp = state->timer_start_timestamp;
     uint32_t timer_stopped_seconds = state->timer_stopped_seconds;
 
-    furi_mutex_release(state->mutex);
+    furry_mutex_release(state->mutex);
 
     canvas_set_font(canvas, FontBigNumbers);
 
@@ -209,25 +209,25 @@ static void clock_state_init(ClockState* const state) {
 
     state->date_format = locale_get_date_format();
 
-    //FURI_LOG_D(TAG, "Time format: %s", state->settings.time_format == H12 ? "12h" : "24h");
-    //FURI_LOG_D(TAG, "Date format: %s", state->settings.date_format == Iso ? "ISO 8601" : "RFC 5322");
-    //furi_hal_rtc_get_datetime(&state->datetime);
+    //FURRY_LOG_D(TAG, "Time format: %s", state->settings.time_format == H12 ? "12h" : "24h");
+    //FURRY_LOG_D(TAG, "Date format: %s", state->settings.date_format == Iso ? "ISO 8601" : "RFC 5322");
+    //furry_hal_rtc_get_datetime(&state->datetime);
 }
 
 // Runs every 1000ms by default
 static void clock_tick(void* ctx) {
-    furi_assert(ctx);
-    FuriMessageQueue* event_queue = ctx;
+    furry_assert(ctx);
+    FurryMessageQueue* event_queue = ctx;
     PluginEvent event = {.type = EventTypeTick};
     // It's OK to loose this event if system overloaded
-    furi_message_queue_put(event_queue, &event, 0);
+    furry_message_queue_put(event_queue, &event, 0);
 }
 
 void timer_start_stop(ClockState* plugin_state) {
     // START/STOP TIMER
-    FuriHalRtcDateTime curr_dt;
-    furi_hal_rtc_get_datetime(&curr_dt);
-    uint32_t curr_ts = furi_hal_rtc_datetime_to_timestamp(&curr_dt);
+    FurryHalRtcDateTime curr_dt;
+    furry_hal_rtc_get_datetime(&curr_dt);
+    uint32_t curr_ts = furry_hal_rtc_datetime_to_timestamp(&curr_dt);
 
     if(plugin_state->timer_running) {
         // Update stopped seconds
@@ -258,26 +258,26 @@ int32_t clock_app(void* p) {
     UNUSED(p);
     ClockState* plugin_state = malloc(sizeof(ClockState));
 
-    plugin_state->event_queue = furi_message_queue_alloc(8, sizeof(PluginEvent));
+    plugin_state->event_queue = furry_message_queue_alloc(8, sizeof(PluginEvent));
     if(plugin_state->event_queue == NULL) {
-        FURI_LOG_E(TAG, "Cannot create event queue");
+        FURRY_LOG_E(TAG, "Cannot create event queue");
         free(plugin_state);
         return 255;
     }
-    //FURI_LOG_D(TAG, "Event queue created");
+    //FURRY_LOG_D(TAG, "Event queue created");
 
-    plugin_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    plugin_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(plugin_state->mutex == NULL) {
-        FURI_LOG_E(TAG, "Cannot create mutex");
-        furi_message_queue_free(plugin_state->event_queue);
+        FURRY_LOG_E(TAG, "Cannot create mutex");
+        furry_message_queue_free(plugin_state->event_queue);
         free(plugin_state);
         return 255;
     }
-    //FURI_LOG_D(TAG, "Mutex created");
+    //FURRY_LOG_D(TAG, "Mutex created");
 
     clock_state_init(plugin_state);
 
-    notif = furi_record_open(RECORD_NOTIFICATION);
+    notif = furry_record_open(RECORD_NOTIFICATION);
     float tmpBrightness = notif->settings.display_brightness;
     brightness = tmpBrightness * 100; // Keep current brightness by default
 
@@ -289,33 +289,33 @@ int32_t clock_app(void* p) {
     view_port_draw_callback_set(view_port, clock_render_callback, plugin_state);
     view_port_input_callback_set(view_port, clock_input_callback, plugin_state->event_queue);
 
-    FuriTimer* timer =
-        furi_timer_alloc(clock_tick, FuriTimerTypePeriodic, plugin_state->event_queue);
+    FurryTimer* timer =
+        furry_timer_alloc(clock_tick, FurryTimerTypePeriodic, plugin_state->event_queue);
 
     if(timer == NULL) {
-        FURI_LOG_E(TAG, "Cannot create timer");
-        furi_mutex_free(plugin_state->mutex);
-        furi_message_queue_free(plugin_state->event_queue);
+        FURRY_LOG_E(TAG, "Cannot create timer");
+        furry_mutex_free(plugin_state->mutex);
+        furry_message_queue_free(plugin_state->event_queue);
         free(plugin_state);
         return 255;
     }
-    //FURI_LOG_D(TAG, "Timer created");
+    //FURRY_LOG_D(TAG, "Timer created");
 
     // Open GUI and register view_port
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
-    furi_timer_start(timer, furi_kernel_get_tick_frequency());
-    //FURI_LOG_D(TAG, "Timer started");
+    furry_timer_start(timer, furry_kernel_get_tick_frequency());
+    //FURRY_LOG_D(TAG, "Timer started");
 
     // Main loop
     PluginEvent event;
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(plugin_state->event_queue, &event, 100);
+        FurryStatus event_status = furry_message_queue_get(plugin_state->event_queue, &event, 100);
 
-        if(event_status != FuriStatusOk) continue;
+        if(event_status != FurryStatusOk) continue;
 
-        if(furi_mutex_acquire(plugin_state->mutex, FuriWaitForever) != FuriStatusOk) continue;
+        if(furry_mutex_acquire(plugin_state->mutex, FurryWaitForever) != FurryStatusOk) continue;
         // press events
         if(event.type == EventTypeKey) {
             if(event.input.type == InputTypeShort) {
@@ -343,21 +343,21 @@ int32_t clock_app(void* p) {
                 }
             }
         } /*else if(event.type == EventTypeTick) {
-            furi_hal_rtc_get_datetime(&plugin_state->datetime);
+            furry_hal_rtc_get_datetime(&plugin_state->datetime);
         }*/
 
         view_port_update(view_port);
-        furi_mutex_release(plugin_state->mutex);
+        furry_mutex_release(plugin_state->mutex);
     }
 
-    furi_timer_free(timer);
+    furry_timer_free(timer);
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
     view_port_free(view_port);
-    furi_message_queue_free(plugin_state->event_queue);
-    furi_mutex_free(plugin_state->mutex);
+    furry_message_queue_free(plugin_state->event_queue);
+    furry_mutex_free(plugin_state->mutex);
     free(plugin_state);
 
     set_backlight_brightness(tmpBrightness);

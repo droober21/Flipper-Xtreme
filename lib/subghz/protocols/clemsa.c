@@ -98,7 +98,7 @@ void* subghz_protocol_encoder_clemsa_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_encoder_clemsa_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderClemsa* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -110,11 +110,11 @@ void subghz_protocol_encoder_clemsa_free(void* context) {
  * @return true On success
  */
 static bool subghz_protocol_encoder_clemsa_get_upload(SubGhzProtocolEncoderClemsa* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     size_t index = 0;
     size_t size_upload = (instance->generic.data_count_bit * 2);
     if(size_upload > instance->encoder.size_upload) {
-        FURI_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
+        FURRY_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
         return false;
     } else {
         instance->encoder.size_upload = size_upload;
@@ -157,7 +157,7 @@ static bool subghz_protocol_encoder_clemsa_get_upload(SubGhzProtocolEncoderClems
 
 SubGhzProtocolStatus
     subghz_protocol_encoder_clemsa_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderClemsa* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -215,19 +215,19 @@ void* subghz_protocol_decoder_clemsa_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_clemsa_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderClemsa* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_clemsa_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderClemsa* instance = context;
     instance->decoder.parser_step = ClemsaDecoderStepReset;
 }
 
 void subghz_protocol_decoder_clemsa_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderClemsa* instance = context;
 
     switch(instance->decoder.parser_step) {
@@ -311,7 +311,7 @@ static void subghz_protocol_clemsa_check_remote_controller(SubGhzBlockGeneric* i
 }
 
 uint8_t subghz_protocol_decoder_clemsa_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderClemsa* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -321,25 +321,25 @@ SubGhzProtocolStatus subghz_protocol_decoder_clemsa_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderClemsa* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_clemsa_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderClemsa* instance = context;
     return subghz_block_generic_deserialize_check_count_bit(
         &instance->generic, flipper_format, subghz_protocol_clemsa_const.min_count_bit_for_found);
 }
 
-void subghz_protocol_decoder_clemsa_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_clemsa_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderClemsa* instance = context;
     subghz_protocol_clemsa_check_remote_controller(&instance->generic);
     //uint32_t data = (uint32_t)(instance->generic.data & 0xFFFFFF);
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %dbit\r\n"
         "Key:%05lX   Btn %X\r\n"

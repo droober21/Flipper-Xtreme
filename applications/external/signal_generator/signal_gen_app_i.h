@@ -2,8 +2,8 @@
 
 #include "scenes/signal_gen_scene.h"
 
-#include <furi_hal_clock.h>
-#include <furi_hal_pwm.h>
+#include <furry_hal_clock.h>
+#include <furry_hal_pwm.h>
 
 #include <gui/gui.h>
 #include <gui/view_dispatcher.h>
@@ -24,11 +24,11 @@ struct SignalGenApp {
     Submenu* submenu;
     SignalGenPwm* pwm_view;
 
-    FuriHalClockMcoSourceId mco_src;
-    FuriHalClockMcoDivisorId mco_div;
+    FurryHalClockMcoSourceId mco_src;
+    FurryHalClockMcoDivisorId mco_div;
 
-    FuriHalPwmOutputId pwm_ch_prev;
-    FuriHalPwmOutputId pwm_ch;
+    FurryHalPwmOutputId pwm_ch_prev;
+    FurryHalPwmOutputId pwm_ch;
     uint32_t pwm_freq;
     uint8_t pwm_duty;
 };

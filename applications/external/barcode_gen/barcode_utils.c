@@ -58,20 +58,20 @@ void free_types() {
     }
 }
 
-BarcodeTypeObj* get_type(FuriString* type_string) {
-    if(furi_string_cmp_str(type_string, "UPC-A") == 0) {
+BarcodeTypeObj* get_type(FurryString* type_string) {
+    if(furry_string_cmp_str(type_string, "UPC-A") == 0) {
         return barcode_type_objs[UPCA];
     }
-    if(furi_string_cmp_str(type_string, "EAN-8") == 0) {
+    if(furry_string_cmp_str(type_string, "EAN-8") == 0) {
         return barcode_type_objs[EAN8];
     }
-    if(furi_string_cmp_str(type_string, "EAN-13") == 0) {
+    if(furry_string_cmp_str(type_string, "EAN-13") == 0) {
         return barcode_type_objs[EAN13];
     }
-    if(furi_string_cmp_str(type_string, "CODE-39") == 0) {
+    if(furry_string_cmp_str(type_string, "CODE-39") == 0) {
         return barcode_type_objs[CODE39];
     }
-    if(furi_string_cmp_str(type_string, "CODE-128") == 0) {
+    if(furry_string_cmp_str(type_string, "CODE-128") == 0) {
         return barcode_type_objs[CODE128];
     }
 

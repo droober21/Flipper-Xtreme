@@ -4,16 +4,16 @@
 #define TAG "SubBruteSceneStart"
 
 void subbrute_scene_load_select_callback(SubBruteCustomEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     SubBruteState* instance = (SubBruteState*)context;
     view_dispatcher_send_custom_event(instance->view_dispatcher, event);
 }
 
 void subbrute_scene_load_select_on_enter(void* context) {
-    furi_assert(context);
-#ifdef FURI_DEBUG
-    FURI_LOG_I(TAG, "subbrute_scene_load_select_on_enter");
+    furry_assert(context);
+#ifdef FURRY_DEBUG
+    FURRY_LOG_I(TAG, "subbrute_scene_load_select_on_enter");
 #endif
     SubBruteState* instance = (SubBruteState*)context;
     SubBruteMainView* view = instance->view_main;
@@ -28,8 +28,8 @@ void subbrute_scene_load_select_on_enter(void* context) {
 
 void subbrute_scene_load_select_on_exit(void* context) {
     UNUSED(context);
-#ifdef FURI_DEBUG
-    FURI_LOG_I(TAG, "subbrute_scene_load_select_on_exit");
+#ifdef FURRY_DEBUG
+    FURRY_LOG_I(TAG, "subbrute_scene_load_select_on_exit");
 #endif
 }
 
@@ -39,7 +39,7 @@ bool subbrute_scene_load_select_on_event(void* context, SceneManagerEvent event)
 
     if(event.type == SceneManagerEventTypeCustom) {
         if(event.event == SubBruteCustomEventTypeIndexSelected) {
-            /*#ifdef FURI_DEBUG && !SUBBRUTE_FAST_TRACK
+            /*#ifdef FURRY_DEBUG && !SUBBRUTE_FAST_TRACK
             view_dispatcher_stop(instance->view_dispatcher);
             consumed = true;
 #else*/
@@ -60,7 +60,7 @@ bool subbrute_scene_load_select_on_event(void* context, SceneManagerEvent event)
                    instance->device->file_protocol_info,
                    extra_repeats,
                    instance->device->two_bytes)) {
-                furi_crash("Invalid attack set!");
+                furry_crash("Invalid attack set!");
             }
             scene_manager_next_scene(instance->scene_manager, SubBruteSceneSetupAttack);
             /*#endif*/

@@ -2,7 +2,7 @@
 
 #include "nfc_worker.h"
 
-#include <furi.h>
+#include <furry.h>
 #include <lib/toolbox/stream/file_stream.h>
 
 #include <lib/nfc/protocols/nfc_util.h>
@@ -18,7 +18,7 @@
 #include <lib/nfc/helpers/reader_analyzer.h>
 
 struct NfcWorker {
-    FuriThread* thread;
+    FurryThread* thread;
     Storage* storage;
     Stream* dict_stream;
 

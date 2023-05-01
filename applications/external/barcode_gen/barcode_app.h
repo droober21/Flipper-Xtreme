@@ -1,6 +1,6 @@
 #pragma once
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #include <gui/gui.h>
 #include <input/input.h>
@@ -53,7 +53,7 @@ struct BarcodeApp {
     ViewDispatcher* view_dispatcher;
     Gui* gui;
 
-    FuriMessageQueue* event_queue;
+    FurryMessageQueue* event_queue;
 
     CreateView* create_view;
     Barcode* barcode_view;

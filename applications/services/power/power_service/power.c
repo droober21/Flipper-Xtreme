@@ -1,14 +1,14 @@
 #include "power_i.h"
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <xtreme.h>
 
 #define POWER_OFF_TIMEOUT 90
 #define TAG "Power"
 
 void power_draw_battery_callback(Canvas* canvas, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Power* power = context;
     BatteryIcon battery_icon = XTREME_SETTINGS()->battery_icon;
     if(battery_icon == BatteryIconOff) return;
@@ -244,20 +244,20 @@ static ViewPort* power_battery_view_port_alloc(Power* power) {
 }
 
 static void power_start_auto_shutdown_timer(Power* power) {
-    furi_timer_start(power->auto_shutdown_timer, furi_ms_to_ticks(power->shutdown_idle_delay_ms));
+    furry_timer_start(power->auto_shutdown_timer, furry_ms_to_ticks(power->shutdown_idle_delay_ms));
 }
 
 static void power_stop_auto_shutdown_timer(Power* power) {
-    furi_timer_stop(power->auto_shutdown_timer);
+    furry_timer_stop(power->auto_shutdown_timer);
 }
 
 static uint32_t power_is_running_auto_shutdown_timer(Power* power) {
-    return furi_timer_is_running(power->auto_shutdown_timer);
+    return furry_timer_is_running(power->auto_shutdown_timer);
 }
 
 static void power_input_event_callback(const void* value, void* context) {
-    furi_assert(value);
-    furi_assert(context);
+    furry_assert(value);
+    furry_assert(context);
     const InputEvent* event = value;
     Power* power = context;
     if(event->type == InputTypePress) {
@@ -268,7 +268,7 @@ static void power_input_event_callback(const void* value, void* context) {
 static void power_auto_shutdown_arm(Power* power) {
     if(power->shutdown_idle_delay_ms) {
         if(power->input_events_subscription == NULL) {
-            power->input_events_subscription = furi_pubsub_subscribe(
+            power->input_events_subscription = furry_pubsub_subscribe(
                 power->input_events_pubsub, power_input_event_callback, power);
         }
         power_start_auto_shutdown_timer(power);
@@ -278,13 +278,13 @@ static void power_auto_shutdown_arm(Power* power) {
 static void power_auto_shutdown_inhibit(Power* power) {
     power_stop_auto_shutdown_timer(power);
     if(power->input_events_subscription) {
-        furi_pubsub_unsubscribe(power->input_events_pubsub, power->input_events_subscription);
+        furry_pubsub_unsubscribe(power->input_events_pubsub, power->input_events_subscription);
         power->input_events_subscription = NULL;
     }
 }
 
 static void power_loader_callback(const void* message, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Power* power = context;
     const LoaderEvent* event = message;
 
@@ -296,15 +296,15 @@ static void power_loader_callback(const void* message, void* context) {
 }
 
 static void power_auto_shutdown_timer_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Power* power = context;
     power_auto_shutdown_inhibit(power);
     power_off(power);
 }
 
 static void power_shutdown_time_changed_callback(const void* event, void* context) {
-    furi_assert(event);
-    furi_assert(context);
+    furry_assert(event);
+    furry_assert(context);
     Power* power = context;
     power->shutdown_idle_delay_ms = *(uint32_t*)event;
     if(power->shutdown_idle_delay_ms) {
@@ -318,28 +318,28 @@ Power* power_alloc() {
     Power* power = malloc(sizeof(Power));
 
     // Records
-    power->notification = furi_record_open(RECORD_NOTIFICATION);
-    power->gui = furi_record_open(RECORD_GUI);
+    power->notification = furry_record_open(RECORD_NOTIFICATION);
+    power->gui = furry_record_open(RECORD_GUI);
 
     // Pubsub
-    power->event_pubsub = furi_pubsub_alloc();
-    power->settings_events = furi_pubsub_alloc();
-    power->loader = furi_record_open(RECORD_LOADER);
-    power->input_events_pubsub = furi_record_open(RECORD_INPUT_EVENTS);
+    power->event_pubsub = furry_pubsub_alloc();
+    power->settings_events = furry_pubsub_alloc();
+    power->loader = furry_record_open(RECORD_LOADER);
+    power->input_events_pubsub = furry_record_open(RECORD_INPUT_EVENTS);
     power->input_events_subscription = NULL;
     power->app_start_stop_subscription =
-        furi_pubsub_subscribe(loader_get_pubsub(power->loader), power_loader_callback, power);
+        furry_pubsub_subscribe(loader_get_pubsub(power->loader), power_loader_callback, power);
     power->settings_events_subscription =
-        furi_pubsub_subscribe(power->settings_events, power_shutdown_time_changed_callback, power);
+        furry_pubsub_subscribe(power->settings_events, power_shutdown_time_changed_callback, power);
 
-    power->input_events_pubsub = furi_record_open(RECORD_INPUT_EVENTS);
+    power->input_events_pubsub = furry_record_open(RECORD_INPUT_EVENTS);
     power->input_events_subscription = NULL;
 
     // State initialization
     power->state = PowerStateNotCharging;
     power->battery_low = false;
     power->power_off_timeout = POWER_OFF_TIMEOUT;
-    power->api_mtx = furi_mutex_alloc(FuriMutexTypeNormal);
+    power->api_mtx = furry_mutex_alloc(FurryMutexTypeNormal);
 
     // Gui
     power->view_dispatcher = view_dispatcher_alloc();
@@ -360,13 +360,13 @@ Power* power_alloc() {
 
     //Auto shutdown timer
     power->auto_shutdown_timer =
-        furi_timer_alloc(power_auto_shutdown_timer_callback, FuriTimerTypeOnce, power);
+        furry_timer_alloc(power_auto_shutdown_timer_callback, FurryTimerTypeOnce, power);
 
     return power;
 }
 
 void power_free(Power* power) {
-    furi_assert(power);
+    furry_assert(power);
 
     // Gui
     view_dispatcher_remove_view(power->view_dispatcher, PowerViewOff);
@@ -377,49 +377,49 @@ void power_free(Power* power) {
     view_port_free(power->battery_view_port);
 
     // State
-    furi_mutex_free(power->api_mtx);
+    furry_mutex_free(power->api_mtx);
 
-    // FuriPubSub
-    furi_pubsub_unsubscribe(loader_get_pubsub(power->loader), power->app_start_stop_subscription);
-    furi_pubsub_unsubscribe(power->settings_events, power->settings_events_subscription);
+    // FurryPubSub
+    furry_pubsub_unsubscribe(loader_get_pubsub(power->loader), power->app_start_stop_subscription);
+    furry_pubsub_unsubscribe(power->settings_events, power->settings_events_subscription);
 
     if(power->input_events_subscription) {
-        furi_pubsub_unsubscribe(power->input_events_pubsub, power->input_events_subscription);
+        furry_pubsub_unsubscribe(power->input_events_pubsub, power->input_events_subscription);
         power->input_events_subscription = NULL;
     }
 
-    furi_pubsub_free(power->event_pubsub);
-    furi_pubsub_free(power->settings_events);
+    furry_pubsub_free(power->event_pubsub);
+    furry_pubsub_free(power->settings_events);
     power->loader = NULL;
     power->input_events_pubsub = NULL;
 
     //Auto shutdown timer
-    furi_timer_free(power->auto_shutdown_timer);
+    furry_timer_free(power->auto_shutdown_timer);
 
     // Records
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_LOADER);
-    furi_record_close(RECORD_INPUT_EVENTS);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_LOADER);
+    furry_record_close(RECORD_INPUT_EVENTS);
 
     free(power);
 }
 
 static void power_check_charging_state(Power* power) {
-    if(furi_hal_power_is_charging()) {
-        if((power->info.charge == 100) || (furi_hal_power_is_charging_done())) {
+    if(furry_hal_power_is_charging()) {
+        if((power->info.charge == 100) || (furry_hal_power_is_charging_done())) {
             if(power->state != PowerStateCharged) {
                 notification_internal_message(power->notification, &sequence_charged);
                 power->state = PowerStateCharged;
                 power->event.type = PowerEventTypeFullyCharged;
-                furi_pubsub_publish(power->event_pubsub, &power->event);
+                furry_pubsub_publish(power->event_pubsub, &power->event);
             }
         } else {
             if(power->state != PowerStateCharging) {
                 notification_internal_message(power->notification, &sequence_charging);
                 power->state = PowerStateCharging;
                 power->event.type = PowerEventTypeStartCharging;
-                furi_pubsub_publish(power->event_pubsub, &power->event);
+                furry_pubsub_publish(power->event_pubsub, &power->event);
             }
         }
     } else {
@@ -427,7 +427,7 @@ static void power_check_charging_state(Power* power) {
             notification_internal_message(power->notification, &sequence_not_charging);
             power->state = PowerStateNotCharging;
             power->event.type = PowerEventTypeStopCharging;
-            furi_pubsub_publish(power->event_pubsub, &power->event);
+            furry_pubsub_publish(power->event_pubsub, &power->event);
         }
     }
 }
@@ -435,26 +435,26 @@ static void power_check_charging_state(Power* power) {
 static bool power_update_info(Power* power) {
     PowerInfo info;
 
-    info.is_charging = furi_hal_power_is_charging();
-    info.gauge_is_ok = furi_hal_power_gauge_is_ok();
-    info.charge = furi_hal_power_get_pct();
-    info.health = furi_hal_power_get_bat_health_pct();
-    info.capacity_remaining = furi_hal_power_get_battery_remaining_capacity();
-    info.capacity_full = furi_hal_power_get_battery_full_capacity();
-    info.current_charger = furi_hal_power_get_battery_current(FuriHalPowerICCharger);
-    info.current_gauge = furi_hal_power_get_battery_current(FuriHalPowerICFuelGauge);
-    info.voltage_battery_charge_limit = furi_hal_power_get_battery_charge_voltage_limit();
-    info.voltage_charger = furi_hal_power_get_battery_voltage(FuriHalPowerICCharger);
-    info.voltage_gauge = furi_hal_power_get_battery_voltage(FuriHalPowerICFuelGauge);
-    info.voltage_vbus = furi_hal_power_get_usb_voltage();
-    info.temperature_charger = furi_hal_power_get_battery_temperature(FuriHalPowerICCharger);
-    info.temperature_gauge = furi_hal_power_get_battery_temperature(FuriHalPowerICFuelGauge);
+    info.is_charging = furry_hal_power_is_charging();
+    info.gauge_is_ok = furry_hal_power_gauge_is_ok();
+    info.charge = furry_hal_power_get_pct();
+    info.health = furry_hal_power_get_bat_health_pct();
+    info.capacity_remaining = furry_hal_power_get_battery_remaining_capacity();
+    info.capacity_full = furry_hal_power_get_battery_full_capacity();
+    info.current_charger = furry_hal_power_get_battery_current(FurryHalPowerICCharger);
+    info.current_gauge = furry_hal_power_get_battery_current(FurryHalPowerICFuelGauge);
+    info.voltage_battery_charge_limit = furry_hal_power_get_battery_charge_voltage_limit();
+    info.voltage_charger = furry_hal_power_get_battery_voltage(FurryHalPowerICCharger);
+    info.voltage_gauge = furry_hal_power_get_battery_voltage(FurryHalPowerICFuelGauge);
+    info.voltage_vbus = furry_hal_power_get_usb_voltage();
+    info.temperature_charger = furry_hal_power_get_battery_temperature(FurryHalPowerICCharger);
+    info.temperature_gauge = furry_hal_power_get_battery_temperature(FurryHalPowerICFuelGauge);
 
-    furi_mutex_acquire(power->api_mtx, FuriWaitForever);
+    furry_mutex_acquire(power->api_mtx, FurryWaitForever);
     bool need_refresh = power->info.charge != info.charge;
     need_refresh |= power->info.is_charging != info.is_charging;
     power->info = info;
-    furi_mutex_release(power->api_mtx);
+    furry_mutex_release(power->api_mtx);
 
     return need_refresh;
 }
@@ -508,7 +508,7 @@ static void power_check_battery_level_change(Power* power) {
         power->battery_level = power->info.charge;
         power->event.type = PowerEventTypeBatteryLevelChanged;
         power->event.data.battery_level = power->battery_level;
-        furi_pubsub_publish(power->event_pubsub, &power->event);
+        furry_pubsub_publish(power->event_pubsub, &power->event);
     }
 }
 
@@ -519,8 +519,8 @@ void power_trigger_ui_update(Power* power) {
 int32_t power_srv(void* p) {
     UNUSED(p);
 
-    if(!furi_hal_is_normal_boot()) {
-        FURI_LOG_W(TAG, "Skipping start in special boot mode");
+    if(!furry_hal_is_normal_boot()) {
+        FURRY_LOG_W(TAG, "Skipping start in special boot mode");
         return 0;
     }
 
@@ -531,7 +531,7 @@ int32_t power_srv(void* p) {
     }
     power_auto_shutdown_arm(power);
     power_update_info(power);
-    furi_record_create(RECORD_POWER, power);
+    furry_record_create(RECORD_POWER, power);
 
     while(1) {
         // Update data from gauge and charger
@@ -552,11 +552,11 @@ int32_t power_srv(void* p) {
         }
 
         // Check OTG status and disable it in case of fault
-        if(furi_hal_power_is_otg_enabled()) {
-            furi_hal_power_check_otg_status();
+        if(furry_hal_power_is_otg_enabled()) {
+            furry_hal_power_check_otg_status();
         }
 
-        furi_delay_ms(1000);
+        furry_delay_ms(1000);
     }
     power_auto_shutdown_inhibit(power);
     power_free(power);

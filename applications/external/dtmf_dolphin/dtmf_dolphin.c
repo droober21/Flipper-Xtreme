@@ -1,23 +1,23 @@
 #include "dtmf_dolphin_i.h"
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <dolphin/dolphin.h>
 
 static bool dtmf_dolphin_app_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     DTMFDolphinApp* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool dtmf_dolphin_app_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DTMFDolphinApp* app = context;
     return scene_manager_handle_back_event(app->scene_manager);
 }
 
 static void dtmf_dolphin_app_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DTMFDolphinApp* app = context;
 
     scene_manager_handle_tick_event(app->scene_manager);
@@ -26,7 +26,7 @@ static void dtmf_dolphin_app_tick_event_callback(void* context) {
 static DTMFDolphinApp* app_alloc() {
     DTMFDolphinApp* app = malloc(sizeof(DTMFDolphinApp));
 
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
     app->view_dispatcher = view_dispatcher_alloc();
     app->scene_manager = scene_manager_alloc(&dtmf_dolphin_scene_handlers, app);
     view_dispatcher_enable_queue(app->view_dispatcher);
@@ -53,7 +53,7 @@ static DTMFDolphinApp* app_alloc() {
         DTMFDolphinViewDialer,
         dtmf_dolphin_dialer_get_view(app->dtmf_dolphin_dialer));
 
-    app->notification = furi_record_open(RECORD_NOTIFICATION);
+    app->notification = furry_record_open(RECORD_NOTIFICATION);
     notification_message(app->notification, &sequence_display_backlight_enforce_on);
 
     scene_manager_next_scene(app->scene_manager, DTMFDolphinSceneStart);
@@ -62,7 +62,7 @@ static DTMFDolphinApp* app_alloc() {
 }
 
 static void app_free(DTMFDolphinApp* app) {
-    furi_assert(app);
+    furry_assert(app);
     view_dispatcher_remove_view(app->view_dispatcher, DTMFDolphinViewMainMenu);
     view_dispatcher_remove_view(app->view_dispatcher, DTMFDolphinViewDialer);
     variable_item_list_free(app->main_menu_list);
@@ -74,8 +74,8 @@ static void app_free(DTMFDolphinApp* app) {
 
     notification_message(app->notification, &sequence_display_backlight_enforce_auto);
 
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
     free(app);
 }
 

@@ -1,8 +1,8 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/elements.h>
 #include <assets_icons.h>
 #include <xtreme.h>
-#include <furi_hal_rtc.h>
+#include <furry_hal_rtc.h>
 
 #include "../desktop_i.h"
 #include "desktop_view_lock_menu.h"
@@ -31,8 +31,8 @@ void desktop_lock_menu_set_callback(
     DesktopLockMenuView* lock_menu,
     DesktopLockMenuViewCallback callback,
     void* context) {
-    furi_assert(lock_menu);
-    furi_assert(callback);
+    furry_assert(lock_menu);
+    furry_assert(callback);
     lock_menu->callback = callback;
     lock_menu->context = context;
 }
@@ -57,7 +57,7 @@ void desktop_lock_menu_set_stealth_mode_state(DesktopLockMenuView* lock_menu, bo
 }
 
 void desktop_lock_menu_set_idx(DesktopLockMenuView* lock_menu, uint8_t idx) {
-    furi_assert(idx < DesktopLockMenuIndexTotalCount);
+    furry_assert(idx < DesktopLockMenuIndexTotalCount);
     with_view_model(
         lock_menu->view, DesktopLockMenuViewModel * model, { model->idx = idx; }, true);
 }
@@ -94,7 +94,7 @@ void desktop_lock_menu_draw_callback(Canvas* canvas, void* model) {
         switch(i) {
         case DesktopLockMenuIndexLefthandedMode:
             icon = &I_CC_LefthandedMode_16x16;
-            enabled = furi_hal_rtc_is_flag_set(FuriHalRtcFlagHandOrient);
+            enabled = furry_hal_rtc_is_flag_set(FurryHalRtcFlagHandOrient);
             break;
         case DesktopLockMenuIndexSettings:
             icon = &I_CC_Settings_16x16;
@@ -177,13 +177,13 @@ void desktop_lock_menu_draw_callback(Canvas* canvas, void* model) {
 }
 
 View* desktop_lock_menu_get_view(DesktopLockMenuView* lock_menu) {
-    furi_assert(lock_menu);
+    furry_assert(lock_menu);
     return lock_menu->view;
 }
 
 bool desktop_lock_menu_input_callback(InputEvent* event, void* context) {
-    furi_assert(event);
-    furi_assert(context);
+    furry_assert(event);
+    furry_assert(context);
 
     DesktopLockMenuView* lock_menu = context;
     uint8_t idx = 0;
@@ -277,10 +277,10 @@ bool desktop_lock_menu_input_callback(InputEvent* event, void* context) {
         } else if(event->key == InputKeyOk && event->type == InputTypeShort) {
             switch(idx) {
             case DesktopLockMenuIndexLefthandedMode:
-                if(furi_hal_rtc_is_flag_set(FuriHalRtcFlagHandOrient)) {
-                    furi_hal_rtc_reset_flag(FuriHalRtcFlagHandOrient);
+                if(furry_hal_rtc_is_flag_set(FurryHalRtcFlagHandOrient)) {
+                    furry_hal_rtc_reset_flag(FurryHalRtcFlagHandOrient);
                 } else {
-                    furi_hal_rtc_set_flag(FuriHalRtcFlagHandOrient);
+                    furry_hal_rtc_set_flag(FurryHalRtcFlagHandOrient);
                 }
                 break;
             case DesktopLockMenuIndexSettings:
@@ -293,9 +293,9 @@ bool desktop_lock_menu_input_callback(InputEvent* event, void* context) {
             case DesktopLockMenuIndexBluetooth:
                 lock_menu->bt->bt_settings.enabled = !lock_menu->bt->bt_settings.enabled;
                 if(lock_menu->bt->bt_settings.enabled) {
-                    furi_hal_bt_start_advertising();
+                    furry_hal_bt_start_advertising();
                 } else {
-                    furi_hal_bt_stop_advertising();
+                    furry_hal_bt_stop_advertising();
                 }
                 lock_menu->save_bt = true;
                 break;
@@ -348,8 +348,8 @@ bool desktop_lock_menu_input_callback(InputEvent* event, void* context) {
 
 DesktopLockMenuView* desktop_lock_menu_alloc() {
     DesktopLockMenuView* lock_menu = malloc(sizeof(DesktopLockMenuView));
-    lock_menu->bt = furi_record_open(RECORD_BT);
-    lock_menu->notification = furi_record_open(RECORD_NOTIFICATION);
+    lock_menu->bt = furry_record_open(RECORD_BT);
+    lock_menu->notification = furry_record_open(RECORD_NOTIFICATION);
     lock_menu->view = view_alloc();
     view_allocate_model(lock_menu->view, ViewModelTypeLocking, sizeof(DesktopLockMenuViewModel));
     with_view_model(
@@ -365,10 +365,10 @@ DesktopLockMenuView* desktop_lock_menu_alloc() {
 }
 
 void desktop_lock_menu_free(DesktopLockMenuView* lock_menu_view) {
-    furi_assert(lock_menu_view);
+    furry_assert(lock_menu_view);
 
     view_free(lock_menu_view->view);
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_record_close(RECORD_BT);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_BT);
     free(lock_menu_view);
 }

@@ -113,13 +113,13 @@ void* ws_protocol_decoder_lacrosse_tx_alloc(SubGhzEnvironment* environment) {
 }
 
 void ws_protocol_decoder_lacrosse_tx_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderLaCrosse_TX* instance = context;
     free(instance);
 }
 
 void ws_protocol_decoder_lacrosse_tx_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderLaCrosse_TX* instance = context;
     instance->header_count = 0;
     instance->decoder.parser_step = LaCrosse_TXDecoderStepReset;
@@ -161,7 +161,7 @@ static void ws_protocol_lacrosse_tx_remote_controller(WSBlockGeneric* instance) 
         //ToDo for verification, records are needed with sensors maintaining temperature and temperature for this standard
         instance->humidity = (uint8_t)msg_value;
     } else {
-        furi_crash("WS: WSProtocolLaCrosse_TX incorrect msg_type.");
+        furry_crash("WS: WSProtocolLaCrosse_TX incorrect msg_type.");
     }
 
     instance->btn = WS_NO_BTN;
@@ -170,7 +170,7 @@ static void ws_protocol_lacrosse_tx_remote_controller(WSBlockGeneric* instance) 
 }
 
 void ws_protocol_decoder_lacrosse_tx_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderLaCrosse_TX* instance = context;
 
     switch(instance->decoder.parser_step) {
@@ -275,7 +275,7 @@ void ws_protocol_decoder_lacrosse_tx_feed(void* context, bool level, uint32_t du
 }
 
 uint8_t ws_protocol_decoder_lacrosse_tx_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderLaCrosse_TX* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -285,23 +285,23 @@ SubGhzProtocolStatus ws_protocol_decoder_lacrosse_tx_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderLaCrosse_TX* instance = context;
     return ws_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     ws_protocol_decoder_lacrosse_tx_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderLaCrosse_TX* instance = context;
     return ws_block_generic_deserialize_check_count_bit(
         &instance->generic, flipper_format, ws_protocol_lacrosse_tx_const.min_count_bit_for_found);
 }
 
-void ws_protocol_decoder_lacrosse_tx_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void ws_protocol_decoder_lacrosse_tx_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     WSProtocolDecoderLaCrosse_TX* instance = context;
-    furi_string_printf(
+    furry_string_printf(
         output,
         "%s %dbit\r\n"
         "Key:0x%lX%08lX\r\n"

@@ -52,7 +52,7 @@ bool unitemp_HDC1080_init(Sensor* sensor) {
     if(!unitemp_i2c_readRegArray(i2c_sensor, 0xFF, 2, data)) return UT_SENSORSTATUS_TIMEOUT;
     uint16_t device_id = ((uint16_t)data[0] << 8) | data[1];
     if(device_id != 0x1050) {
-        FURI_LOG_E(
+        FURRY_LOG_E(
             APP_NAME,
             "Sensor %s returned wrong ID 0x%02X, expected 0x1050",
             sensor->name,
@@ -79,14 +79,14 @@ UnitempStatus unitemp_HDC1080_update(Sensor* sensor) {
     uint8_t data[2] = {0};
     //Запуск измерения
     if(!unitemp_i2c_writeArray(i2c_sensor, 1, data)) return UT_SENSORSTATUS_TIMEOUT;
-    furi_delay_ms(10);
+    furry_delay_ms(10);
     if(!unitemp_i2c_readArray(i2c_sensor, 2, data)) return UT_SENSORSTATUS_TIMEOUT;
 
     sensor->temp = ((float)(((uint16_t)data[0] << 8) | data[1]) / 65536) * 165 - 40;
 
     data[0] = 1;
     if(!unitemp_i2c_writeArray(i2c_sensor, 1, data)) return UT_SENSORSTATUS_TIMEOUT;
-    furi_delay_ms(10);
+    furry_delay_ms(10);
     if(!unitemp_i2c_readArray(i2c_sensor, 2, data)) return UT_SENSORSTATUS_TIMEOUT;
     sensor->hum = ((float)(((uint16_t)data[0] << 8) | data[1]) / 65536) * 100;
 

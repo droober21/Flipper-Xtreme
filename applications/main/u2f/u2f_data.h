@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-#include <furi.h>
+#include <furry.h>
 
 #define U2F_DATA_FOLDER EXT_PATH("u2f/")
 #define U2F_CERT_FILE U2F_DATA_FOLDER "assets/cert.der"

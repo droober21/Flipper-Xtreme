@@ -1,6 +1,6 @@
 #include "gpio_items.h"
 
-#include <furi_hal_resources.h>
+#include <furry_hal_resources.h>
 
 struct GPIOItems {
     GpioPinRecord* pins;
@@ -37,9 +37,9 @@ uint8_t gpio_items_get_count(GPIOItems* items) {
 }
 
 void gpio_items_configure_pin(GPIOItems* items, uint8_t index, GpioMode mode) {
-    furi_assert(index < items->count);
-    furi_hal_gpio_write(items->pins[index].pin, false);
-    furi_hal_gpio_init(items->pins[index].pin, mode, GpioPullNo, GpioSpeedVeryHigh);
+    furry_assert(index < items->count);
+    furry_hal_gpio_write(items->pins[index].pin, false);
+    furry_hal_gpio_init(items->pins[index].pin, mode, GpioPullNo, GpioSpeedVeryHigh);
 }
 
 void gpio_items_configure_all_pins(GPIOItems* items, GpioMode mode) {
@@ -49,8 +49,8 @@ void gpio_items_configure_all_pins(GPIOItems* items, GpioMode mode) {
 }
 
 void gpio_items_set_pin(GPIOItems* items, uint8_t index, bool level) {
-    furi_assert(index < items->count);
-    furi_hal_gpio_write(items->pins[index].pin, level);
+    furry_assert(index < items->count);
+    furry_hal_gpio_write(items->pins[index].pin, level);
 }
 
 void gpio_items_set_all_pins(GPIOItems* items, bool level) {
@@ -60,7 +60,7 @@ void gpio_items_set_all_pins(GPIOItems* items, bool level) {
 }
 
 const char* gpio_items_get_pin_name(GPIOItems* items, uint8_t index) {
-    furi_assert(index < items->count + 1);
+    furry_assert(index < items->count + 1);
     if(index == items->count) {
         return "ALL";
     } else {

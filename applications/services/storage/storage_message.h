@@ -1,5 +1,5 @@
 #pragma once
-#include <furi.h>
+#include <furry.h>
 #include <toolbox/api_lock.h>
 
 #ifdef __cplusplus
@@ -11,7 +11,7 @@ typedef struct {
     const char* path;
     FS_AccessMode access_mode;
     FS_OpenMode open_mode;
-    FuriThreadId thread_id;
+    FurryThreadId thread_id;
 } SADataFOpen;
 
 typedef struct {
@@ -35,7 +35,7 @@ typedef struct {
 typedef struct {
     File* file;
     const char* path;
-    FuriThreadId thread_id;
+    FurryThreadId thread_id;
 } SADataDOpen;
 
 typedef struct {
@@ -48,25 +48,25 @@ typedef struct {
 typedef struct {
     const char* path;
     uint32_t* timestamp;
-    FuriThreadId thread_id;
+    FurryThreadId thread_id;
 } SADataCTimestamp;
 
 typedef struct {
     const char* path;
     FileInfo* fileinfo;
-    FuriThreadId thread_id;
+    FurryThreadId thread_id;
 } SADataCStat;
 
 typedef struct {
     const char* fs_path;
     uint64_t* total_space;
     uint64_t* free_space;
-    FuriThreadId thread_id;
+    FurryThreadId thread_id;
 } SADataCFSInfo;
 
 typedef struct {
-    FuriString* path;
-    FuriThreadId thread_id;
+    FurryString* path;
+    FurryThreadId thread_id;
 } SADataCResolvePath;
 
 typedef struct {
@@ -75,7 +75,7 @@ typedef struct {
 
 typedef struct {
     const char* path;
-    FuriThreadId thread_id;
+    FurryThreadId thread_id;
 } SADataPath;
 
 typedef struct {
@@ -144,7 +144,7 @@ typedef enum {
 } StorageCommand;
 
 typedef struct {
-    FuriApiLock lock;
+    FurryApiLock lock;
     StorageCommand command;
     SAData* data;
     SAReturn* return_data;

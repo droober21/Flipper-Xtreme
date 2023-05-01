@@ -1,5 +1,5 @@
 #include "about_view.h"
-#include <furi.h>
+#include <furry.h>
 #include <gui/elements.h>
 #include <notification/notification.h>
 #include <notification/notification_messages.h>
@@ -13,7 +13,7 @@ typedef struct {
 } AboutViewModel;
 
 static void about_view_draw_callback(Canvas* canvas, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     canvas_clear(canvas);
     canvas_set_color(canvas, ColorBlack);
     canvas_draw_str_aligned(canvas, 0, 0, AlignLeft, AlignTop, "IFTTT Virtual button");
@@ -31,18 +31,18 @@ AboutView* about_view_alloc() {
 }
 
 void about_view_free(AboutView* about_view) {
-    furi_assert(about_view);
+    furry_assert(about_view);
     view_free(about_view->view);
     free(about_view);
 }
 
 View* about_view_get_view(AboutView* about_view) {
-    furi_assert(about_view);
+    furry_assert(about_view);
     return about_view->view;
 }
 
 void about_view_set_data(AboutView* about_view, bool connected) {
-    furi_assert(about_view);
+    furry_assert(about_view);
     with_view_model(
         about_view->view, AboutViewModel * model, { model->connected = connected; }, true);
 }

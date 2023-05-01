@@ -113,7 +113,7 @@ void* subghz_protocol_encoder_chamb_code_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_encoder_chamb_code_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderChamb_Code* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -138,7 +138,7 @@ static uint64_t subghz_protocol_chamb_bit_to_code(uint64_t data, uint8_t size) {
  */
 static bool
     subghz_protocol_encoder_chamb_code_get_upload(SubGhzProtocolEncoderChamb_Code* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     uint64_t data = subghz_protocol_chamb_bit_to_code(
         instance->generic.data, instance->generic.data_count_bit);
@@ -155,7 +155,7 @@ static bool
         break;
 
     default:
-        FURI_LOG_E(TAG, "Invalid bits count");
+        FURRY_LOG_E(TAG, "Invalid bits count");
         return false;
         break;
     }
@@ -209,7 +209,7 @@ static bool
 
 SubGhzProtocolStatus
     subghz_protocol_encoder_chamb_code_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderChamb_Code* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -219,7 +219,7 @@ SubGhzProtocolStatus
         }
         if(instance->generic.data_count_bit >
            subghz_protocol_chamb_code_const.min_count_bit_for_found) {
-            FURI_LOG_E(TAG, "Wrong number of bits in key");
+            FURRY_LOG_E(TAG, "Wrong number of bits in key");
             ret = SubGhzProtocolStatusErrorValueBitCount;
             break;
         }
@@ -270,13 +270,13 @@ void* subghz_protocol_decoder_chamb_code_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_chamb_code_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderChamb_Code* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_chamb_code_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderChamb_Code* instance = context;
     instance->decoder.parser_step = Chamb_CodeDecoderStepReset;
 }
@@ -300,7 +300,7 @@ static bool subghz_protocol_chamb_code_to_bit(uint64_t* data, uint8_t size) {
 
 static bool subghz_protocol_decoder_chamb_code_check_mask_and_parse(
     SubGhzProtocolDecoderChamb_Code* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     if(instance->decoder.decode_count_bit >
        subghz_protocol_chamb_code_const.min_count_bit_for_found + 1)
         return false;
@@ -332,7 +332,7 @@ static bool subghz_protocol_decoder_chamb_code_check_mask_and_parse(
 }
 
 void subghz_protocol_decoder_chamb_code_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderChamb_Code* instance = context;
     switch(instance->decoder.parser_step) {
     case Chamb_CodeDecoderStepReset:
@@ -423,7 +423,7 @@ void subghz_protocol_decoder_chamb_code_feed(void* context, bool level, uint32_t
 }
 
 uint8_t subghz_protocol_decoder_chamb_code_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderChamb_Code* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -433,14 +433,14 @@ SubGhzProtocolStatus subghz_protocol_decoder_chamb_code_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderChamb_Code* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_chamb_code_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderChamb_Code* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -450,7 +450,7 @@ SubGhzProtocolStatus
         }
         if(instance->generic.data_count_bit >
            subghz_protocol_chamb_code_const.min_count_bit_for_found) {
-            FURI_LOG_E(TAG, "Wrong number of bits in key");
+            FURRY_LOG_E(TAG, "Wrong number of bits in key");
             ret = SubGhzProtocolStatusErrorValueBitCount;
             break;
         }
@@ -458,8 +458,8 @@ SubGhzProtocolStatus
     return ret;
 }
 
-void subghz_protocol_decoder_chamb_code_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_chamb_code_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderChamb_Code* instance = context;
 
     uint32_t code_found_lo = instance->generic.data & 0x00000000ffffffff;
@@ -469,7 +469,7 @@ void subghz_protocol_decoder_chamb_code_get_string(void* context, FuriString* ou
 
     uint32_t code_found_reverse_lo = code_found_reverse & 0x00000000ffffffff;
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %db\r\n"
         "Key:0x%03lX\r\n"
@@ -481,19 +481,19 @@ void subghz_protocol_decoder_chamb_code_get_string(void* context, FuriString* ou
 
     switch(instance->generic.data_count_bit) {
     case 7:
-        furi_string_cat_printf(
+        furry_string_cat_printf(
             output,
             "DIP:" CHAMBERLAIN_7_CODE_DIP_PATTERN "\r\n",
             CHAMBERLAIN_7_CODE_DATA_TO_DIP(code_found_lo));
         break;
     case 8:
-        furi_string_cat_printf(
+        furry_string_cat_printf(
             output,
             "DIP:" CHAMBERLAIN_8_CODE_DIP_PATTERN "\r\n",
             CHAMBERLAIN_8_CODE_DATA_TO_DIP(code_found_lo));
         break;
     case 9:
-        furi_string_cat_printf(
+        furry_string_cat_printf(
             output,
             "DIP:" CHAMBERLAIN_9_CODE_DIP_PATTERN "\r\n",
             CHAMBERLAIN_9_CODE_DATA_TO_DIP(code_found_lo));

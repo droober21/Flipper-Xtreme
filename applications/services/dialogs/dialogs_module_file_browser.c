@@ -4,19 +4,19 @@
 #include <toolbox/api_lock.h>
 
 typedef struct {
-    FuriApiLock lock;
+    FurryApiLock lock;
     bool result;
 } DialogsAppFileBrowserContext;
 
 static void dialogs_app_file_browser_back_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DialogsAppFileBrowserContext* file_browser_context = context;
     file_browser_context->result = false;
     api_lock_unlock(file_browser_context->lock);
 }
 
 static void dialogs_app_file_browser_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DialogsAppFileBrowserContext* file_browser_context = context;
     file_browser_context->result = true;
     api_lock_unlock(file_browser_context->lock);
@@ -24,7 +24,7 @@ static void dialogs_app_file_browser_callback(void* context) {
 
 bool dialogs_app_process_module_file_browser(const DialogsAppMessageDataFileBrowser* data) {
     bool ret = false;
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
 
     DialogsAppFileBrowserContext* file_browser_context =
         malloc(sizeof(DialogsAppFileBrowserContext));
@@ -61,7 +61,7 @@ bool dialogs_app_process_module_file_browser(const DialogsAppMessageDataFileBrow
     file_browser_free(file_browser);
     api_lock_free(file_browser_context->lock);
     free(file_browser_context);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
     return ret;
 }

@@ -31,12 +31,12 @@ struct Power {
     ViewPort* battery_view_port;
     Gui* gui;
     NotificationApp* notification;
-    FuriPubSub* event_pubsub;
-    FuriPubSub* settings_events;
-    FuriPubSub* input_events_pubsub;
-    FuriPubSubSubscription* input_events_subscription;
-    FuriPubSubSubscription* app_start_stop_subscription;
-    FuriPubSubSubscription* settings_events_subscription;
+    FurryPubSub* event_pubsub;
+    FurryPubSub* settings_events;
+    FurryPubSub* input_events_pubsub;
+    FurryPubSubSubscription* input_events_subscription;
+    FurryPubSubSubscription* app_start_stop_subscription;
+    FurryPubSubSubscription* settings_events_subscription;
     PowerEvent event;
 
     PowerState state;
@@ -48,9 +48,9 @@ struct Power {
     uint8_t power_off_timeout;
 
     uint32_t shutdown_idle_delay_ms;
-    FuriTimer* auto_shutdown_timer;
+    FurryTimer* auto_shutdown_timer;
     Loader* loader;
-    FuriMutex* api_mtx;
+    FurryMutex* api_mtx;
 };
 
 typedef enum {

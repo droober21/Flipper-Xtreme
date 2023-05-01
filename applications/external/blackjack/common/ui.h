@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi.h>
+#include <furry.h>
 #include <gui/canvas.h>
 
 #define SCREEN_WIDTH 128

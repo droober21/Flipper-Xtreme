@@ -2,7 +2,7 @@
 #include "../views/pocsag_pager_receiver.h"
 
 void pocsag_pager_scene_receiver_info_callback(PCSGCustomEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     POCSAGPagerApp* app = context;
     view_dispatcher_send_custom_event(app->view_dispatcher, event);
 }
@@ -11,7 +11,7 @@ static void pocsag_pager_scene_receiver_info_add_to_history_callback(
     SubGhzReceiver* receiver,
     SubGhzProtocolDecoderBase* decoder_base,
     void* context) {
-    furi_assert(context);
+    furry_assert(context);
     POCSAGPagerApp* app = context;
 
     if(pcsg_history_add_to_history(app->txrx->history, decoder_base, app->txrx->preset) ==

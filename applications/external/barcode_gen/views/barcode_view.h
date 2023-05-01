@@ -10,7 +10,7 @@ typedef struct {
 } Barcode;
 
 typedef struct {
-    FuriString* file_path;
+    FurryString* file_path;
     BarcodeData* data;
 } BarcodeModel;
 

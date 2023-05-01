@@ -3,8 +3,8 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
-#include <furi.h>
-#include <furi_hal_memory.h>
+#include <furry.h>
+#include <furry_hal_memory.h>
 
 #define SECTOR_SIZE 512
 #define N_SECTORS 8

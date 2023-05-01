@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi_hal_nfc.h>
+#include <furry_hal_nfc.h>
 
 #define MAX_APDU_LEN 255
 
@@ -63,18 +63,18 @@ typedef struct {
  * @note Search EMV Application, start it, try to read AID, PAN, card name,
  * expiration date, currency and country codes
  *
- * @param tx_rx     FuriHalNfcTxRxContext instance
+ * @param tx_rx     FurryHalNfcTxRxContext instance
  * @param emv_app   EmvApplication instance
  * 
  * @return true on success
  */
-bool emv_read_bank_card(FuriHalNfcTxRxContext* tx_rx, EmvApplication* emv_app);
+bool emv_read_bank_card(FurryHalNfcTxRxContext* tx_rx, EmvApplication* emv_app);
 
 /** Emulate bank card
  * @note Answer to application selection and PDOL
  *
- * @param tx_rx     FuriHalNfcTxRxContext instance
+ * @param tx_rx     FurryHalNfcTxRxContext instance
  *
  * @return true on success
  */
-bool emv_card_emulation(FuriHalNfcTxRxContext* tx_rx);
+bool emv_card_emulation(FurryHalNfcTxRxContext* tx_rx);

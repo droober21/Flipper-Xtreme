@@ -6,7 +6,7 @@ enum {
 };
 
 bool nfc_magic_wipe_worker_callback(NfcMagicWorkerEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     NfcMagic* nfc_magic = context;
     view_dispatcher_send_custom_event(nfc_magic->view_dispatcher, event);

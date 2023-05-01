@@ -32,9 +32,9 @@ bool desktop_scene_slideshow_on_event(void* context, SceneManagerEvent event) {
             consumed = true;
             break;
         case DesktopSlideshowPoweroff:
-            power = furi_record_open(RECORD_POWER);
+            power = furry_record_open(RECORD_POWER);
             power_off(power);
-            furi_record_close(RECORD_POWER);
+            furry_record_close(RECORD_POWER);
             consumed = true;
             break;
 
@@ -49,7 +49,7 @@ void desktop_scene_slideshow_on_exit(void* context) {
     Desktop* desktop = (Desktop*)context;
 
     gui_set_hide_statusbar(desktop->gui, false);
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     storage_common_remove(storage, SLIDESHOW_FS_PATH);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }

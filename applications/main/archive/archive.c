@@ -1,19 +1,19 @@
 #include "archive_i.h"
 
 static bool archive_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     ArchiveApp* archive = context;
     return scene_manager_handle_custom_event(archive->scene_manager, event);
 }
 
 static bool archive_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     ArchiveApp* archive = context;
     return scene_manager_handle_back_event(archive->scene_manager);
 }
 
 static void archive_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     ArchiveApp* archive = context;
     scene_manager_handle_tick_event(archive->scene_manager);
 }
@@ -21,12 +21,12 @@ static void archive_tick_event_callback(void* context) {
 static ArchiveApp* archive_alloc() {
     ArchiveApp* archive = malloc(sizeof(ArchiveApp));
 
-    archive->fav_move_str = furi_string_alloc();
+    archive->fav_move_str = furry_string_alloc();
 
     archive->scene_manager = scene_manager_alloc(&archive_scene_handlers, archive);
     archive->view_dispatcher = view_dispatcher_alloc();
 
-    archive->gui = furi_record_open(RECORD_GUI);
+    archive->gui = furry_record_open(RECORD_GUI);
 
     ViewDispatcher* view_dispatcher = archive->view_dispatcher;
     view_dispatcher_enable_queue(view_dispatcher);
@@ -35,7 +35,7 @@ static ArchiveApp* archive_alloc() {
     view_dispatcher_set_navigation_event_callback(view_dispatcher, archive_back_event_callback);
     view_dispatcher_set_tick_event_callback(view_dispatcher, archive_tick_event_callback, 100);
 
-    archive->dialogs = furi_record_open(RECORD_DIALOGS);
+    archive->dialogs = furry_record_open(RECORD_DIALOGS);
 
     archive->text_input = text_input_alloc();
     view_dispatcher_add_view(
@@ -60,7 +60,7 @@ static ArchiveApp* archive_alloc() {
 }
 
 void archive_free(ArchiveApp* archive) {
-    furi_assert(archive);
+    furry_assert(archive);
     ViewDispatcher* view_dispatcher = archive->view_dispatcher;
 
     // Loading
@@ -81,12 +81,12 @@ void archive_free(ArchiveApp* archive) {
     scene_manager_free(archive->scene_manager);
 
     browser_free(archive->browser);
-    furi_string_free(archive->fav_move_str);
+    furry_string_free(archive->fav_move_str);
 
-    furi_record_close(RECORD_DIALOGS);
+    furry_record_close(RECORD_DIALOGS);
     archive->dialogs = NULL;
 
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     archive->gui = NULL;
 
     free(archive);

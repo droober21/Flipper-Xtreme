@@ -1,7 +1,7 @@
 #include "protocol_group_misc.h"
 
-#include <furi_hal_rfid.h>
-#include <furi_hal_ibutton.h>
+#include <furry_hal_rfid.h>
+#include <furry_hal_ibutton.h>
 
 #include <toolbox/protocols/protocol_dict.h>
 
@@ -69,7 +69,7 @@ static const char* ibutton_protocol_group_misc_get_name(
 
 typedef struct {
     uint32_t last_dwt_value;
-    FuriStreamBuffer* stream;
+    FurryStreamBuffer* stream;
 } iButtonReadContext;
 
 static void ibutton_protocols_comparator_callback(bool level, void* context) {
@@ -79,7 +79,7 @@ static void ibutton_protocols_comparator_callback(bool level, void* context) {
 
     LevelDuration data =
         level_duration_make(level, current_dwt_value - read_context->last_dwt_value);
-    furi_stream_buffer_send(read_context->stream, &data, sizeof(LevelDuration), 0);
+    furry_stream_buffer_send(read_context->stream, &data, sizeof(LevelDuration), 0);
 
     read_context->last_dwt_value = current_dwt_value;
 }
@@ -92,26 +92,26 @@ static bool ibutton_protocol_group_misc_read(
 
     protocol_dict_decoders_start(group->dict);
 
-    furi_hal_rfid_pins_reset();
+    furry_hal_rfid_pins_reset();
     // pulldown pull pin, we sense the signal through the analog part of the RFID schematic
-    furi_hal_rfid_pin_pull_pulldown();
+    furry_hal_rfid_pin_pull_pulldown();
 
     iButtonReadContext read_context = {
         .last_dwt_value = DWT->CYCCNT,
-        .stream = furi_stream_buffer_alloc(sizeof(LevelDuration) * 512, 1),
+        .stream = furry_stream_buffer_alloc(sizeof(LevelDuration) * 512, 1),
     };
 
-    furi_hal_rfid_comp_set_callback(ibutton_protocols_comparator_callback, &read_context);
-    furi_hal_rfid_comp_start();
+    furry_hal_rfid_comp_set_callback(ibutton_protocols_comparator_callback, &read_context);
+    furry_hal_rfid_comp_start();
 
-    const uint32_t tick_start = furi_get_tick();
+    const uint32_t tick_start = furry_get_tick();
 
     for(;;) {
         LevelDuration level;
-        size_t ret = furi_stream_buffer_receive(
+        size_t ret = furry_stream_buffer_receive(
             read_context.stream, &level, sizeof(LevelDuration), IBUTTON_MISC_READ_TIMEOUT);
 
-        if((furi_get_tick() - tick_start) > IBUTTON_MISC_READ_TIMEOUT) {
+        if((furry_get_tick() - tick_start) > IBUTTON_MISC_READ_TIMEOUT) {
             break;
         }
 
@@ -133,11 +133,11 @@ static bool ibutton_protocol_group_misc_read(
         }
     }
 
-    furi_hal_rfid_comp_stop();
-    furi_hal_rfid_comp_set_callback(NULL, NULL);
-    furi_hal_rfid_pins_reset();
+    furry_hal_rfid_comp_stop();
+    furry_hal_rfid_comp_set_callback(NULL, NULL);
+    furry_hal_rfid_pins_reset();
 
-    furi_stream_buffer_free(read_context.stream);
+    furry_stream_buffer_free(read_context.stream);
 
     return result;
 }
@@ -148,8 +148,8 @@ static void ibutton_protocol_group_misc_emulate_callback(void* context) {
     const LevelDuration level_duration =
         protocol_dict_encoder_yield(group->dict, group->emulate_id);
 
-    furi_hal_ibutton_emulate_set_next(level_duration_get_duration(level_duration));
-    furi_hal_ibutton_pin_write(level_duration_get_level(level_duration));
+    furry_hal_ibutton_emulate_set_next(level_duration_get_duration(level_duration));
+    furry_hal_ibutton_pin_write(level_duration_get_level(level_duration));
 }
 
 static void ibutton_protocol_group_misc_emulate_start(
@@ -160,8 +160,8 @@ static void ibutton_protocol_group_misc_emulate_start(
     protocol_dict_set_data(group->dict, id, data, protocol_dict_get_data_size(group->dict, id));
     protocol_dict_encoder_start(group->dict, group->emulate_id);
 
-    furi_hal_ibutton_pin_configure();
-    furi_hal_ibutton_emulate_start(0, ibutton_protocol_group_misc_emulate_callback, group);
+    furry_hal_ibutton_pin_configure();
+    furry_hal_ibutton_emulate_start(0, ibutton_protocol_group_misc_emulate_callback, group);
 }
 
 static void ibutton_protocol_group_misc_emulate_stop(
@@ -171,8 +171,8 @@ static void ibutton_protocol_group_misc_emulate_stop(
     UNUSED(group);
     UNUSED(data);
     UNUSED(id);
-    furi_hal_ibutton_emulate_stop();
-    furi_hal_ibutton_pin_reset();
+    furry_hal_ibutton_emulate_stop();
+    furry_hal_ibutton_pin_reset();
 }
 
 static bool ibutton_protocol_group_misc_save(
@@ -204,7 +204,7 @@ static void ibutton_protocol_group_misc_render_data(
     iButtonProtocolGroupMisc* group,
     const iButtonProtocolData* data,
     iButtonProtocolLocalId id,
-    FuriString* result) {
+    FurryString* result) {
     const size_t data_size = protocol_dict_get_data_size(group->dict, id);
     protocol_dict_set_data(group->dict, id, data, data_size);
     protocol_dict_render_data(group->dict, result, id);
@@ -214,7 +214,7 @@ static void ibutton_protocol_group_misc_render_brief_data(
     iButtonProtocolGroupMisc* group,
     const iButtonProtocolData* data,
     iButtonProtocolLocalId id,
-    FuriString* result) {
+    FurryString* result) {
     const size_t data_size = protocol_dict_get_data_size(group->dict, id);
     protocol_dict_set_data(group->dict, id, data, data_size);
     protocol_dict_render_brief_data(group->dict, result, id);
@@ -224,7 +224,7 @@ static void ibutton_protocol_group_misc_render_error(
     iButtonProtocolGroupMisc* group,
     const iButtonProtocolData* data,
     iButtonProtocolLocalId id,
-    FuriString* result) {
+    FurryString* result) {
     UNUSED(group);
     UNUSED(data);
     UNUSED(id);

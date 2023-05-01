@@ -30,9 +30,9 @@ typedef struct {
 typedef struct {
     LocaleDateFormat date_format;
     LocaleTimeFormat time_format;
-    FuriHalRtcDateTime datetime;
-    FuriMutex* mutex;
-    FuriMessageQueue* event_queue;
+    FurryHalRtcDateTime datetime;
+    FurryMutex* mutex;
+    FurryMessageQueue* event_queue;
     uint32_t timer_start_timestamp;
     uint32_t timer_stopped_seconds;
     bool timer_running;

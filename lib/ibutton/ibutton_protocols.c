@@ -48,7 +48,7 @@ static void ibutton_protocols_get_group_by_id(
             local_id -= ibutton_protocol_groups[i]->protocol_count;
         }
     }
-    furi_crash(NULL);
+    furry_crash(NULL);
 }
 
 iButtonProtocols* ibutton_protocols_alloc() {
@@ -181,7 +181,7 @@ bool ibutton_protocols_save(
     const iButtonProtocolData* data = ibutton_key_get_protocol_data(key);
 
     bool success = false;
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     FlipperFormat* ff = flipper_format_buffered_file_alloc(storage);
 
@@ -201,7 +201,7 @@ bool ibutton_protocols_save(
     } while(false);
 
     flipper_format_free(ff);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return success;
 }
@@ -210,10 +210,10 @@ bool ibutton_protocols_load(iButtonProtocols* protocols, iButtonKey* key, const 
     iButtonProtocolData* data = ibutton_key_get_protocol_data(key);
 
     bool success = false;
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     FlipperFormat* ff = flipper_format_buffered_file_alloc(storage);
-    FuriString* tmp = furi_string_alloc();
+    FurryString* tmp = furry_string_alloc();
 
     do {
         if(!flipper_format_buffered_file_open_existing(ff, file_name)) break;
@@ -221,7 +221,7 @@ bool ibutton_protocols_load(iButtonProtocols* protocols, iButtonKey* key, const 
         uint32_t version;
 
         if(!flipper_format_read_header(ff, tmp, &version)) break;
-        if(!furi_string_equal(tmp, IBUTTON_FILE_TYPE)) break;
+        if(!furry_string_equal(tmp, IBUTTON_FILE_TYPE)) break;
 
         if(version == 1) {
             if(!flipper_format_read_string(ff, IBUTTON_PROTOCOL_KEY_V1, tmp)) break;
@@ -232,7 +232,7 @@ bool ibutton_protocols_load(iButtonProtocols* protocols, iButtonKey* key, const 
         }
 
         const iButtonProtocolId id =
-            ibutton_protocols_get_id_by_name(protocols, furi_string_get_cstr(tmp));
+            ibutton_protocols_get_id_by_name(protocols, furry_string_get_cstr(tmp));
         ibutton_key_set_protocol_id(key, id);
 
         GET_PROTOCOL_GROUP(id);
@@ -242,8 +242,8 @@ bool ibutton_protocols_load(iButtonProtocols* protocols, iButtonKey* key, const 
     } while(false);
 
     flipper_format_free(ff);
-    furi_string_free(tmp);
-    furi_record_close(RECORD_STORAGE);
+    furry_string_free(tmp);
+    furry_record_close(RECORD_STORAGE);
 
     return success;
 }
@@ -251,7 +251,7 @@ bool ibutton_protocols_load(iButtonProtocols* protocols, iButtonKey* key, const 
 void ibutton_protocols_render_data(
     iButtonProtocols* protocols,
     const iButtonKey* key,
-    FuriString* result) {
+    FurryString* result) {
     const iButtonProtocolId id = ibutton_key_get_protocol_id(key);
     const iButtonProtocolData* data = ibutton_key_get_protocol_data(key);
 
@@ -262,7 +262,7 @@ void ibutton_protocols_render_data(
 void ibutton_protocols_render_brief_data(
     iButtonProtocols* protocols,
     const iButtonKey* key,
-    FuriString* result) {
+    FurryString* result) {
     const iButtonProtocolId id = ibutton_key_get_protocol_id(key);
     const iButtonProtocolData* data = ibutton_key_get_protocol_data(key);
 
@@ -273,7 +273,7 @@ void ibutton_protocols_render_brief_data(
 void ibutton_protocols_render_error(
     iButtonProtocols* protocols,
     const iButtonKey* key,
-    FuriString* result) {
+    FurryString* result) {
     const iButtonProtocolId id = ibutton_key_get_protocol_id(key);
     const iButtonProtocolData* data = ibutton_key_get_protocol_data(key);
 

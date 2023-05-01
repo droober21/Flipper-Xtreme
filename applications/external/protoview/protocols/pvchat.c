@@ -87,7 +87,7 @@ static bool decode(uint8_t* bits, uint32_t numbytes, uint32_t numbits, ProtoView
 
     uint64_t off = bitmap_seek_bits(bits, numbytes, 0, numbits, sync_pattern);
     if(off == BITMAP_SEEK_NOT_FOUND) return false;
-    FURI_LOG_E(TAG, "Chat preamble+sync found");
+    FURRY_LOG_E(TAG, "Chat preamble+sync found");
 
     /* If there is room on the left, let's mark the start of the message
      * a bit before: we don't try to detect all the preamble, but only
@@ -103,7 +103,7 @@ static bool decode(uint8_t* bits, uint32_t numbytes, uint32_t numbits, ProtoView
     uint8_t raw[64] = {(uint8_t)'.'};
     uint32_t decoded =
         convert_from_line_code(raw, sizeof(raw), bits, numbytes, off, "100", "110"); /* PWM */
-    FURI_LOG_E(TAG, "Chat decoded bits: %lu", decoded);
+    FURRY_LOG_E(TAG, "Chat decoded bits: %lu", decoded);
 
     if(decoded < 8 * 4) return false; /* Min message len. */
 
@@ -114,7 +114,7 @@ static bool decode(uint8_t* bits, uint32_t numbytes, uint32_t numbits, ProtoView
         if(raw[j] == 0xff && raw[j + 1] == 0xaa) break;
 
     if(j == sizeof(raw) - 1) {
-        FURI_LOG_E(TAG, "Chat: terminator not found");
+        FURRY_LOG_E(TAG, "Chat: terminator not found");
         return false; // No terminator found.
     }
 
@@ -125,14 +125,14 @@ static bool decode(uint8_t* bits, uint32_t numbytes, uint32_t numbits, ProtoView
 
     // Check if the control sum matches.
     if(sum_bytes(raw, datalen - 1, 0) != raw[datalen - 1]) {
-        FURI_LOG_E(TAG, "Chat: checksum mismatch");
+        FURRY_LOG_E(TAG, "Chat: checksum mismatch");
         return false;
     }
 
     // Check if the length of the sender looks sane
     uint8_t senderlen = raw[0];
     if(senderlen >= sizeof(raw)) {
-        FURI_LOG_E(TAG, "Chat: invalid sender length");
+        FURRY_LOG_E(TAG, "Chat: invalid sender length");
         return false; // Overflow
     }
 

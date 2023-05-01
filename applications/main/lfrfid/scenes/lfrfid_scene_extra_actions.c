@@ -44,7 +44,7 @@ void lfrfid_scene_extra_actions_on_enter(void* context) {
         SubmenuIndexRAW,
         lfrfid_scene_extra_actions_submenu_callback,
         app,
-        !furi_hal_rtc_is_flag_set(FuriHalRtcFlagDebug),
+        !furry_hal_rtc_is_flag_set(FurryHalRtcFlagDebug),
         "Enable\nDebug!");
     submenu_add_lockable_item(
         submenu,
@@ -52,14 +52,14 @@ void lfrfid_scene_extra_actions_on_enter(void* context) {
         SubmenuIndexRAWEmulate,
         lfrfid_scene_extra_actions_submenu_callback,
         app,
-        !furi_hal_rtc_is_flag_set(FuriHalRtcFlagDebug),
+        !furry_hal_rtc_is_flag_set(FurryHalRtcFlagDebug),
         "Enable\nDebug!");
 
     submenu_set_selected_item(
         submenu, scene_manager_get_scene_state(app->scene_manager, LfRfidSceneExtraActions));
 
     // clear key
-    furi_string_reset(app->file_name);
+    furry_string_reset(app->file_name);
     app->protocol_id = PROTOCOL_NO;
     app->read_type = LFRFIDWorkerReadTypeAuto;
 

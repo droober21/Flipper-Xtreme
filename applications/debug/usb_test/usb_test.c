@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #include <gui/view.h>
 #include <gui/view_dispatcher.h>
@@ -10,7 +10,7 @@ typedef struct {
     Gui* gui;
     ViewDispatcher* view_dispatcher;
     Submenu* submenu;
-    FuriHalUsbHidConfig hid_cfg;
+    FurryHalUsbHidConfig hid_cfg;
 } UsbTestApp;
 
 typedef enum {
@@ -25,28 +25,28 @@ typedef enum {
 } SubmenuIndex;
 
 void usb_test_submenu_callback(void* context, uint32_t index) {
-    furi_assert(context);
+    furry_assert(context);
     UsbTestApp* app = context;
     if(index == UsbTestSubmenuIndexEnable) {
-        furi_hal_usb_enable();
+        furry_hal_usb_enable();
     } else if(index == UsbTestSubmenuIndexDisable) {
-        furi_hal_usb_disable();
+        furry_hal_usb_disable();
     } else if(index == UsbTestSubmenuIndexRestart) {
-        furi_hal_usb_reinit();
+        furry_hal_usb_reinit();
     } else if(index == UsbTestSubmenuIndexVcpSingle) {
-        furi_hal_usb_set_config(&usb_cdc_single, NULL);
+        furry_hal_usb_set_config(&usb_cdc_single, NULL);
     } else if(index == UsbTestSubmenuIndexVcpDual) {
-        furi_hal_usb_set_config(&usb_cdc_dual, NULL);
+        furry_hal_usb_set_config(&usb_cdc_dual, NULL);
     } else if(index == UsbTestSubmenuIndexHid) {
-        furi_hal_usb_set_config(&usb_hid, NULL);
+        furry_hal_usb_set_config(&usb_hid, NULL);
     } else if(index == UsbTestSubmenuIndexHidWithParams) {
         app->hid_cfg.vid = 0x1234;
         app->hid_cfg.pid = 0xabcd;
         strlcpy(app->hid_cfg.manuf, "WEN", sizeof(app->hid_cfg.manuf));
         strlcpy(app->hid_cfg.product, "FLIP", sizeof(app->hid_cfg.product));
-        furi_hal_usb_set_config(&usb_hid, &app->hid_cfg);
+        furry_hal_usb_set_config(&usb_hid, &app->hid_cfg);
     } else if(index == UsbTestSubmenuIndexHidU2F) {
-        furi_hal_usb_set_config(&usb_hid_u2f, NULL);
+        furry_hal_usb_set_config(&usb_hid_u2f, NULL);
     }
 }
 
@@ -59,7 +59,7 @@ UsbTestApp* usb_test_app_alloc() {
     UsbTestApp* app = malloc(sizeof(UsbTestApp));
 
     // Gui
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
 
     // View dispatcher
     app->view_dispatcher = view_dispatcher_alloc();
@@ -98,7 +98,7 @@ UsbTestApp* usb_test_app_alloc() {
 }
 
 void usb_test_app_free(UsbTestApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // Free views
     view_dispatcher_remove_view(app->view_dispatcher, 0);
@@ -106,7 +106,7 @@ void usb_test_app_free(UsbTestApp* app) {
     view_dispatcher_free(app->view_dispatcher);
 
     // Close gui record
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     app->gui = NULL;
 
     // Free rest

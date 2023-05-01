@@ -27,8 +27,8 @@ bool ibutton_scene_rpc_on_event(void* context, SceneManagerEvent event) {
             bool result = false;
             const char* file_path = rpc_system_app_get_data(ibutton->rpc);
 
-            if(file_path && (furi_string_empty(ibutton->file_path))) {
-                furi_string_set(ibutton->file_path, file_path);
+            if(file_path && (furry_string_empty(ibutton->file_path))) {
+                furry_string_set(ibutton->file_path, file_path);
 
                 if(ibutton_load_key(ibutton)) {
                     popup_set_text(popup, ibutton->key_name, 82, 32, AlignCenter, AlignTop);

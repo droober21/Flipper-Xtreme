@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <toolbox/protocols/protocol.h>
 #include <lfrfid/tools/fsk_demod.h>
 #include <lfrfid/tools/fsk_osc.h>
@@ -232,9 +232,9 @@ LevelDuration protocol_io_prox_xsf_encoder_yield(ProtocolIOProxXSF* protocol) {
     return level_duration_make(level, duration);
 };
 
-void protocol_io_prox_xsf_render_data(ProtocolIOProxXSF* protocol, FuriString* result) {
+void protocol_io_prox_xsf_render_data(ProtocolIOProxXSF* protocol, FurryString* result) {
     uint8_t* data = protocol->data;
-    furi_string_printf(
+    furry_string_printf(
         result,
         "FC: %u\r\n"
         "VС: %u\r\n"
@@ -244,9 +244,9 @@ void protocol_io_prox_xsf_render_data(ProtocolIOProxXSF* protocol, FuriString* r
         (uint16_t)((data[2] << 8) | (data[3])));
 }
 
-void protocol_io_prox_xsf_render_brief_data(ProtocolIOProxXSF* protocol, FuriString* result) {
+void protocol_io_prox_xsf_render_brief_data(ProtocolIOProxXSF* protocol, FurryString* result) {
     uint8_t* data = protocol->data;
-    furi_string_printf(
+    furry_string_printf(
         result,
         "FC: %u, VС: %u\r\n"
         "Card: %u",

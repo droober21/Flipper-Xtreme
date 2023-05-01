@@ -8,7 +8,7 @@ enum PowerSettingsSubmenuIndex {
 };
 
 static void power_settings_scene_start_submenu_callback(void* context, uint32_t index) {
-    furi_assert(context);
+    furry_assert(context);
     PowerSettingsApp* app = context;
     view_dispatcher_send_custom_event(app->view_dispatcher, index);
 }

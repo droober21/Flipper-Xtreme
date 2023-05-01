@@ -36,17 +36,17 @@ bool wav_parser_parse(WavParser* parser, Stream* stream, WavPlayerApp* app) {
 
     if(memcmp(parser->header.riff, "RIFF", 4) != 0 ||
        memcmp(parser->header.wave, "WAVE", 4) != 0) {
-        FURI_LOG_E(TAG, "WAV: wrong header");
+        FURRY_LOG_E(TAG, "WAV: wrong header");
         return false;
     }
 
     if(memcmp(parser->format.fmt, "fmt ", 4) != 0) {
-        FURI_LOG_E(TAG, "WAV: wrong format");
+        FURRY_LOG_E(TAG, "WAV: wrong format");
         return false;
     }
 
     if(parser->format.tag != FormatTagPCM || memcmp(parser->data.data, "data", 4) != 0) {
-        FURI_LOG_E(
+        FURRY_LOG_E(
             TAG,
             "WAV: non-PCM format %u, next '%lu'",
             parser->format.tag,
@@ -54,7 +54,7 @@ bool wav_parser_parse(WavParser* parser, Stream* stream, WavPlayerApp* app) {
         return false;
     }
 
-    FURI_LOG_I(
+    FURRY_LOG_I(
         TAG,
         "Format tag: %s, ch: %u, smplrate: %lu, bps: %lu, bits: %u",
         format_text(parser->format.tag),
@@ -70,7 +70,7 @@ bool wav_parser_parse(WavParser* parser, Stream* stream, WavPlayerApp* app) {
     parser->wav_data_start = stream_tell(stream);
     parser->wav_data_end = parser->wav_data_start + parser->data.size;
 
-    FURI_LOG_I(TAG, "data: %u - %u", parser->wav_data_start, parser->wav_data_end);
+    FURRY_LOG_I(TAG, "data: %u - %u", parser->wav_data_start, parser->wav_data_end);
 
     return true;
 }

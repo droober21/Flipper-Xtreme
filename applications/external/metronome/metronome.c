@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <input/input.h>
 #include <stdlib.h>
 
@@ -47,35 +47,35 @@ typedef struct {
     int note_length;
     int current_beat;
     enum OutputMode output_mode;
-    FuriTimer* timer;
+    FurryTimer* timer;
     NotificationApp* notifications;
-    FuriMutex* mutex;
+    FurryMutex* mutex;
 } MetronomeState;
 
 static void render_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     const MetronomeState* metronome_state = ctx;
-    furi_mutex_acquire(metronome_state->mutex, FuriWaitForever);
+    furry_mutex_acquire(metronome_state->mutex, FurryWaitForever);
 
-    FuriString* tempStr = furi_string_alloc();
+    FurryString* tempStr = furry_string_alloc();
 
     canvas_draw_frame(canvas, 0, 0, 128, 64);
 
     canvas_set_font(canvas, FontPrimary);
 
     // draw bars/beat
-    furi_string_printf(
+    furry_string_printf(
         tempStr, "%d/%d", metronome_state->beats_per_bar, metronome_state->note_length);
     canvas_draw_str_aligned(
-        canvas, 64, 8, AlignCenter, AlignCenter, furi_string_get_cstr(tempStr));
-    furi_string_reset(tempStr);
+        canvas, 64, 8, AlignCenter, AlignCenter, furry_string_get_cstr(tempStr));
+    furry_string_reset(tempStr);
 
     // draw BPM value
-    furi_string_printf(tempStr, "%.2f", metronome_state->bpm);
+    furry_string_printf(tempStr, "%.2f", metronome_state->bpm);
     canvas_set_font(canvas, FontBigNumbers);
     canvas_draw_str_aligned(
-        canvas, 64, 24, AlignCenter, AlignCenter, furi_string_get_cstr(tempStr));
-    furi_string_reset(tempStr);
+        canvas, 64, 24, AlignCenter, AlignCenter, furry_string_get_cstr(tempStr));
+    furry_string_reset(tempStr);
 
     // draw volume indicator
     // always draw first waves
@@ -127,22 +127,22 @@ static void render_callback(Canvas* const canvas, void* ctx) {
         canvas, 8, 36, 112, (float)metronome_state->current_beat / metronome_state->beats_per_bar);
 
     // cleanup
-    furi_string_free(tempStr);
-    furi_mutex_release(metronome_state->mutex);
+    furry_string_free(tempStr);
+    furry_mutex_release(metronome_state->mutex);
 }
 
-static void input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     PluginEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 static void timer_callback(void* ctx) {
     // this is where we go BEEP!
-    furi_assert(ctx);
+    furry_assert(ctx);
     MetronomeState* metronome_state = ctx;
-    furi_mutex_acquire(metronome_state->mutex, FuriWaitForever);
+    furry_mutex_acquire(metronome_state->mutex, FurryWaitForever);
 
     metronome_state->current_beat++;
     if(metronome_state->current_beat > metronome_state->beats_per_bar) {
@@ -153,8 +153,8 @@ static void timer_callback(void* ctx) {
         notification_message(metronome_state->notifications, &sequence_set_only_red_255);
         switch(metronome_state->output_mode) {
         case Loud:
-            if(furi_hal_speaker_acquire(1000)) {
-                furi_hal_speaker_start(440.0f, 1.0f);
+            if(furry_hal_speaker_acquire(1000)) {
+                furry_hal_speaker_start(440.0f, 1.0f);
             }
             break;
         case Vibro:
@@ -168,8 +168,8 @@ static void timer_callback(void* ctx) {
         notification_message(metronome_state->notifications, &sequence_set_only_green_255);
         switch(metronome_state->output_mode) {
         case Loud:
-            if(furi_hal_speaker_acquire(1000)) {
-                furi_hal_speaker_start(220.0f, 1.0f);
+            if(furry_hal_speaker_acquire(1000)) {
+                furry_hal_speaker_start(220.0f, 1.0f);
             }
             break;
         case Vibro:
@@ -183,20 +183,20 @@ static void timer_callback(void* ctx) {
     // this is a bit of a kludge... if we are on vibro and unpronounced, stop vibro after half the usual duration
     switch(metronome_state->output_mode) {
     case Loud:
-        furi_delay_ms(BEEP_DELAY_MS);
-        if(furi_hal_speaker_is_mine()) {
-            furi_hal_speaker_stop();
-            furi_hal_speaker_release();
+        furry_delay_ms(BEEP_DELAY_MS);
+        if(furry_hal_speaker_is_mine()) {
+            furry_hal_speaker_stop();
+            furry_hal_speaker_release();
         }
         break;
     case Vibro:
         if(metronome_state->current_beat == 1) {
-            furi_delay_ms(BEEP_DELAY_MS);
+            furry_delay_ms(BEEP_DELAY_MS);
             notification_message(metronome_state->notifications, &sequence_reset_vibro);
         } else {
-            furi_delay_ms((int)BEEP_DELAY_MS / 2);
+            furry_delay_ms((int)BEEP_DELAY_MS / 2);
             notification_message(metronome_state->notifications, &sequence_reset_vibro);
-            furi_delay_ms((int)BEEP_DELAY_MS / 2);
+            furry_delay_ms((int)BEEP_DELAY_MS / 2);
         }
         break;
     case Silent:
@@ -204,21 +204,21 @@ static void timer_callback(void* ctx) {
     }
     notification_message(metronome_state->notifications, &sequence_reset_rgb);
 
-    furi_mutex_release(metronome_state->mutex);
+    furry_mutex_release(metronome_state->mutex);
 }
 
 static uint32_t state_to_sleep_ticks(MetronomeState* metronome_state) {
     // calculate time between beeps
-    uint32_t tps = furi_kernel_get_tick_frequency();
+    uint32_t tps = furry_kernel_get_tick_frequency();
     double multiplier = 4.0d / metronome_state->note_length;
     double bps = (double)metronome_state->bpm / 60;
     return (uint32_t)(round(tps / bps) - ((BEEP_DELAY_MS / 1000) * tps)) * multiplier;
 }
 
 static void update_timer(MetronomeState* metronome_state) {
-    if(furi_timer_is_running(metronome_state->timer)) {
-        furi_timer_stop(metronome_state->timer);
-        furi_timer_start(metronome_state->timer, state_to_sleep_ticks(metronome_state));
+    if(furry_timer_is_running(metronome_state->timer)) {
+        furry_timer_stop(metronome_state->timer);
+        furry_timer_start(metronome_state->timer, state_to_sleep_ticks(metronome_state));
     }
 }
 
@@ -268,18 +268,18 @@ static void metronome_state_init(MetronomeState* const metronome_state) {
     metronome_state->note_length = 4;
     metronome_state->current_beat = 0;
     metronome_state->output_mode = Loud;
-    metronome_state->notifications = furi_record_open(RECORD_NOTIFICATION);
+    metronome_state->notifications = furry_record_open(RECORD_NOTIFICATION);
 }
 
 int32_t metronome_app() {
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(PluginEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(PluginEvent));
 
     MetronomeState* metronome_state = malloc(sizeof(MetronomeState));
     metronome_state_init(metronome_state);
 
-    metronome_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    metronome_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!metronome_state->mutex) {
-        FURI_LOG_E("Metronome", "cannot create mutex\r\n");
+        FURRY_LOG_E("Metronome", "cannot create mutex\r\n");
         free(metronome_state);
         return 255;
     }
@@ -289,19 +289,19 @@ int32_t metronome_app() {
     view_port_draw_callback_set(view_port, render_callback, metronome_state);
     view_port_input_callback_set(view_port, input_callback, event_queue);
     metronome_state->timer =
-        furi_timer_alloc(timer_callback, FuriTimerTypePeriodic, metronome_state);
+        furry_timer_alloc(timer_callback, FurryTimerTypePeriodic, metronome_state);
 
     // Open GUI and register view_port
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     PluginEvent event;
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 100);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 100);
 
-        furi_mutex_acquire(metronome_state->mutex, FuriWaitForever);
+        furry_mutex_acquire(metronome_state->mutex, FurryWaitForever);
 
-        if(event_status == FuriStatusOk) {
+        if(event_status == FurryStatusOk) {
             if(event.type == EventTypeKey) {
                 if(event.input.type == InputTypeShort) {
                     // push events
@@ -321,10 +321,10 @@ int32_t metronome_app() {
                     case InputKeyOk:
                         metronome_state->playing = !metronome_state->playing;
                         if(metronome_state->playing) {
-                            furi_timer_start(
+                            furry_timer_start(
                                 metronome_state->timer, state_to_sleep_ticks(metronome_state));
                         } else {
-                            furi_timer_stop(metronome_state->timer);
+                            furry_timer_stop(metronome_state->timer);
                         }
                         break;
                     case InputKeyBack:
@@ -381,17 +381,17 @@ int32_t metronome_app() {
         }
 
         view_port_update(view_port);
-        furi_mutex_release(metronome_state->mutex);
+        furry_mutex_release(metronome_state->mutex);
     }
 
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_mutex_free(metronome_state->mutex);
-    furi_timer_free(metronome_state->timer);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_message_queue_free(event_queue);
+    furry_mutex_free(metronome_state->mutex);
+    furry_timer_free(metronome_state->timer);
+    furry_record_close(RECORD_NOTIFICATION);
     free(metronome_state);
 
     return 0;

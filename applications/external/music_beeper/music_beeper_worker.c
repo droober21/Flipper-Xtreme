@@ -1,7 +1,7 @@
 #include "music_beeper_worker.h"
 
-#include <furi_hal.h>
-#include <furi.h>
+#include <furry_hal.h>
+#include <furry.h>
 
 #include <storage/storage.h>
 #include <lib/flipper_format/flipper_format.h>
@@ -28,7 +28,7 @@ typedef struct {
 ARRAY_DEF(NoteBlockArray, NoteBlock, M_POD_OPLIST);
 
 struct MusicBeeperWorker {
-    FuriThread* thread;
+    FurryThread* thread;
     bool should_work;
 
     MusicBeeperWorkerCallback callback;
@@ -42,29 +42,29 @@ struct MusicBeeperWorker {
 };
 
 static int32_t music_beeper_worker_thread_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     MusicBeeperWorker* instance = context;
 
     NoteBlockArray_it_t it;
     NoteBlockArray_it(it, instance->notes);
-    if(furi_hal_speaker_acquire(1000)) {
+    if(furry_hal_speaker_acquire(1000)) {
         while(instance->should_work) {
             if(NoteBlockArray_end_p(it)) {
                 NoteBlockArray_it(it, instance->notes);
-                furi_delay_ms(10);
+                furry_delay_ms(10);
             } else {
                 NoteBlock* note_block = NoteBlockArray_ref(it);
 
                 float note_from_a4 = (float)note_block->semitone - NOTE_C4_SEMITONE;
                 float frequency = NOTE_C4 * powf(TWO_POW_TWELTH_ROOT, note_from_a4);
-                float duration = 60.0 * furi_kernel_get_tick_frequency() * 4 / instance->bpm /
+                float duration = 60.0 * furry_kernel_get_tick_frequency() * 4 / instance->bpm /
                                  note_block->duration;
                 uint32_t dots = note_block->dots;
                 while(dots > 0) {
                     duration += duration / 2;
                     dots--;
                 }
-                uint32_t next_tick = furi_get_tick() + duration;
+                uint32_t next_tick = furry_get_tick() + duration;
                 float volume = instance->volume;
 
                 if(instance->callback) {
@@ -76,21 +76,21 @@ static int32_t music_beeper_worker_thread_callback(void* context) {
                         instance->callback_context);
                 }
 
-                furi_hal_speaker_stop();
-                furi_hal_speaker_start(frequency, volume);
-                while(instance->should_work && furi_get_tick() < next_tick) {
+                furry_hal_speaker_stop();
+                furry_hal_speaker_start(frequency, volume);
+                while(instance->should_work && furry_get_tick() < next_tick) {
                     volume *= 1;
-                    furi_hal_speaker_set_volume(volume);
-                    furi_delay_ms(2);
+                    furry_hal_speaker_set_volume(volume);
+                    furry_delay_ms(2);
                 }
                 NoteBlockArray_next(it);
             }
         }
 
-        furi_hal_speaker_stop();
-        furi_hal_speaker_release();
+        furry_hal_speaker_stop();
+        furry_hal_speaker_release();
     } else {
-        FURI_LOG_E(TAG, "Speaker system is busy with another process.");
+        FURRY_LOG_E(TAG, "Speaker system is busy with another process.");
     }
 
     return 0;
@@ -101,11 +101,11 @@ MusicBeeperWorker* music_beeper_worker_alloc() {
 
     NoteBlockArray_init(instance->notes);
 
-    instance->thread = furi_thread_alloc();
-    furi_thread_set_name(instance->thread, "MusicBeeperWorker");
-    furi_thread_set_stack_size(instance->thread, 1024);
-    furi_thread_set_context(instance->thread, instance);
-    furi_thread_set_callback(instance->thread, music_beeper_worker_thread_callback);
+    instance->thread = furry_thread_alloc();
+    furry_thread_set_name(instance->thread, "MusicBeeperWorker");
+    furry_thread_set_stack_size(instance->thread, 1024);
+    furry_thread_set_context(instance->thread, instance);
+    furry_thread_set_callback(instance->thread, music_beeper_worker_thread_callback);
 
     instance->volume = 1.0f;
 
@@ -117,8 +117,8 @@ void music_beeper_worker_clear(MusicBeeperWorker* instance) {
 }
 
 void music_beeper_worker_free(MusicBeeperWorker* instance) {
-    furi_assert(instance);
-    furi_thread_free(instance->thread);
+    furry_assert(instance);
+    furry_thread_free(instance->thread);
     NoteBlockArray_clear(instance->notes);
     free(instance);
 }
@@ -266,7 +266,7 @@ static bool music_beeper_worker_parse_notes(MusicBeeperWorker* instance, const c
             is_valid &= (octave <= 16);
             is_valid &= (dots <= 16);
             if(!is_valid) {
-                FURI_LOG_E(
+                FURRY_LOG_E(
                     TAG,
                     "Invalid note: %lu%c%c%lu.%lu",
                     duration,
@@ -289,7 +289,7 @@ static bool music_beeper_worker_parse_notes(MusicBeeperWorker* instance, const c
             }
 
             if(music_beeper_worker_add_note(instance, semitone, duration, dots)) {
-                FURI_LOG_D(
+                FURRY_LOG_D(
                     TAG,
                     "Added note: %c%c%lu.%lu = %u %lu",
                     note_char == '\0' ? '_' : note_char,
@@ -299,7 +299,7 @@ static bool music_beeper_worker_parse_notes(MusicBeeperWorker* instance, const c
                     semitone,
                     duration);
             } else {
-                FURI_LOG_E(
+                FURRY_LOG_E(
                     TAG,
                     "Invalid note: %c%c%lu.%lu = %u %lu",
                     note_char == '\0' ? '_' : note_char,
@@ -319,8 +319,8 @@ static bool music_beeper_worker_parse_notes(MusicBeeperWorker* instance, const c
 }
 
 bool music_beeper_worker_load(MusicBeeperWorker* instance, const char* file_path) {
-    furi_assert(instance);
-    furi_assert(file_path);
+    furry_assert(instance);
+    furry_assert(file_path);
 
     bool ret = false;
     if(strcasestr(file_path, ".fmf")) {
@@ -332,14 +332,14 @@ bool music_beeper_worker_load(MusicBeeperWorker* instance, const char* file_path
 }
 
 bool music_beeper_worker_load_fmf_from_file(MusicBeeperWorker* instance, const char* file_path) {
-    furi_assert(instance);
-    furi_assert(file_path);
+    furry_assert(instance);
+    furry_assert(file_path);
 
     bool result = false;
-    FuriString* temp_str;
-    temp_str = furi_string_alloc();
+    FurryString* temp_str;
+    temp_str = furry_string_alloc();
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* file = flipper_format_file_alloc(storage);
 
     do {
@@ -347,57 +347,57 @@ bool music_beeper_worker_load_fmf_from_file(MusicBeeperWorker* instance, const c
 
         uint32_t version = 0;
         if(!flipper_format_read_header(file, temp_str, &version)) break;
-        if(furi_string_cmp_str(temp_str, MUSIC_BEEPER_FILETYPE) ||
+        if(furry_string_cmp_str(temp_str, MUSIC_BEEPER_FILETYPE) ||
            (version != MUSIC_BEEPER_VERSION)) {
-            FURI_LOG_E(TAG, "Incorrect file format or version");
+            FURRY_LOG_E(TAG, "Incorrect file format or version");
             break;
         }
 
         if(!flipper_format_read_uint32(file, "BPM", &instance->bpm, 1)) {
-            FURI_LOG_E(TAG, "BPM is missing");
+            FURRY_LOG_E(TAG, "BPM is missing");
             break;
         }
         if(!flipper_format_read_uint32(file, "Duration", &instance->duration, 1)) {
-            FURI_LOG_E(TAG, "Duration is missing");
+            FURRY_LOG_E(TAG, "Duration is missing");
             break;
         }
         if(!flipper_format_read_uint32(file, "Octave", &instance->octave, 1)) {
-            FURI_LOG_E(TAG, "Octave is missing");
+            FURRY_LOG_E(TAG, "Octave is missing");
             break;
         }
 
         if(!flipper_format_read_string(file, "Notes", temp_str)) {
-            FURI_LOG_E(TAG, "Notes is missing");
+            FURRY_LOG_E(TAG, "Notes is missing");
             break;
         }
 
-        if(!music_beeper_worker_parse_notes(instance, furi_string_get_cstr(temp_str))) {
+        if(!music_beeper_worker_parse_notes(instance, furry_string_get_cstr(temp_str))) {
             break;
         }
 
         result = true;
     } while(false);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     flipper_format_free(file);
-    furi_string_free(temp_str);
+    furry_string_free(temp_str);
 
     return result;
 }
 
 bool music_beeper_worker_load_rtttl_from_file(MusicBeeperWorker* instance, const char* file_path) {
-    furi_assert(instance);
-    furi_assert(file_path);
+    furry_assert(instance);
+    furry_assert(file_path);
 
     bool result = false;
-    FuriString* content;
-    content = furi_string_alloc();
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    FurryString* content;
+    content = furry_string_alloc();
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     File* file = storage_file_alloc(storage);
 
     do {
         if(!storage_file_open(file, file_path, FSAM_READ, FSOM_OPEN_EXISTING)) {
-            FURI_LOG_E(TAG, "Unable to open file");
+            FURRY_LOG_E(TAG, "Unable to open file");
             break;
         };
 
@@ -406,18 +406,18 @@ bool music_beeper_worker_load_rtttl_from_file(MusicBeeperWorker* instance, const
             uint8_t buffer[65] = {0};
             ret = storage_file_read(file, buffer, sizeof(buffer) - 1);
             for(size_t i = 0; i < ret; i++) {
-                furi_string_push_back(content, buffer[i]);
+                furry_string_push_back(content, buffer[i]);
             }
         } while(ret > 0);
 
-        furi_string_trim(content);
-        if(!furi_string_size(content)) {
-            FURI_LOG_E(TAG, "Empty file");
+        furry_string_trim(content);
+        if(!furry_string_size(content)) {
+            FURRY_LOG_E(TAG, "Empty file");
             break;
         }
 
-        if(!music_beeper_worker_load_rtttl_from_string(instance, furi_string_get_cstr(content))) {
-            FURI_LOG_E(TAG, "Invalid file content");
+        if(!music_beeper_worker_load_rtttl_from_string(instance, furry_string_get_cstr(content))) {
+            FURRY_LOG_E(TAG, "Invalid file content");
             break;
         }
 
@@ -425,14 +425,14 @@ bool music_beeper_worker_load_rtttl_from_file(MusicBeeperWorker* instance, const
     } while(0);
 
     storage_file_free(file);
-    furi_record_close(RECORD_STORAGE);
-    furi_string_free(content);
+    furry_record_close(RECORD_STORAGE);
+    furry_string_free(content);
 
     return result;
 }
 
 bool music_beeper_worker_load_rtttl_from_string(MusicBeeperWorker* instance, const char* string) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     const char* cursor = string;
 
@@ -483,28 +483,28 @@ void music_beeper_worker_set_callback(
     MusicBeeperWorker* instance,
     MusicBeeperWorkerCallback callback,
     void* context) {
-    furi_assert(instance);
+    furry_assert(instance);
     instance->callback = callback;
     instance->callback_context = context;
 }
 
 void music_beeper_worker_set_volume(MusicBeeperWorker* instance, float volume) {
-    furi_assert(instance);
+    furry_assert(instance);
     instance->volume = volume;
 }
 
 void music_beeper_worker_start(MusicBeeperWorker* instance) {
-    furi_assert(instance);
-    furi_assert(instance->should_work == false);
+    furry_assert(instance);
+    furry_assert(instance->should_work == false);
 
     instance->should_work = true;
-    furi_thread_start(instance->thread);
+    furry_thread_start(instance->thread);
 }
 
 void music_beeper_worker_stop(MusicBeeperWorker* instance) {
-    furi_assert(instance);
-    furi_assert(instance->should_work == true);
+    furry_assert(instance);
+    furry_assert(instance->should_work == true);
 
     instance->should_work = false;
-    furi_thread_join(instance->thread);
+    furry_thread_join(instance->thread);
 }

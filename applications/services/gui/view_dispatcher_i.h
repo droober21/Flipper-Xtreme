@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <furi.h>
+#include <furry.h>
 #include <m-dict.h>
 
 #include "view_dispatcher.h"
@@ -15,7 +15,7 @@
 DICT_DEF2(ViewDict, uint32_t, M_DEFAULT_OPLIST, View*, M_PTR_OPLIST)
 
 struct ViewDispatcher {
-    FuriMessageQueue* queue;
+    FurryMessageQueue* queue;
     Gui* gui;
     ViewPort* view_port;
     ViewDict_t views;

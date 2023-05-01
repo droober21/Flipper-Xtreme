@@ -9,7 +9,7 @@
 #include "hede_assets.h"
 #include "heap_defence_icons.h"
 
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <notification/notification.h>
@@ -86,7 +86,7 @@ typedef struct {
     Person* person;
     Animations animation;
     GameStatuses game_status;
-    FuriMutex* mutex;
+    FurryMutex* mutex;
 } GameState;
 
 typedef Box** Field;
@@ -129,7 +129,7 @@ static GameState* allocGameState() {
 }
 
 static void game_destroy(GameState* game) {
-    furi_assert(game);
+    furry_assert(game);
     free(game->field[0]);
     free(game->field);
     free(game);
@@ -196,7 +196,7 @@ static inline void heap_swap(Box* first, Box* second) {
  */
 
 static void generate_box(GameState const* game) {
-    furi_assert(game);
+    furry_assert(game);
 
     static byte tick_count = BOX_GENERATION_RATE;
     if(tick_count++ != BOX_GENERATION_RATE) {
@@ -215,7 +215,7 @@ static void generate_box(GameState const* game) {
 }
 
 static void drop_box(GameState* game) {
-    furi_assert(game);
+    furry_assert(game);
 
     for(int y = Y_LAST; y > 0; y--) {
         for(int x = 0; x < X_FIELD_SIZE; x++) {
@@ -346,7 +346,7 @@ void hd_person_set_state(Person* person, PlayerStates state) {
 
 static void person_move(Person* person, Field field) {
     /// Left-right logic
-    FURI_LOG_W(TAG, "[JUMP]func:[%s] line: %d", __FUNCTION__, __LINE__);
+    FURRY_LOG_W(TAG, "[JUMP]func:[%s] line: %d", __FUNCTION__, __LINE__);
 
     if(person->states == PlayerNothing) {
         if(!on_ground(person, field)) {
@@ -384,7 +384,7 @@ static void person_move(Person* person, Field field) {
         break;
     case 1:
         person->h_tick++;
-        FURI_LOG_W(TAG, "[JUMP]func:[%s] line: %d", __FUNCTION__, __LINE__);
+        FURRY_LOG_W(TAG, "[JUMP]func:[%s] line: %d", __FUNCTION__, __LINE__);
         bool moved = horizontal_move(person, field);
         if(!moved) {
             person->h_tick = 0;
@@ -392,12 +392,12 @@ static void person_move(Person* person, Field field) {
         }
         break;
     case 5:
-        FURI_LOG_W(TAG, "[JUMP]func:[%s] line: %d", __FUNCTION__, __LINE__);
+        FURRY_LOG_W(TAG, "[JUMP]func:[%s] line: %d", __FUNCTION__, __LINE__);
         person->h_tick = 0;
         person->x_direction = 0;
         break;
     default:
-        FURI_LOG_W(TAG, "[JUMP]func:[%s] line: %d", __FUNCTION__, __LINE__);
+        FURRY_LOG_W(TAG, "[JUMP]func:[%s] line: %d", __FUNCTION__, __LINE__);
         person->h_tick++;
     }
 }
@@ -432,16 +432,16 @@ static void draw_box(Canvas* canvas, Box* box, int x, int y) {
 }
 
 static void heap_defense_render_callback(Canvas* const canvas, void* mutex) {
-    furi_assert(mutex);
+    furry_assert(mutex);
     const GameState* game = mutex;
-    furi_mutex_acquire(game->mutex, FuriWaitForever);
+    furry_mutex_acquire(game->mutex, FurryWaitForever);
 
     ///Draw GameOver or Pause
     if(!(game->game_status & GameStatusInProgress)) {
-        FURI_LOG_W(TAG, "[DAED_DRAW]func: [%s] line: %d ", __FUNCTION__, __LINE__);
+        FURRY_LOG_W(TAG, "[DAED_DRAW]func: [%s] line: %d ", __FUNCTION__, __LINE__);
 
         canvas_draw_icon_animation(canvas, 0, 0, animations[game->animation]);
-        furi_mutex_release(game->mutex);
+        furry_mutex_release(game->mutex);
         return;
     }
 
@@ -481,34 +481,34 @@ static void heap_defense_render_callback(Canvas* const canvas, void* mutex) {
         }
     }
 
-    furi_mutex_release(game->mutex);
+    furry_mutex_release(game->mutex);
 }
 
-static void heap_defense_input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
+static void heap_defense_input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
     if(input_event->type != InputTypePress && input_event->type != InputTypeLong) return;
 
-    furi_assert(event_queue);
+    furry_assert(event_queue);
     GameEvent event = {.type = EventKeyPress, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
-static void heap_defense_timer_callback(FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void heap_defense_timer_callback(FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     GameEvent event;
     event.type = EventGameTick;
     event.input = (InputEvent){0};
-    furi_message_queue_put(event_queue, &event, 0);
+    furry_message_queue_put(event_queue, &event, 0);
 }
 
 int32_t heap_defence_app(void* p) {
     UNUSED(p);
 
-    //FURI_LOG_W(TAG, "Heap defence start %d", __LINE__);
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(GameEvent));
+    //FURRY_LOG_W(TAG, "Heap defence start %d", __LINE__);
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(GameEvent));
     GameState* game = allocGameState();
 
-    game->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    game->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!game->mutex) {
         game_destroy(game);
         return 1;
@@ -519,14 +519,14 @@ int32_t heap_defence_app(void* p) {
     view_port_draw_callback_set(view_port, heap_defense_render_callback, game);
     view_port_input_callback_set(view_port, heap_defense_input_callback, event_queue);
 
-    FuriTimer* timer =
-        furi_timer_alloc(heap_defense_timer_callback, FuriTimerTypePeriodic, event_queue);
-    furi_timer_start(timer, furi_kernel_get_tick_frequency() / TIMER_UPDATE_FREQ);
+    FurryTimer* timer =
+        furry_timer_alloc(heap_defense_timer_callback, FurryTimerTypePeriodic, event_queue);
+    furry_timer_start(timer, furry_kernel_get_tick_frequency() / TIMER_UPDATE_FREQ);
 
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
-    NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+    NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
 
     memset(game->field[Y_LAST], 128, ROW_BYTE_SIZE);
     game->person->p.y -= 2;
@@ -535,11 +535,11 @@ int32_t heap_defence_app(void* p) {
 
     GameEvent event = {0};
     while(event.input.key != InputKeyBack) {
-        if(furi_message_queue_get(event_queue, &event, 100) != FuriStatusOk) {
+        if(furry_message_queue_get(event_queue, &event, 100) != FurryStatusOk) {
             continue;
         }
 
-        furi_mutex_acquire(game->mutex, FuriWaitForever);
+        furry_mutex_acquire(game->mutex, FurryWaitForever);
 
         //unset vibration
         if(game->game_status & GameStatusVibro) {
@@ -576,19 +576,19 @@ int32_t heap_defence_app(void* p) {
                 notification_message(notification, &sequence_error);
             }
         }
-        furi_mutex_release(game->mutex);
+        furry_mutex_release(game->mutex);
         view_port_update(view_port);
     }
 
-    furi_timer_free(timer);
+    furry_timer_free(timer);
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
     view_port_free(view_port);
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_message_queue_free(event_queue);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_message_queue_free(event_queue);
     assets_clear();
-    furi_mutex_free(game->mutex);
+    furry_mutex_free(game->mutex);
     game_destroy(game);
 
     return 0;

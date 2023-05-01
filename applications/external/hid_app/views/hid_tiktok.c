@@ -24,7 +24,7 @@ typedef struct {
 } HidTikTokModel;
 
 static void hid_tiktok_draw_callback(Canvas* canvas, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     HidTikTokModel* model = context;
 
     // Header
@@ -114,12 +114,12 @@ static void hid_tiktok_reset_cursor(HidTikTok* hid_tiktok) {
     // Delays to guarantee one packet per connection interval
     for(size_t i = 0; i < 8; i++) {
         hid_hal_mouse_move(hid_tiktok->hid, -127, -127);
-        furi_delay_ms(50);
+        furry_delay_ms(50);
     }
     // Move cursor from the corner
     hid_hal_mouse_move(hid_tiktok->hid, 40, 120);
     hid_hal_mouse_move(hid_tiktok->hid, 0, 120);
-    furi_delay_ms(50);
+    furry_delay_ms(50);
 }
 
 static void
@@ -161,7 +161,7 @@ static void
 }
 
 static bool hid_tiktok_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     HidTikTok* hid_tiktok = context;
     bool consumed = false;
 
@@ -182,11 +182,11 @@ static bool hid_tiktok_input_callback(InputEvent* event, void* context) {
             } else if(event->type == InputTypeShort) {
                 if(event->key == InputKeyOk) {
                     hid_hal_mouse_press(hid_tiktok->hid, HID_MOUSE_BTN_LEFT);
-                    furi_delay_ms(25);
+                    furry_delay_ms(25);
                     hid_hal_mouse_release(hid_tiktok->hid, HID_MOUSE_BTN_LEFT);
-                    furi_delay_ms(100);
+                    furry_delay_ms(100);
                     hid_hal_mouse_press(hid_tiktok->hid, HID_MOUSE_BTN_LEFT);
-                    furi_delay_ms(25);
+                    furry_delay_ms(25);
                     hid_hal_mouse_release(hid_tiktok->hid, HID_MOUSE_BTN_LEFT);
                     consumed = true;
                 } else if(event->key == InputKeyDown) {
@@ -200,7 +200,7 @@ static bool hid_tiktok_input_callback(InputEvent* event, void* context) {
                 } else if(event->key == InputKeyBack) {
                     // Pause
                     hid_hal_mouse_press(hid_tiktok->hid, HID_MOUSE_BTN_LEFT);
-                    furi_delay_ms(50);
+                    furry_delay_ms(50);
                     hid_hal_mouse_release(hid_tiktok->hid, HID_MOUSE_BTN_LEFT);
                     consumed = true;
                 }
@@ -233,18 +233,18 @@ HidTikTok* hid_tiktok_alloc(Hid* bt_hid) {
 }
 
 void hid_tiktok_free(HidTikTok* hid_tiktok) {
-    furi_assert(hid_tiktok);
+    furry_assert(hid_tiktok);
     view_free(hid_tiktok->view);
     free(hid_tiktok);
 }
 
 View* hid_tiktok_get_view(HidTikTok* hid_tiktok) {
-    furi_assert(hid_tiktok);
+    furry_assert(hid_tiktok);
     return hid_tiktok->view;
 }
 
 void hid_tiktok_set_connected_status(HidTikTok* hid_tiktok, bool connected) {
-    furi_assert(hid_tiktok);
+    furry_assert(hid_tiktok);
     with_view_model(
         hid_tiktok->view,
         HidTikTokModel * model,

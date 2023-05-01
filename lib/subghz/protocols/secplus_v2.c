@@ -100,7 +100,7 @@ void* subghz_protocol_encoder_secplus_v2_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_encoder_secplus_v2_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderSecPlus_v2* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -139,7 +139,7 @@ static bool subghz_protocol_secplus_v2_mix_invet(uint8_t invert, uint16_t p[]) {
     case 0x09: // 0b1001 (False, False, False),
         break;
     default:
-        FURI_LOG_E(TAG, "Invert FAIL");
+        FURRY_LOG_E(TAG, "Invert FAIL");
         return false;
     }
     return true;
@@ -182,7 +182,7 @@ static bool subghz_protocol_secplus_v2_mix_order_decode(uint8_t order, uint16_t 
         // no reordering
         break;
     default:
-        FURI_LOG_E(TAG, "Order FAIL");
+        FURRY_LOG_E(TAG, "Order FAIL");
         return false;
     }
     return true;
@@ -227,7 +227,7 @@ static bool subghz_protocol_secplus_v2_mix_order_encode(uint8_t order, uint16_t 
         c = p[2];
         break;
     default:
-        FURI_LOG_E(TAG, "Order FAIL");
+        FURRY_LOG_E(TAG, "Order FAIL");
         return false;
     }
 
@@ -265,7 +265,7 @@ static bool
     for(int i = 6; i >= 0; i -= 2) {
         roll_array[k] = (data >> i) & 0x03;
         if(roll_array[k++] == 3) {
-            FURI_LOG_E(TAG, "Roll_Array FAIL");
+            FURRY_LOG_E(TAG, "Roll_Array FAIL");
             return false;
         }
     }
@@ -273,7 +273,7 @@ static bool
     for(int i = 8; i >= 0; i -= 2) {
         roll_array[k] = (p[2] >> i) & 0x03;
         if(roll_array[k++] == 3) {
-            FURI_LOG_E(TAG, "Roll_Array FAIL");
+            FURRY_LOG_E(TAG, "Roll_Array FAIL");
             return false;
         }
     }
@@ -326,7 +326,7 @@ static void
         }
         // Max value = 2^28 (268435456)
         if(rolling >= 0x10000000) {
-            FURI_LOG_E(TAG, "Rolling FAIL");
+            FURRY_LOG_E(TAG, "Rolling FAIL");
             instance->cnt = 0;
             instance->btn = 0;
             instance->serial = 0;
@@ -456,7 +456,7 @@ static void subghz_protocol_secplus_v2_encode(SubGhzProtocolEncoderSecPlus_v2* i
     uint8_t roll_1[9] = {0};
     uint8_t roll_2[9] = {0};
 
-    instance->generic.cnt += furi_hal_subghz_get_rolling_counter_mult();
+    instance->generic.cnt += furry_hal_subghz_get_rolling_counter_mult();
 
     //ToDo it is not known what value the counter starts
     if(instance->generic.cnt > 0xFFFFFFF) instance->generic.cnt = 0xE500000;
@@ -518,7 +518,7 @@ static LevelDuration
         break;
 
     default:
-        furi_crash("SubGhz: ManchesterEncoderResult is incorrect.");
+        furry_crash("SubGhz: ManchesterEncoderResult is incorrect.");
         break;
     }
     return level_duration_make(data.level, data.duration);
@@ -530,7 +530,7 @@ static LevelDuration
  */
 static void
     subghz_protocol_encoder_secplus_v2_get_upload(SubGhzProtocolEncoderSecPlus_v2* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     size_t index = 0;
 
     ManchesterEncoderState enc_state;
@@ -583,7 +583,7 @@ static void
 
 SubGhzProtocolStatus
     subghz_protocol_encoder_secplus_v2_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderSecPlus_v2* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -597,7 +597,7 @@ SubGhzProtocolStatus
         uint8_t key_data[sizeof(uint64_t)] = {0};
         if(!flipper_format_read_hex(
                flipper_format, "Secplus_packet_1", key_data, sizeof(uint64_t))) {
-            FURI_LOG_E(TAG, "Secplus_packet_1");
+            FURRY_LOG_E(TAG, "Secplus_packet_1");
             ret = SubGhzProtocolStatusErrorParserOthers;
             break;
         }
@@ -618,7 +618,7 @@ SubGhzProtocolStatus
             key_data[sizeof(uint64_t) - i - 1] = (instance->generic.data >> (i * 8)) & 0xFF;
         }
         if(!flipper_format_update_hex(flipper_format, "Key", key_data, sizeof(uint64_t))) {
-            FURI_LOG_E(TAG, "Unable to add Key");
+            FURRY_LOG_E(TAG, "Unable to add Key");
             ret = SubGhzProtocolStatusErrorParserKey;
             break;
         }
@@ -628,7 +628,7 @@ SubGhzProtocolStatus
         }
         if(!flipper_format_update_hex(
                flipper_format, "Secplus_packet_1", key_data, sizeof(uint64_t))) {
-            FURI_LOG_E(TAG, "Unable to add Secplus_packet_1");
+            FURRY_LOG_E(TAG, "Unable to add Secplus_packet_1");
             ret = SubGhzProtocolStatusErrorParserOthers;
             break;
         }
@@ -669,7 +669,7 @@ bool subghz_protocol_secplus_v2_create_data(
     uint8_t btn,
     uint32_t cnt,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderSecPlus_v2* instance = context;
     instance->generic.serial = serial;
     instance->generic.cnt = cnt;
@@ -687,7 +687,7 @@ bool subghz_protocol_secplus_v2_create_data(
 
     if((res == SubGhzProtocolStatusOk) &&
        !flipper_format_write_hex(flipper_format, "Secplus_packet_1", key_data, sizeof(uint64_t))) {
-        FURI_LOG_E(TAG, "Unable to add Secplus_packet_1");
+        FURRY_LOG_E(TAG, "Unable to add Secplus_packet_1");
         res = SubGhzProtocolStatusErrorParserOthers;
     }
     return res == SubGhzProtocolStatusOk;
@@ -703,13 +703,13 @@ void* subghz_protocol_decoder_secplus_v2_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_secplus_v2_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderSecPlus_v2* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_secplus_v2_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     // SubGhzProtocolDecoderSecPlus_v2* instance = context;
     // does not reset the decoder because you need to get 2 parts of the package
 }
@@ -728,7 +728,7 @@ static bool subghz_protocol_secplus_v2_check_packet(SubGhzProtocolDecoderSecPlus
 }
 
 void subghz_protocol_decoder_secplus_v2_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderSecPlus_v2* instance = context;
 
     ManchesterEvent event = ManchesterEventReset;
@@ -827,7 +827,7 @@ void subghz_protocol_decoder_secplus_v2_feed(void* context, bool level, uint32_t
 }
 
 uint8_t subghz_protocol_decoder_secplus_v2_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderSecPlus_v2* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -837,7 +837,7 @@ SubGhzProtocolStatus subghz_protocol_decoder_secplus_v2_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderSecPlus_v2* instance = context;
     SubGhzProtocolStatus ret =
         subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
@@ -849,7 +849,7 @@ SubGhzProtocolStatus subghz_protocol_decoder_secplus_v2_serialize(
 
     if((ret == SubGhzProtocolStatusOk) &&
        !flipper_format_write_hex(flipper_format, "Secplus_packet_1", key_data, sizeof(uint64_t))) {
-        FURI_LOG_E(TAG, "Unable to add Secplus_packet_1");
+        FURRY_LOG_E(TAG, "Unable to add Secplus_packet_1");
         ret = SubGhzProtocolStatusErrorParserOthers;
     }
     return ret;
@@ -857,7 +857,7 @@ SubGhzProtocolStatus subghz_protocol_decoder_secplus_v2_serialize(
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_secplus_v2_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderSecPlus_v2* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -869,14 +869,14 @@ SubGhzProtocolStatus
             break;
         }
         if(!flipper_format_rewind(flipper_format)) {
-            FURI_LOG_E(TAG, "Rewind error");
+            FURRY_LOG_E(TAG, "Rewind error");
             ret = SubGhzProtocolStatusErrorParserOthers;
             break;
         }
         uint8_t key_data[sizeof(uint64_t)] = {0};
         if(!flipper_format_read_hex(
                flipper_format, "Secplus_packet_1", key_data, sizeof(uint64_t))) {
-            FURI_LOG_E(TAG, "Missing Secplus_packet_1");
+            FURRY_LOG_E(TAG, "Missing Secplus_packet_1");
             ret = SubGhzProtocolStatusErrorParserOthers;
             break;
         }
@@ -888,12 +888,12 @@ SubGhzProtocolStatus
     return ret;
 }
 
-void subghz_protocol_decoder_secplus_v2_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_secplus_v2_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderSecPlus_v2* instance = context;
     subghz_protocol_secplus_v2_remote_controller(&instance->generic, instance->secplus_packet_1);
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %db\r\n"
         "Pk1:0x%lX%08lX\r\n"

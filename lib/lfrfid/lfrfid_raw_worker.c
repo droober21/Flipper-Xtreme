@@ -1,4 +1,4 @@
-#include <furi_hal_rfid.h>
+#include <furry_hal_rfid.h>
 #include <toolbox/stream/file_stream.h>
 #include <toolbox/buffer_stream.h>
 #include <toolbox/varint.h>
@@ -15,7 +15,7 @@
 // emulate mode
 typedef struct {
     size_t overrun_count;
-    FuriStreamBuffer* stream;
+    FurryStreamBuffer* stream;
 } RfidEmulateCtx;
 
 typedef struct {
@@ -39,9 +39,9 @@ typedef struct {
 
 // main worker
 struct LFRFIDRawWorker {
-    FuriString* file_path;
-    FuriThread* thread;
-    FuriEventFlag* events;
+    FurryString* file_path;
+    FurryThread* thread;
+    FurryEventFlag* events;
 
     LFRFIDWorkerEmulateRawCallback emulate_callback;
     LFRFIDWorkerReadRawCallback read_callback;
@@ -61,18 +61,18 @@ static int32_t lfrfid_raw_emulate_worker_thread(void* thread_context);
 LFRFIDRawWorker* lfrfid_raw_worker_alloc() {
     LFRFIDRawWorker* worker = malloc(sizeof(LFRFIDRawWorker));
 
-    worker->thread = furi_thread_alloc_ex("LfrfidRawWorker", 2048, NULL, worker);
+    worker->thread = furry_thread_alloc_ex("LfrfidRawWorker", 2048, NULL, worker);
 
-    worker->events = furi_event_flag_alloc(NULL);
+    worker->events = furry_event_flag_alloc(NULL);
 
-    worker->file_path = furi_string_alloc();
+    worker->file_path = furry_string_alloc();
     return worker;
 }
 
 void lfrfid_raw_worker_free(LFRFIDRawWorker* worker) {
-    furi_thread_free(worker->thread);
-    furi_event_flag_free(worker->events);
-    furi_string_free(worker->file_path);
+    furry_thread_free(worker->thread);
+    furry_event_flag_free(worker->events);
+    furry_string_free(worker->file_path);
     free(worker);
 }
 
@@ -83,18 +83,18 @@ void lfrfid_raw_worker_start_read(
     float duty_cycle,
     LFRFIDWorkerReadRawCallback callback,
     void* context) {
-    furi_check(furi_thread_get_state(worker->thread) == FuriThreadStateStopped);
+    furry_check(furry_thread_get_state(worker->thread) == FurryThreadStateStopped);
 
-    furi_string_set(worker->file_path, file_path);
+    furry_string_set(worker->file_path, file_path);
 
     worker->frequency = freq;
     worker->duty_cycle = duty_cycle;
     worker->read_callback = callback;
     worker->context = context;
 
-    furi_thread_set_callback(worker->thread, lfrfid_raw_read_worker_thread);
+    furry_thread_set_callback(worker->thread, lfrfid_raw_read_worker_thread);
 
-    furi_thread_start(worker->thread);
+    furry_thread_start(worker->thread);
 }
 
 void lfrfid_raw_worker_start_emulate(
@@ -102,20 +102,20 @@ void lfrfid_raw_worker_start_emulate(
     const char* file_path,
     LFRFIDWorkerEmulateRawCallback callback,
     void* context) {
-    furi_check(furi_thread_get_state(worker->thread) == FuriThreadStateStopped);
-    furi_string_set(worker->file_path, file_path);
+    furry_check(furry_thread_get_state(worker->thread) == FurryThreadStateStopped);
+    furry_string_set(worker->file_path, file_path);
     worker->emulate_callback = callback;
     worker->context = context;
-    furi_thread_set_callback(worker->thread, lfrfid_raw_emulate_worker_thread);
-    furi_thread_start(worker->thread);
+    furry_thread_set_callback(worker->thread, lfrfid_raw_emulate_worker_thread);
+    furry_thread_start(worker->thread);
 }
 
 void lfrfid_raw_worker_stop(LFRFIDRawWorker* worker) {
     worker->emulate_callback = NULL;
     worker->context = NULL;
     worker->read_callback = NULL;
-    furi_event_flag_set(worker->events, 1 << LFRFIDRawWorkerEventStop);
-    furi_thread_join(worker->thread);
+    furry_event_flag_set(worker->events, 1 << LFRFIDRawWorkerEventStop);
+    furry_thread_join(worker->thread);
 }
 
 static void lfrfid_raw_worker_capture(bool level, uint32_t duration, void* context) {
@@ -133,9 +133,9 @@ static void lfrfid_raw_worker_capture(bool level, uint32_t duration, void* conte
 static int32_t lfrfid_raw_read_worker_thread(void* thread_context) {
     LFRFIDRawWorker* worker = (LFRFIDRawWorker*)thread_context;
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     LFRFIDRawFile* file = lfrfid_raw_file_alloc(storage);
-    const char* filename = furi_string_get_cstr(worker->file_path);
+    const char* filename = furry_string_get_cstr(worker->file_path);
     bool file_valid = lfrfid_raw_file_open_write(file, filename);
 
     LFRFIDRawWorkerReadData* data = malloc(sizeof(LFRFIDRawWorkerReadData));
@@ -151,15 +151,15 @@ static int32_t lfrfid_raw_read_worker_thread(void* thread_context) {
 
     if(file_valid) {
         // setup carrier
-        furi_hal_rfid_pins_read();
-        furi_hal_rfid_tim_read(worker->frequency, worker->duty_cycle);
-        furi_hal_rfid_tim_read_start();
+        furry_hal_rfid_pins_read();
+        furry_hal_rfid_tim_read(worker->frequency, worker->duty_cycle);
+        furry_hal_rfid_tim_read_start();
 
         // stabilize detector
-        furi_delay_ms(1500);
+        furry_delay_ms(1500);
 
         // start capture
-        furi_hal_rfid_tim_read_capture_start(lfrfid_raw_worker_capture, data);
+        furry_hal_rfid_tim_read_capture_start(lfrfid_raw_worker_capture, data);
 
         while(1) {
             Buffer* buffer = buffer_stream_receive(data->stream, 100);
@@ -184,14 +184,14 @@ static int32_t lfrfid_raw_read_worker_thread(void* thread_context) {
                 worker->read_callback(LFRFIDWorkerReadRawOverrun, worker->context);
             }
 
-            uint32_t flags = furi_event_flag_get(worker->events);
-            if(FURI_BIT(flags, LFRFIDRawWorkerEventStop)) {
+            uint32_t flags = furry_event_flag_get(worker->events);
+            if(FURRY_BIT(flags, LFRFIDRawWorkerEventStop)) {
                 break;
             }
         }
 
-        furi_hal_rfid_tim_read_capture_stop();
-        furi_hal_rfid_tim_read_stop();
+        furry_hal_rfid_tim_read_capture_stop();
+        furry_hal_rfid_tim_read_stop();
     } else {
         if(worker->read_callback != NULL) {
             // message file_error to worker
@@ -202,10 +202,10 @@ static int32_t lfrfid_raw_read_worker_thread(void* thread_context) {
     if(!file_valid) {
         const uint32_t available_flags = (1 << LFRFIDRawWorkerEventStop);
         while(true) {
-            uint32_t flags = furi_event_flag_wait(
-                worker->events, available_flags, FuriFlagWaitAny, FuriWaitForever);
+            uint32_t flags = furry_event_flag_wait(
+                worker->events, available_flags, FurryFlagWaitAny, FurryWaitForever);
 
-            if(FURI_BIT(flags, LFRFIDRawWorkerEventStop)) {
+            if(FURRY_BIT(flags, LFRFIDRawWorkerEventStop)) {
                 break;
             }
         }
@@ -214,7 +214,7 @@ static int32_t lfrfid_raw_read_worker_thread(void* thread_context) {
     varint_pair_free(data->pair);
     buffer_stream_free(data->stream);
     lfrfid_raw_file_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     free(data);
 
     return 0;
@@ -224,7 +224,7 @@ static void rfid_emulate_dma_isr(bool half, void* context) {
     RfidEmulateCtx* ctx = context;
 
     uint32_t flag = half ? HalfTransfer : TransferComplete;
-    size_t len = furi_stream_buffer_send(ctx->stream, &flag, sizeof(uint32_t), 0);
+    size_t len = furry_stream_buffer_send(ctx->stream, &flag, sizeof(uint32_t), 0);
     if(len != sizeof(uint32_t)) {
         ctx->overrun_count++;
     }
@@ -237,14 +237,14 @@ static int32_t lfrfid_raw_emulate_worker_thread(void* thread_context) {
 
     LFRFIDRawWorkerEmulateData* data = malloc(sizeof(LFRFIDRawWorkerEmulateData));
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     data->ctx.overrun_count = 0;
-    data->ctx.stream = furi_stream_buffer_alloc(sizeof(uint32_t), sizeof(uint32_t));
+    data->ctx.stream = furry_stream_buffer_alloc(sizeof(uint32_t), sizeof(uint32_t));
 
     LFRFIDRawFile* file = lfrfid_raw_file_alloc(storage);
 
     do {
-        file_valid = lfrfid_raw_file_open_read(file, furi_string_get_cstr(worker->file_path));
+        file_valid = lfrfid_raw_file_open_read(file, furry_string_get_cstr(worker->file_path));
         if(!file_valid) break;
         file_valid = lfrfid_raw_file_read_header(file, &worker->frequency, &worker->duty_cycle);
         if(!file_valid) break;
@@ -259,7 +259,7 @@ static int32_t lfrfid_raw_emulate_worker_thread(void* thread_context) {
         }
     } while(false);
 
-    furi_hal_rfid_tim_emulate_dma_start(
+    furry_hal_rfid_tim_emulate_dma_start(
         data->emulate_buffer_arr,
         data->emulate_buffer_ccr,
         EMULATE_BUFFER_SIZE,
@@ -276,7 +276,7 @@ static int32_t lfrfid_raw_emulate_worker_thread(void* thread_context) {
 
         while(true) {
             size_t size =
-                furi_stream_buffer_receive(data->ctx.stream, &flag, sizeof(uint32_t), 100);
+                furry_stream_buffer_receive(data->ctx.stream, &flag, sizeof(uint32_t), 100);
 
             if(size == sizeof(uint32_t)) {
                 size_t start = 0;
@@ -312,34 +312,34 @@ static int32_t lfrfid_raw_emulate_worker_thread(void* thread_context) {
                 worker->emulate_callback(LFRFIDWorkerEmulateRawOverrun, worker->context);
             }
 
-            uint32_t flags = furi_event_flag_get(worker->events);
-            if(FURI_BIT(flags, LFRFIDRawWorkerEventStop)) {
+            uint32_t flags = furry_event_flag_get(worker->events);
+            if(FURRY_BIT(flags, LFRFIDRawWorkerEventStop)) {
                 break;
             };
         }
     }
 
-    furi_hal_rfid_tim_emulate_dma_stop();
+    furry_hal_rfid_tim_emulate_dma_stop();
 
     if(!file_valid) {
         const uint32_t available_flags = (1 << LFRFIDRawWorkerEventStop);
         while(true) {
-            uint32_t flags = furi_event_flag_wait(
-                worker->events, available_flags, FuriFlagWaitAny, FuriWaitForever);
+            uint32_t flags = furry_event_flag_wait(
+                worker->events, available_flags, FurryFlagWaitAny, FurryWaitForever);
 
-            if(FURI_BIT(flags, LFRFIDRawWorkerEventStop)) {
+            if(FURRY_BIT(flags, LFRFIDRawWorkerEventStop)) {
                 break;
             };
         }
     }
 
     if(data->ctx.overrun_count) {
-        FURI_LOG_E(TAG_EMULATE, "overruns: %zu", data->ctx.overrun_count);
+        FURRY_LOG_E(TAG_EMULATE, "overruns: %zu", data->ctx.overrun_count);
     }
 
-    furi_stream_buffer_free(data->ctx.stream);
+    furry_stream_buffer_free(data->ctx.stream);
     lfrfid_raw_file_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     free(data);
 
     return 0;

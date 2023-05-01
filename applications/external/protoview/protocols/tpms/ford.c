@@ -21,7 +21,7 @@ static bool decode(uint8_t* bits, uint32_t numbytes, uint32_t numbits, ProtoView
 
     uint64_t off = bitmap_seek_bits(bits, numbytes, 0, numbits, sync_pattern);
     if(off == BITMAP_SEEK_NOT_FOUND) return false;
-    FURI_LOG_E(TAG, "Fort TPMS preamble+sync found");
+    FURRY_LOG_E(TAG, "Fort TPMS preamble+sync found");
 
     info->start_off = off;
     off += sync_len; /* Skip preamble and sync. */
@@ -29,7 +29,7 @@ static bool decode(uint8_t* bits, uint32_t numbytes, uint32_t numbits, ProtoView
     uint8_t raw[8];
     uint32_t decoded = convert_from_line_code(
         raw, sizeof(raw), bits, numbytes, off, "01", "10"); /* Manchester. */
-    FURI_LOG_E(TAG, "Ford TPMS decoded bits: %lu", decoded);
+    FURRY_LOG_E(TAG, "Ford TPMS decoded bits: %lu", decoded);
 
     if(decoded < 8 * 8) return false; /* Require the full 8 bytes. */
 

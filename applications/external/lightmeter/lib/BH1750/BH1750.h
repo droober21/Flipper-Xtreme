@@ -11,14 +11,14 @@
  * https://github.com/lamik/Light_Sensors_STM32
  */
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #ifndef BH1750_H_
 #define BH1750_H_
 
 // I2C BUS
-#define I2C_BUS &furi_hal_i2c_handle_external
+#define I2C_BUS &furry_hal_i2c_handle_external
 #define I2C_TIMEOUT 10
 
 #define BH1750_ADDRESS (0x23 << 1)

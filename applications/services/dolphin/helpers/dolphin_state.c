@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 #include <storage/storage.h>
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <math.h>
 #include <toolbox/saved_struct.h>
 
@@ -44,10 +44,10 @@ bool dolphin_state_save(DolphinState* dolphin_state) {
         DOLPHIN_STATE_HEADER_VERSION);
 
     if(result) {
-        FURI_LOG_I(TAG, "State saved");
+        FURRY_LOG_I(TAG, "State saved");
         dolphin_state->dirty = false;
     } else {
-        FURI_LOG_E(TAG, "Failed to save state");
+        FURRY_LOG_E(TAG, "Failed to save state");
     }
 
     return result;
@@ -62,10 +62,10 @@ bool dolphin_state_load(DolphinState* dolphin_state) {
         DOLPHIN_STATE_HEADER_VERSION);
 
     if(!success) {
-        Storage* storage = furi_record_open(RECORD_STORAGE);
+        Storage* storage = furry_record_open(RECORD_STORAGE);
         storage_common_copy(storage, DOLPHIN_STATE_OLD_PATH, DOLPHIN_STATE_PATH);
         storage_common_remove(storage, DOLPHIN_STATE_OLD_PATH);
-        furi_record_close(RECORD_STORAGE);
+        furry_record_close(RECORD_STORAGE);
         success = saved_struct_load(
             DOLPHIN_STATE_PATH,
             &dolphin_state->data,
@@ -82,7 +82,7 @@ bool dolphin_state_load(DolphinState* dolphin_state) {
     }
 
     if(!success) {
-        FURI_LOG_W(TAG, "Reset dolphin-state");
+        FURRY_LOG_W(TAG, "Reset dolphin-state");
         memset(dolphin_state, 0, sizeof(*dolphin_state));
         dolphin_state->dirty = true;
     }
@@ -91,9 +91,9 @@ bool dolphin_state_load(DolphinState* dolphin_state) {
 }
 
 uint64_t dolphin_state_timestamp() {
-    FuriHalRtcDateTime datetime;
-    furi_hal_rtc_get_datetime(&datetime);
-    return furi_hal_rtc_datetime_to_timestamp(&datetime);
+    FurryHalRtcDateTime datetime;
+    furry_hal_rtc_get_datetime(&datetime);
+    return furry_hal_rtc_datetime_to_timestamp(&datetime);
 }
 
 bool dolphin_state_is_levelup(int icounter) {
@@ -188,7 +188,7 @@ void dolphin_state_on_deed(DolphinState* dolphin_state, DolphinDeed deed) {
     dolphin_state->data.timestamp = dolphin_state_timestamp();
     dolphin_state->dirty = true;
 
-    FURI_LOG_D(
+    FURRY_LOG_D(
         TAG,
         "icounter %ld, butthurt %ld",
         dolphin_state->data.icounter,
@@ -204,13 +204,13 @@ void dolphin_state_butthurted(DolphinState* dolphin_state) {
 }
 
 void dolphin_state_increase_level(DolphinState* dolphin_state) {
-    furi_assert(dolphin_state_is_levelup(dolphin_state->data.icounter));
+    furry_assert(dolphin_state_is_levelup(dolphin_state->data.icounter));
     ++dolphin_state->data.icounter;
     dolphin_state->dirty = true;
 }
 
 void dolphin_state_clear_limits(DolphinState* dolphin_state) {
-    furi_assert(dolphin_state);
+    furry_assert(dolphin_state);
 
     for(int i = 0; i < DolphinAppMAX; ++i) {
         dolphin_state->data.icounter_daily_limit[i] = 0;

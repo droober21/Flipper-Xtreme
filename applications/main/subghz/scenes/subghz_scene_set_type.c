@@ -18,7 +18,7 @@ bool subghz_scene_set_type_submenu_gen_data_protocol(
     uint32_t bit,
     uint32_t frequency,
     const char* preset_name) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhz* subghz = context;
 
     bool res = false;
@@ -28,7 +28,7 @@ bool subghz_scene_set_type_submenu_gen_data_protocol(
         subghz_receiver_search_decoder_base_by_name(subghz->txrx->receiver, protocol_name);
 
     if(subghz->txrx->decoder_result == NULL) {
-        furi_string_set(subghz->error_str, "Protocol not\nfound!");
+        furry_string_set(subghz->error_str, "Protocol not\nfound!");
         scene_manager_next_scene(subghz->scene_manager, SubGhzSceneShowErrorSub);
         return false;
     }
@@ -39,11 +39,11 @@ bool subghz_scene_set_type_submenu_gen_data_protocol(
         if(subghz_protocol_decoder_base_serialize(
                subghz->txrx->decoder_result, subghz->txrx->fff_data, subghz->txrx->preset) !=
            SubGhzProtocolStatusOk) {
-            FURI_LOG_E(TAG, "Unable to serialize");
+            FURRY_LOG_E(TAG, "Unable to serialize");
             break;
         }
         if(!flipper_format_update_uint32(subghz->txrx->fff_data, "Bit", &bit, 1)) {
-            FURI_LOG_E(TAG, "Unable to update Bit");
+            FURRY_LOG_E(TAG, "Unable to update Bit");
             break;
         }
 
@@ -52,7 +52,7 @@ bool subghz_scene_set_type_submenu_gen_data_protocol(
             key_data[sizeof(uint64_t) - i - 1] = (key >> (i * 8)) & 0xFF;
         }
         if(!flipper_format_update_hex(subghz->txrx->fff_data, "Key", key_data, sizeof(uint64_t))) {
-            FURI_LOG_E(TAG, "Unable to update Key");
+            FURRY_LOG_E(TAG, "Unable to update Key");
             break;
         }
         res = true;
@@ -91,7 +91,7 @@ bool subghz_scene_set_type_submenu_gen_data_keeloq(
 
     subghz_transmitter_free(subghz->txrx->transmitter);
     if(!res) {
-        furi_string_set(subghz->error_str, "Function requires\nan SD card with\nfresh databases.");
+        furry_string_set(subghz->error_str, "Function requires\nan SD card with\nfresh databases.");
         scene_manager_next_scene(subghz->scene_manager, SubGhzSceneShowError);
     }
     return res;
@@ -650,7 +650,7 @@ bool subghz_scene_set_type_on_event(void* context, SceneManagerEvent event) {
             }
             subghz_transmitter_free(subghz->txrx->transmitter);
             if(!generated_protocol) {
-                furi_string_set(
+                furry_string_set(
                     subghz->error_str, "Function requires\nan SD card with\nfresh databases.");
                 scene_manager_next_scene(subghz->scene_manager, SubGhzSceneShowError);
             }
@@ -673,7 +673,7 @@ bool subghz_scene_set_type_on_event(void* context, SceneManagerEvent event) {
             }
             subghz_transmitter_free(subghz->txrx->transmitter);
             if(!generated_protocol) {
-                furi_string_set(
+                furry_string_set(
                     subghz->error_str, "Function requires\nan SD card with\nfresh databases.");
                 scene_manager_next_scene(subghz->scene_manager, SubGhzSceneShowError);
             }
@@ -696,7 +696,7 @@ bool subghz_scene_set_type_on_event(void* context, SceneManagerEvent event) {
             }
             subghz_transmitter_free(subghz->txrx->transmitter);
             if(!generated_protocol) {
-                furi_string_set(
+                furry_string_set(
                     subghz->error_str, "Function requires\nan SD card with\nfresh databases.");
                 scene_manager_next_scene(subghz->scene_manager, SubGhzSceneShowError);
             }
@@ -732,7 +732,7 @@ bool subghz_scene_set_type_on_event(void* context, SceneManagerEvent event) {
             }
             subghz_transmitter_free(subghz->txrx->transmitter);
             if(!generated_protocol) {
-                furi_string_set(
+                furry_string_set(
                     subghz->error_str, "Function requires\nan SD card with\nfresh databases.");
                 scene_manager_next_scene(subghz->scene_manager, SubGhzSceneShowError);
             }
@@ -756,7 +756,7 @@ bool subghz_scene_set_type_on_event(void* context, SceneManagerEvent event) {
             }
             subghz_transmitter_free(subghz->txrx->transmitter);
             if(!generated_protocol) {
-                furi_string_set(
+                furry_string_set(
                     subghz->error_str, "Function requires\nan SD card with\nfresh databases.");
                 scene_manager_next_scene(subghz->scene_manager, SubGhzSceneShowError);
             }

@@ -26,7 +26,7 @@ static void infrared_signal_clear_timings(InfraredSignal* signal) {
 
 static bool infrared_signal_is_message_valid(InfraredMessage* message) {
     if(!infrared_is_protocol_valid(message->protocol)) {
-        FURI_LOG_E(TAG, "Unknown protocol");
+        FURRY_LOG_E(TAG, "Unknown protocol");
         return false;
     }
 
@@ -34,7 +34,7 @@ static bool infrared_signal_is_message_valid(InfraredMessage* message) {
     uint32_t address_mask = (1UL << address_length) - 1;
 
     if(message->address != (message->address & address_mask)) {
-        FURI_LOG_E(
+        FURRY_LOG_E(
             TAG,
             "Address is out of range (mask 0x%08lX): 0x%lX\r\n",
             address_mask,
@@ -46,7 +46,7 @@ static bool infrared_signal_is_message_valid(InfraredMessage* message) {
     uint32_t command_mask = (1UL << command_length) - 1;
 
     if(message->command != (message->command & command_mask)) {
-        FURI_LOG_E(
+        FURRY_LOG_E(
             TAG,
             "Command is out of range (mask 0x%08lX): 0x%lX\r\n",
             command_mask,
@@ -59,7 +59,7 @@ static bool infrared_signal_is_message_valid(InfraredMessage* message) {
 
 static bool infrared_signal_is_raw_valid(InfraredRawSignal* raw) {
     if((raw->frequency > INFRARED_MAX_FREQUENCY) || (raw->frequency < INFRARED_MIN_FREQUENCY)) {
-        FURI_LOG_E(
+        FURRY_LOG_E(
             TAG,
             "Frequency is out of range (%X - %X): %lX",
             INFRARED_MIN_FREQUENCY,
@@ -68,11 +68,11 @@ static bool infrared_signal_is_raw_valid(InfraredRawSignal* raw) {
         return false;
 
     } else if((raw->duty_cycle <= 0) || (raw->duty_cycle > 1)) {
-        FURI_LOG_E(TAG, "Duty cycle is out of range (0 - 1): %f", (double)raw->duty_cycle);
+        FURRY_LOG_E(TAG, "Duty cycle is out of range (0 - 1): %f", (double)raw->duty_cycle);
         return false;
 
     } else if((raw->timings_size <= 0) || (raw->timings_size > MAX_TIMINGS_AMOUNT)) {
-        FURI_LOG_E(
+        FURRY_LOG_E(
             TAG,
             "Timings amount is out of range (0 - %X): %X",
             MAX_TIMINGS_AMOUNT,
@@ -92,7 +92,7 @@ static inline bool infrared_signal_save_message(InfraredMessage* message, Flippe
 }
 
 static inline bool infrared_signal_save_raw(InfraredRawSignal* raw, FlipperFormat* ff) {
-    furi_assert(raw->timings_size <= MAX_TIMINGS_AMOUNT);
+    furry_assert(raw->timings_size <= MAX_TIMINGS_AMOUNT);
     return flipper_format_write_string_cstr(ff, "type", "raw") &&
            flipper_format_write_uint32(ff, "frequency", &raw->frequency, 1) &&
            flipper_format_write_float(ff, "duty_cycle", &raw->duty_cycle, 1) &&
@@ -100,15 +100,15 @@ static inline bool infrared_signal_save_raw(InfraredRawSignal* raw, FlipperForma
 }
 
 static inline bool infrared_signal_read_message(InfraredSignal* signal, FlipperFormat* ff) {
-    FuriString* buf;
-    buf = furi_string_alloc();
+    FurryString* buf;
+    buf = furry_string_alloc();
     bool success = false;
 
     do {
         if(!flipper_format_read_string(ff, "protocol", buf)) break;
 
         InfraredMessage message;
-        message.protocol = infrared_get_protocol_by_name(furi_string_get_cstr(buf));
+        message.protocol = infrared_get_protocol_by_name(furry_string_get_cstr(buf));
 
         success = flipper_format_read_hex(ff, "address", (uint8_t*)&message.address, 4) &&
                   flipper_format_read_hex(ff, "command", (uint8_t*)&message.command, 4) &&
@@ -119,7 +119,7 @@ static inline bool infrared_signal_read_message(InfraredSignal* signal, FlipperF
         infrared_signal_set_message(signal, &message);
     } while(0);
 
-    furi_string_free(buf);
+    furry_string_free(buf);
     return success;
 }
 
@@ -147,22 +147,22 @@ static inline bool infrared_signal_read_raw(InfraredSignal* signal, FlipperForma
 }
 
 static bool infrared_signal_read_body(InfraredSignal* signal, FlipperFormat* ff) {
-    FuriString* tmp = furi_string_alloc();
+    FurryString* tmp = furry_string_alloc();
 
     bool success = false;
 
     do {
         if(!flipper_format_read_string(ff, "type", tmp)) break;
-        if(furi_string_equal(tmp, "raw")) {
+        if(furry_string_equal(tmp, "raw")) {
             success = infrared_signal_read_raw(signal, ff);
-        } else if(furi_string_equal(tmp, "parsed")) {
+        } else if(furry_string_equal(tmp, "parsed")) {
             success = infrared_signal_read_message(signal, ff);
         } else {
-            FURI_LOG_E(TAG, "Unknown signal type");
+            FURRY_LOG_E(TAG, "Unknown signal type");
         }
     } while(false);
 
-    furi_string_free(tmp);
+    furry_string_free(tmp);
     return success;
 }
 
@@ -219,7 +219,7 @@ void infrared_signal_set_raw_signal(
 }
 
 InfraredRawSignal* infrared_signal_get_raw_signal(InfraredSignal* signal) {
-    furi_assert(signal->is_raw);
+    furry_assert(signal->is_raw);
     return &signal->payload.raw;
 }
 
@@ -231,7 +231,7 @@ void infrared_signal_set_message(InfraredSignal* signal, const InfraredMessage* 
 }
 
 InfraredMessage* infrared_signal_get_message(InfraredSignal* signal) {
-    furi_assert(!signal->is_raw);
+    furry_assert(!signal->is_raw);
     return &signal->payload.message;
 }
 
@@ -246,33 +246,33 @@ bool infrared_signal_save(InfraredSignal* signal, FlipperFormat* ff, const char*
     }
 }
 
-bool infrared_signal_read(InfraredSignal* signal, FlipperFormat* ff, FuriString* name) {
-    FuriString* tmp = furi_string_alloc();
+bool infrared_signal_read(InfraredSignal* signal, FlipperFormat* ff, FurryString* name) {
+    FurryString* tmp = furry_string_alloc();
 
     bool success = false;
 
     do {
         if(!flipper_format_read_string(ff, "name", tmp)) break;
-        furi_string_set(name, tmp);
+        furry_string_set(name, tmp);
         if(!infrared_signal_read_body(signal, ff)) break;
         success = true;
     } while(0);
 
-    furi_string_free(tmp);
+    furry_string_free(tmp);
     return success;
 }
 
 bool infrared_signal_search_and_read(
     InfraredSignal* signal,
     FlipperFormat* ff,
-    const FuriString* name) {
+    const FurryString* name) {
     bool success = false;
-    FuriString* tmp = furi_string_alloc();
+    FurryString* tmp = furry_string_alloc();
 
     do {
         bool is_name_found = false;
         while(flipper_format_read_string(ff, "name", tmp)) {
-            is_name_found = furi_string_equal(name, tmp);
+            is_name_found = furry_string_equal(name, tmp);
             if(is_name_found) break;
         }
         if(!is_name_found) break;
@@ -280,7 +280,7 @@ bool infrared_signal_search_and_read(
         success = true;
     } while(false);
 
-    furi_string_free(tmp);
+    furry_string_free(tmp);
     return success;
 }
 

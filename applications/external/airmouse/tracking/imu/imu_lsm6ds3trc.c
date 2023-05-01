@@ -1,6 +1,6 @@
 #include "lsm6ds3tr_c_reg.h"
 
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 #include "imu.h"
 
@@ -13,33 +13,33 @@ static const double DEG_TO_RAD = 0.017453292519943295769236907684886;
 stmdev_ctx_t lsm6ds3trc_ctx;
 
 int32_t lsm6ds3trc_write_i2c(void* handle, uint8_t reg_addr, const uint8_t* data, uint16_t len) {
-    if(furi_hal_i2c_write_mem(handle, LSM6DS3_ADDRESS, reg_addr, (uint8_t*)data, len, 50))
+    if(furry_hal_i2c_write_mem(handle, LSM6DS3_ADDRESS, reg_addr, (uint8_t*)data, len, 50))
         return 0;
     return -1;
 }
 
 int32_t lsm6ds3trc_read_i2c(void* handle, uint8_t reg_addr, uint8_t* read_data, uint16_t len) {
-    if(furi_hal_i2c_read_mem(handle, LSM6DS3_ADDRESS, reg_addr, read_data, len, 50)) return 0;
+    if(furry_hal_i2c_read_mem(handle, LSM6DS3_ADDRESS, reg_addr, read_data, len, 50)) return 0;
     return -1;
 }
 
 bool lsm6ds3trc_begin() {
-    FURI_LOG_I(TAG, "Init LSM6DS3TR-C");
+    FURRY_LOG_I(TAG, "Init LSM6DS3TR-C");
 
-    if(!furi_hal_i2c_is_device_ready(&furi_hal_i2c_handle_external, LSM6DS3_ADDRESS, 50)) {
-        FURI_LOG_E(TAG, "Not ready");
+    if(!furry_hal_i2c_is_device_ready(&furry_hal_i2c_handle_external, LSM6DS3_ADDRESS, 50)) {
+        FURRY_LOG_E(TAG, "Not ready");
         return false;
     }
 
     lsm6ds3trc_ctx.write_reg = lsm6ds3trc_write_i2c;
     lsm6ds3trc_ctx.read_reg = lsm6ds3trc_read_i2c;
-    lsm6ds3trc_ctx.mdelay = furi_delay_ms;
-    lsm6ds3trc_ctx.handle = &furi_hal_i2c_handle_external;
+    lsm6ds3trc_ctx.mdelay = furry_delay_ms;
+    lsm6ds3trc_ctx.handle = &furry_hal_i2c_handle_external;
 
     uint8_t whoami;
     lsm6ds3tr_c_device_id_get(&lsm6ds3trc_ctx, &whoami);
     if(whoami != LSM6DS3TR_C_ID) {
-        FURI_LOG_I(TAG, "Unknown model: %x", (int)whoami);
+        FURRY_LOG_I(TAG, "Unknown model: %x", (int)whoami);
         return false;
     }
 
@@ -59,7 +59,7 @@ bool lsm6ds3trc_begin() {
     lsm6ds3tr_c_gy_power_mode_set(&lsm6ds3trc_ctx, LSM6DS3TR_C_GY_HIGH_PERFORMANCE);
     lsm6ds3tr_c_gy_band_pass_set(&lsm6ds3trc_ctx, LSM6DS3TR_C_LP2_ONLY);
 
-    FURI_LOG_I(TAG, "Init OK");
+    FURRY_LOG_I(TAG, "Init OK");
     return true;
 }
 

@@ -10,7 +10,7 @@ extern "C" {
 /** Text input anonymous structure */
 typedef struct UART_TextInput UART_TextInput;
 typedef void (*UART_TextInputCallback)(void* context);
-typedef bool (*UART_TextInputValidatorCallback)(const char* text, FuriString* error, void* context);
+typedef bool (*UART_TextInputValidatorCallback)(const char* text, FurryString* error, void* context);
 
 /** Allocate and initialize text input 
  * 

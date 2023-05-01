@@ -29,7 +29,7 @@ Min level: 7
 Max level: 30
 Weight: 3
 
-Name: L1_Furippa1_128x64
+Name: L1_Furryppa1_128x64
 Min butthurt: 0
 Max butthurt: 6
 Min level: 10
@@ -92,7 +92,7 @@ Min level: 22
 Max level: 30
 Weight: 3
 
-Name: L2_Furippa2_128x64
+Name: L2_Furryppa2_128x64
 Min butthurt: 0
 Max butthurt: 6
 Min level: 20
@@ -113,7 +113,7 @@ Min level: 25
 Max level: 30
 Weight: 3
 
-Name: L3_Furippa3_128x64
+Name: L3_Furryppa3_128x64
 Min butthurt: 0
 Max butthurt: 6
 Min level: 30

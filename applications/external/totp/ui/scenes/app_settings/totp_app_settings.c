@@ -44,7 +44,7 @@ typedef struct {
 
 void totp_scene_app_settings_activate(PluginState* plugin_state) {
     SceneState* scene_state = malloc(sizeof(SceneState));
-    furi_check(scene_state != NULL);
+    furry_check(scene_state != NULL);
     plugin_state->current_scene_state = scene_state;
 
     float off_int;

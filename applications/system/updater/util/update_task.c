@@ -1,8 +1,8 @@
 #include "update_task.h"
 #include "update_task_i.h"
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <storage/storage.h>
 #include <toolbox/path.h>
 #include <update_util/dfu_file.h>
@@ -69,19 +69,19 @@ static const UpdateTaskStageGroupMap update_task_stage_progress[] = {
 static UpdateTaskStageGroup update_task_get_task_groups(UpdateTask* update_task) {
     UpdateTaskStageGroup ret = UpdateTaskStageGroupPreUpdate | UpdateTaskStageGroupPostUpdate;
     UpdateManifest* manifest = update_task->manifest;
-    if(!furi_string_empty(manifest->radio_image)) {
+    if(!furry_string_empty(manifest->radio_image)) {
         ret |= UpdateTaskStageGroupRadio;
     }
     if(update_manifest_has_obdata(manifest)) {
         ret |= UpdateTaskStageGroupOptionBytes;
     }
-    if(!furi_string_empty(manifest->firmware_dfu_image)) {
+    if(!furry_string_empty(manifest->firmware_dfu_image)) {
         ret |= UpdateTaskStageGroupFirmware;
     }
-    if(!furi_string_empty(manifest->resource_bundle)) {
+    if(!furry_string_empty(manifest->resource_bundle)) {
         ret |= UpdateTaskStageGroupResources;
     }
-    if(!furi_string_empty(manifest->splash_file)) {
+    if(!furry_string_empty(manifest->splash_file)) {
         ret |= UpdateTaskStageGroupSplashscreen;
     }
     return ret;
@@ -109,14 +109,14 @@ void update_task_set_progress(UpdateTask* update_task, UpdateTaskStage stage, ui
         }
         /* Build error message with code "[stage_idx-stage_percent]" */
         if(stage >= UpdateTaskStageError) {
-            furi_string_printf(
+            furry_string_printf(
                 update_task->state.status,
                 "%s #[%d-%d]",
                 update_task_stage_descr[stage],
                 update_task->state.stage,
                 update_task->state.stage_progress);
         } else {
-            furi_string_set(update_task->state.status, update_task_stage_descr[stage]);
+            furry_string_set(update_task->state.status, update_task_stage_descr[stage]);
         }
         /* Store stage update */
         update_task->state.stage = stage;
@@ -149,7 +149,7 @@ void update_task_set_progress(UpdateTask* update_task, UpdateTaskStage stage, ui
 
     if(update_task->status_change_cb) {
         (update_task->status_change_cb)(
-            furi_string_get_cstr(update_task->state.status),
+            furry_string_get_cstr(update_task->state.status),
             adapted_progress,
             update_stage_is_error(update_task->state.stage),
             update_task->status_change_cb_state);
@@ -157,7 +157,7 @@ void update_task_set_progress(UpdateTask* update_task, UpdateTaskStage stage, ui
 }
 
 static void update_task_close_file(UpdateTask* update_task) {
-    furi_assert(update_task);
+    furry_assert(update_task);
     if(!storage_file_is_open(update_task->file)) {
         return;
     }
@@ -165,39 +165,39 @@ static void update_task_close_file(UpdateTask* update_task) {
     storage_file_close(update_task->file);
 }
 
-static bool update_task_check_file_exists(UpdateTask* update_task, FuriString* filename) {
-    furi_assert(update_task);
-    FuriString* tmp_path;
-    tmp_path = furi_string_alloc_set(update_task->update_path);
-    path_append(tmp_path, furi_string_get_cstr(filename));
-    bool exists = storage_file_exists(update_task->storage, furi_string_get_cstr(tmp_path));
-    furi_string_free(tmp_path);
+static bool update_task_check_file_exists(UpdateTask* update_task, FurryString* filename) {
+    furry_assert(update_task);
+    FurryString* tmp_path;
+    tmp_path = furry_string_alloc_set(update_task->update_path);
+    path_append(tmp_path, furry_string_get_cstr(filename));
+    bool exists = storage_file_exists(update_task->storage, furry_string_get_cstr(tmp_path));
+    furry_string_free(tmp_path);
     return exists;
 }
 
-bool update_task_open_file(UpdateTask* update_task, FuriString* filename) {
-    furi_assert(update_task);
+bool update_task_open_file(UpdateTask* update_task, FurryString* filename) {
+    furry_assert(update_task);
     update_task_close_file(update_task);
 
-    FuriString* tmp_path;
-    tmp_path = furi_string_alloc_set(update_task->update_path);
-    path_append(tmp_path, furi_string_get_cstr(filename));
+    FurryString* tmp_path;
+    tmp_path = furry_string_alloc_set(update_task->update_path);
+    path_append(tmp_path, furry_string_get_cstr(filename));
     bool open_success = storage_file_open(
-        update_task->file, furi_string_get_cstr(tmp_path), FSAM_READ, FSOM_OPEN_EXISTING);
-    furi_string_free(tmp_path);
+        update_task->file, furry_string_get_cstr(tmp_path), FSAM_READ, FSOM_OPEN_EXISTING);
+    furry_string_free(tmp_path);
     return open_success;
 }
 
-static void update_task_worker_thread_cb(FuriThreadState state, void* context) {
+static void update_task_worker_thread_cb(FurryThreadState state, void* context) {
     UpdateTask* update_task = context;
 
-    if(state != FuriThreadStateStopped) {
+    if(state != FurryThreadStateStopped) {
         return;
     }
 
-    if(furi_thread_get_return_code(update_task->thread) == UPDATE_TASK_NOERR) {
-        furi_delay_ms(UPDATE_DELAY_OPERATION_OK);
-        furi_hal_power_reset();
+    if(furry_thread_get_return_code(update_task->thread) == UPDATE_TASK_NOERR) {
+        furry_delay_ms(UPDATE_DELAY_OPERATION_OK);
+        furry_hal_power_reset();
     }
 }
 
@@ -207,49 +207,49 @@ UpdateTask* update_task_alloc() {
     update_task->state.stage = UpdateTaskStageProgress;
     update_task->state.stage_progress = 0;
     update_task->state.overall_progress = 0;
-    update_task->state.status = furi_string_alloc();
+    update_task->state.status = furry_string_alloc();
 
     update_task->manifest = update_manifest_alloc();
-    update_task->storage = furi_record_open(RECORD_STORAGE);
+    update_task->storage = furry_record_open(RECORD_STORAGE);
     update_task->file = storage_file_alloc(update_task->storage);
     update_task->status_change_cb = NULL;
-    update_task->boot_mode = furi_hal_rtc_get_boot_mode();
-    update_task->update_path = furi_string_alloc();
+    update_task->boot_mode = furry_hal_rtc_get_boot_mode();
+    update_task->update_path = furry_string_alloc();
 
-    FuriThread* thread = update_task->thread =
-        furi_thread_alloc_ex("UpdateWorker", 5120, NULL, update_task);
+    FurryThread* thread = update_task->thread =
+        furry_thread_alloc_ex("UpdateWorker", 5120, NULL, update_task);
 
-    furi_thread_set_state_callback(thread, update_task_worker_thread_cb);
-    furi_thread_set_state_context(thread, update_task);
-#ifdef FURI_RAM_EXEC
+    furry_thread_set_state_callback(thread, update_task_worker_thread_cb);
+    furry_thread_set_state_context(thread, update_task);
+#ifdef FURRY_RAM_EXEC
     UNUSED(update_task_worker_backup_restore);
-    furi_thread_set_callback(thread, update_task_worker_flash_writer);
+    furry_thread_set_callback(thread, update_task_worker_flash_writer);
 #else
     UNUSED(update_task_worker_flash_writer);
-    furi_thread_set_callback(thread, update_task_worker_backup_restore);
+    furry_thread_set_callback(thread, update_task_worker_backup_restore);
 #endif
 
     return update_task;
 }
 
 void update_task_free(UpdateTask* update_task) {
-    furi_assert(update_task);
+    furry_assert(update_task);
 
-    furi_thread_join(update_task->thread);
+    furry_thread_join(update_task->thread);
 
-    furi_thread_free(update_task->thread);
+    furry_thread_free(update_task->thread);
     update_task_close_file(update_task);
     storage_file_free(update_task->file);
     update_manifest_free(update_task->manifest);
 
-    furi_record_close(RECORD_STORAGE);
-    furi_string_free(update_task->update_path);
+    furry_record_close(RECORD_STORAGE);
+    furry_string_free(update_task->update_path);
 
     free(update_task);
 }
 
 bool update_task_parse_manifest(UpdateTask* update_task) {
-    furi_assert(update_task);
+    furry_assert(update_task);
     update_task->state.stage_progress = 0;
     update_task->state.overall_progress = 0;
     update_task->state.total_progress_points = 0;
@@ -258,12 +258,12 @@ bool update_task_parse_manifest(UpdateTask* update_task) {
 
     update_task_set_progress(update_task, UpdateTaskStageReadManifest, 0);
     bool result = false;
-    FuriString* manifest_path;
-    manifest_path = furi_string_alloc();
+    FurryString* manifest_path;
+    manifest_path = furry_string_alloc();
 
     do {
         update_task_set_progress(update_task, UpdateTaskStageProgress, 13);
-        if(!furi_hal_version_do_i_belong_here()) {
+        if(!furry_hal_version_do_i_belong_here()) {
             break;
         }
 
@@ -273,11 +273,11 @@ bool update_task_parse_manifest(UpdateTask* update_task) {
             break;
         }
 
-        path_extract_dirname(furi_string_get_cstr(manifest_path), update_task->update_path);
+        path_extract_dirname(furry_string_get_cstr(manifest_path), update_task->update_path);
         update_task_set_progress(update_task, UpdateTaskStageProgress, 30);
 
         UpdateManifest* manifest = update_task->manifest;
-        if(!update_manifest_init(manifest, furi_string_get_cstr(manifest_path))) {
+        if(!update_manifest_init(manifest, furry_string_get_cstr(manifest_path))) {
             break;
         }
 
@@ -288,8 +288,8 @@ bool update_task_parse_manifest(UpdateTask* update_task) {
 
         update_task_set_progress(update_task, UpdateTaskStageProgress, 50);
         /* Check target only if it's set - skipped for pre-production samples */
-        if(furi_hal_version_get_hw_target() &&
-           (manifest->target != furi_hal_version_get_hw_target())) {
+        if(furry_hal_version_get_hw_target() &&
+           (manifest->target != furry_hal_version_get_hw_target())) {
             break;
         }
 
@@ -319,7 +319,7 @@ bool update_task_parse_manifest(UpdateTask* update_task) {
         result = true;
     } while(false);
 
-    furi_string_free(manifest_path);
+    furry_string_free(manifest_path);
     return result;
 }
 
@@ -329,21 +329,21 @@ void update_task_set_progress_cb(UpdateTask* update_task, updateProgressCb cb, v
 }
 
 void update_task_start(UpdateTask* update_task) {
-    furi_assert(update_task);
-    furi_thread_start(update_task->thread);
+    furry_assert(update_task);
+    furry_thread_start(update_task->thread);
 }
 
 bool update_task_is_running(UpdateTask* update_task) {
-    furi_assert(update_task);
-    return furi_thread_get_state(update_task->thread) == FuriThreadStateRunning;
+    furry_assert(update_task);
+    return furry_thread_get_state(update_task->thread) == FurryThreadStateRunning;
 }
 
 UpdateTaskState const* update_task_get_state(UpdateTask* update_task) {
-    furi_assert(update_task);
+    furry_assert(update_task);
     return &update_task->state;
 }
 
 UpdateManifest const* update_task_get_manifest(UpdateTask* update_task) {
-    furi_assert(update_task);
+    furry_assert(update_task);
     return update_task->manifest;
 }

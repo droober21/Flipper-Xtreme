@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <gui/elements.h>
 #include <gui/canvas.h>
 #include <toolbox/version.h>
@@ -17,7 +17,7 @@ struct DesktopSettingsViewPinSetupHowto2 {
 };
 
 static void desktop_settings_view_pin_setup_howto2_draw(Canvas* canvas, void* model) {
-    furi_assert(canvas);
+    furry_assert(canvas);
     UNUSED(model);
 
     canvas_set_font(canvas, FontSecondary);
@@ -36,8 +36,8 @@ static void desktop_settings_view_pin_setup_howto2_draw(Canvas* canvas, void* mo
 }
 
 static bool desktop_settings_view_pin_setup_howto2_input(InputEvent* event, void* context) {
-    furi_assert(event);
-    furi_assert(context);
+    furry_assert(event);
+    furry_assert(context);
 
     DesktopSettingsViewPinSetupHowto2* instance = context;
     bool consumed = false;
@@ -58,21 +58,21 @@ static bool desktop_settings_view_pin_setup_howto2_input(InputEvent* event, void
 void desktop_settings_view_pin_setup_howto2_set_context(
     DesktopSettingsViewPinSetupHowto2* instance,
     void* context) {
-    furi_assert(instance);
+    furry_assert(instance);
     instance->context = context;
 }
 
 void desktop_settings_view_pin_setup_howto2_set_cancel_callback(
     DesktopSettingsViewPinSetupHowto2* instance,
     DesktopSettingsViewPinSetupHowto2Callback callback) {
-    furi_assert(instance);
+    furry_assert(instance);
     instance->cancel_callback = callback;
 }
 
 void desktop_settings_view_pin_setup_howto2_set_ok_callback(
     DesktopSettingsViewPinSetupHowto2* instance,
     DesktopSettingsViewPinSetupHowto2Callback callback) {
-    furi_assert(instance);
+    furry_assert(instance);
     instance->ok_callback = callback;
 }
 
@@ -87,13 +87,13 @@ DesktopSettingsViewPinSetupHowto2* desktop_settings_view_pin_setup_howto2_alloc(
 }
 
 void desktop_settings_view_pin_setup_howto2_free(DesktopSettingsViewPinSetupHowto2* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     view_free(instance->view);
     free(instance);
 }
 
 View* desktop_settings_view_pin_setup_howto2_get_view(DesktopSettingsViewPinSetupHowto2* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     return instance->view;
 }

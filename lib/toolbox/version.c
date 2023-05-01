@@ -20,13 +20,13 @@ static const Version version = {
     .git_branch = GIT_BRANCH,
     .git_branch_num = GIT_BRANCH_NUM,
     .build_date = BUILD_DATE,
-#ifdef FURI_CUSTOM_FLIPPER_NAME
-    .custom_flipper_name = FURI_CUSTOM_FLIPPER_NAME,
+#ifdef FURRY_CUSTOM_FLIPPER_NAME
+    .custom_flipper_name = FURRY_CUSTOM_FLIPPER_NAME,
 #else
     .custom_flipper_name = NULL,
 #endif
     .version = VERSION
-#ifdef FURI_RAM_EXEC
+#ifdef FURRY_RAM_EXEC
     " (RAM)"
 #endif
     ,

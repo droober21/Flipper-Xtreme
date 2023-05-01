@@ -106,7 +106,7 @@ void* subghz_protocol_encoder_secplus_v1_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_encoder_secplus_v1_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderSecPlus_v1* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -119,11 +119,11 @@ void subghz_protocol_encoder_secplus_v1_free(void* context) {
  */
 static bool
     subghz_protocol_encoder_secplus_v1_get_upload(SubGhzProtocolEncoderSecPlus_v1* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     size_t index = 0;
     size_t size_upload = (instance->generic.data_count_bit * 2);
     if(size_upload > instance->encoder.size_upload) {
-        FURI_LOG_E(TAG, "Encoder size upload exceeds allocated encoder buffer.");
+        FURRY_LOG_E(TAG, "Encoder size upload exceeds allocated encoder buffer.");
         return false;
     } else {
         instance->encoder.size_upload = size_upload;
@@ -159,7 +159,7 @@ static bool
             break;
 
         default:
-            FURI_LOG_E(TAG, "Encoder error, wrong bit type");
+            FURRY_LOG_E(TAG, "Encoder error, wrong bit type");
             return false;
             break;
         }
@@ -195,7 +195,7 @@ static bool
             break;
 
         default:
-            FURI_LOG_E(TAG, "Encoder error, wrong bit type.");
+            FURRY_LOG_E(TAG, "Encoder error, wrong bit type.");
             return false;
             break;
         }
@@ -228,7 +228,7 @@ static bool subghz_protocol_secplus_v1_encode(SubGhzProtocolEncoderSecPlus_v1* i
         rolling = 0xE6000000;
     }
     if(fixed > 0xCFD41B90) {
-        FURI_LOG_E("TAG", "Encode wrong fixed data");
+        FURRY_LOG_E("TAG", "Encode wrong fixed data");
         return false;
     }
 
@@ -266,7 +266,7 @@ static bool subghz_protocol_secplus_v1_encode(SubGhzProtocolEncoderSecPlus_v1* i
 
 SubGhzProtocolStatus
     subghz_protocol_encoder_secplus_v1_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderSecPlus_v1* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -296,7 +296,7 @@ SubGhzProtocolStatus
             key_data[sizeof(uint64_t) - i - 1] = (instance->generic.data >> (i * 8)) & 0xFF;
         }
         if(!flipper_format_update_hex(flipper_format, "Key", key_data, sizeof(uint64_t))) {
-            FURI_LOG_E(TAG, "Unable to add Key");
+            FURRY_LOG_E(TAG, "Unable to add Key");
             ret = SubGhzProtocolStatusErrorParserKey;
             break;
         }
@@ -340,13 +340,13 @@ void* subghz_protocol_decoder_secplus_v1_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_secplus_v1_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderSecPlus_v1* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_secplus_v1_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     // SubGhzProtocolDecoderSecPlus_v1* instance = context;
     // does not reset the decoder because you need to get 2 parts of the package
 }
@@ -393,7 +393,7 @@ static void subghz_protocol_secplus_v1_decode(SubGhzProtocolDecoderSecPlus_v1* i
 }
 
 void subghz_protocol_decoder_secplus_v1_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderSecPlus_v1* instance = context;
 
     switch(instance->decoder.parser_step) {
@@ -511,7 +511,7 @@ void subghz_protocol_decoder_secplus_v1_feed(void* context, bool level, uint32_t
 }
 
 uint8_t subghz_protocol_decoder_secplus_v1_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderSecPlus_v1* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -521,14 +521,14 @@ SubGhzProtocolStatus subghz_protocol_decoder_secplus_v1_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderSecPlus_v1* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_secplus_v1_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderSecPlus_v1* instance = context;
     return subghz_block_generic_deserialize_check_count_bit(
         &instance->generic,
@@ -548,8 +548,8 @@ bool subghz_protocol_secplus_v1_check_fixed(uint32_t fixed) {
     return true;
 }
 
-void subghz_protocol_decoder_secplus_v1_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_secplus_v1_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderSecPlus_v1* instance = context;
 
     uint32_t fixed = (instance->generic.data >> 32) & 0xFFFFFFFF;
@@ -560,7 +560,7 @@ void subghz_protocol_decoder_secplus_v1_get_string(void* context, FuriString* ou
     uint8_t id1 = (fixed / 9) % 3;
     uint16_t pin = 0;
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %db\r\n"
         "Key:0x%lX%08lX\r\n"
@@ -580,9 +580,9 @@ void subghz_protocol_decoder_secplus_v1_get_string(void* context, FuriString* ou
         pin = (fixed / 59049) % 19683;
 
         if(pin <= 9999) {
-            furi_string_cat_printf(output, " pin:%d", pin);
+            furry_string_cat_printf(output, " pin:%d", pin);
         } else if(pin <= 11029) {
-            furi_string_cat_printf(output, " pin:enter");
+            furry_string_cat_printf(output, " pin:enter");
         }
 
         int pin_suffix = 0;
@@ -590,13 +590,13 @@ void subghz_protocol_decoder_secplus_v1_get_string(void* context, FuriString* ou
         pin_suffix = (fixed / 1162261467) % 3;
 
         if(pin_suffix == 1) {
-            furi_string_cat_printf(output, " #\r\n");
+            furry_string_cat_printf(output, " #\r\n");
         } else if(pin_suffix == 2) {
-            furi_string_cat_printf(output, " *\r\n");
+            furry_string_cat_printf(output, " *\r\n");
         } else {
-            furi_string_cat_printf(output, "\r\n");
+            furry_string_cat_printf(output, "\r\n");
         }
-        furi_string_cat_printf(
+        furry_string_cat_printf(
             output,
             "Sn:0x%08lX\r\n"
             "Cnt:0x%03lX "
@@ -608,14 +608,14 @@ void subghz_protocol_decoder_secplus_v1_get_string(void* context, FuriString* ou
         //id = fixed / 27;
         instance->generic.serial = fixed / 27;
         if(instance->generic.btn == 1) {
-            furi_string_cat_printf(output, " Btn:left\r\n");
+            furry_string_cat_printf(output, " Btn:left\r\n");
         } else if(instance->generic.btn == 0) {
-            furi_string_cat_printf(output, " Btn:middle\r\n");
+            furry_string_cat_printf(output, " Btn:middle\r\n");
         } else if(instance->generic.btn == 2) { //-V547
-            furi_string_cat_printf(output, " Btn:right\r\n");
+            furry_string_cat_printf(output, " Btn:right\r\n");
         }
 
-        furi_string_cat_printf(
+        furry_string_cat_printf(
             output,
             "Sn:0x%08lX\r\n"
             "Cnt:0x%03lX "

@@ -1,8 +1,8 @@
 #include "flipper.pb.h"
 #include "rpc_i.h"
 #include "gpio.pb.h"
-#include <furi_hal_gpio.h>
-#include <furi_hal_resources.h>
+#include <furry_hal_gpio.h>
+#include <furry_hal_resources.h>
 
 static const GpioPin* rpc_pin_to_hal_pin(PB_Gpio_GpioPin rpc_pin) {
     switch(rpc_pin) {
@@ -52,9 +52,9 @@ static GpioPull rpc_pull_mode_to_hall_pull_mode(PB_Gpio_GpioInputPull pull_mode)
 }
 
 static void rpc_system_gpio_set_pin_mode(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(context);
-    furi_assert(request->which_content == PB_Main_gpio_set_pin_mode_tag);
+    furry_assert(request);
+    furry_assert(context);
+    furry_assert(request->which_content == PB_Main_gpio_set_pin_mode_tag);
 
     RpcSession* session = context;
 
@@ -62,18 +62,18 @@ static void rpc_system_gpio_set_pin_mode(const PB_Main* request, void* context) 
     const GpioPin* pin = rpc_pin_to_hal_pin(cmd.pin);
     GpioMode mode = rpc_mode_to_hal_mode(cmd.mode);
 
-    furi_hal_gpio_init_simple(pin, mode);
+    furry_hal_gpio_init_simple(pin, mode);
     if(mode == GpioModeOutputPushPull) {
-        furi_hal_gpio_write(pin, false);
+        furry_hal_gpio_write(pin, false);
     }
 
     rpc_send_and_release_empty(session, request->command_id, PB_CommandStatus_OK);
 }
 
 static void rpc_system_gpio_write_pin(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(context);
-    furi_assert(request->which_content == PB_Main_gpio_write_pin_tag);
+    furry_assert(request);
+    furry_assert(context);
+    furry_assert(request->which_content == PB_Main_gpio_write_pin_tag);
 
     RpcSession* session = context;
 
@@ -89,7 +89,7 @@ static void rpc_system_gpio_write_pin(const PB_Main* request, void* context) {
         response->command_status = PB_CommandStatus_ERROR_GPIO_MODE_INCORRECT;
     } else {
         response->command_status = PB_CommandStatus_OK;
-        furi_hal_gpio_write(pin, value);
+        furry_hal_gpio_write(pin, value);
     }
 
     rpc_send_and_release(session, response);
@@ -98,9 +98,9 @@ static void rpc_system_gpio_write_pin(const PB_Main* request, void* context) {
 }
 
 static void rpc_system_gpio_read_pin(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(context);
-    furi_assert(request->which_content == PB_Main_gpio_read_pin_tag);
+    furry_assert(request);
+    furry_assert(context);
+    furry_assert(request->which_content == PB_Main_gpio_read_pin_tag);
 
     RpcSession* session = context;
 
@@ -116,7 +116,7 @@ static void rpc_system_gpio_read_pin(const PB_Main* request, void* context) {
     } else {
         response->command_status = PB_CommandStatus_OK;
         response->which_content = PB_Main_gpio_read_pin_response_tag;
-        response->content.gpio_read_pin_response.value = !!furi_hal_gpio_read(pin);
+        response->content.gpio_read_pin_response.value = !!furry_hal_gpio_read(pin);
     }
 
     rpc_send_and_release(session, response);
@@ -125,9 +125,9 @@ static void rpc_system_gpio_read_pin(const PB_Main* request, void* context) {
 }
 
 void rpc_system_gpio_get_pin_mode(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(context);
-    furi_assert(request->which_content == PB_Main_gpio_get_pin_mode_tag);
+    furry_assert(request);
+    furry_assert(context);
+    furry_assert(request->which_content == PB_Main_gpio_get_pin_mode_tag);
 
     RpcSession* session = context;
 
@@ -161,9 +161,9 @@ void rpc_system_gpio_get_pin_mode(const PB_Main* request, void* context) {
 }
 
 void rpc_system_gpio_set_input_pull(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(context);
-    furi_assert(request->which_content == PB_Main_gpio_set_input_pull_tag);
+    furry_assert(request);
+    furry_assert(context);
+    furry_assert(request->which_content == PB_Main_gpio_set_input_pull_tag);
 
     RpcSession* session = context;
 
@@ -180,7 +180,7 @@ void rpc_system_gpio_set_input_pull(const PB_Main* request, void* context) {
         status = PB_CommandStatus_ERROR_GPIO_MODE_INCORRECT;
     } else {
         status = PB_CommandStatus_OK;
-        furi_hal_gpio_init(pin, GpioModeInput, pull_mode, GpioSpeedLow);
+        furry_hal_gpio_init(pin, GpioModeInput, pull_mode, GpioSpeedLow);
     }
 
     rpc_send_and_release_empty(session, request->command_id, status);
@@ -189,7 +189,7 @@ void rpc_system_gpio_set_input_pull(const PB_Main* request, void* context) {
 }
 
 void* rpc_system_gpio_alloc(RpcSession* session) {
-    furi_assert(session);
+    furry_assert(session);
 
     RpcHandler rpc_handler = {
         .message_handler = NULL,

@@ -1,11 +1,11 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <furi_hal_resources.h>
-#include <furi_hal_gpio.h>
+#include <furry_hal_resources.h>
+#include <furry_hal_gpio.h>
 
 #define BORDER_OFFSET 1
 #define MARGIN_OFFSET 3
@@ -69,8 +69,8 @@ typedef struct {
     uint16_t numLines;
     uint16_t fallSpeed;
     GameState gameState;
-    FuriTimer* timer;
-    FuriMutex* mutex;
+    FurryTimer* timer;
+    FurryMutex* mutex;
 } TetrisState;
 
 typedef enum {
@@ -127,9 +127,9 @@ static void tetris_game_draw_playfield(Canvas* const canvas, const TetrisState* 
 }
 
 static void tetris_game_render_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     const TetrisState* tetris_state = ctx;
-    furi_mutex_acquire(tetris_state->mutex, FuriWaitForever);
+    furry_mutex_acquire(tetris_state->mutex, FurryWaitForever);
 
     tetris_game_draw_border(canvas);
     tetris_game_draw_playfield(canvas, tetris_state);
@@ -157,14 +157,14 @@ static void tetris_game_render_callback(Canvas* const canvas, void* ctx) {
         canvas_set_font(canvas, FontSecondary);
         canvas_draw_str_aligned(canvas, 32, 73, AlignCenter, AlignBottom, buffer);
     }
-    furi_mutex_release(tetris_state->mutex);
+    furry_mutex_release(tetris_state->mutex);
 }
 
-static void tetris_game_input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void tetris_game_input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     TetrisEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 static void tetris_game_init_state(TetrisState* tetris_state) {
@@ -175,7 +175,7 @@ static void tetris_game_init_state(TetrisState* tetris_state) {
 
     memcpy(&tetris_state->currPiece, &shapes[rand() % 7], sizeof(tetris_state->currPiece));
 
-    furi_timer_start(tetris_state->timer, tetris_state->fallSpeed);
+    furry_timer_start(tetris_state->timer, tetris_state->fallSpeed);
 }
 
 static void tetris_game_remove_curr_piece(TetrisState* tetris_state) {
@@ -284,11 +284,11 @@ static bool tetris_game_piece_at_bottom(TetrisState* tetris_state, Piece* newPie
     return false;
 }
 
-static void tetris_game_update_timer_callback(FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void tetris_game_update_timer_callback(FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     TetrisEvent event = {.type = EventTypeTick};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 static void
@@ -299,7 +299,7 @@ static void
 
     if(wasDownMove) {
         if(tetris_game_piece_at_bottom(tetris_state, newPiece)) {
-            furi_timer_stop(tetris_state->timer);
+            furry_timer_stop(tetris_state->timer);
 
             tetris_game_render_curr_piece(tetris_state);
             uint8_t numLines = 0;
@@ -339,7 +339,7 @@ static void
                 tetris_state->gameState = GameStateGameOver;
             } else {
                 memcpy(&tetris_state->currPiece, spawnedPiece, sizeof(tetris_state->currPiece));
-                furi_timer_start(tetris_state->timer, tetris_state->fallSpeed);
+                furry_timer_start(tetris_state->timer, tetris_state->fallSpeed);
             }
         }
     }
@@ -352,14 +352,14 @@ static void
 }
 
 int32_t tetris_game_app() {
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(TetrisEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(TetrisEvent));
 
     TetrisState* tetris_state = malloc(sizeof(TetrisState));
 
-    tetris_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    tetris_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!tetris_state->mutex) {
-        FURI_LOG_E("TetrisGame", "cannot create mutex\r\n");
-        furi_message_queue_free(event_queue);
+        FURRY_LOG_E("TetrisGame", "cannot create mutex\r\n");
+        furry_message_queue_free(event_queue);
         free(tetris_state);
         return 255;
     }
@@ -378,11 +378,11 @@ int32_t tetris_game_app() {
     view_port_input_callback_set(view_port, tetris_game_input_callback, event_queue);
 
     // Open GUI and register view_port
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     tetris_state->timer =
-        furi_timer_alloc(tetris_game_update_timer_callback, FuriTimerTypePeriodic, event_queue);
+        furry_timer_alloc(tetris_game_update_timer_callback, FurryTimerTypePeriodic, event_queue);
     tetris_game_init_state(tetris_state);
 
     TetrisEvent event;
@@ -392,14 +392,14 @@ int32_t tetris_game_app() {
 
     for(bool processing = true; processing;) {
         // This 10U implicitly sets the game loop speed. downRepeatCounter relies on this value
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 10U);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 10U);
 
-        furi_mutex_acquire(tetris_state->mutex, FuriWaitForever);
+        furry_mutex_acquire(tetris_state->mutex, FurryWaitForever);
 
         memcpy(newPiece, &tetris_state->currPiece, sizeof(tetris_state->currPiece));
         bool wasDownMove = false;
 
-        if(!furi_hal_gpio_read(&gpio_button_right)) {
+        if(!furry_hal_gpio_read(&gpio_button_right)) {
             if(downRepeatCounter > 3) {
                 for(int i = 0; i < 4; i++) {
                     newPiece->p[i].y += 1;
@@ -411,7 +411,7 @@ int32_t tetris_game_app() {
             }
         }
 
-        if(event_status == FuriStatusOk) {
+        if(event_status == FurryStatusOk) {
             if(event.type == EventTypeKey) {
                 if(event.input.type == InputTypePress || event.input.type == InputTypeLong ||
                    event.input.type == InputTypeRepeat) {
@@ -449,7 +449,7 @@ int32_t tetris_game_app() {
             } else if(event.type == EventTypeTick) {
                 // TODO: This is inverted.  it returns true when the button is not pressed.
                 // see macro in input.c and do that
-                if(furi_hal_gpio_read(&gpio_button_right)) {
+                if(furry_hal_gpio_read(&gpio_button_right)) {
                     for(int i = 0; i < 4; i++) {
                         newPiece->p[i].y += 1;
                     }
@@ -461,16 +461,16 @@ int32_t tetris_game_app() {
         tetris_game_process_step(tetris_state, newPiece, wasDownMove);
 
         view_port_update(view_port);
-        furi_mutex_release(tetris_state->mutex);
+        furry_mutex_release(tetris_state->mutex);
     }
 
-    furi_timer_free(tetris_state->timer);
+    furry_timer_free(tetris_state->timer);
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_mutex_free(tetris_state->mutex);
+    furry_message_queue_free(event_queue);
+    furry_mutex_free(tetris_state->mutex);
     vTaskPrioritySet(timer_task, origTimerPrio);
     free(newPiece);
     free(tetris_state);

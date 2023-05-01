@@ -99,7 +99,7 @@ void* subghz_protocol_encoder_bett_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_encoder_bett_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderBETT* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -111,11 +111,11 @@ void subghz_protocol_encoder_bett_free(void* context) {
  * @return true On success
  */
 static bool subghz_protocol_encoder_bett_get_upload(SubGhzProtocolEncoderBETT* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     size_t index = 0;
     size_t size_upload = (instance->generic.data_count_bit * 2);
     if(size_upload > instance->encoder.size_upload) {
-        FURI_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
+        FURRY_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
         return false;
     } else {
         instance->encoder.size_upload = size_upload;
@@ -157,7 +157,7 @@ static bool subghz_protocol_encoder_bett_get_upload(SubGhzProtocolEncoderBETT* i
 
 SubGhzProtocolStatus
     subghz_protocol_encoder_bett_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderBETT* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -166,7 +166,7 @@ SubGhzProtocolStatus
             flipper_format,
             subghz_protocol_bett_const.min_count_bit_for_found);
         if(ret != SubGhzProtocolStatusOk) {
-            FURI_LOG_E(TAG, "Deserialize error");
+            FURRY_LOG_E(TAG, "Deserialize error");
             break;
         }
         //optional parameter parameter
@@ -215,19 +215,19 @@ void* subghz_protocol_decoder_bett_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_bett_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderBETT* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_bett_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderBETT* instance = context;
     instance->decoder.parser_step = BETTDecoderStepReset;
 }
 
 void subghz_protocol_decoder_bett_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderBETT* instance = context;
 
     switch(instance->decoder.parser_step) {
@@ -290,7 +290,7 @@ void subghz_protocol_decoder_bett_feed(void* context, bool level, uint32_t durat
 }
 
 uint8_t subghz_protocol_decoder_bett_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderBETT* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -300,24 +300,24 @@ SubGhzProtocolStatus subghz_protocol_decoder_bett_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderBETT* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_bett_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderBETT* instance = context;
     return subghz_block_generic_deserialize_check_count_bit(
         &instance->generic, flipper_format, subghz_protocol_bett_const.min_count_bit_for_found);
 }
 
-void subghz_protocol_decoder_bett_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_bett_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderBETT* instance = context;
     uint32_t data = (uint32_t)(instance->generic.data & 0x3FFFF);
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %dbit\r\n"
         "Key:%05lX\r\n"

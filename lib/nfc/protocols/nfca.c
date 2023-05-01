@@ -1,7 +1,7 @@
 #include "nfca.h"
 #include <string.h>
 #include <stdio.h>
-#include <furi.h>
+#include <furry.h>
 
 #define NFCA_CMD_RATS (0xE0U)
 
@@ -108,7 +108,7 @@ NfcaSignal* nfca_signal_alloc() {
 }
 
 void nfca_signal_free(NfcaSignal* nfca_signal) {
-    furi_assert(nfca_signal);
+    furry_assert(nfca_signal);
 
     digital_signal_free(nfca_signal->one);
     digital_signal_free(nfca_signal->zero);
@@ -117,9 +117,9 @@ void nfca_signal_free(NfcaSignal* nfca_signal) {
 }
 
 void nfca_signal_encode(NfcaSignal* nfca_signal, uint8_t* data, uint16_t bits, uint8_t* parity) {
-    furi_assert(nfca_signal);
-    furi_assert(data);
-    furi_assert(parity);
+    furry_assert(nfca_signal);
+    furry_assert(data);
+    furry_assert(parity);
 
     nfca_signal->tx_signal->edge_cnt = 0;
     nfca_signal->tx_signal->start_level = true;
@@ -128,7 +128,7 @@ void nfca_signal_encode(NfcaSignal* nfca_signal, uint8_t* data, uint16_t bits, u
 
     if(bits < 8) {
         for(size_t i = 0; i < bits; i++) {
-            if(FURI_BIT(data[0], i)) {
+            if(FURRY_BIT(data[0], i)) {
                 digital_signal_append(nfca_signal->tx_signal, nfca_signal->one);
             } else {
                 digital_signal_append(nfca_signal->tx_signal, nfca_signal->zero);

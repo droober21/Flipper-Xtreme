@@ -1,5 +1,5 @@
 #include "battery_info.h"
-#include <furi.h>
+#include <furry.h>
 #include <gui/elements.h>
 #include <assets_icons.h>
 #include <locale/locale.h>
@@ -90,7 +90,7 @@ static void draw_battery(Canvas* canvas, BatteryInfoModel* data, int x, int y) {
 };
 
 static void battery_info_draw_callback(Canvas* canvas, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     BatteryInfoModel* model = context;
 
     canvas_clear(canvas);
@@ -137,19 +137,19 @@ BatteryInfo* battery_info_alloc() {
 }
 
 void battery_info_free(BatteryInfo* battery_info) {
-    furi_assert(battery_info);
+    furry_assert(battery_info);
     view_free(battery_info->view);
     free(battery_info);
 }
 
 View* battery_info_get_view(BatteryInfo* battery_info) {
-    furi_assert(battery_info);
+    furry_assert(battery_info);
     return battery_info->view;
 }
 
 void battery_info_set_data(BatteryInfo* battery_info, BatteryInfoModel* data) {
-    furi_assert(battery_info);
-    furi_assert(data);
+    furry_assert(battery_info);
+    furry_assert(data);
     with_view_model(
         battery_info->view,
         BatteryInfoModel * model,

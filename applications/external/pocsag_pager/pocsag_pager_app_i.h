@@ -62,8 +62,8 @@ void pcsg_preset_init(
     size_t preset_data_size);
 void pcsg_get_frequency_modulation(
     POCSAGPagerApp* app,
-    FuriString* frequency,
-    FuriString* modulation);
+    FurryString* frequency,
+    FurryString* modulation);
 void pcsg_begin(POCSAGPagerApp* app, uint8_t* preset_data);
 uint32_t pcsg_rx(POCSAGPagerApp* app, uint32_t frequency);
 void pcsg_idle(POCSAGPagerApp* app);

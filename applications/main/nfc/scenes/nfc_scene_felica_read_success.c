@@ -4,7 +4,7 @@ void nfc_scene_felica_read_success_widget_callback(
     GuiButtonType result,
     InputType type,
     void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Nfc* nfc = context;
 
     if(type == InputTypeShort) {
@@ -23,31 +23,31 @@ void nfc_scene_felica_read_success_on_enter(void* context) {
     widget_add_button_element(
         widget, GuiButtonTypeRight, "More", nfc_scene_felica_read_success_widget_callback, nfc);
 
-    FuriString* temp_str = NULL;
-    if(furi_string_size(nfc->dev->dev_data.parsed_data)) {
-        temp_str = furi_string_alloc_set(nfc->dev->dev_data.parsed_data);
+    FurryString* temp_str = NULL;
+    if(furry_string_size(nfc->dev->dev_data.parsed_data)) {
+        temp_str = furry_string_alloc_set(nfc->dev->dev_data.parsed_data);
     } else {
-        temp_str = furi_string_alloc_printf("\e#%s", nfc_felica_type(felica_data->type));
+        temp_str = furry_string_alloc_printf("\e#%s", nfc_felica_type(felica_data->type));
 
         FelicaSystemList_it_t it;
         for(FelicaSystemList_it(it, felica_data->systems); !FelicaSystemList_end_p(it);
             FelicaSystemList_next(it)) {
             FelicaSystem* current_system = *FelicaSystemList_ref(it);
-            furi_string_cat_printf(
+            furry_string_cat_printf(
                 temp_str, "\nSystem %04X (#%d):", current_system->code, current_system->number);
-            furi_string_cat_printf(temp_str, "\nIDm:\n    ");
+            furry_string_cat_printf(temp_str, "\nIDm:\n    ");
             for(size_t i = 0; i < 8; i++) {
-                furi_string_cat_printf(temp_str, "%02X", current_system->idm[i]);
+                furry_string_cat_printf(temp_str, "%02X", current_system->idm[i]);
             }
-            furi_string_cat_printf(temp_str, "\nPMm:\n    ");
+            furry_string_cat_printf(temp_str, "\nPMm:\n    ");
             for(size_t i = 0; i < 8; i++) {
-                furi_string_cat_printf(temp_str, "%02X", current_system->pmm[i]);
+                furry_string_cat_printf(temp_str, "%02X", current_system->pmm[i]);
             }
         }
     }
 
-    widget_add_text_scroll_element(widget, 0, 0, 128, 52, furi_string_get_cstr(temp_str));
-    furi_string_free(temp_str);
+    widget_add_text_scroll_element(widget, 0, 0, 128, 52, furry_string_get_cstr(temp_str));
+    furry_string_free(temp_str);
 
     notification_message_block(nfc->notifications, &sequence_set_green_255);
 

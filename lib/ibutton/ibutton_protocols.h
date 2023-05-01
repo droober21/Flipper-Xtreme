@@ -137,34 +137,34 @@ bool ibutton_protocols_load(iButtonProtocols* protocols, iButtonKey* key, const 
  * Format a string containing device full data
  * @param [in] protocols pointer to an iButtonProtocols object
  * @param [in] key pointer to the key to be rendered
- * @param [out] result pointer to the FuriString instance (must be initialized)
+ * @param [out] result pointer to the FurryString instance (must be initialized)
  */
 void ibutton_protocols_render_data(
     iButtonProtocols* protocols,
     const iButtonKey* key,
-    FuriString* result);
+    FurryString* result);
 
 /**
  * Format a string containing device brief data
  * @param [in] protocols pointer to an iButtonProtocols object
  * @param [in] key pointer to the key to be rendered
- * @param [out] result pointer to the FuriString instance (must be initialized)
+ * @param [out] result pointer to the FurryString instance (must be initialized)
  */
 void ibutton_protocols_render_brief_data(
     iButtonProtocols* protocols,
     const iButtonKey* key,
-    FuriString* result);
+    FurryString* result);
 
 /**
  * Format a string containing error message (for invalid keys)
  * @param [in] protocols pointer to an iButtonProtocols object
  * @param [in] key pointer to the key to be rendered
- * @param [out] result pointer to the FuriString instance (must be initialized)
+ * @param [out] result pointer to the FurryString instance (must be initialized)
  */
 void ibutton_protocols_render_error(
     iButtonProtocols* protocols,
     const iButtonKey* key,
-    FuriString* result);
+    FurryString* result);
 
 /**
  * Check whether the key data is valid

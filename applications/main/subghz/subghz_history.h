@@ -2,8 +2,8 @@
 #pragma once
 
 #include <math.h>
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <lib/flipper_format/flipper_format.h>
 #include <lib/subghz/types.h>
 
@@ -73,26 +73,26 @@ const char* subghz_history_get_protocol_name(SubGhzHistory* instance, uint16_t i
 /** Get string item menu to history[idx]
  * 
  * @param instance  - SubGhzHistory instance
- * @param output    - FuriString* output
+ * @param output    - FurryString* output
  * @param idx       - record index
  */
-void subghz_history_get_text_item_menu(SubGhzHistory* instance, FuriString* output, uint16_t idx);
+void subghz_history_get_text_item_menu(SubGhzHistory* instance, FurryString* output, uint16_t idx);
 
 /** Get time item menu to history[idx]
  * 
  * @param instance  - SubGhzHistory instance
- * @param output    - FuriString* output
+ * @param output    - FurryString* output
  * @param idx       - record index
  */
-void subghz_history_get_time_item_menu(SubGhzHistory* instance, FuriString* output, uint16_t idx);
+void subghz_history_get_time_item_menu(SubGhzHistory* instance, FurryString* output, uint16_t idx);
 
 /** Get string the remaining number of records to history
  * 
  * @param instance  - SubGhzHistory instance
- * @param output    - FuriString* output
+ * @param output    - FurryString* output
  * @return bool - is FULL
  */
-bool subghz_history_get_text_space_left(SubGhzHistory* instance, FuriString* output);
+bool subghz_history_get_text_space_left(SubGhzHistory* instance, FurryString* output);
 
 /** Return last index
  *

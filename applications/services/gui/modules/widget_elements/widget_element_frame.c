@@ -9,14 +9,14 @@ typedef struct {
 } GuiFrameModel;
 
 static void gui_frame_draw(Canvas* canvas, WidgetElement* element) {
-    furi_assert(canvas);
-    furi_assert(element);
+    furry_assert(canvas);
+    furry_assert(element);
     GuiFrameModel* model = element->model;
     canvas_draw_rframe(canvas, model->x, model->y, model->width, model->height, model->radius);
 }
 
 static void gui_frame_free(WidgetElement* gui_frame) {
-    furi_assert(gui_frame);
+    furry_assert(gui_frame);
 
     free(gui_frame->model);
     free(gui_frame);

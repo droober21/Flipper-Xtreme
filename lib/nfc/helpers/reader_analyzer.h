@@ -33,11 +33,11 @@ void reader_analyzer_stop(ReaderAnalyzer* instance);
 NfcProtocol
     reader_analyzer_guess_protocol(ReaderAnalyzer* instance, uint8_t* buff_rx, uint16_t len);
 
-FuriHalNfcDevData* reader_analyzer_get_nfc_data(ReaderAnalyzer* instance);
+FurryHalNfcDevData* reader_analyzer_get_nfc_data(ReaderAnalyzer* instance);
 
-void reader_analyzer_set_nfc_data(ReaderAnalyzer* instance, FuriHalNfcDevData* nfc_data);
+void reader_analyzer_set_nfc_data(ReaderAnalyzer* instance, FurryHalNfcDevData* nfc_data);
 
 void reader_analyzer_prepare_tx_rx(
     ReaderAnalyzer* instance,
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     bool is_picc);

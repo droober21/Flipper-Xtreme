@@ -7,8 +7,8 @@
 
 #include "gui.h"
 
-#include <furi.h>
-#include <furi_hal_rtc.h>
+#include <furry.h>
+#include <furry_hal_rtc.h>
 #include <m-array.h>
 #include <m-algo.h>
 #include <stdio.h>
@@ -58,8 +58,8 @@ ALGO_DEF(CanvasCallbackPairArray, CanvasCallbackPairArray_t);
 /** Gui structure */
 struct Gui {
     // Thread and lock
-    FuriThreadId thread_id;
-    FuriMutex* mutex;
+    FurryThreadId thread_id;
+    FurryMutex* mutex;
 
     // Layers and Canvas
     uint16_t hide_statusbar_count;
@@ -70,8 +70,8 @@ struct Gui {
     CanvasCallbackPairArray_t canvas_callback_pair;
 
     // Input
-    FuriMessageQueue* input_queue;
-    FuriPubSub* input_events;
+    FurryMessageQueue* input_queue;
+    FurryPubSub* input_events;
     uint8_t ongoing_input;
     ViewPort* ongoing_input_view_port;
 };

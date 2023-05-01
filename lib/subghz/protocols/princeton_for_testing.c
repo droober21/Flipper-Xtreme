@@ -1,6 +1,6 @@
 #include "princeton_for_testing.h"
 
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include "../blocks/math.h"
 
 /*
@@ -44,7 +44,7 @@ SubGhzEncoderPrinceton* subghz_encoder_princeton_for_testing_alloc() {
 }
 
 void subghz_encoder_princeton_for_testing_free(SubGhzEncoderPrinceton* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     free(instance);
 }
 
@@ -59,7 +59,7 @@ void subghz_encoder_princeton_for_testing_set(
     uint32_t key,
     size_t repeat,
     uint32_t frequency) {
-    furi_assert(instance);
+    furry_assert(instance);
     instance->te = SUBGHZ_PT_SHORT;
     instance->key = key;
     instance->repeat = repeat + 1;
@@ -76,15 +76,15 @@ void subghz_encoder_princeton_for_testing_set(
 
     instance->count_key = instance->count_key_package + 3;
 
-    if((furi_get_tick() - instance->time_stop) < instance->timeout) {
-        instance->time_stop = (instance->timeout - (furi_get_tick() - instance->time_stop)) * 1000;
+    if((furry_get_tick() - instance->time_stop) < instance->timeout) {
+        instance->time_stop = (instance->timeout - (furry_get_tick() - instance->time_stop)) * 1000;
     } else {
         instance->time_stop = 0;
     }
 }
 
 size_t subghz_encoder_princeton_for_testing_get_repeat_left(SubGhzEncoderPrinceton* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     return instance->repeat;
 }
 
@@ -92,7 +92,7 @@ void subghz_encoder_princeton_for_testing_print_log(void* context) {
     SubGhzEncoderPrinceton* instance = context;
     float duty_cycle =
         ((float)instance->time_high / (instance->time_high + instance->time_low)) * 100;
-    FURI_LOG_I(
+    FURRY_LOG_I(
         TAG "Encoder",
         "Radio tx_time=%luus  ON=%luus, OFF=%luus, DutyCycle=%lu,%lu%%",
         instance->time_high + instance->time_low,
@@ -201,7 +201,7 @@ SubGhzDecoderPrinceton* subghz_decoder_princeton_for_testing_alloc(void) {
 }
 
 void subghz_decoder_princeton_for_testing_free(SubGhzDecoderPrinceton* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     free(instance);
 }
 

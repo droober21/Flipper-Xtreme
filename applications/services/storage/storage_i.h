@@ -1,6 +1,6 @@
 #pragma once
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <gui/gui.h>
 #include "storage_glue.h"
 #include "storage_sd_api.h"
@@ -21,10 +21,10 @@ typedef struct {
 } StorageSDGui;
 
 struct Storage {
-    FuriMessageQueue* message_queue;
+    FurryMessageQueue* message_queue;
     StorageData storage[STORAGE_COUNT];
     StorageSDGui sd_gui;
-    FuriPubSub* pubsub;
+    FurryPubSub* pubsub;
 };
 
 #ifdef __cplusplus

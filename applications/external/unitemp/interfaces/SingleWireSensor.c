@@ -79,7 +79,7 @@ bool unitemp_singlewire_alloc(Sensor* sensor, char* args) {
     if(args == NULL) return false;
     SingleWireSensor* instance = malloc(sizeof(SingleWireSensor));
     if(instance == NULL) {
-        FURI_LOG_E(APP_NAME, "Sensor %s instance allocation error", sensor->name);
+        FURRY_LOG_E(APP_NAME, "Sensor %s instance allocation error", sensor->name);
         return false;
     }
     sensor->instance = instance;
@@ -90,7 +90,7 @@ bool unitemp_singlewire_alloc(Sensor* sensor, char* args) {
     if(unitemp_singlewire_sensorSetGPIO(sensor, unitemp_gpio_getFromInt(gpio))) {
         return true;
     }
-    FURI_LOG_E(APP_NAME, "Sensor %s GPIO setting error", sensor->name);
+    FURRY_LOG_E(APP_NAME, "Sensor %s GPIO setting error", sensor->name);
     free(instance);
     return false;
 }
@@ -103,14 +103,14 @@ bool unitemp_singlewire_free(Sensor* sensor) {
 bool unitemp_singlewire_init(Sensor* sensor) {
     SingleWireSensor* instance = ((Sensor*)sensor)->instance;
     if(instance == NULL || instance->gpio == NULL) {
-        FURI_LOG_E(APP_NAME, "Sensor pointer is null!");
+        FURRY_LOG_E(APP_NAME, "Sensor pointer is null!");
         return false;
     }
     unitemp_gpio_lock(instance->gpio, &SINGLE_WIRE);
     //Высокий уровень по умолчанию
-    furi_hal_gpio_write(instance->gpio->pin, true);
+    furry_hal_gpio_write(instance->gpio->pin, true);
     //Режим работы - OpenDrain, подтяжка включается на всякий случай
-    furi_hal_gpio_init(
+    furry_hal_gpio_init(
         instance->gpio->pin, //Порт FZ
         GpioModeOutputOpenDrain, //Режим работы - открытый сток
         GpioPullUp, //Принудительная подтяжка линии данных к питанию
@@ -123,9 +123,9 @@ bool unitemp_singlewire_deinit(Sensor* sensor) {
     if(instance == NULL || instance->gpio == NULL) return false;
     unitemp_gpio_unlock(instance->gpio);
     //Низкий уровень по умолчанию
-    furi_hal_gpio_write(instance->gpio->pin, false);
+    furry_hal_gpio_write(instance->gpio->pin, false);
     //Режим работы - аналог, подтяжка выключена
-    furi_hal_gpio_init(
+    furry_hal_gpio_init(
         instance->gpio->pin, //Порт FZ
         GpioModeAnalog, //Режим работы - аналог
         GpioPullNo, //Подтяжка выключена
@@ -153,20 +153,20 @@ UnitempStatus unitemp_singlewire_update(Sensor* sensor) {
 
     /* Запрос */
     //Опускание линии
-    furi_hal_gpio_write(instance->gpio->pin, false);
+    furry_hal_gpio_write(instance->gpio->pin, false);
     //Ожидание более 18 мс
-    furi_delay_ms(19);
+    furry_delay_ms(19);
     //Выключение прерываний, чтобы ничто не мешало обработке данных
     __disable_irq();
     //Подъём линии
-    furi_hal_gpio_write(instance->gpio->pin, true);
+    furry_hal_gpio_write(instance->gpio->pin, true);
 
     /* Ответ датчика */
     //Переменная-счётчик
     uint16_t timeout = 0;
 
     //Ожидание подъёма линии
-    while(!furi_hal_gpio_read(instance->gpio->pin)) {
+    while(!furry_hal_gpio_read(instance->gpio->pin)) {
         timeout++;
         if(timeout > POLLING_TIMEOUT_TICKS) {
             //Включение прерываний
@@ -178,7 +178,7 @@ UnitempStatus unitemp_singlewire_update(Sensor* sensor) {
     timeout = 0;
 
     //Ожидание спада линии
-    while(furi_hal_gpio_read(instance->gpio->pin)) {
+    while(furry_hal_gpio_read(instance->gpio->pin)) {
         timeout++;
         if(timeout > POLLING_TIMEOUT_TICKS) {
             //Включение прерываний
@@ -189,7 +189,7 @@ UnitempStatus unitemp_singlewire_update(Sensor* sensor) {
     }
 
     //Ожидание подъёма линии
-    while(!furi_hal_gpio_read(instance->gpio->pin)) {
+    while(!furry_hal_gpio_read(instance->gpio->pin)) {
         timeout++;
         if(timeout > POLLING_TIMEOUT_TICKS) {
             //Включение прерываний
@@ -201,7 +201,7 @@ UnitempStatus unitemp_singlewire_update(Sensor* sensor) {
     timeout = 0;
 
     //Ожидание спада линии
-    while(furi_hal_gpio_read(instance->gpio->pin)) {
+    while(furry_hal_gpio_read(instance->gpio->pin)) {
         timeout++;
         if(timeout > POLLING_TIMEOUT_TICKS) {
             //Включение прерываний
@@ -217,9 +217,9 @@ UnitempStatus unitemp_singlewire_update(Sensor* sensor) {
         for(uint8_t b = 7; b != 255; b--) {
             uint16_t hT = 0, lT = 0;
             //Пока линия в низком уровне, инкремент переменной lT
-            while(!furi_hal_gpio_read(instance->gpio->pin) && lT != 65535) lT++;
+            while(!furry_hal_gpio_read(instance->gpio->pin) && lT != 65535) lT++;
             //Пока линия в высоком уровне, инкремент переменной hT
-            while(furi_hal_gpio_read(instance->gpio->pin) && hT != 65535) hT++;
+            while(furry_hal_gpio_read(instance->gpio->pin) && hT != 65535) hT++;
             //Если hT больше lT, то пришла единица
             if(hT > lT) data[a] |= (1 << b);
         }

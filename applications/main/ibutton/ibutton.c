@@ -30,17 +30,17 @@ static const NotificationSequence* ibutton_notification_sequences[] = {
 };
 
 static void ibutton_make_app_folder(iButton* ibutton) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     if(!storage_simply_mkdir(storage, IBUTTON_APP_FOLDER)) {
         dialog_message_show_storage_error(ibutton->dialogs, "Cannot create\napp folder");
     }
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 static void ibutton_rpc_command_callback(RpcAppSystemEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     iButton* ibutton = context;
 
     if(event == RpcAppEventSessionClose) {
@@ -58,19 +58,19 @@ static void ibutton_rpc_command_callback(RpcAppSystemEvent event, void* context)
 }
 
 bool ibutton_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     iButton* ibutton = context;
     return scene_manager_handle_custom_event(ibutton->scene_manager, event);
 }
 
 bool ibutton_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     iButton* ibutton = context;
     return scene_manager_handle_back_event(ibutton->scene_manager);
 }
 
 void ibutton_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     iButton* ibutton = context;
     scene_manager_handle_tick_event(ibutton->scene_manager);
 }
@@ -78,7 +78,7 @@ void ibutton_tick_event_callback(void* context) {
 iButton* ibutton_alloc() {
     iButton* ibutton = malloc(sizeof(iButton));
 
-    ibutton->file_path = furi_string_alloc();
+    ibutton->file_path = furry_string_alloc();
 
     ibutton->scene_manager = scene_manager_alloc(&ibutton_scene_handlers, ibutton);
 
@@ -92,10 +92,10 @@ iButton* ibutton_alloc() {
     view_dispatcher_set_tick_event_callback(
         ibutton->view_dispatcher, ibutton_tick_event_callback, 100);
 
-    ibutton->gui = furi_record_open(RECORD_GUI);
+    ibutton->gui = furry_record_open(RECORD_GUI);
 
-    ibutton->dialogs = furi_record_open(RECORD_DIALOGS);
-    ibutton->notifications = furi_record_open(RECORD_NOTIFICATION);
+    ibutton->dialogs = furry_record_open(RECORD_DIALOGS);
+    ibutton->notifications = furry_record_open(RECORD_NOTIFICATION);
 
     ibutton->protocols = ibutton_protocols_alloc();
     ibutton->key = ibutton_key_alloc(ibutton_protocols_get_max_data_size(ibutton->protocols));
@@ -130,7 +130,7 @@ iButton* ibutton_alloc() {
 }
 
 void ibutton_free(iButton* ibutton) {
-    furi_assert(ibutton);
+    furry_assert(ibutton);
 
     view_dispatcher_remove_view(ibutton->view_dispatcher, iButtonViewLoading);
     loading_free(ibutton->loading);
@@ -153,13 +153,13 @@ void ibutton_free(iButton* ibutton) {
     view_dispatcher_free(ibutton->view_dispatcher);
     scene_manager_free(ibutton->scene_manager);
 
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
     ibutton->notifications = NULL;
 
-    furi_record_close(RECORD_DIALOGS);
+    furry_record_close(RECORD_DIALOGS);
     ibutton->dialogs = NULL;
 
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     ibutton->gui = NULL;
 
     ibutton_worker_stop_thread(ibutton->worker);
@@ -167,7 +167,7 @@ void ibutton_free(iButton* ibutton) {
     ibutton_key_free(ibutton->key);
     ibutton_protocols_free(ibutton->protocols);
 
-    furi_string_free(ibutton->file_path);
+    furry_string_free(ibutton->file_path);
 
     free(ibutton);
 }
@@ -176,18 +176,18 @@ bool ibutton_load_key(iButton* ibutton) {
     view_dispatcher_switch_to_view(ibutton->view_dispatcher, iButtonViewLoading);
 
     const bool success = ibutton_protocols_load(
-        ibutton->protocols, ibutton->key, furi_string_get_cstr(ibutton->file_path));
+        ibutton->protocols, ibutton->key, furry_string_get_cstr(ibutton->file_path));
 
     if(!success) {
         dialog_message_show_storage_error(ibutton->dialogs, "Cannot load\nkey file");
 
     } else {
-        FuriString* tmp = furi_string_alloc();
+        FurryString* tmp = furry_string_alloc();
 
         path_extract_filename(ibutton->file_path, tmp, true);
-        strncpy(ibutton->key_name, furi_string_get_cstr(tmp), IBUTTON_KEY_NAME_SIZE);
+        strncpy(ibutton->key_name, furry_string_get_cstr(tmp), IBUTTON_KEY_NAME_SIZE);
 
-        furi_string_free(tmp);
+        furry_string_free(tmp);
     }
 
     return success;
@@ -198,8 +198,8 @@ bool ibutton_select_and_load_key(iButton* ibutton) {
     dialog_file_browser_set_basic_options(&browser_options, IBUTTON_APP_EXTENSION, &I_ibutt_10px);
     browser_options.base_path = IBUTTON_APP_FOLDER;
 
-    if(furi_string_empty(ibutton->file_path)) {
-        furi_string_set(ibutton->file_path, browser_options.base_path);
+    if(furry_string_empty(ibutton->file_path)) {
+        furry_string_set(ibutton->file_path, browser_options.base_path);
     }
 
     return dialog_file_browser_show(
@@ -214,7 +214,7 @@ bool ibutton_save_key(iButton* ibutton) {
 
     iButtonKey* key = ibutton->key;
     const bool success =
-        ibutton_protocols_save(ibutton->protocols, key, furi_string_get_cstr(ibutton->file_path));
+        ibutton_protocols_save(ibutton->protocols, key, furry_string_get_cstr(ibutton->file_path));
 
     if(!success) {
         dialog_message_show_storage_error(ibutton->dialogs, "Cannot save\nkey file");
@@ -226,9 +226,9 @@ bool ibutton_save_key(iButton* ibutton) {
 bool ibutton_delete_key(iButton* ibutton) {
     bool result = false;
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
-    result = storage_simply_remove(storage, furi_string_get_cstr(ibutton->file_path));
-    furi_record_close(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
+    result = storage_simply_remove(storage, furry_string_get_cstr(ibutton->file_path));
+    furry_record_close(RECORD_STORAGE);
 
     ibutton_reset_key(ibutton);
 
@@ -237,12 +237,12 @@ bool ibutton_delete_key(iButton* ibutton) {
 
 void ibutton_reset_key(iButton* ibutton) {
     memset(ibutton->key_name, 0, IBUTTON_KEY_NAME_SIZE + 1);
-    furi_string_reset(ibutton->file_path);
+    furry_string_reset(ibutton->file_path);
     ibutton_key_reset(ibutton->key);
 }
 
 void ibutton_notification_message(iButton* ibutton, uint32_t message) {
-    furi_assert(message < sizeof(ibutton_notification_sequences) / sizeof(NotificationSequence*));
+    furry_assert(message < sizeof(ibutton_notification_sequences) / sizeof(NotificationSequence*));
     notification_message(ibutton->notifications, ibutton_notification_sequences[message]);
 }
 
@@ -267,13 +267,13 @@ int32_t ibutton_app(void* arg) {
 
     if((arg != NULL) && (strlen(arg) != 0)) {
         if(sscanf(arg, "RPC %lX", (uint32_t*)&ibutton->rpc) == 1) {
-            FURI_LOG_D(TAG, "Running in RPC mode");
+            FURRY_LOG_D(TAG, "Running in RPC mode");
 
             rpc_system_app_set_callback(ibutton->rpc, ibutton_rpc_command_callback, ibutton);
             rpc_system_app_send_started(ibutton->rpc);
 
         } else {
-            furi_string_set(ibutton->file_path, (const char*)arg);
+            furry_string_set(ibutton->file_path, (const char*)arg);
             key_loaded = ibutton_load_key(ibutton);
         }
     }

@@ -90,7 +90,7 @@ void* subghz_protocol_encoder_doitrand_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_encoder_doitrand_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderDoitrand* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -102,11 +102,11 @@ void subghz_protocol_encoder_doitrand_free(void* context) {
  * @return true On success
  */
 static bool subghz_protocol_encoder_doitrand_get_upload(SubGhzProtocolEncoderDoitrand* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     size_t index = 0;
     size_t size_upload = (instance->generic.data_count_bit * 2) + 2;
     if(size_upload > instance->encoder.size_upload) {
-        FURI_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
+        FURRY_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
         return false;
     } else {
         instance->encoder.size_upload = size_upload;
@@ -138,7 +138,7 @@ static bool subghz_protocol_encoder_doitrand_get_upload(SubGhzProtocolEncoderDoi
 
 SubGhzProtocolStatus
     subghz_protocol_encoder_doitrand_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderDoitrand* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -195,19 +195,19 @@ void* subghz_protocol_decoder_doitrand_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_doitrand_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderDoitrand* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_doitrand_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderDoitrand* instance = context;
     instance->decoder.parser_step = DoitrandDecoderStepReset;
 }
 
 void subghz_protocol_decoder_doitrand_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderDoitrand* instance = context;
 
     switch(instance->decoder.parser_step) {
@@ -304,7 +304,7 @@ static void subghz_protocol_doitrand_check_remote_controller(SubGhzBlockGeneric*
 }
 
 uint8_t subghz_protocol_decoder_doitrand_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderDoitrand* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -314,14 +314,14 @@ SubGhzProtocolStatus subghz_protocol_decoder_doitrand_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderDoitrand* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_doitrand_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderDoitrand* instance = context;
     return subghz_block_generic_deserialize_check_count_bit(
         &instance->generic,
@@ -329,11 +329,11 @@ SubGhzProtocolStatus
         subghz_protocol_doitrand_const.min_count_bit_for_found);
 }
 
-void subghz_protocol_decoder_doitrand_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_doitrand_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderDoitrand* instance = context;
     subghz_protocol_doitrand_check_remote_controller(&instance->generic);
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %dbit\r\n"
         "Key:%02lX%08lX\r\n"

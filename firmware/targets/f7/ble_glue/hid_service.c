@@ -2,7 +2,7 @@
 #include "app_common.h"
 #include <ble/ble.h>
 
-#include <furi.h>
+#include <furry.h>
 
 #define TAG "BtHid"
 
@@ -40,7 +40,7 @@ static SVCCTL_EvtAckStatus_t hid_svc_event_handler(void* event) {
             aci_gatt_write_permit_req_event_rp0* req =
                 (aci_gatt_write_permit_req_event_rp0*)blecore_evt->data;
 
-            furi_check(hid_svc->led_state_event_callback && hid_svc->led_state_ctx);
+            furry_check(hid_svc->led_state_event_callback && hid_svc->led_state_ctx);
 
             // this check is likely to be incorrect, it will actually work in our case
             // but we need to investigate gatt api to see what is the rules
@@ -90,7 +90,7 @@ void hid_svc_start() {
             4, /* Service + Report Map + HID Information + HID Control Point + LED state */
         &hid_svc->svc_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add HID service: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add HID service: %d", status);
     }
     // Add Protocol mode characteristics
     char_uuid.Char_UUID_16 = PROTOCOL_MODE_CHAR_UUID;
@@ -106,14 +106,14 @@ void hid_svc_start() {
         CHAR_VALUE_LEN_CONSTANT,
         &hid_svc->protocol_mode_char_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add protocol mode characteristic: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add protocol mode characteristic: %d", status);
     }
     // Update Protocol mode characteristic
     uint8_t protocol_mode = 1;
     status = aci_gatt_update_char_value(
         hid_svc->svc_handle, hid_svc->protocol_mode_char_handle, 0, 1, &protocol_mode);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to update protocol mode characteristic: %d", status);
+        FURRY_LOG_E(TAG, "Failed to update protocol mode characteristic: %d", status);
     }
 
 #if(HID_SVC_REPORT_COUNT != 0)
@@ -133,7 +133,7 @@ void hid_svc_start() {
                 CHAR_VALUE_LEN_VARIABLE,
                 &(hid_svc->report_char_handle[i]));
             if(status) {
-                FURI_LOG_E(TAG, "Failed to add report characteristic: %d", status);
+                FURRY_LOG_E(TAG, "Failed to add report characteristic: %d", status);
             }
 
             desc_uuid.Char_UUID_16 = REPORT_REFERENCE_DESCRIPTOR_UUID;
@@ -152,7 +152,7 @@ void hid_svc_start() {
                 CHAR_VALUE_LEN_CONSTANT,
                 &(hid_svc->report_ref_desc_handle[i]));
             if(status) {
-                FURI_LOG_E(TAG, "Failed to add report reference descriptor: %d", status);
+                FURRY_LOG_E(TAG, "Failed to add report reference descriptor: %d", status);
             }
         } else if((i - HID_SVC_INPUT_REPORT_COUNT) < HID_SVC_OUTPUT_REPORT_COUNT) {
             uint8_t buf[2] = {i + 1, 2}; // 2 output
@@ -169,7 +169,7 @@ void hid_svc_start() {
                 CHAR_VALUE_LEN_VARIABLE,
                 &(hid_svc->report_char_handle[i]));
             if(status) {
-                FURI_LOG_E(TAG, "Failed to add report characteristic: %d", status);
+                FURRY_LOG_E(TAG, "Failed to add report characteristic: %d", status);
             }
 
             desc_uuid.Char_UUID_16 = REPORT_REFERENCE_DESCRIPTOR_UUID;
@@ -188,7 +188,7 @@ void hid_svc_start() {
                 CHAR_VALUE_LEN_CONSTANT,
                 &(hid_svc->report_ref_desc_handle[i]));
             if(status) {
-                FURI_LOG_E(TAG, "Failed to add report reference descriptor: %d", status);
+                FURRY_LOG_E(TAG, "Failed to add report reference descriptor: %d", status);
             }
         } else {
             uint8_t buf[2] = {i + 1, 3}; // 3 feature
@@ -205,7 +205,7 @@ void hid_svc_start() {
                 CHAR_VALUE_LEN_VARIABLE,
                 &(hid_svc->report_char_handle[i]));
             if(status) {
-                FURI_LOG_E(TAG, "Failed to add report characteristic: %d", status);
+                FURRY_LOG_E(TAG, "Failed to add report characteristic: %d", status);
             }
 
             desc_uuid.Char_UUID_16 = REPORT_REFERENCE_DESCRIPTOR_UUID;
@@ -224,7 +224,7 @@ void hid_svc_start() {
                 CHAR_VALUE_LEN_CONSTANT,
                 &(hid_svc->report_ref_desc_handle[i]));
             if(status) {
-                FURI_LOG_E(TAG, "Failed to add report reference descriptor: %d", status);
+                FURRY_LOG_E(TAG, "Failed to add report reference descriptor: %d", status);
             }
         }
     }
@@ -243,7 +243,7 @@ void hid_svc_start() {
         CHAR_VALUE_LEN_CONSTANT,
         &(hid_svc->led_state_char_handle));
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add led state characteristic: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add led state characteristic: %d", status);
     }
 
     // add led state char descriptor specifying it is an output report
@@ -264,7 +264,7 @@ void hid_svc_start() {
         CHAR_VALUE_LEN_CONSTANT,
         &(hid_svc->led_state_desc_handle));
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add led state descriptor: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add led state descriptor: %d", status);
     }
 
     // Add Report Map characteristic
@@ -281,7 +281,7 @@ void hid_svc_start() {
         CHAR_VALUE_LEN_VARIABLE,
         &hid_svc->report_map_char_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add report map characteristic: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add report map characteristic: %d", status);
     }
 
     // Add Information characteristic
@@ -298,7 +298,7 @@ void hid_svc_start() {
         CHAR_VALUE_LEN_CONSTANT,
         &hid_svc->info_char_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add information characteristic: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add information characteristic: %d", status);
     }
     // Add Control Point characteristic
     char_uuid.Char_UUID_16 = HID_CONTROL_POINT_CHAR_UUID;
@@ -314,7 +314,7 @@ void hid_svc_start() {
         CHAR_VALUE_LEN_CONSTANT,
         &hid_svc->ctrl_point_char_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add control point characteristic: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add control point characteristic: %d", status);
     }
 
     hid_svc->led_state_event_callback = NULL;
@@ -322,48 +322,48 @@ void hid_svc_start() {
 }
 
 bool hid_svc_update_report_map(const uint8_t* data, uint16_t len) {
-    furi_assert(data);
-    furi_assert(hid_svc);
+    furry_assert(data);
+    furry_assert(hid_svc);
 
     tBleStatus status = aci_gatt_update_char_value(
         hid_svc->svc_handle, hid_svc->report_map_char_handle, 0, len, data);
     if(status) {
-        FURI_LOG_E(TAG, "Failed updating report map characteristic: %d", status);
+        FURRY_LOG_E(TAG, "Failed updating report map characteristic: %d", status);
         return false;
     }
     return true;
 }
 
 bool hid_svc_update_input_report(uint8_t input_report_num, uint8_t* data, uint16_t len) {
-    furi_assert(data);
-    furi_assert(hid_svc);
+    furry_assert(data);
+    furry_assert(hid_svc);
 
     tBleStatus status = aci_gatt_update_char_value(
         hid_svc->svc_handle, hid_svc->report_char_handle[input_report_num], 0, len, data);
     if(status) {
-        FURI_LOG_E(TAG, "Failed updating report characteristic: %d", status);
+        FURRY_LOG_E(TAG, "Failed updating report characteristic: %d", status);
         return false;
     }
     return true;
 }
 
 bool hid_svc_update_info(uint8_t* data, uint16_t len) {
-    furi_assert(data);
-    furi_assert(hid_svc);
+    furry_assert(data);
+    furry_assert(hid_svc);
 
     tBleStatus status =
         aci_gatt_update_char_value(hid_svc->svc_handle, hid_svc->info_char_handle, 0, len, data);
     if(status) {
-        FURI_LOG_E(TAG, "Failed updating info characteristic: %d", status);
+        FURRY_LOG_E(TAG, "Failed updating info characteristic: %d", status);
         return false;
     }
     return true;
 }
 
 void hid_svc_register_led_state_callback(HidLedStateEventCallback callback, void* context) {
-    furi_assert(hid_svc);
-    furi_assert(callback);
-    furi_assert(context);
+    furry_assert(hid_svc);
+    furry_assert(callback);
+    furry_assert(context);
 
     hid_svc->led_state_event_callback = callback;
     hid_svc->led_state_ctx = context;
@@ -379,36 +379,36 @@ void hid_svc_stop() {
         // Delete characteristics
         status = aci_gatt_del_char(hid_svc->svc_handle, hid_svc->report_map_char_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete Report Map characteristic: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete Report Map characteristic: %d", status);
         }
 #if(HID_SVC_INPUT_REPORT_COUNT != 0)
         for(uint8_t i = 0; i < HID_SVC_REPORT_COUNT; i++) {
             status = aci_gatt_del_char(hid_svc->svc_handle, hid_svc->report_char_handle[i]);
             if(status) {
-                FURI_LOG_E(TAG, "Failed to delete Report characteristic: %d", status);
+                FURRY_LOG_E(TAG, "Failed to delete Report characteristic: %d", status);
             }
         }
 #endif
         status = aci_gatt_del_char(hid_svc->svc_handle, hid_svc->protocol_mode_char_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete Protocol Mode characteristic: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete Protocol Mode characteristic: %d", status);
         }
         status = aci_gatt_del_char(hid_svc->svc_handle, hid_svc->info_char_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete Information characteristic: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete Information characteristic: %d", status);
         }
         status = aci_gatt_del_char(hid_svc->svc_handle, hid_svc->ctrl_point_char_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete Control Point characteristic: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete Control Point characteristic: %d", status);
         }
         status = aci_gatt_del_char(hid_svc->svc_handle, hid_svc->led_state_char_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete led state characteristic: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete led state characteristic: %d", status);
         }
         // Delete service
         status = aci_gatt_del_service(hid_svc->svc_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete HID service: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete HID service: %d", status);
         }
         // Delete buffer size mutex
         free(hid_svc);

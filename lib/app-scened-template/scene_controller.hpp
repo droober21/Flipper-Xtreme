@@ -21,7 +21,7 @@ public:
      * @param scene_pointer scene object pointer
      */
     void add_scene(typename TApp::SceneType scene_index, TScene* scene_pointer) {
-        furi_check(scenes.count(scene_index) == 0);
+        furry_check(scenes.count(scene_index) == 0);
         scenes[scene_index] = scene_pointer;
     }
 

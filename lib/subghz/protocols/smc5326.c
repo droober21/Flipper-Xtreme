@@ -109,7 +109,7 @@ void* subghz_protocol_encoder_smc5326_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_encoder_smc5326_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderSMC5326* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -121,12 +121,12 @@ void subghz_protocol_encoder_smc5326_free(void* context) {
  * @return true On success
  */
 static bool subghz_protocol_encoder_smc5326_get_upload(SubGhzProtocolEncoderSMC5326* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     size_t index = 0;
     size_t size_upload = (instance->generic.data_count_bit * 2) + 2;
     if(size_upload > instance->encoder.size_upload) {
-        FURI_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
+        FURRY_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
         return false;
     } else {
         instance->encoder.size_upload = size_upload;
@@ -157,7 +157,7 @@ static bool subghz_protocol_encoder_smc5326_get_upload(SubGhzProtocolEncoderSMC5
 
 SubGhzProtocolStatus
     subghz_protocol_encoder_smc5326_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderSMC5326* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -169,12 +169,12 @@ SubGhzProtocolStatus
             break;
         }
         if(!flipper_format_rewind(flipper_format)) {
-            FURI_LOG_E(TAG, "Rewind error");
+            FURRY_LOG_E(TAG, "Rewind error");
             ret = SubGhzProtocolStatusErrorParserOthers;
             break;
         }
         if(!flipper_format_read_uint32(flipper_format, "TE", (uint32_t*)&instance->te, 1)) {
-            FURI_LOG_E(TAG, "Missing TE");
+            FURRY_LOG_E(TAG, "Missing TE");
             ret = SubGhzProtocolStatusErrorParserTe;
             break;
         }
@@ -224,20 +224,20 @@ void* subghz_protocol_decoder_smc5326_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_smc5326_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderSMC5326* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_smc5326_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderSMC5326* instance = context;
     instance->decoder.parser_step = SMC5326DecoderStepReset;
     instance->last_data = 0;
 }
 
 void subghz_protocol_decoder_smc5326_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderSMC5326* instance = context;
 
     switch(instance->decoder.parser_step) {
@@ -309,7 +309,7 @@ void subghz_protocol_decoder_smc5326_feed(void* context, bool level, uint32_t du
 }
 
 uint8_t subghz_protocol_decoder_smc5326_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderSMC5326* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -319,13 +319,13 @@ SubGhzProtocolStatus subghz_protocol_decoder_smc5326_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderSMC5326* instance = context;
     SubGhzProtocolStatus ret =
         subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
     if((ret == SubGhzProtocolStatusOk) &&
        !flipper_format_write_uint32(flipper_format, "TE", &instance->te, 1)) {
-        FURI_LOG_E(TAG, "Unable to add TE");
+        FURRY_LOG_E(TAG, "Unable to add TE");
         ret = SubGhzProtocolStatusErrorParserTe;
     }
     return ret;
@@ -333,7 +333,7 @@ SubGhzProtocolStatus subghz_protocol_decoder_smc5326_serialize(
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_smc5326_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderSMC5326* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -345,12 +345,12 @@ SubGhzProtocolStatus
             break;
         }
         if(!flipper_format_rewind(flipper_format)) {
-            FURI_LOG_E(TAG, "Rewind error");
+            FURRY_LOG_E(TAG, "Rewind error");
             ret = SubGhzProtocolStatusErrorParserOthers;
             break;
         }
         if(!flipper_format_read_uint32(flipper_format, "TE", (uint32_t*)&instance->te, 1)) {
-            FURI_LOG_E(TAG, "Missing TE");
+            FURRY_LOG_E(TAG, "Missing TE");
             ret = SubGhzProtocolStatusErrorParserTe;
             break;
         }
@@ -359,8 +359,8 @@ SubGhzProtocolStatus
     return ret;
 }
 
-static void subghz_protocol_smc5326_get_event_serialize(uint8_t event, FuriString* output) {
-    furi_string_cat_printf(
+static void subghz_protocol_smc5326_get_event_serialize(uint8_t event, FurryString* output) {
+    furry_string_cat_printf(
         output,
         "%s%s%s%s\r\n",
         (((event >> 6) & 0x3) == 0x3 ? "B1 " : ""),
@@ -369,12 +369,12 @@ static void subghz_protocol_smc5326_get_event_serialize(uint8_t event, FuriStrin
         (((event >> 0) & 0x3) == 0x3 ? "B4 " : ""));
 }
 
-void subghz_protocol_decoder_smc5326_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_smc5326_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderSMC5326* instance = context;
     uint32_t data = (uint32_t)((instance->generic.data >> 9) & 0xFFFF);
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %ubit\r\n"
         "Key:%07lX         Te:%luus\r\n"
@@ -387,5 +387,5 @@ void subghz_protocol_decoder_smc5326_get_string(void* context, FuriString* outpu
         SHOW_DIP_P(data, DIP_P),
         SHOW_DIP_P(data, DIP_O));
     subghz_protocol_smc5326_get_event_serialize(instance->generic.data >> 1, output);
-    furi_string_cat_printf(output, "  -:   " DIP_PATTERN "\r\n", SHOW_DIP_P(data, DIP_N));
+    furry_string_cat_printf(output, "  -:   " DIP_PATTERN "\r\n", SHOW_DIP_P(data, DIP_N));
 }

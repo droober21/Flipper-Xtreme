@@ -1,6 +1,6 @@
 #include "dfu_file.h"
 
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include <toolbox/crc32_calc.h>
 
 #define VALID_WHOLE_FILE_CRC 0xFFFFFFFF
@@ -18,7 +18,7 @@ bool dfu_file_validate_crc(File* dfuf, const DfuPageTaskProgressCb progress_cb, 
 }
 
 uint8_t dfu_file_validate_headers(File* dfuf, const DfuValidationParams* reference_params) {
-    furi_assert(reference_params);
+    furry_assert(reference_params);
 
     DfuPrefix dfu_prefix = {0};
     DfuSuffix dfu_suffix = {0};
@@ -72,10 +72,10 @@ static DfuUpdateBlockResult dfu_file_perform_task_for_update_pages(
     const DfuUpdateTask* task,
     File* dfuf,
     const ImageElementHeader* header) {
-    furi_assert(task);
-    furi_assert(header);
+    furry_assert(task);
+    furry_assert(header);
     task->progress_cb(0, task->context);
-    const size_t FLASH_PAGE_SIZE = furi_hal_flash_get_page_size();
+    const size_t FLASH_PAGE_SIZE = furry_hal_flash_get_page_size();
     const size_t FLASH_PAGE_ALIGNMENT_MASK = FLASH_PAGE_SIZE - 1;
     if((header->dwElementAddress & FLASH_PAGE_ALIGNMENT_MASK) != 0) {
         /* start address is not aligned by page boundary -- we don't support that. Yet. */
@@ -104,7 +104,7 @@ static DfuUpdateBlockResult dfu_file_perform_task_for_update_pages(
             break;
         }
 
-        int16_t i_page = furi_hal_flash_get_page_number(header->dwElementAddress + element_offs);
+        int16_t i_page = furry_hal_flash_get_page_number(header->dwElementAddress + element_offs);
         if(i_page < 0) {
             break;
         }

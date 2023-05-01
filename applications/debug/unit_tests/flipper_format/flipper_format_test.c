@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <flipper_format/flipper_format.h>
 #include <flipper_format/flipper_format_i.h>
 #include <toolbox/stream/stream.h>
@@ -85,7 +85,7 @@ static const char* test_file_flipper = TEST_DIR READ_TEST_FLP;
 static const char* test_file_oddities = TEST_DIR READ_TEST_ODD;
 
 static bool storage_write_string(const char* path, const char* data) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     File* file = storage_file_alloc(storage);
     bool result = false;
 
@@ -98,31 +98,31 @@ static bool storage_write_string(const char* path, const char* data) {
 
     storage_file_close(file);
     storage_file_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return result;
 }
 
 static void tests_setup() {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     mu_assert(storage_simply_remove_recursive(storage, TEST_DIR_NAME), "Cannot clean data");
     mu_assert(storage_simply_mkdir(storage, TEST_DIR_NAME), "Cannot create dir");
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 static void tests_teardown() {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     mu_assert(storage_simply_remove_recursive(storage, TEST_DIR_NAME), "Cannot clean data");
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 static bool test_read(const char* file_name) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     bool result = false;
 
     FlipperFormat* file = flipper_format_file_alloc(storage);
-    FuriString* string_value;
-    string_value = furi_string_alloc();
+    FurryString* string_value;
+    string_value = furry_string_alloc();
     uint32_t uint32_value;
     void* scratchpad = malloc(512);
 
@@ -130,11 +130,11 @@ static bool test_read(const char* file_name) {
         if(!flipper_format_file_open_existing(file, file_name)) break;
 
         if(!flipper_format_read_header(file, string_value, &uint32_value)) break;
-        if(furi_string_cmp_str(string_value, test_filetype) != 0) break;
+        if(furry_string_cmp_str(string_value, test_filetype) != 0) break;
         if(uint32_value != test_version) break;
 
         if(!flipper_format_read_string(file, test_string_key, string_value)) break;
-        if(furi_string_cmp_str(string_value, test_string_data) != 0) break;
+        if(furry_string_cmp_str(string_value, test_string_data) != 0) break;
 
         if(!flipper_format_get_value_count(file, test_int_key, &uint32_value)) break;
         if(uint32_value != COUNT_OF(test_int_data)) break;
@@ -169,22 +169,22 @@ static bool test_read(const char* file_name) {
     } while(false);
 
     free(scratchpad);
-    furi_string_free(string_value);
+    furry_string_free(string_value);
 
     flipper_format_free(file);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return result;
 }
 
 static bool test_read_updated(const char* file_name) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     bool result = false;
 
     FlipperFormat* file = flipper_format_file_alloc(storage);
-    FuriString* string_value;
-    string_value = furi_string_alloc();
+    FurryString* string_value;
+    string_value = furry_string_alloc();
     uint32_t uint32_value;
     void* scratchpad = malloc(512);
 
@@ -192,11 +192,11 @@ static bool test_read_updated(const char* file_name) {
         if(!flipper_format_file_open_existing(file, file_name)) break;
 
         if(!flipper_format_read_header(file, string_value, &uint32_value)) break;
-        if(furi_string_cmp_str(string_value, test_filetype) != 0) break;
+        if(furry_string_cmp_str(string_value, test_filetype) != 0) break;
         if(uint32_value != test_version) break;
 
         if(!flipper_format_read_string(file, test_string_key, string_value)) break;
-        if(furi_string_cmp_str(string_value, test_string_updated_data) != 0) break;
+        if(furry_string_cmp_str(string_value, test_string_updated_data) != 0) break;
 
         if(!flipper_format_get_value_count(file, test_int_key, &uint32_value)) break;
         if(uint32_value != COUNT_OF(test_int_updated_data)) break;
@@ -247,17 +247,17 @@ static bool test_read_updated(const char* file_name) {
     } while(false);
 
     free(scratchpad);
-    furi_string_free(string_value);
+    furry_string_free(string_value);
 
     flipper_format_free(file);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return result;
 }
 
 static bool test_write(const char* file_name) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     bool result = false;
     FlipperFormat* file = flipper_format_file_alloc(storage);
 
@@ -283,13 +283,13 @@ static bool test_write(const char* file_name) {
     } while(false);
 
     flipper_format_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return result;
 }
 
 static bool test_delete_last_key(const char* file_name) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     bool result = false;
     FlipperFormat* file = flipper_format_file_alloc(storage);
 
@@ -300,13 +300,13 @@ static bool test_delete_last_key(const char* file_name) {
     } while(false);
 
     flipper_format_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return result;
 }
 
 static bool test_append_key(const char* file_name) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     bool result = false;
     FlipperFormat* file = flipper_format_file_alloc(storage);
 
@@ -318,13 +318,13 @@ static bool test_append_key(const char* file_name) {
     } while(false);
 
     flipper_format_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return result;
 }
 
 static bool test_update(const char* file_name) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     bool result = false;
     FlipperFormat* file = flipper_format_file_alloc(storage);
 
@@ -352,13 +352,13 @@ static bool test_update(const char* file_name) {
     } while(false);
 
     flipper_format_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return result;
 }
 
 static bool test_update_backward(const char* file_name) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     bool result = false;
     FlipperFormat* file = flipper_format_file_alloc(storage);
 
@@ -383,13 +383,13 @@ static bool test_update_backward(const char* file_name) {
     } while(false);
 
     flipper_format_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return result;
 }
 
 static bool test_write_multikey(const char* file_name) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     bool result = false;
     FlipperFormat* file = flipper_format_file_alloc(storage);
 
@@ -410,24 +410,24 @@ static bool test_write_multikey(const char* file_name) {
     } while(false);
 
     flipper_format_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return result;
 }
 
 static bool test_read_multikey(const char* file_name) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     bool result = false;
     FlipperFormat* file = flipper_format_file_alloc(storage);
 
-    FuriString* string_value;
-    string_value = furi_string_alloc();
+    FurryString* string_value;
+    string_value = furry_string_alloc();
     uint32_t uint32_value;
 
     do {
         if(!flipper_format_file_open_existing(file, file_name)) break;
         if(!flipper_format_read_header(file, string_value, &uint32_value)) break;
-        if(furi_string_cmp_str(string_value, test_filetype) != 0) break;
+        if(furry_string_cmp_str(string_value, test_filetype) != 0) break;
         if(uint32_value != test_version) break;
 
         bool error = false;
@@ -448,10 +448,10 @@ static bool test_read_multikey(const char* file_name) {
         result = true;
     } while(false);
 
-    furi_string_free(string_value);
+    furry_string_free(string_value);
 
     flipper_format_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return result;
 }

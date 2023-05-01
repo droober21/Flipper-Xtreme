@@ -1,7 +1,7 @@
 #include "flipper.pb.h"
 #include <core/record.h>
 #include "rpc_i.h"
-#include <furi.h>
+#include <furry.h>
 #include <loader/loader.h>
 #include "rpc_app.h"
 
@@ -26,24 +26,24 @@ struct RpcAppSystem {
 #define RPC_SYSTEM_APP_TEMP_ARGS_SIZE 16
 
 static void rpc_system_app_start_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(context);
+    furry_assert(request);
+    furry_assert(context);
 
-    furi_assert(request->which_content == PB_Main_app_start_request_tag);
+    furry_assert(request->which_content == PB_Main_app_start_request_tag);
     RpcAppSystem* rpc_app = context;
     RpcSession* session = rpc_app->session;
     rpc_system_app_error_reset(rpc_app);
-    furi_assert(session);
+    furry_assert(session);
     char args_temp[RPC_SYSTEM_APP_TEMP_ARGS_SIZE];
 
-    furi_assert(!rpc_app->last_id);
-    furi_assert(!rpc_app->last_data);
+    furry_assert(!rpc_app->last_id);
+    furry_assert(!rpc_app->last_data);
 
-    FURI_LOG_D(TAG, "StartProcess: id %lu", request->command_id);
+    FURRY_LOG_D(TAG, "StartProcess: id %lu", request->command_id);
 
     PB_CommandStatus result;
 
-    Loader* loader = furi_record_open(RECORD_LOADER);
+    Loader* loader = furry_record_open(RECORD_LOADER);
     const char* app_name = request->content.app_start_request.name;
     if(app_name) {
         const char* app_args = request->content.app_start_request.args;
@@ -62,31 +62,31 @@ static void rpc_system_app_start_process(const PB_Main* request, void* context) 
         } else if(status == LoaderStatusOk) {
             result = PB_CommandStatus_OK;
         } else {
-            furi_crash(NULL);
+            furry_crash(NULL);
         }
     } else {
         result = PB_CommandStatus_ERROR_INVALID_PARAMETERS;
     }
 
-    furi_record_close(RECORD_LOADER);
+    furry_record_close(RECORD_LOADER);
 
-    FURI_LOG_D(TAG, "StartProcess: response id %lu, result %d", request->command_id, result);
+    FURRY_LOG_D(TAG, "StartProcess: response id %lu, result %d", request->command_id, result);
     rpc_send_and_release_empty(session, request->command_id, result);
 }
 
 static void rpc_system_app_lock_status_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(context);
+    furry_assert(request);
+    furry_assert(context);
 
-    furi_assert(request->which_content == PB_Main_app_lock_status_request_tag);
+    furry_assert(request->which_content == PB_Main_app_lock_status_request_tag);
     RpcAppSystem* rpc_app = context;
     rpc_system_app_error_reset(rpc_app);
     RpcSession* session = rpc_app->session;
-    furi_assert(session);
+    furry_assert(session);
 
-    FURI_LOG_D(TAG, "LockStatus");
+    FURRY_LOG_D(TAG, "LockStatus");
 
-    Loader* loader = furi_record_open(RECORD_LOADER);
+    Loader* loader = furry_record_open(RECORD_LOADER);
 
     PB_Main response = {
         .has_next = false,
@@ -97,140 +97,140 @@ static void rpc_system_app_lock_status_process(const PB_Main* request, void* con
 
     response.content.app_lock_status_response.locked = loader_is_locked(loader);
 
-    furi_record_close(RECORD_LOADER);
+    furry_record_close(RECORD_LOADER);
 
-    FURI_LOG_D(TAG, "LockStatus: response");
+    FURRY_LOG_D(TAG, "LockStatus: response");
     rpc_send_and_release(session, &response);
     pb_release(&PB_Main_msg, &response);
 }
 
 static void rpc_system_app_exit_request(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(context);
+    furry_assert(request);
+    furry_assert(context);
 
-    furi_assert(request->which_content == PB_Main_app_exit_request_tag);
+    furry_assert(request->which_content == PB_Main_app_exit_request_tag);
     RpcAppSystem* rpc_app = context;
     rpc_system_app_error_reset(rpc_app);
     RpcSession* session = rpc_app->session;
-    furi_assert(session);
+    furry_assert(session);
 
     PB_CommandStatus status;
 
     if(rpc_app->app_callback) {
-        FURI_LOG_D(TAG, "ExitRequest: id %lu", request->command_id);
-        furi_assert(!rpc_app->last_id);
-        furi_assert(!rpc_app->last_data);
+        FURRY_LOG_D(TAG, "ExitRequest: id %lu", request->command_id);
+        furry_assert(!rpc_app->last_id);
+        furry_assert(!rpc_app->last_data);
         rpc_app->last_id = request->command_id;
         rpc_app->app_callback(RpcAppEventAppExit, rpc_app->app_context);
     } else {
         status = PB_CommandStatus_ERROR_APP_NOT_RUNNING;
-        FURI_LOG_E(
+        FURRY_LOG_E(
             TAG, "ExitRequest: APP_NOT_RUNNING, id %lu, status: %d", request->command_id, status);
         rpc_send_and_release_empty(session, request->command_id, status);
     }
 }
 
 static void rpc_system_app_load_file(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(context);
+    furry_assert(request);
+    furry_assert(context);
 
-    furi_assert(request->which_content == PB_Main_app_load_file_request_tag);
+    furry_assert(request->which_content == PB_Main_app_load_file_request_tag);
     RpcAppSystem* rpc_app = context;
     rpc_system_app_error_reset(rpc_app);
     RpcSession* session = rpc_app->session;
-    furi_assert(session);
+    furry_assert(session);
 
     PB_CommandStatus status;
     if(rpc_app->app_callback) {
-        FURI_LOG_D(TAG, "LoadFile: id %lu", request->command_id);
-        furi_assert(!rpc_app->last_id);
-        furi_assert(!rpc_app->last_data);
+        FURRY_LOG_D(TAG, "LoadFile: id %lu", request->command_id);
+        furry_assert(!rpc_app->last_id);
+        furry_assert(!rpc_app->last_data);
         rpc_app->last_id = request->command_id;
         rpc_app->last_data = strdup(request->content.app_load_file_request.path);
         rpc_app->app_callback(RpcAppEventLoadFile, rpc_app->app_context);
     } else {
         status = PB_CommandStatus_ERROR_APP_NOT_RUNNING;
-        FURI_LOG_E(
+        FURRY_LOG_E(
             TAG, "LoadFile: APP_NOT_RUNNING, id %lu, status: %d", request->command_id, status);
         rpc_send_and_release_empty(session, request->command_id, status);
     }
 }
 
 static void rpc_system_app_button_press(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(context);
+    furry_assert(request);
+    furry_assert(context);
 
-    furi_assert(request->which_content == PB_Main_app_button_press_request_tag);
+    furry_assert(request->which_content == PB_Main_app_button_press_request_tag);
     RpcAppSystem* rpc_app = context;
     rpc_system_app_error_reset(rpc_app);
     RpcSession* session = rpc_app->session;
-    furi_assert(session);
+    furry_assert(session);
 
     PB_CommandStatus status;
     if(rpc_app->app_callback) {
-        FURI_LOG_D(TAG, "ButtonPress");
-        furi_assert(!rpc_app->last_id);
-        furi_assert(!rpc_app->last_data);
+        FURRY_LOG_D(TAG, "ButtonPress");
+        furry_assert(!rpc_app->last_id);
+        furry_assert(!rpc_app->last_data);
         rpc_app->last_id = request->command_id;
         rpc_app->last_data = strdup(request->content.app_button_press_request.args);
         rpc_app->app_callback(RpcAppEventButtonPress, rpc_app->app_context);
     } else {
         status = PB_CommandStatus_ERROR_APP_NOT_RUNNING;
-        FURI_LOG_E(
+        FURRY_LOG_E(
             TAG, "ButtonPress: APP_NOT_RUNNING, id %lu, status: %d", request->command_id, status);
         rpc_send_and_release_empty(session, request->command_id, status);
     }
 }
 
 static void rpc_system_app_button_release(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(request->which_content == PB_Main_app_button_release_request_tag);
-    furi_assert(context);
+    furry_assert(request);
+    furry_assert(request->which_content == PB_Main_app_button_release_request_tag);
+    furry_assert(context);
 
     RpcAppSystem* rpc_app = context;
     rpc_system_app_error_reset(rpc_app);
     RpcSession* session = rpc_app->session;
-    furi_assert(session);
+    furry_assert(session);
 
     PB_CommandStatus status;
     if(rpc_app->app_callback) {
-        FURI_LOG_D(TAG, "ButtonRelease");
-        furi_assert(!rpc_app->last_id);
-        furi_assert(!rpc_app->last_data);
+        FURRY_LOG_D(TAG, "ButtonRelease");
+        furry_assert(!rpc_app->last_id);
+        furry_assert(!rpc_app->last_data);
         rpc_app->last_id = request->command_id;
         rpc_app->app_callback(RpcAppEventButtonRelease, rpc_app->app_context);
     } else {
         status = PB_CommandStatus_ERROR_APP_NOT_RUNNING;
-        FURI_LOG_E(
+        FURRY_LOG_E(
             TAG, "ButtonRelease: APP_NOT_RUNNING, id %lu, status: %d", request->command_id, status);
         rpc_send_and_release_empty(session, request->command_id, status);
     }
 }
 
 static void rpc_system_app_get_error_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(request->which_content == PB_Main_app_get_error_request_tag);
-    furi_assert(context);
+    furry_assert(request);
+    furry_assert(request->which_content == PB_Main_app_get_error_request_tag);
+    furry_assert(context);
 
     RpcAppSystem* rpc_app = context;
     RpcSession* session = rpc_app->session;
-    furi_assert(session);
+    furry_assert(session);
 
     rpc_app->error_msg->command_id = request->command_id;
 
-    FURI_LOG_D(TAG, "GetError");
+    FURRY_LOG_D(TAG, "GetError");
     rpc_send(session, rpc_app->error_msg);
 }
 
 static void rpc_system_app_data_exchange_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(request->which_content == PB_Main_app_data_exchange_request_tag);
-    furi_assert(context);
+    furry_assert(request);
+    furry_assert(request->which_content == PB_Main_app_data_exchange_request_tag);
+    furry_assert(context);
 
     RpcAppSystem* rpc_app = context;
     rpc_system_app_error_reset(rpc_app);
     RpcSession* session = rpc_app->session;
-    furi_assert(session);
+    furry_assert(session);
 
     PB_CommandStatus command_status;
     pb_bytes_array_t* data = request->content.app_data_exchange_request.data;
@@ -248,43 +248,43 @@ static void rpc_system_app_data_exchange_process(const PB_Main* request, void* c
         command_status = PB_CommandStatus_ERROR_APP_CMD_ERROR;
     }
 
-    FURI_LOG_D(TAG, "DataExchange");
+    FURRY_LOG_D(TAG, "DataExchange");
     rpc_send_and_release_empty(session, request->command_id, command_status);
 }
 
 void rpc_system_app_send_started(RpcAppSystem* rpc_app) {
-    furi_assert(rpc_app);
+    furry_assert(rpc_app);
     RpcSession* session = rpc_app->session;
-    furi_assert(session);
+    furry_assert(session);
 
     rpc_app->state_msg->content.app_state_response.state = PB_App_AppState_APP_STARTED;
 
-    FURI_LOG_D(TAG, "SendStarted");
+    FURRY_LOG_D(TAG, "SendStarted");
     rpc_send(session, rpc_app->state_msg);
 }
 
 void rpc_system_app_send_exited(RpcAppSystem* rpc_app) {
-    furi_assert(rpc_app);
+    furry_assert(rpc_app);
     RpcSession* session = rpc_app->session;
-    furi_assert(session);
+    furry_assert(session);
 
     rpc_app->state_msg->content.app_state_response.state = PB_App_AppState_APP_CLOSED;
 
-    FURI_LOG_D(TAG, "SendExit");
+    FURRY_LOG_D(TAG, "SendExit");
     rpc_send(session, rpc_app->state_msg);
 }
 
 const char* rpc_system_app_get_data(RpcAppSystem* rpc_app) {
-    furi_assert(rpc_app);
-    furi_assert(rpc_app->last_data);
+    furry_assert(rpc_app);
+    furry_assert(rpc_app->last_data);
     return rpc_app->last_data;
 }
 
 void rpc_system_app_confirm(RpcAppSystem* rpc_app, RpcAppSystemEvent event, bool result) {
-    furi_assert(rpc_app);
+    furry_assert(rpc_app);
     RpcSession* session = rpc_app->session;
-    furi_assert(session);
-    furi_assert(rpc_app->last_id);
+    furry_assert(session);
+    furry_assert(rpc_app->last_id);
 
     PB_CommandStatus status = result ? PB_CommandStatus_OK : PB_CommandStatus_ERROR_APP_CMD_ERROR;
 
@@ -300,30 +300,30 @@ void rpc_system_app_confirm(RpcAppSystem* rpc_app, RpcAppSystemEvent event, bool
             free(rpc_app->last_data);
             rpc_app->last_data = NULL;
         }
-        FURI_LOG_D(TAG, "AppConfirm: event %d last_id %lu status %d", event, last_id, status);
+        FURRY_LOG_D(TAG, "AppConfirm: event %d last_id %lu status %d", event, last_id, status);
         rpc_send_and_release_empty(session, last_id, status);
         break;
     default:
-        furi_crash("RPC App state programming Error");
+        furry_crash("RPC App state programming Error");
         break;
     }
 }
 
 void rpc_system_app_set_callback(RpcAppSystem* rpc_app, RpcAppSystemCallback callback, void* ctx) {
-    furi_assert(rpc_app);
+    furry_assert(rpc_app);
 
     rpc_app->app_callback = callback;
     rpc_app->app_context = ctx;
 }
 
 void rpc_system_app_set_error_code(RpcAppSystem* rpc_app, uint32_t error_code) {
-    furi_assert(rpc_app);
+    furry_assert(rpc_app);
     PB_App_GetErrorResponse* content = &rpc_app->error_msg->content.app_get_error_response;
     content->code = error_code;
 }
 
 void rpc_system_app_set_error_text(RpcAppSystem* rpc_app, const char* error_text) {
-    furi_assert(rpc_app);
+    furry_assert(rpc_app);
     PB_App_GetErrorResponse* content = &rpc_app->error_msg->content.app_get_error_response;
 
     if(content->text) {
@@ -334,7 +334,7 @@ void rpc_system_app_set_error_text(RpcAppSystem* rpc_app, const char* error_text
 }
 
 void rpc_system_app_error_reset(RpcAppSystem* rpc_app) {
-    furi_assert(rpc_app);
+    furry_assert(rpc_app);
 
     rpc_system_app_set_error_code(rpc_app, 0);
     rpc_system_app_set_error_text(rpc_app, NULL);
@@ -344,16 +344,16 @@ void rpc_system_app_set_data_exchange_callback(
     RpcAppSystem* rpc_app,
     RpcAppSystemDataExchangeCallback callback,
     void* ctx) {
-    furi_assert(rpc_app);
+    furry_assert(rpc_app);
 
     rpc_app->data_exchange_callback = callback;
     rpc_app->data_exchange_context = ctx;
 }
 
 void rpc_system_app_exchange_data(RpcAppSystem* rpc_app, const uint8_t* data, size_t data_size) {
-    furi_assert(rpc_app);
+    furry_assert(rpc_app);
     RpcSession* session = rpc_app->session;
-    furi_assert(session);
+    furry_assert(session);
 
     PB_Main message = {
         .command_id = 0,
@@ -376,7 +376,7 @@ void rpc_system_app_exchange_data(RpcAppSystem* rpc_app, const uint8_t* data, si
 }
 
 void* rpc_system_app_alloc(RpcSession* session) {
-    furi_assert(session);
+    furry_assert(session);
 
     RpcAppSystem* rpc_app = malloc(sizeof(RpcAppSystem));
     rpc_app->session = session;
@@ -428,19 +428,19 @@ void* rpc_system_app_alloc(RpcSession* session) {
 
 void rpc_system_app_free(void* context) {
     RpcAppSystem* rpc_app = context;
-    furi_assert(rpc_app);
+    furry_assert(rpc_app);
     RpcSession* session = rpc_app->session;
-    furi_assert(session);
+    furry_assert(session);
 
     if(rpc_app->app_callback) {
         rpc_app->app_callback(RpcAppEventSessionClose, rpc_app->app_context);
     }
 
     while(rpc_app->app_callback) {
-        furi_delay_tick(1);
+        furry_delay_tick(1);
     }
 
-    furi_assert(!rpc_app->data_exchange_callback);
+    furry_assert(!rpc_app->data_exchange_callback);
 
     if(rpc_app->last_data) free(rpc_app->last_data);
 

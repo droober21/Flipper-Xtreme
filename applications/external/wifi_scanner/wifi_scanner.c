@@ -1,8 +1,8 @@
-#include <furi.h>
-#include <furi_hal_console.h>
-#include <furi_hal_gpio.h>
-#include <furi_hal_power.h>
-#include <furi_hal_uart.h>
+#include <furry.h>
+#include <furry_hal_console.h>
+#include <furry_hal_gpio.h>
+#include <furry_hal_power.h>
+#include <furry_hal_uart.h>
 #include <gui/canvas_i.h>
 #include <gui/gui.h>
 #include <input/input.h>
@@ -19,9 +19,9 @@
 
 #if WIFI_APP_DEBUG
 #define APP_NAME_TAG "WiFi_Scanner"
-#define WIFI_APP_LOG_I(format, ...) FURI_LOG_I(APP_NAME_TAG, format, ##__VA_ARGS__)
-#define WIFI_APP_LOG_D(format, ...) FURI_LOG_D(APP_NAME_TAG, format, ##__VA_ARGS__)
-#define WIFI_APP_LOG_E(format, ...) FURI_LOG_E(APP_NAME_TAG, format, ##__VA_ARGS__)
+#define WIFI_APP_LOG_I(format, ...) FURRY_LOG_I(APP_NAME_TAG, format, ##__VA_ARGS__)
+#define WIFI_APP_LOG_D(format, ...) FURRY_LOG_D(APP_NAME_TAG, format, ##__VA_ARGS__)
+#define WIFI_APP_LOG_E(format, ...) FURRY_LOG_E(APP_NAME_TAG, format, ##__VA_ARGS__)
 #else
 #define WIFI_APP_LOG_I(format, ...)
 #define WIFI_APP_LOG_D(format, ...)
@@ -58,10 +58,10 @@ typedef struct SPluginEvent {
 } SPluginEvent;
 
 typedef struct EAccessPointDesc {
-    FuriString* m_accessPointName;
+    FurryString* m_accessPointName;
     int16_t m_rssi;
-    FuriString* m_secType;
-    FuriString* m_bssid;
+    FurryString* m_secType;
+    FurryString* m_bssid;
     unsigned short m_channel;
     bool m_isHidden;
 } EAccessPointDesc;
@@ -83,11 +83,11 @@ typedef enum EWorkerEventFlags {
 } EWorkerEventFlags;
 
 typedef struct SWiFiScannerApp {
-    FuriMutex* mutex;
+    FurryMutex* mutex;
     Gui* m_gui;
-    FuriThread* m_worker_thread;
+    FurryThread* m_worker_thread;
     NotificationApp* m_notification;
-    FuriStreamBuffer* m_rx_stream;
+    FurryStreamBuffer* m_rx_stream;
 
     bool m_wifiModuleInitialized;
     bool m_wifiModuleAttached;
@@ -111,13 +111,13 @@ static void wifi_scanner_app_init(SWiFiScannerApp* const app) {
     app->m_totalAccessPoints = 0;
     app->m_currentIndexAccessPoint = 0;
 
-    app->m_currentAccesspointDescription.m_accessPointName = furi_string_alloc();
-    furi_string_set(app->m_currentAccesspointDescription.m_accessPointName, "N/A\n");
+    app->m_currentAccesspointDescription.m_accessPointName = furry_string_alloc();
+    furry_string_set(app->m_currentAccesspointDescription.m_accessPointName, "N/A\n");
     app->m_currentAccesspointDescription.m_channel = 0;
-    app->m_currentAccesspointDescription.m_bssid = furi_string_alloc();
-    furi_string_set(app->m_currentAccesspointDescription.m_bssid, "N/A\n");
-    app->m_currentAccesspointDescription.m_secType = furi_string_alloc();
-    furi_string_set(app->m_currentAccesspointDescription.m_secType, "N/A\n");
+    app->m_currentAccesspointDescription.m_bssid = furry_string_alloc();
+    furry_string_set(app->m_currentAccesspointDescription.m_bssid, "N/A\n");
+    app->m_currentAccesspointDescription.m_secType = furry_string_alloc();
+    furry_string_set(app->m_currentAccesspointDescription.m_secType, "N/A\n");
     app->m_currentAccesspointDescription.m_rssi = 0;
     app->m_currentAccesspointDescription.m_isHidden = false;
 
@@ -163,9 +163,9 @@ void DrawSignalStrengthBar(Canvas* canvas, int rssi, int x, int y, int width, in
 }
 
 static void wifi_module_render_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     SWiFiScannerApp* app = ctx;
-    furi_mutex_acquire(app->mutex, FuriWaitForever);
+    furry_mutex_acquire(app->mutex, FurryWaitForever);
 
     canvas_clear(canvas);
 
@@ -185,7 +185,7 @@ static void wifi_module_render_callback(Canvas* const canvas, void* ctx) {
         } break;
         case WaitingForModule:
 #if ENABLE_MODULE_DETECTION
-            furi_assert(!app->m_wifiModuleAttached);
+            furry_assert(!app->m_wifiModuleAttached);
             if(!app->m_wifiModuleAttached) {
                 canvas_set_font(canvas, FontSecondary);
 
@@ -201,7 +201,7 @@ static void wifi_module_render_callback(Canvas* const canvas, void* ctx) {
 #endif
             break;
         case Initializing: {
-            furi_assert(!app->m_wifiModuleInitialized);
+            furry_assert(!app->m_wifiModuleInitialized);
             if(!app->m_wifiModuleInitialized) {
                 canvas_set_font(canvas, FontPrimary);
 
@@ -237,7 +237,7 @@ static void wifi_module_render_callback(Canvas* const canvas, void* ctx) {
                 offsetY,
                 app->m_currentAccesspointDescription.m_isHidden ?
                     "(Hidden SSID)" :
-                    furi_string_get_cstr(app->m_currentAccesspointDescription.m_accessPointName));
+                    furry_string_get_cstr(app->m_currentAccesspointDescription.m_accessPointName));
 
             offsetY += fontHeight;
 
@@ -245,7 +245,7 @@ static void wifi_module_render_callback(Canvas* const canvas, void* ctx) {
                 canvas,
                 offsetX,
                 offsetY,
-                furi_string_get_cstr(app->m_currentAccesspointDescription.m_bssid));
+                furry_string_get_cstr(app->m_currentAccesspointDescription.m_bssid));
 
             canvas_set_font(canvas, FontSecondary);
             //u8g2_SetFont(&canvas->fb, u8g2_font_tinytim_tf);
@@ -270,7 +270,7 @@ static void wifi_module_render_callback(Canvas* const canvas, void* ctx) {
                 string,
                 sizeof(string),
                 "ENCR: %s",
-                furi_string_get_cstr(app->m_currentAccesspointDescription.m_secType));
+                furry_string_get_cstr(app->m_currentAccesspointDescription.m_secType));
             canvas_draw_str(canvas, offsetX, offsetY, string);
 
             offsetY += fontHeight;
@@ -345,7 +345,7 @@ static void wifi_module_render_callback(Canvas* const canvas, void* ctx) {
                 canvas,
                 offsetX,
                 offsetY,
-                furi_string_get_cstr(app->m_currentAccesspointDescription.m_accessPointName));
+                furry_string_get_cstr(app->m_currentAccesspointDescription.m_accessPointName));
 
             offsetY += fontHeight + 2;
 
@@ -353,7 +353,7 @@ static void wifi_module_render_callback(Canvas* const canvas, void* ctx) {
                 canvas,
                 offsetX,
                 offsetY,
-                furi_string_get_cstr(app->m_currentAccesspointDescription.m_bssid));
+                furry_string_get_cstr(app->m_currentAccesspointDescription.m_bssid));
 
             DrawSignalStrengthBar(
                 canvas, app->m_currentAccesspointDescription.m_rssi, 5, 5, 12, 25);
@@ -366,7 +366,7 @@ static void wifi_module_render_callback(Canvas* const canvas, void* ctx) {
                 25);
         } break;
         case ScanAnimation: {
-            uint32_t currentTime = furi_get_tick();
+            uint32_t currentTime = furry_get_tick();
             if(currentTime - app->m_prevAnimationTime > app->m_animationTime) {
                 app->m_prevAnimationTime = currentTime;
                 app->m_animtaionCounter += 1;
@@ -394,7 +394,7 @@ static void wifi_module_render_callback(Canvas* const canvas, void* ctx) {
                 message);
         } break;
         case MonitorAnimation: {
-            uint32_t currentTime = furi_get_tick();
+            uint32_t currentTime = furry_get_tick();
             if(currentTime - app->m_prevAnimationTime > app->m_animationTime) {
                 app->m_prevAnimationTime = currentTime;
                 app->m_animtaionCounter += 1;
@@ -433,18 +433,18 @@ static void wifi_module_render_callback(Canvas* const canvas, void* ctx) {
             break;
         }
     }
-    furi_mutex_release(app->mutex);
+    furry_mutex_release(app->mutex);
 }
 
-static void wifi_module_input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void wifi_module_input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     SPluginEvent event = {.m_type = EventTypeKey, .m_input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 static void uart_on_irq_cb(UartIrqEvent ev, uint8_t data, void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     SWiFiScannerApp* app = context;
 
@@ -452,90 +452,90 @@ static void uart_on_irq_cb(UartIrqEvent ev, uint8_t data, void* context) {
 
     if(ev == UartIrqEventRXNE) {
         WIFI_APP_LOG_I("ev == UartIrqEventRXNE");
-        furi_stream_buffer_send(app->m_rx_stream, &data, 1, 0);
-        furi_thread_flags_set(furi_thread_get_id(app->m_worker_thread), WorkerEventRx);
+        furry_stream_buffer_send(app->m_rx_stream, &data, 1, 0);
+        furry_thread_flags_set(furry_thread_get_id(app->m_worker_thread), WorkerEventRx);
     }
 }
 
 static int32_t uart_worker(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     SWiFiScannerApp* app = context;
-    furi_mutex_acquire(app->mutex, FuriWaitForever);
+    furry_mutex_acquire(app->mutex, FurryWaitForever);
     if(app == NULL) {
         return 1;
     }
 
-    FuriStreamBuffer* rx_stream = app->m_rx_stream;
+    FurryStreamBuffer* rx_stream = app->m_rx_stream;
 
-    furi_mutex_release(app->mutex);
+    furry_mutex_release(app->mutex);
 
     while(true) {
-        uint32_t events = furi_thread_flags_wait(
-            WorkerEventStop | WorkerEventRx, FuriFlagWaitAny, FuriWaitForever);
-        furi_check((events & FuriFlagError) == 0);
+        uint32_t events = furry_thread_flags_wait(
+            WorkerEventStop | WorkerEventRx, FurryFlagWaitAny, FurryWaitForever);
+        furry_check((events & FurryFlagError) == 0);
 
         if(events & WorkerEventStop) break;
         if(events & WorkerEventRx) {
             size_t length = 0;
-            FuriString* receivedString;
-            receivedString = furi_string_alloc();
+            FurryString* receivedString;
+            receivedString = furry_string_alloc();
             do {
                 uint8_t data[64];
-                length = furi_stream_buffer_receive(rx_stream, data, 64, 25);
+                length = furry_stream_buffer_receive(rx_stream, data, 64, 25);
                 if(length > 0) {
                     WIFI_APP_LOG_I("Received Data - length: %i", length);
 
                     for(uint16_t i = 0; i < length; i++) {
-                        furi_string_push_back(receivedString, data[i]);
+                        furry_string_push_back(receivedString, data[i]);
                     }
 
                     //notification_message(app->notification, &sequence_set_only_red_255);
                 }
             } while(length > 0);
-            if(furi_string_size(receivedString) > 0) {
-                FuriString* chunk;
-                chunk = furi_string_alloc();
+            if(furry_string_size(receivedString) > 0) {
+                FurryString* chunk;
+                chunk = furry_string_alloc();
                 size_t begin = 0;
                 size_t end = 0;
-                size_t stringSize = furi_string_size(receivedString);
+                size_t stringSize = furry_string_size(receivedString);
 
-                WIFI_APP_LOG_I("Received string: %s", furi_string_get_cstr(receivedString));
+                WIFI_APP_LOG_I("Received string: %s", furry_string_get_cstr(receivedString));
 
-                FuriString* chunksArray[EChunkArrayData_ENUM_MAX];
+                FurryString* chunksArray[EChunkArrayData_ENUM_MAX];
                 for(uint8_t i = 0; i < EChunkArrayData_ENUM_MAX; ++i) {
-                    chunksArray[i] = furi_string_alloc();
+                    chunksArray[i] = furry_string_alloc();
                 }
 
                 uint8_t index = 0;
                 do {
-                    end = furi_string_search_char(receivedString, '+', begin);
+                    end = furry_string_search_char(receivedString, '+', begin);
 
-                    if(end == FURI_STRING_FAILURE) {
+                    if(end == FURRY_STRING_FAILURE) {
                         end = stringSize;
                     }
 
                     WIFI_APP_LOG_I("size: %i, begin: %i, end: %i", stringSize, begin, end);
 
-                    furi_string_set_strn(
-                        chunk, &furi_string_get_cstr(receivedString)[begin], end - begin);
+                    furry_string_set_strn(
+                        chunk, &furry_string_get_cstr(receivedString)[begin], end - begin);
 
-                    WIFI_APP_LOG_I("String chunk: %s", furi_string_get_cstr(chunk));
+                    WIFI_APP_LOG_I("String chunk: %s", furry_string_get_cstr(chunk));
 
-                    furi_string_set(chunksArray[index++], chunk);
+                    furry_string_set(chunksArray[index++], chunk);
 
                     begin = end + 1;
                 } while(end < stringSize);
-                furi_string_free(chunk);
+                furry_string_free(chunk);
 
                 app = context;
-                furi_mutex_acquire(app->mutex, FuriWaitForever);
+                furry_mutex_acquire(app->mutex, FurryWaitForever);
                 if(app == NULL) {
                     return 1;
                 }
 
                 if(!app->m_wifiModuleInitialized) {
-                    if(furi_string_cmp_str(
+                    if(furry_string_cmp_str(
                            chunksArray[EChunkArrayData_Context], MODULE_CONTEXT_INITIALIZATION) ==
                        0) {
                         app->m_wifiModuleInitialized = true;
@@ -543,57 +543,57 @@ static int32_t uart_worker(void* context) {
                     }
 
                 } else {
-                    if(furi_string_cmp_str(
+                    if(furry_string_cmp_str(
                            chunksArray[EChunkArrayData_Context], MODULE_CONTEXT_MONITOR) == 0) {
                         app->m_context = MonitorMode;
                     } else if(
-                        furi_string_cmp_str(
+                        furry_string_cmp_str(
                             chunksArray[EChunkArrayData_Context], MODULE_CONTEXT_SCAN) == 0) {
                         app->m_context = ScanMode;
                     } else if(
-                        furi_string_cmp_str(
+                        furry_string_cmp_str(
                             chunksArray[EChunkArrayData_Context], MODULE_CONTEXT_SCAN_ANIMATION) ==
                         0) {
                         app->m_context = ScanAnimation;
                     } else if(
-                        furi_string_cmp_str(
+                        furry_string_cmp_str(
                             chunksArray[EChunkArrayData_Context],
                             MODULE_CONTEXT_MONITOR_ANIMATION) == 0) {
                         app->m_context = MonitorAnimation;
                     }
 
                     if(app->m_context == MonitorMode || app->m_context == ScanMode) {
-                        furi_string_set(
+                        furry_string_set(
                             app->m_currentAccesspointDescription.m_accessPointName,
                             chunksArray[EChunkArrayData_SSID]);
-                        furi_string_set(
+                        furry_string_set(
                             app->m_currentAccesspointDescription.m_secType,
                             chunksArray[EChunkArrayData_EncryptionType]);
                         app->m_currentAccesspointDescription.m_rssi =
-                            atoi(furi_string_get_cstr(chunksArray[EChunkArrayData_RSSI]));
-                        furi_string_set(
+                            atoi(furry_string_get_cstr(chunksArray[EChunkArrayData_RSSI]));
+                        furry_string_set(
                             app->m_currentAccesspointDescription.m_bssid,
                             chunksArray[EChunkArrayData_BSSID]);
                         app->m_currentAccesspointDescription.m_channel =
-                            atoi(furi_string_get_cstr(chunksArray[EChunkArrayData_Channel]));
+                            atoi(furry_string_get_cstr(chunksArray[EChunkArrayData_Channel]));
                         app->m_currentAccesspointDescription.m_isHidden =
-                            atoi(furi_string_get_cstr(chunksArray[EChunkArrayData_IsHidden]));
+                            atoi(furry_string_get_cstr(chunksArray[EChunkArrayData_IsHidden]));
 
                         app->m_currentIndexAccessPoint = atoi(
-                            furi_string_get_cstr(chunksArray[EChunkArrayData_CurrentAPIndex]));
+                            furry_string_get_cstr(chunksArray[EChunkArrayData_CurrentAPIndex]));
                         app->m_totalAccessPoints =
-                            atoi(furi_string_get_cstr(chunksArray[EChunkArrayData_TotalAps]));
+                            atoi(furry_string_get_cstr(chunksArray[EChunkArrayData_TotalAps]));
                     }
                 }
 
-                furi_mutex_release(app->mutex);
+                furry_mutex_release(app->mutex);
 
                 // Clear string array
                 for(index = 0; index < EChunkArrayData_ENUM_MAX; ++index) {
-                    furi_string_free(chunksArray[index]);
+                    furry_string_free(chunksArray[index]);
                 }
             }
-            furi_string_free(receivedString);
+            furry_string_free(receivedString);
         }
     }
 
@@ -635,7 +635,7 @@ void send_serial_command(ESerialCommand command) {
         return;
     };
 
-    furi_hal_uart_tx(FuriHalUartIdUSART1, data, 1);
+    furry_hal_uart_tx(FurryHalUartIdUSART1, data, 1);
 }
 
 int32_t wifi_scanner_app(void* p) {
@@ -643,36 +643,36 @@ int32_t wifi_scanner_app(void* p) {
 
     WIFI_APP_LOG_I("Init");
 
-    // FuriTimer* timer = furi_timer_alloc(blink_test_update, FuriTimerTypePeriodic, event_queue);
-    // furi_timer_start(timer, furi_kernel_get_tick_frequency());
+    // FurryTimer* timer = furry_timer_alloc(blink_test_update, FurryTimerTypePeriodic, event_queue);
+    // furry_timer_start(timer, furry_kernel_get_tick_frequency());
 
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(SPluginEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(SPluginEvent));
 
     SWiFiScannerApp* app = malloc(sizeof(SWiFiScannerApp));
 
     wifi_scanner_app_init(app);
 
 #if ENABLE_MODULE_DETECTION
-    furi_hal_gpio_init(
+    furry_hal_gpio_init(
         &gpio_ext_pc0,
         GpioModeInput,
         GpioPullUp,
         GpioSpeedLow); // Connect to the Flipper's ground just to be sure
-    //furi_hal_gpio_add_int_callback(pinD0, input_isr_d0, this);
+    //furry_hal_gpio_add_int_callback(pinD0, input_isr_d0, this);
     app->m_context = WaitingForModule;
 #else
     app->m_context = Initializing;
 #if ENABLE_MODULE_POWER
     uint8_t attempts = 0;
-    while(!furi_hal_power_is_otg_enabled() && attempts++ < 5) {
-        furi_hal_power_enable_otg();
-        furi_delay_ms(10);
+    while(!furry_hal_power_is_otg_enabled() && attempts++ < 5) {
+        furry_hal_power_enable_otg();
+        furry_delay_ms(10);
     }
-    furi_delay_ms(200);
+    furry_delay_ms(200);
 #endif // ENABLE_MODULE_POWER
 #endif // ENABLE_MODULE_DETECTION
 
-    app->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    app->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
 
     if(!app->mutex) {
         WIFI_APP_LOG_E("cannot create mutex\r\n");
@@ -682,34 +682,34 @@ int32_t wifi_scanner_app(void* p) {
 
     WIFI_APP_LOG_I("Mutex created");
 
-    app->m_notification = furi_record_open(RECORD_NOTIFICATION);
+    app->m_notification = furry_record_open(RECORD_NOTIFICATION);
 
     ViewPort* view_port = view_port_alloc();
     view_port_draw_callback_set(view_port, wifi_module_render_callback, app);
     view_port_input_callback_set(view_port, wifi_module_input_callback, event_queue);
 
     // Open GUI and register view_port
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     //notification_message(app->notification, &sequence_set_only_blue_255);
 
-    app->m_rx_stream = furi_stream_buffer_alloc(1 * 1024, 1);
+    app->m_rx_stream = furry_stream_buffer_alloc(1 * 1024, 1);
 
-    app->m_worker_thread = furi_thread_alloc();
-    furi_thread_set_name(app->m_worker_thread, "WiFiModuleUARTWorker");
-    furi_thread_set_stack_size(app->m_worker_thread, 1024);
-    furi_thread_set_context(app->m_worker_thread, app);
-    furi_thread_set_callback(app->m_worker_thread, uart_worker);
-    furi_thread_start(app->m_worker_thread);
+    app->m_worker_thread = furry_thread_alloc();
+    furry_thread_set_name(app->m_worker_thread, "WiFiModuleUARTWorker");
+    furry_thread_set_stack_size(app->m_worker_thread, 1024);
+    furry_thread_set_context(app->m_worker_thread, app);
+    furry_thread_set_callback(app->m_worker_thread, uart_worker);
+    furry_thread_start(app->m_worker_thread);
     WIFI_APP_LOG_I("UART thread allocated");
 
     // Enable uart listener
 #if DISABLE_CONSOLE
-    furi_hal_console_disable();
+    furry_hal_console_disable();
 #endif
-    furi_hal_uart_set_br(FuriHalUartIdUSART1, FLIPPERZERO_SERIAL_BAUD);
-    furi_hal_uart_set_irq_cb(FuriHalUartIdUSART1, uart_on_irq_cb, app);
+    furry_hal_uart_set_br(FurryHalUartIdUSART1, FLIPPERZERO_SERIAL_BAUD);
+    furry_hal_uart_set_irq_cb(FurryHalUartIdUSART1, uart_on_irq_cb, app);
     WIFI_APP_LOG_I("UART Listener created");
 
     // Because we assume that module was on before we launched the app. We need to ensure that module will be in initial state on app start
@@ -717,20 +717,20 @@ int32_t wifi_scanner_app(void* p) {
 
     SPluginEvent event;
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 100);
-        furi_mutex_acquire(app->mutex, FuriWaitForever);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 100);
+        furry_mutex_acquire(app->mutex, FurryWaitForever);
 
 #if ENABLE_MODULE_DETECTION
         if(!app->m_wifiModuleAttached) {
-            if(furi_hal_gpio_read(&gpio_ext_pc0) == false) {
+            if(furry_hal_gpio_read(&gpio_ext_pc0) == false) {
                 WIFI_APP_LOG_I("Module Attached");
                 app->m_wifiModuleAttached = true;
                 app->m_context = Initializing;
 #if ENABLE_MODULE_POWER
                 uint8_t attempts2 = 0;
-                while(!furi_hal_power_is_otg_enabled() && attempts2++ < 3) {
-                    furi_hal_power_enable_otg();
-                    furi_delay_ms(10);
+                while(!furry_hal_power_is_otg_enabled() && attempts2++ < 3) {
+                    furry_hal_power_enable_otg();
+                    furry_delay_ms(10);
                 }
 
 #endif
@@ -738,7 +738,7 @@ int32_t wifi_scanner_app(void* p) {
         }
 #endif // ENABLE_MODULE_DETECTION
 
-        if(event_status == FuriStatusOk) {
+        if(event_status == FurryStatusOk) {
             if(event.m_type == EventTypeKey) {
                 if(app->m_wifiModuleInitialized) {
                     if(app->m_context == ScanMode) {
@@ -811,7 +811,7 @@ int32_t wifi_scanner_app(void* p) {
         }
 
 #if ENABLE_MODULE_DETECTION
-        if(app->m_wifiModuleAttached && furi_hal_gpio_read(&gpio_ext_pc0) == true) {
+        if(app->m_wifiModuleAttached && furry_hal_gpio_read(&gpio_ext_pc0) == true) {
             WIFI_APP_LOG_D("Module Disconnected - Exit");
             processing = false;
             app->m_wifiModuleAttached = false;
@@ -820,22 +820,22 @@ int32_t wifi_scanner_app(void* p) {
 #endif
 
         view_port_update(view_port);
-        furi_mutex_release(app->mutex);
+        furry_mutex_release(app->mutex);
     }
 
     WIFI_APP_LOG_I("Start exit app");
 
-    furi_thread_flags_set(furi_thread_get_id(app->m_worker_thread), WorkerEventStop);
-    furi_thread_join(app->m_worker_thread);
-    furi_thread_free(app->m_worker_thread);
+    furry_thread_flags_set(furry_thread_get_id(app->m_worker_thread), WorkerEventStop);
+    furry_thread_join(app->m_worker_thread);
+    furry_thread_free(app->m_worker_thread);
 
     WIFI_APP_LOG_I("Thread Deleted");
 
     // Reset GPIO pins to default state
-    furi_hal_gpio_init(&gpio_ext_pc0, GpioModeAnalog, GpioPullNo, GpioSpeedLow);
+    furry_hal_gpio_init(&gpio_ext_pc0, GpioModeAnalog, GpioPullNo, GpioSpeedLow);
 
 #if DISABLE_CONSOLE
-    furi_hal_console_enable();
+    furry_hal_console_enable();
 #endif
 
     view_port_enabled_set(view_port, false);
@@ -843,17 +843,17 @@ int32_t wifi_scanner_app(void* p) {
     gui_remove_view_port(gui, view_port);
 
     // Close gui record
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
     app->m_gui = NULL;
 
     view_port_free(view_port);
 
-    furi_message_queue_free(event_queue);
+    furry_message_queue_free(event_queue);
 
-    furi_stream_buffer_free(app->m_rx_stream);
+    furry_stream_buffer_free(app->m_rx_stream);
 
-    furi_mutex_free(app->mutex);
+    furry_mutex_free(app->mutex);
 
     // Free rest
     free(app);
@@ -861,8 +861,8 @@ int32_t wifi_scanner_app(void* p) {
     WIFI_APP_LOG_I("App freed");
 
 #if ENABLE_MODULE_POWER
-    if(furi_hal_power_is_otg_enabled()) {
-        furi_hal_power_disable_otg();
+    if(furry_hal_power_is_otg_enabled()) {
+        furry_hal_power_disable_otg();
     }
 #endif
 

@@ -53,8 +53,8 @@
 
 #define UNITEMP_D
 
-#ifdef FURI_DEBUG
-#define UNITEMP_DEBUG(msg, ...) FURI_LOG_D(APP_NAME, msg, ##__VA_ARGS__)
+#ifdef FURRY_DEBUG
+#define UNITEMP_DEBUG(msg, ...) FURRY_LOG_D(APP_NAME, msg, ##__VA_ARGS__)
 #else
 #define UNITEMP_DEBUG(msg, ...)
 #endif

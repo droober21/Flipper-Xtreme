@@ -29,7 +29,7 @@ void move_menu(Menu* menu, int8_t direction) {
     if(!menu->enabled) return;
     int max = menu->menu_count;
     for(int8_t i = 0; i < max; i++) {
-        FURI_LOG_D(
+        FURRY_LOG_D(
             "MENU",
             "Iteration %i, current %i, direction %i, state %i",
             i,
@@ -41,18 +41,18 @@ void move_menu(Menu* menu, int8_t direction) {
         } else {
             menu->current_menu = (menu->current_menu + direction) % menu->menu_count;
         }
-        FURI_LOG_D(
+        FURRY_LOG_D(
             "MENU",
             "After process current %i, direction %i, state %i",
             menu->current_menu,
             direction,
             menu->items[menu->current_menu].enabled ? 1 : 0);
         if(menu->items[menu->current_menu].enabled) {
-            FURI_LOG_D("MENU", "Next menu %i", menu->current_menu);
+            FURRY_LOG_D("MENU", "Next menu %i", menu->current_menu);
             return;
         }
     }
-    FURI_LOG_D("MENU", "Not found, setting false");
+    FURRY_LOG_D("MENU", "Not found, setting false");
     menu->enabled = false;
 }
 

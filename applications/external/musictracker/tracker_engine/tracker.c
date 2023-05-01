@@ -398,32 +398,32 @@ void tracker_free(Tracker* tracker) {
 }
 
 void tracker_set_message_callback(Tracker* tracker, TrackerMessageCallback callback, void* context) {
-    furi_check(tracker->playing == false);
+    furry_check(tracker->playing == false);
     tracker->callback = callback;
     tracker->context = context;
 }
 
 void tracker_set_song(Tracker* tracker, const Song* song) {
-    furi_check(tracker->playing == false);
+    furry_check(tracker->playing == false);
     tracker->song = song;
     tracker_song_state_init(tracker);
 }
 
 void tracker_set_order_index(Tracker* tracker, uint8_t order_index) {
-    furi_check(tracker->playing == false);
-    furi_check(order_index < tracker->song->order_list_size);
+    furry_check(tracker->playing == false);
+    furry_check(order_index < tracker->song->order_list_size);
     tracker->song_state.order_list_index = order_index;
     tracker->song_state.pattern_index = tracker->song->order_list[order_index];
 }
 
 void tracker_set_row(Tracker* tracker, uint8_t row) {
-    furi_check(tracker->playing == false);
-    furi_check(row < PATTERN_SIZE);
+    furry_check(tracker->playing == false);
+    furry_check(row < PATTERN_SIZE);
     tracker->song_state.row_index = row;
 }
 
 void tracker_start(Tracker* tracker) {
-    furi_check(tracker->song != NULL);
+    furry_check(tracker->song != NULL);
 
     tracker->playing = true;
     tracker_send_position_message(tracker);

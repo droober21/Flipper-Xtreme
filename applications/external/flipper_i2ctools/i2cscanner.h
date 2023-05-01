@@ -1,10 +1,10 @@
 #pragma once
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 // I2C BUS
-#define I2C_BUS &furi_hal_i2c_handle_external
+#define I2C_BUS &furry_hal_i2c_handle_external
 #define I2C_TIMEOUT 3
 
 // 7 bits addresses

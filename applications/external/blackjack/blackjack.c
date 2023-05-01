@@ -32,9 +32,9 @@ static void draw_ui(Canvas* const canvas, const GameState* game_state) {
 }
 
 static void render_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     const GameState* game_state = ctx;
-    furi_mutex_acquire(game_state->mutex, FuriWaitForever);
+    furry_mutex_acquire(game_state->mutex, FurryWaitForever);
 
     canvas_set_color(canvas, ColorBlack);
     canvas_draw_frame(canvas, 0, 0, 128, 64);
@@ -57,7 +57,7 @@ static void render_callback(Canvas* const canvas, void* ctx) {
         settings_page(canvas, game_state);
     }
 
-    furi_mutex_release(game_state->mutex);
+    furry_mutex_release(game_state->mutex);
 }
 
 //region card draw
@@ -194,7 +194,7 @@ void dealerTurn(void* ctx) {
 }
 
 float animationTime(const GameState* game_state) {
-    return (float)(furi_get_tick() - game_state->queue_state.start) /
+    return (float)(furry_get_tick() - game_state->queue_state.start) /
            (float)(game_state->settings.animation_duration);
 }
 
@@ -367,7 +367,7 @@ void settings_tick(GameState* game_state) {
 }
 
 void tick(GameState* game_state) {
-    game_state->last_tick = furi_get_tick();
+    game_state->last_tick = furry_get_tick();
     bool queue_ran = run_queue(&(game_state->queue_state), game_state);
 
     switch(game_state->state) {
@@ -461,16 +461,16 @@ void init(GameState* game_state) {
     start_round(game_state);
 }
 
-static void input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
     AppEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
-static void update_timer_callback(FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void update_timer_callback(FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
     AppEvent event = {.type = EventTypeTick};
-    furi_message_queue_put(event_queue, &event, 0);
+    furry_message_queue_put(event_queue, &event, 0);
 }
 
 void doubleAction(void* state) {
@@ -536,7 +536,7 @@ int32_t blackjack_app(void* p) {
 
     int32_t return_code = 0;
 
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(AppEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(AppEvent));
 
     GameState* game_state = malloc(sizeof(GameState));
     game_state->menu = malloc(sizeof(Menu));
@@ -549,9 +549,9 @@ int32_t blackjack_app(void* p) {
 
     game_state->state = GameStateStart;
 
-    game_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    game_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!game_state->mutex) {
-        FURI_LOG_E(APP_NAME, "cannot create mutex\r\n");
+        FURRY_LOG_E(APP_NAME, "cannot create mutex\r\n");
         return_code = 255;
         goto free_and_exit;
     }
@@ -560,18 +560,18 @@ int32_t blackjack_app(void* p) {
     view_port_draw_callback_set(view_port, render_callback, game_state);
     view_port_input_callback_set(view_port, input_callback, event_queue);
 
-    FuriTimer* timer = furi_timer_alloc(update_timer_callback, FuriTimerTypePeriodic, event_queue);
-    furi_timer_start(timer, furi_kernel_get_tick_frequency() / 25);
+    FurryTimer* timer = furry_timer_alloc(update_timer_callback, FurryTimerTypePeriodic, event_queue);
+    furry_timer_start(timer, furry_kernel_get_tick_frequency() / 25);
 
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     AppEvent event;
 
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 100);
-        furi_mutex_acquire(game_state->mutex, FuriWaitForever);
-        if(event_status == FuriStatusOk) {
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 100);
+        furry_mutex_acquire(game_state->mutex, FurryWaitForever);
+        if(event_status == FurryStatusOk) {
             if(event.type == EventTypeKey) {
                 if(event.input.type == InputTypePress) {
                     switch(event.input.key) {
@@ -607,22 +607,22 @@ int32_t blackjack_app(void* p) {
             }
         }
         view_port_update(view_port);
-        furi_mutex_release(game_state->mutex);
+        furry_mutex_release(game_state->mutex);
     }
 
-    furi_timer_free(timer);
+    furry_timer_free(timer);
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(view_port);
-    furi_mutex_free(game_state->mutex);
+    furry_mutex_free(game_state->mutex);
 
 free_and_exit:
     free(game_state->deck.cards);
     free_menu(game_state->menu);
     queue_clear(&(game_state->queue_state));
     free(game_state);
-    furi_message_queue_free(event_queue);
+    furry_message_queue_free(event_queue);
 
     return return_code;
 }

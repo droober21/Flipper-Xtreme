@@ -40,53 +40,53 @@ Header,+,applications/services/power/power_service/power.h,,
 Header,+,applications/services/rgb_backlight/rgb_backlight.h,,
 Header,+,applications/services/rpc/rpc_app.h,,
 Header,+,applications/services/storage/storage.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_clock.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_console.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_flash.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_gpio.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_i2c_config.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_i2c_types.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_ibutton.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_idle_timer.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_interrupt.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_nfc.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_os.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_pwm.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_resources.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_rfid.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_spi_config.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_spi_types.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_subghz.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_subghz_configs.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_target_hw.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_uart.h,,
-Header,+,firmware/targets/f7/furi_hal/furi_hal_usb_cdc.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_clock.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_console.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_flash.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_gpio.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_i2c_config.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_i2c_types.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_ibutton.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_idle_timer.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_interrupt.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_nfc.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_os.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_pwm.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_resources.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_rfid.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_spi_config.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_spi_types.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_subghz.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_subghz_configs.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_target_hw.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_uart.h,,
+Header,+,firmware/targets/f7/furry_hal/furry_hal_usb_cdc.h,,
 Header,+,firmware/targets/f7/platform_specific/intrinsic_export.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_bt.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_bt_hid.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_bt_serial.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_cortex.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_crypto.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_debug.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_i2c.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_info.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_infrared.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_light.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_memory.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_mpu.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_power.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_random.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_region.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_rtc.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_sd.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_speaker.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_spi.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_usb.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_usb_hid.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_usb_hid_u2f.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_version.h,,
-Header,+,firmware/targets/furi_hal_include/furi_hal_vibro.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_bt.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_bt_hid.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_bt_serial.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_cortex.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_crypto.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_debug.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_i2c.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_info.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_infrared.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_light.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_memory.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_mpu.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_power.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_random.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_region.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_rtc.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_sd.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_speaker.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_spi.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_usb.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_usb_hid.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_usb_hid_u2f.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_version.h,,
+Header,+,firmware/targets/furry_hal_include/furry_hal_vibro.h,,
 Header,+,lib/STM32CubeWB/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_adc.h,,
 Header,+,lib/STM32CubeWB/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_bus.h,,
 Header,+,lib/STM32CubeWB/Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_comp.h,,
@@ -331,8 +331,8 @@ Function,-,__eprintf,void,"const char*, const char*, unsigned int, const char*"
 Function,+,__errno,int*,
 Function,-,__fpclassifyd,int,double
 Function,-,__fpclassifyf,int,float
-Function,+,__furi_crash,void,
-Function,+,__furi_halt,void,
+Function,+,__furry_crash,void,
+Function,+,__furry_halt,void,
 Function,-,__getdelim,ssize_t,"char**, size_t*, int, FILE*"
 Function,-,__getline,ssize_t,"char**, size_t*, FILE*"
 Function,-,__isinfd,int,double
@@ -519,12 +519,12 @@ Function,-,arc4random,__uint32_t,
 Function,-,arc4random_buf,void,"void*, size_t"
 Function,-,arc4random_uniform,__uint32_t,__uint32_t
 Function,+,args_char_to_hex,_Bool,"char, char, uint8_t*"
-Function,+,args_get_first_word_length,size_t,FuriString*
-Function,+,args_length,size_t,FuriString*
-Function,+,args_read_hex_bytes,_Bool,"FuriString*, uint8_t*, size_t"
-Function,+,args_read_int_and_trim,_Bool,"FuriString*, int*"
-Function,+,args_read_probably_quoted_string_and_trim,_Bool,"FuriString*, FuriString*"
-Function,+,args_read_string_and_trim,_Bool,"FuriString*, FuriString*"
+Function,+,args_get_first_word_length,size_t,FurryString*
+Function,+,args_length,size_t,FurryString*
+Function,+,args_read_hex_bytes,_Bool,"FurryString*, uint8_t*, size_t"
+Function,+,args_read_int_and_trim,_Bool,"FurryString*, int*"
+Function,+,args_read_probably_quoted_string_and_trim,_Bool,"FurryString*, FurryString*"
+Function,+,args_read_string_and_trim,_Bool,"FurryString*, FurryString*"
 Function,-,asctime,char*,const tm*
 Function,-,asctime_r,char*,"const tm*, char*"
 Function,-,asin,double,double
@@ -683,26 +683,26 @@ Function,+,canvas_width,uint8_t,const Canvas*
 Function,-,cbrt,double,double
 Function,-,cbrtf,float,float
 Function,-,cbrtl,long double,long double
-Function,+,cc1101_calibrate,void,FuriHalSpiBusHandle*
-Function,+,cc1101_flush_rx,void,FuriHalSpiBusHandle*
-Function,+,cc1101_flush_tx,void,FuriHalSpiBusHandle*
-Function,-,cc1101_get_partnumber,uint8_t,FuriHalSpiBusHandle*
-Function,+,cc1101_get_rssi,uint8_t,FuriHalSpiBusHandle*
-Function,+,cc1101_get_status,CC1101Status,FuriHalSpiBusHandle*
-Function,-,cc1101_get_version,uint8_t,FuriHalSpiBusHandle*
-Function,+,cc1101_read_fifo,uint8_t,"FuriHalSpiBusHandle*, uint8_t*, uint8_t*"
-Function,+,cc1101_read_reg,CC1101Status,"FuriHalSpiBusHandle*, uint8_t, uint8_t*"
-Function,+,cc1101_reset,void,FuriHalSpiBusHandle*
-Function,+,cc1101_set_frequency,uint32_t,"FuriHalSpiBusHandle*, uint32_t"
-Function,-,cc1101_set_intermediate_frequency,uint32_t,"FuriHalSpiBusHandle*, uint32_t"
-Function,+,cc1101_set_pa_table,void,"FuriHalSpiBusHandle*, const uint8_t[8]"
-Function,+,cc1101_shutdown,void,FuriHalSpiBusHandle*
-Function,+,cc1101_strobe,CC1101Status,"FuriHalSpiBusHandle*, uint8_t"
-Function,+,cc1101_switch_to_idle,void,FuriHalSpiBusHandle*
-Function,+,cc1101_switch_to_rx,void,FuriHalSpiBusHandle*
-Function,+,cc1101_switch_to_tx,void,FuriHalSpiBusHandle*
-Function,+,cc1101_write_fifo,uint8_t,"FuriHalSpiBusHandle*, const uint8_t*, uint8_t"
-Function,+,cc1101_write_reg,CC1101Status,"FuriHalSpiBusHandle*, uint8_t, uint8_t"
+Function,+,cc1101_calibrate,void,FurryHalSpiBusHandle*
+Function,+,cc1101_flush_rx,void,FurryHalSpiBusHandle*
+Function,+,cc1101_flush_tx,void,FurryHalSpiBusHandle*
+Function,-,cc1101_get_partnumber,uint8_t,FurryHalSpiBusHandle*
+Function,+,cc1101_get_rssi,uint8_t,FurryHalSpiBusHandle*
+Function,+,cc1101_get_status,CC1101Status,FurryHalSpiBusHandle*
+Function,-,cc1101_get_version,uint8_t,FurryHalSpiBusHandle*
+Function,+,cc1101_read_fifo,uint8_t,"FurryHalSpiBusHandle*, uint8_t*, uint8_t*"
+Function,+,cc1101_read_reg,CC1101Status,"FurryHalSpiBusHandle*, uint8_t, uint8_t*"
+Function,+,cc1101_reset,void,FurryHalSpiBusHandle*
+Function,+,cc1101_set_frequency,uint32_t,"FurryHalSpiBusHandle*, uint32_t"
+Function,-,cc1101_set_intermediate_frequency,uint32_t,"FurryHalSpiBusHandle*, uint32_t"
+Function,+,cc1101_set_pa_table,void,"FurryHalSpiBusHandle*, const uint8_t[8]"
+Function,+,cc1101_shutdown,void,FurryHalSpiBusHandle*
+Function,+,cc1101_strobe,CC1101Status,"FurryHalSpiBusHandle*, uint8_t"
+Function,+,cc1101_switch_to_idle,void,FurryHalSpiBusHandle*
+Function,+,cc1101_switch_to_rx,void,FurryHalSpiBusHandle*
+Function,+,cc1101_switch_to_tx,void,FurryHalSpiBusHandle*
+Function,+,cc1101_write_fifo,uint8_t,"FurryHalSpiBusHandle*, const uint8_t*, uint8_t"
+Function,+,cc1101_write_reg,CC1101Status,"FurryHalSpiBusHandle*, uint8_t, uint8_t"
 Function,-,ceil,double,double
 Function,-,ceilf,float,float
 Function,-,ceill,long double,long double
@@ -771,7 +771,7 @@ Function,+,dialog_ex_set_result_callback,void,"DialogEx*, DialogExResultCallback
 Function,+,dialog_ex_set_right_button_text,void,"DialogEx*, const char*"
 Function,+,dialog_ex_set_text,void,"DialogEx*, const char*, uint8_t, uint8_t, Align, Align"
 Function,+,dialog_file_browser_set_basic_options,void,"DialogsFileBrowserOptions*, const char*, const Icon*"
-Function,+,dialog_file_browser_show,_Bool,"DialogsApp*, FuriString*, FuriString*, const DialogsFileBrowserOptions*"
+Function,+,dialog_file_browser_show,_Bool,"DialogsApp*, FurryString*, FurryString*, const DialogsFileBrowserOptions*"
 Function,+,dialog_message_alloc,DialogMessage*,
 Function,+,dialog_message_free,void,DialogMessage*
 Function,+,dialog_message_set_buttons,void,"DialogMessage*, const char*, const char*, const char*"
@@ -805,7 +805,7 @@ Function,+,dir_walk_close,void,DirWalk*
 Function,+,dir_walk_free,void,DirWalk*
 Function,+,dir_walk_get_error,FS_Error,DirWalk*
 Function,+,dir_walk_open,_Bool,"DirWalk*, const char*"
-Function,+,dir_walk_read,DirWalkResult,"DirWalk*, FuriString*, FileInfo*"
+Function,+,dir_walk_read,DirWalkResult,"DirWalk*, FurryString*, FileInfo*"
 Function,+,dir_walk_set_filter_cb,void,"DirWalk*, DirWalkFilterCb, void*"
 Function,+,dir_walk_set_recursive,void,"DirWalk*, _Bool"
 Function,-,div,div_t,"int, int"
@@ -816,7 +816,7 @@ Function,+,dolphin_deed_get_weight,uint8_t,DolphinDeed
 Function,+,dolphin_flush,void,Dolphin*
 Function,+,dolphin_get_level,uint8_t,int
 Function,+,dolphin_get_levels,const int*,
-Function,+,dolphin_get_pubsub,FuriPubSub*,Dolphin*
+Function,+,dolphin_get_pubsub,FurryPubSub*,Dolphin*
 Function,+,dolphin_state_alloc,DolphinState*,
 Function,+,dolphin_state_butthurted,void,DolphinState*
 Function,+,dolphin_state_clear_limits,void,DolphinState*
@@ -849,20 +849,20 @@ Function,+,elements_multiline_text_aligned,void,"Canvas*, uint8_t, uint8_t, Alig
 Function,+,elements_multiline_text_framed,void,"Canvas*, uint8_t, uint8_t, const char*"
 Function,+,elements_progress_bar,void,"Canvas*, uint8_t, uint8_t, uint8_t, float"
 Function,+,elements_progress_bar_with_text,void,"Canvas*, uint8_t, uint8_t, uint8_t, float, const char*"
-Function,+,elements_scrollable_text_line,void,"Canvas*, uint8_t, uint8_t, uint8_t, FuriString*, size_t, _Bool, _Bool"
+Function,+,elements_scrollable_text_line,void,"Canvas*, uint8_t, uint8_t, uint8_t, FurryString*, size_t, _Bool, _Bool"
 Function,+,elements_scrollable_text_line_str,void,"Canvas*, uint8_t, uint8_t, uint8_t, const char*, size_t, _Bool, _Bool"
 Function,+,elements_scrollbar,void,"Canvas*, uint16_t, uint16_t"
 Function,+,elements_scrollbar_pos,void,"Canvas*, uint8_t, uint8_t, uint8_t, uint16_t, uint16_t"
 Function,+,elements_slightly_rounded_box,void,"Canvas*, uint8_t, uint8_t, uint8_t, uint8_t"
 Function,+,elements_slightly_rounded_frame,void,"Canvas*, uint8_t, uint8_t, uint8_t, uint8_t"
-Function,+,elements_string_fit_width,void,"Canvas*, FuriString*, uint8_t"
+Function,+,elements_string_fit_width,void,"Canvas*, FurryString*, uint8_t"
 Function,+,elements_text_box,void,"Canvas*, uint8_t, uint8_t, uint8_t, uint8_t, Align, Align, const char*, _Bool"
 Function,+,elf_resolve_from_hashtable,_Bool,"const ElfApiInterface*, const char*, Elf32_Addr*"
 Function,+,empty_screen_alloc,EmptyScreen*,
 Function,+,empty_screen_free,void,EmptyScreen*
 Function,+,empty_screen_get_view,View*,EmptyScreen*
-Function,-,emv_card_emulation,_Bool,FuriHalNfcTxRxContext*
-Function,-,emv_read_bank_card,_Bool,"FuriHalNfcTxRxContext*, EmvApplication*"
+Function,-,emv_card_emulation,_Bool,FurryHalNfcTxRxContext*
+Function,-,emv_read_bank_card,_Bool,"FurryHalNfcTxRxContext*, EmvApplication*"
 Function,-,erand48,double,unsigned short[3]
 Function,-,erf,double,double
 Function,-,erfc,double,double
@@ -886,7 +886,7 @@ Function,-,expm1l,long double,long double
 Function,-,fabs,double,double
 Function,-,fabsf,float,float
 Function,-,fabsl,long double,long double
-Function,+,fap_loader_load_name_and_icon,_Bool,"FuriString*, Storage*, uint8_t**, FuriString*"
+Function,+,fap_loader_load_name_and_icon,_Bool,"FurryString*, Storage*, uint8_t**, FurryString*"
 Function,-,fclose,int,FILE*
 Function,-,fcloseall,int,
 Function,-,fdim,double,"double, double"
@@ -897,8 +897,8 @@ Function,-,felica_check_ic_type,_Bool,uint8_t*
 Function,-,felica_clear,void,FelicaData*
 Function,-,felica_define_normal_block,void,"FelicaService*, uint16_t, uint8_t*"
 Function,-,felica_get_ic_type,FelicaICType,uint8_t*
-Function,-,felica_get_service_name,FuriString*,FelicaService*
-Function,-,felica_get_system_name,FuriString*,FelicaSystem*
+Function,-,felica_get_service_name,FurryString*,FelicaService*
+Function,-,felica_get_system_name,FurryString*,FelicaSystem*
 Function,-,felica_lite_can_read_without_mac,_Bool,"uint8_t*, uint8_t"
 Function,-,felica_lite_prepare_unencrypted_read,uint8_t,"uint8_t*, const FelicaReader*, _Bool, const uint8_t*, uint8_t"
 Function,-,felica_lite_prepare_unencrypted_write,uint8_t,"uint8_t*, const FelicaReader*, const uint8_t*, uint8_t, const uint8_t*"
@@ -906,8 +906,8 @@ Function,-,felica_parse_unencrypted_read,uint16_t,"uint8_t*, uint8_t, FelicaRead
 Function,-,felica_parse_unencrypted_write,_Bool,"uint8_t*, uint8_t, FelicaReader*"
 Function,-,felica_prepare_unencrypted_read,uint8_t,"uint8_t*, const FelicaReader*, const uint16_t*, uint8_t, const uint32_t*, uint8_t"
 Function,-,felica_prepare_unencrypted_write,uint8_t,"uint8_t*, FelicaReader*, const uint16_t*, uint8_t, const uint32_t*, uint8_t, const uint8_t*"
-Function,-,felica_read_card,_Bool,"FuriHalNfcTxRxContext*, FelicaData*, uint8_t*, uint8_t*"
-Function,-,felica_read_lite_system,_Bool,"FuriHalNfcTxRxContext*, FelicaReader*, FelicaData*, FelicaSystem*"
+Function,-,felica_read_card,_Bool,"FurryHalNfcTxRxContext*, FelicaData*, uint8_t*, uint8_t*"
+Function,-,felica_read_lite_system,_Bool,"FurryHalNfcTxRxContext*, FelicaReader*, FelicaData*, FelicaSystem*"
 Function,-,feof,int,FILE*
 Function,-,feof_unlocked,int,FILE*
 Function,-,ferror,int,FILE*
@@ -922,23 +922,23 @@ Function,-,fgetc_unlocked,int,FILE*
 Function,-,fgetpos,int,"FILE*, fpos_t*"
 Function,-,fgets,char*,"char*, int, FILE*"
 Function,-,fgets_unlocked,char*,"char*, int, FILE*"
-Function,+,file_browser_alloc,FileBrowser*,FuriString*
+Function,+,file_browser_alloc,FileBrowser*,FurryString*
 Function,+,file_browser_configure,void,"FileBrowser*, const char*, const char*, _Bool, _Bool, const Icon*, _Bool"
 Function,+,file_browser_free,void,FileBrowser*
 Function,+,file_browser_get_view,View*,FileBrowser*
 Function,+,file_browser_set_callback,void,"FileBrowser*, FileBrowserCallback, void*"
 Function,+,file_browser_set_item_callback,void,"FileBrowser*, FileBrowserLoadItemCallback, void*"
-Function,+,file_browser_start,void,"FileBrowser*, FuriString*"
+Function,+,file_browser_start,void,"FileBrowser*, FurryString*"
 Function,+,file_browser_stop,void,FileBrowser*
-Function,+,file_browser_worker_alloc,BrowserWorker*,"FuriString*, const char*, const char*, _Bool, _Bool"
-Function,+,file_browser_worker_folder_enter,void,"BrowserWorker*, FuriString*, int32_t"
+Function,+,file_browser_worker_alloc,BrowserWorker*,"FurryString*, const char*, const char*, _Bool, _Bool"
+Function,+,file_browser_worker_folder_enter,void,"BrowserWorker*, FurryString*, int32_t"
 Function,+,file_browser_worker_folder_exit,void,BrowserWorker*
 Function,+,file_browser_worker_folder_refresh,void,"BrowserWorker*, int32_t"
 Function,+,file_browser_worker_free,void,BrowserWorker*
 Function,+,file_browser_worker_is_in_start_folder,_Bool,BrowserWorker*
 Function,+,file_browser_worker_load,void,"BrowserWorker*, uint32_t, uint32_t"
 Function,+,file_browser_worker_set_callback_context,void,"BrowserWorker*, void*"
-Function,+,file_browser_worker_set_config,void,"BrowserWorker*, FuriString*, const char*, _Bool, _Bool"
+Function,+,file_browser_worker_set_config,void,"BrowserWorker*, FurryString*, const char*, _Bool, _Bool"
 Function,+,file_browser_worker_set_folder_callback,void,"BrowserWorker*, BrowserWorkerFolderOpenCallback"
 Function,+,file_browser_worker_set_item_callback,void,"BrowserWorker*, BrowserWorkerListItemCallback"
 Function,+,file_browser_worker_set_list_callback,void,"BrowserWorker*, BrowserWorkerListLoadCallback"
@@ -969,7 +969,7 @@ Function,+,flipper_application_plugin_get_descriptor,const FlipperAppPluginDescr
 Function,+,flipper_application_preload,FlipperApplicationPreloadStatus,"FlipperApplication*, const char*"
 Function,+,flipper_application_preload_manifest,FlipperApplicationPreloadStatus,"FlipperApplication*, const char*"
 Function,+,flipper_application_preload_status_to_string,const char*,FlipperApplicationPreloadStatus
-Function,+,flipper_application_spawn,FuriThread*,"FlipperApplication*, void*"
+Function,+,flipper_application_spawn,FurryThread*,"FlipperApplication*, void*"
 Function,+,flipper_format_buffered_file_alloc,FlipperFormat*,Storage*
 Function,+,flipper_format_buffered_file_close,_Bool,FlipperFormat*
 Function,+,flipper_format_buffered_file_open_always,_Bool,"FlipperFormat*, const char*"
@@ -988,17 +988,17 @@ Function,+,flipper_format_insert_or_update_bool,_Bool,"FlipperFormat*, const cha
 Function,+,flipper_format_insert_or_update_float,_Bool,"FlipperFormat*, const char*, const float*, const uint16_t"
 Function,+,flipper_format_insert_or_update_hex,_Bool,"FlipperFormat*, const char*, const uint8_t*, const uint16_t"
 Function,+,flipper_format_insert_or_update_int32,_Bool,"FlipperFormat*, const char*, const int32_t*, const uint16_t"
-Function,+,flipper_format_insert_or_update_string,_Bool,"FlipperFormat*, const char*, FuriString*"
+Function,+,flipper_format_insert_or_update_string,_Bool,"FlipperFormat*, const char*, FurryString*"
 Function,+,flipper_format_insert_or_update_string_cstr,_Bool,"FlipperFormat*, const char*, const char*"
 Function,+,flipper_format_insert_or_update_uint32,_Bool,"FlipperFormat*, const char*, const uint32_t*, const uint16_t"
 Function,+,flipper_format_key_exist,_Bool,"FlipperFormat*, const char*"
 Function,+,flipper_format_read_bool,_Bool,"FlipperFormat*, const char*, _Bool*, const uint16_t"
 Function,+,flipper_format_read_float,_Bool,"FlipperFormat*, const char*, float*, const uint16_t"
-Function,+,flipper_format_read_header,_Bool,"FlipperFormat*, FuriString*, uint32_t*"
+Function,+,flipper_format_read_header,_Bool,"FlipperFormat*, FurryString*, uint32_t*"
 Function,+,flipper_format_read_hex,_Bool,"FlipperFormat*, const char*, uint8_t*, const uint16_t"
 Function,+,flipper_format_read_hex_uint64,_Bool,"FlipperFormat*, const char*, uint64_t*, const uint16_t"
 Function,+,flipper_format_read_int32,_Bool,"FlipperFormat*, const char*, int32_t*, const uint16_t"
-Function,+,flipper_format_read_string,_Bool,"FlipperFormat*, const char*, FuriString*"
+Function,+,flipper_format_read_string,_Bool,"FlipperFormat*, const char*, FurryString*"
 Function,+,flipper_format_read_uint32,_Bool,"FlipperFormat*, const char*, uint32_t*, const uint16_t"
 Function,+,flipper_format_rewind,_Bool,FlipperFormat*
 Function,+,flipper_format_seek_to_end,_Bool,FlipperFormat*
@@ -1008,19 +1008,19 @@ Function,+,flipper_format_update_bool,_Bool,"FlipperFormat*, const char*, const 
 Function,+,flipper_format_update_float,_Bool,"FlipperFormat*, const char*, const float*, const uint16_t"
 Function,+,flipper_format_update_hex,_Bool,"FlipperFormat*, const char*, const uint8_t*, const uint16_t"
 Function,+,flipper_format_update_int32,_Bool,"FlipperFormat*, const char*, const int32_t*, const uint16_t"
-Function,+,flipper_format_update_string,_Bool,"FlipperFormat*, const char*, FuriString*"
+Function,+,flipper_format_update_string,_Bool,"FlipperFormat*, const char*, FurryString*"
 Function,+,flipper_format_update_string_cstr,_Bool,"FlipperFormat*, const char*, const char*"
 Function,+,flipper_format_update_uint32,_Bool,"FlipperFormat*, const char*, const uint32_t*, const uint16_t"
 Function,+,flipper_format_write_bool,_Bool,"FlipperFormat*, const char*, const _Bool*, const uint16_t"
-Function,+,flipper_format_write_comment,_Bool,"FlipperFormat*, FuriString*"
+Function,+,flipper_format_write_comment,_Bool,"FlipperFormat*, FurryString*"
 Function,+,flipper_format_write_comment_cstr,_Bool,"FlipperFormat*, const char*"
 Function,+,flipper_format_write_float,_Bool,"FlipperFormat*, const char*, const float*, const uint16_t"
-Function,+,flipper_format_write_header,_Bool,"FlipperFormat*, FuriString*, const uint32_t"
+Function,+,flipper_format_write_header,_Bool,"FlipperFormat*, FurryString*, const uint32_t"
 Function,+,flipper_format_write_header_cstr,_Bool,"FlipperFormat*, const char*, const uint32_t"
 Function,+,flipper_format_write_hex,_Bool,"FlipperFormat*, const char*, const uint8_t*, const uint16_t"
 Function,+,flipper_format_write_hex_uint64,_Bool,"FlipperFormat*, const char*, const uint64_t*, const uint16_t"
 Function,+,flipper_format_write_int32,_Bool,"FlipperFormat*, const char*, const int32_t*, const uint16_t"
-Function,+,flipper_format_write_string,_Bool,"FlipperFormat*, const char*, FuriString*"
+Function,+,flipper_format_write_string,_Bool,"FlipperFormat*, const char*, FurryString*"
 Function,+,flipper_format_write_string_cstr,_Bool,"FlipperFormat*, const char*, const char*"
 Function,+,flipper_format_write_uint32,_Bool,"FlipperFormat*, const char*, const uint32_t*, const uint16_t"
 Function,+,float_is_equal,_Bool,"float, float"
@@ -1068,621 +1068,621 @@ Function,-,ftello,off_t,FILE*
 Function,-,ftrylockfile,int,FILE*
 Function,-,funlockfile,void,FILE*
 Function,-,funopen,FILE*,"const void*, int (*)(void*, char*, int), int (*)(void*, const char*, int), fpos_t (*)(void*, fpos_t, int), int (*)(void*)"
-Function,+,furi_delay_ms,void,uint32_t
-Function,+,furi_delay_tick,void,uint32_t
-Function,+,furi_delay_until_tick,FuriStatus,uint32_t
-Function,+,furi_delay_us,void,uint32_t
-Function,+,furi_event_flag_alloc,FuriEventFlag*,
-Function,+,furi_event_flag_clear,uint32_t,"FuriEventFlag*, uint32_t"
-Function,+,furi_event_flag_free,void,FuriEventFlag*
-Function,+,furi_event_flag_get,uint32_t,FuriEventFlag*
-Function,+,furi_event_flag_set,uint32_t,"FuriEventFlag*, uint32_t"
-Function,+,furi_event_flag_wait,uint32_t,"FuriEventFlag*, uint32_t, uint32_t, uint32_t"
-Function,+,furi_get_tick,uint32_t,
-Function,+,furi_hal_bt_change_app,_Bool,"FuriHalBtProfile, GapEventCallback, void*"
-Function,+,furi_hal_bt_clear_white_list,_Bool,
-Function,+,furi_hal_bt_dump_state,void,FuriString*
-Function,+,furi_hal_bt_ensure_c2_mode,_Bool,BleGlueC2Mode
-Function,+,furi_hal_bt_get_conn_rssi,uint32_t,uint8_t*
-Function,+,furi_hal_bt_get_key_storage_buff,void,"uint8_t**, uint16_t*"
-Function,+,furi_hal_bt_get_profile_adv_name,const char*,FuriHalBtProfile
-Function,+,furi_hal_bt_get_profile_mac_addr,const uint8_t*,FuriHalBtProfile
-Function,+,furi_hal_bt_get_profile_pairing_method,GapPairing,FuriHalBtProfile
-Function,+,furi_hal_bt_get_radio_stack,FuriHalBtStack,
-Function,+,furi_hal_bt_get_rssi,float,
-Function,+,furi_hal_bt_get_transmitted_packets,uint32_t,
-Function,+,furi_hal_bt_hid_consumer_key_press,_Bool,uint16_t
-Function,+,furi_hal_bt_hid_consumer_key_release,_Bool,uint16_t
-Function,+,furi_hal_bt_hid_consumer_key_release_all,_Bool,
-Function,+,furi_hal_bt_hid_get_led_state,uint8_t,
-Function,+,furi_hal_bt_hid_kb_press,_Bool,uint16_t
-Function,+,furi_hal_bt_hid_kb_release,_Bool,uint16_t
-Function,+,furi_hal_bt_hid_kb_release_all,_Bool,
-Function,+,furi_hal_bt_hid_mouse_move,_Bool,"int8_t, int8_t"
-Function,+,furi_hal_bt_hid_mouse_press,_Bool,uint8_t
-Function,+,furi_hal_bt_hid_mouse_release,_Bool,uint8_t
-Function,+,furi_hal_bt_hid_mouse_release_all,_Bool,
-Function,+,furi_hal_bt_hid_mouse_scroll,_Bool,int8_t
-Function,+,furi_hal_bt_hid_start,void,
-Function,+,furi_hal_bt_hid_stop,void,
-Function,-,furi_hal_bt_init,void,
-Function,+,furi_hal_bt_is_active,_Bool,
-Function,+,furi_hal_bt_is_alive,_Bool,
-Function,+,furi_hal_bt_is_ble_gatt_gap_supported,_Bool,
-Function,+,furi_hal_bt_is_connected,_Bool,
-Function,+,furi_hal_bt_is_testing_supported,_Bool,
-Function,+,furi_hal_bt_lock_core2,void,
-Function,+,furi_hal_bt_nvm_sram_sem_acquire,void,
-Function,+,furi_hal_bt_nvm_sram_sem_release,void,
-Function,+,furi_hal_bt_reinit,void,
-Function,+,furi_hal_bt_serial_notify_buffer_is_empty,void,
-Function,+,furi_hal_bt_serial_set_event_callback,void,"uint16_t, FuriHalBtSerialCallback, void*"
-Function,+,furi_hal_bt_serial_set_rpc_status,void,FuriHalBtSerialRpcStatus
-Function,+,furi_hal_bt_serial_start,void,
-Function,+,furi_hal_bt_serial_stop,void,
-Function,+,furi_hal_bt_serial_tx,_Bool,"uint8_t*, uint16_t"
-Function,+,furi_hal_bt_set_key_storage_change_callback,void,"BleGlueKeyStorageChangedCallback, void*"
-Function,+,furi_hal_bt_set_profile_adv_name,void,"FuriHalBtProfile, const char[( 18 + 1 )]"
-Function,+,furi_hal_bt_set_profile_mac_addr,void,"FuriHalBtProfile, const uint8_t[( 6 )]"
-Function,+,furi_hal_bt_set_profile_pairing_method,void,"FuriHalBtProfile, GapPairing"
-Function,+,furi_hal_bt_start_advertising,void,
-Function,+,furi_hal_bt_start_app,_Bool,"FuriHalBtProfile, GapEventCallback, void*"
-Function,+,furi_hal_bt_start_packet_rx,void,"uint8_t, uint8_t"
-Function,+,furi_hal_bt_start_packet_tx,void,"uint8_t, uint8_t, uint8_t"
-Function,+,furi_hal_bt_start_radio_stack,_Bool,
-Function,+,furi_hal_bt_start_rx,void,uint8_t
-Function,+,furi_hal_bt_start_tone_tx,void,"uint8_t, uint8_t"
-Function,+,furi_hal_bt_stop_advertising,void,
-Function,+,furi_hal_bt_stop_packet_test,uint16_t,
-Function,+,furi_hal_bt_stop_rx,void,
-Function,+,furi_hal_bt_stop_tone_tx,void,
-Function,+,furi_hal_bt_unlock_core2,void,
-Function,+,furi_hal_bt_update_battery_level,void,uint8_t
-Function,+,furi_hal_bt_update_power_state,void,
-Function,+,furi_hal_cdc_get_ctrl_line_state,uint8_t,uint8_t
-Function,+,furi_hal_cdc_get_port_settings,usb_cdc_line_coding*,uint8_t
-Function,+,furi_hal_cdc_receive,int32_t,"uint8_t, uint8_t*, uint16_t"
-Function,+,furi_hal_cdc_send,void,"uint8_t, uint8_t*, uint16_t"
-Function,+,furi_hal_cdc_set_callbacks,void,"uint8_t, CdcCallbacks*, void*"
-Function,-,furi_hal_clock_deinit_early,void,
-Function,-,furi_hal_clock_init,void,
-Function,-,furi_hal_clock_init_early,void,
-Function,+,furi_hal_clock_mco_disable,void,
-Function,+,furi_hal_clock_mco_enable,void,"FuriHalClockMcoSourceId, FuriHalClockMcoDivisorId"
-Function,-,furi_hal_clock_resume_tick,void,
-Function,-,furi_hal_clock_suspend_tick,void,
-Function,-,furi_hal_clock_switch_to_hsi,void,
-Function,-,furi_hal_clock_switch_to_pll,void,
-Function,+,furi_hal_console_disable,void,
-Function,+,furi_hal_console_enable,void,
-Function,+,furi_hal_console_init,void,
-Function,+,furi_hal_console_printf,void,"const char[], ..."
-Function,+,furi_hal_console_puts,void,const char*
-Function,+,furi_hal_console_set_tx_callback,void,"FuriHalConsoleTxCallback, void*"
-Function,+,furi_hal_console_tx,void,"const uint8_t*, size_t"
-Function,+,furi_hal_console_tx_with_new_line,void,"const uint8_t*, size_t"
-Function,+,furi_hal_cortex_delay_us,void,uint32_t
-Function,-,furi_hal_cortex_init_early,void,
-Function,+,furi_hal_cortex_instructions_per_microsecond,uint32_t,
-Function,+,furi_hal_cortex_timer_get,FuriHalCortexTimer,uint32_t
-Function,+,furi_hal_cortex_timer_is_expired,_Bool,FuriHalCortexTimer
-Function,+,furi_hal_cortex_timer_wait,void,FuriHalCortexTimer
-Function,+,furi_hal_crypto_decrypt,_Bool,"const uint8_t*, uint8_t*, size_t"
-Function,+,furi_hal_crypto_encrypt,_Bool,"const uint8_t*, uint8_t*, size_t"
-Function,-,furi_hal_crypto_init,void,
-Function,+,furi_hal_crypto_store_add_key,_Bool,"FuriHalCryptoKey*, uint8_t*"
-Function,+,furi_hal_crypto_store_load_key,_Bool,"uint8_t, const uint8_t*"
-Function,+,furi_hal_crypto_store_unload_key,_Bool,uint8_t
-Function,+,furi_hal_crypto_verify_enclave,_Bool,"uint8_t*, uint8_t*"
-Function,+,furi_hal_crypto_verify_key,_Bool,uint8_t
-Function,+,furi_hal_debug_disable,void,
-Function,+,furi_hal_debug_enable,void,
-Function,+,furi_hal_debug_is_gdb_session_active,_Bool,
-Function,-,furi_hal_deinit_early,void,
-Function,-,furi_hal_flash_erase,void,uint8_t
-Function,-,furi_hal_flash_get_base,size_t,
-Function,-,furi_hal_flash_get_cycles_count,size_t,
-Function,-,furi_hal_flash_get_free_end_address,const void*,
-Function,-,furi_hal_flash_get_free_page_count,size_t,
-Function,-,furi_hal_flash_get_free_page_start_address,size_t,
-Function,-,furi_hal_flash_get_free_start_address,const void*,
-Function,-,furi_hal_flash_get_page_number,int16_t,size_t
-Function,-,furi_hal_flash_get_page_size,size_t,
-Function,-,furi_hal_flash_get_read_block_size,size_t,
-Function,-,furi_hal_flash_get_write_block_size,size_t,
-Function,-,furi_hal_flash_init,void,
-Function,-,furi_hal_flash_ob_apply,void,
-Function,-,furi_hal_flash_ob_get_raw_ptr,const FuriHalFlashRawOptionByteData*,
-Function,-,furi_hal_flash_ob_set_word,_Bool,"size_t, const uint32_t"
-Function,-,furi_hal_flash_program_page,void,"const uint8_t, const uint8_t*, uint16_t"
-Function,-,furi_hal_flash_write_dword,void,"size_t, uint64_t"
-Function,+,furi_hal_gpio_add_int_callback,void,"const GpioPin*, GpioExtiCallback, void*"
-Function,+,furi_hal_gpio_disable_int_callback,void,const GpioPin*
-Function,+,furi_hal_gpio_enable_int_callback,void,const GpioPin*
-Function,+,furi_hal_gpio_init,void,"const GpioPin*, const GpioMode, const GpioPull, const GpioSpeed"
-Function,+,furi_hal_gpio_init_ex,void,"const GpioPin*, const GpioMode, const GpioPull, const GpioSpeed, const GpioAltFn"
-Function,+,furi_hal_gpio_init_simple,void,"const GpioPin*, const GpioMode"
-Function,+,furi_hal_gpio_remove_int_callback,void,const GpioPin*
-Function,+,furi_hal_hid_consumer_key_press,_Bool,uint16_t
-Function,+,furi_hal_hid_consumer_key_release,_Bool,uint16_t
-Function,+,furi_hal_hid_get_led_state,uint8_t,
-Function,+,furi_hal_hid_is_connected,_Bool,
-Function,+,furi_hal_hid_kb_press,_Bool,uint16_t
-Function,+,furi_hal_hid_kb_release,_Bool,uint16_t
-Function,+,furi_hal_hid_kb_release_all,_Bool,
-Function,+,furi_hal_hid_mouse_move,_Bool,"int8_t, int8_t"
-Function,+,furi_hal_hid_mouse_press,_Bool,uint8_t
-Function,+,furi_hal_hid_mouse_release,_Bool,uint8_t
-Function,+,furi_hal_hid_mouse_scroll,_Bool,int8_t
-Function,+,furi_hal_hid_set_state_callback,void,"HidStateCallback, void*"
-Function,+,furi_hal_hid_u2f_get_request,uint32_t,uint8_t*
-Function,+,furi_hal_hid_u2f_is_connected,_Bool,
-Function,+,furi_hal_hid_u2f_send_response,void,"uint8_t*, uint8_t"
-Function,+,furi_hal_hid_u2f_set_callback,void,"HidU2fCallback, void*"
-Function,+,furi_hal_i2c_acquire,void,FuriHalI2cBusHandle*
-Function,-,furi_hal_i2c_deinit_early,void,
-Function,-,furi_hal_i2c_init,void,
-Function,-,furi_hal_i2c_init_early,void,
-Function,+,furi_hal_i2c_is_device_ready,_Bool,"FuriHalI2cBusHandle*, uint8_t, uint32_t"
-Function,+,furi_hal_i2c_read_mem,_Bool,"FuriHalI2cBusHandle*, uint8_t, uint8_t, uint8_t*, uint8_t, uint32_t"
-Function,+,furi_hal_i2c_read_reg_16,_Bool,"FuriHalI2cBusHandle*, uint8_t, uint8_t, uint16_t*, uint32_t"
-Function,+,furi_hal_i2c_read_reg_8,_Bool,"FuriHalI2cBusHandle*, uint8_t, uint8_t, uint8_t*, uint32_t"
-Function,+,furi_hal_i2c_release,void,FuriHalI2cBusHandle*
-Function,+,furi_hal_i2c_rx,_Bool,"FuriHalI2cBusHandle*, const uint8_t, uint8_t*, const uint8_t, uint32_t"
-Function,+,furi_hal_i2c_trx,_Bool,"FuriHalI2cBusHandle*, const uint8_t, const uint8_t*, const uint8_t, uint8_t*, const uint8_t, uint32_t"
-Function,+,furi_hal_i2c_tx,_Bool,"FuriHalI2cBusHandle*, const uint8_t, const uint8_t*, const uint8_t, uint32_t"
-Function,+,furi_hal_i2c_write_mem,_Bool,"FuriHalI2cBusHandle*, uint8_t, uint8_t, uint8_t*, uint8_t, uint32_t"
-Function,+,furi_hal_i2c_write_reg_16,_Bool,"FuriHalI2cBusHandle*, uint8_t, uint8_t, uint16_t, uint32_t"
-Function,+,furi_hal_i2c_write_reg_8,_Bool,"FuriHalI2cBusHandle*, uint8_t, uint8_t, uint8_t, uint32_t"
-Function,+,furi_hal_ibutton_emulate_set_next,void,uint32_t
-Function,+,furi_hal_ibutton_emulate_start,void,"uint32_t, FuriHalIbuttonEmulateCallback, void*"
-Function,+,furi_hal_ibutton_emulate_stop,void,
-Function,-,furi_hal_ibutton_init,void,
-Function,+,furi_hal_ibutton_pin_configure,void,
-Function,+,furi_hal_ibutton_pin_reset,void,
-Function,+,furi_hal_ibutton_pin_write,void,const _Bool
-Function,+,furi_hal_info_get,void,"PropertyValueCallback, char, void*"
-Function,+,furi_hal_infrared_async_rx_set_capture_isr_callback,void,"FuriHalInfraredRxCaptureCallback, void*"
-Function,+,furi_hal_infrared_async_rx_set_timeout,void,uint32_t
-Function,+,furi_hal_infrared_async_rx_set_timeout_isr_callback,void,"FuriHalInfraredRxTimeoutCallback, void*"
-Function,+,furi_hal_infrared_async_rx_start,void,
-Function,+,furi_hal_infrared_async_rx_stop,void,
-Function,+,furi_hal_infrared_async_tx_set_data_isr_callback,void,"FuriHalInfraredTxGetDataISRCallback, void*"
-Function,+,furi_hal_infrared_async_tx_set_signal_sent_isr_callback,void,"FuriHalInfraredTxSignalSentISRCallback, void*"
-Function,+,furi_hal_infrared_async_tx_start,void,"uint32_t, float"
-Function,+,furi_hal_infrared_async_tx_stop,void,
-Function,+,furi_hal_infrared_async_tx_wait_termination,void,
-Function,+,furi_hal_infrared_get_debug_out_status,_Bool,
-Function,+,furi_hal_infrared_is_busy,_Bool,
-Function,+,furi_hal_infrared_set_debug_out,void,_Bool
-Function,-,furi_hal_init,void,
-Function,-,furi_hal_init_early,void,
-Function,-,furi_hal_interrupt_init,void,
-Function,+,furi_hal_interrupt_set_isr,void,"FuriHalInterruptId, FuriHalInterruptISR, void*"
-Function,+,furi_hal_interrupt_set_isr_ex,void,"FuriHalInterruptId, uint16_t, FuriHalInterruptISR, void*"
-Function,-,furi_hal_is_normal_boot,_Bool,
-Function,+,furi_hal_light_blink_set_color,void,Light
-Function,+,furi_hal_light_blink_start,void,"Light, uint8_t, uint16_t, uint16_t"
-Function,+,furi_hal_light_blink_stop,void,
-Function,-,furi_hal_light_init,void,
-Function,+,furi_hal_light_sequence,void,const char*
-Function,+,furi_hal_light_set,void,"Light, uint8_t"
-Function,+,furi_hal_memory_alloc,void*,size_t
-Function,+,furi_hal_memory_get_free,size_t,
-Function,+,furi_hal_memory_init,void,
-Function,+,furi_hal_memory_max_pool_block,size_t,
-Function,+,furi_hal_mpu_disable,void,
-Function,+,furi_hal_mpu_enable,void,
-Function,-,furi_hal_mpu_init,void,
-Function,+,furi_hal_mpu_protect_disable,void,FuriHalMpuRegion
-Function,+,furi_hal_mpu_protect_no_access,void,"FuriHalMpuRegion, uint32_t, FuriHalMPURegionSize"
-Function,+,furi_hal_mpu_protect_read_only,void,"FuriHalMpuRegion, uint32_t, FuriHalMPURegionSize"
-Function,+,furi_hal_nfc_activate_nfca,_Bool,"uint32_t, uint32_t*"
-Function,+,furi_hal_nfc_deinit,void,
-Function,+,furi_hal_nfc_detect,_Bool,"FuriHalNfcDevData*, uint32_t"
-Function,+,furi_hal_nfc_emulate_nfca,_Bool,"uint8_t*, uint8_t, uint8_t*, uint8_t, FuriHalNfcEmulateCallback, void*, uint32_t"
-Function,+,furi_hal_nfc_exit_sleep,void,
-Function,+,furi_hal_nfc_field_off,void,
-Function,+,furi_hal_nfc_field_on,void,
-Function,+,furi_hal_nfc_init,void,
-Function,+,furi_hal_nfc_is_busy,_Bool,
-Function,+,furi_hal_nfc_is_init,_Bool,
-Function,+,furi_hal_nfc_listen,_Bool,"uint8_t*, uint8_t, uint8_t*, uint8_t, _Bool, uint32_t"
-Function,+,furi_hal_nfc_listen_rx,_Bool,"FuriHalNfcTxRxContext*, uint32_t"
-Function,+,furi_hal_nfc_listen_sleep,void,
-Function,+,furi_hal_nfc_listen_start,void,FuriHalNfcDevData*
-Function,+,furi_hal_nfc_ll_poll,void,
-Function,+,furi_hal_nfc_ll_set_error_handling,void,FuriHalNfcErrorHandling
-Function,+,furi_hal_nfc_ll_set_fdt_listen,void,uint32_t
-Function,+,furi_hal_nfc_ll_set_fdt_poll,void,uint32_t
-Function,+,furi_hal_nfc_ll_set_guard_time,void,uint32_t
-Function,+,furi_hal_nfc_ll_set_mode,FuriHalNfcReturn,"FuriHalNfcMode, FuriHalNfcBitrate, FuriHalNfcBitrate"
-Function,+,furi_hal_nfc_ll_txrx,FuriHalNfcReturn,"uint8_t*, uint16_t, uint8_t*, uint16_t, uint16_t*, uint32_t, uint32_t"
-Function,+,furi_hal_nfc_ll_txrx_bits,FuriHalNfcReturn,"uint8_t*, uint16_t, uint8_t*, uint16_t, uint16_t*, uint32_t, uint32_t"
-Function,+,furi_hal_nfc_ll_txrx_off,void,
-Function,+,furi_hal_nfc_ll_txrx_on,void,
-Function,+,furi_hal_nfc_sleep,void,
-Function,+,furi_hal_nfc_start_sleep,void,
-Function,+,furi_hal_nfc_stop,void,
-Function,+,furi_hal_nfc_stop_cmd,void,
-Function,+,furi_hal_nfc_tx_rx,_Bool,"FuriHalNfcTxRxContext*, uint16_t"
-Function,+,furi_hal_nfc_tx_rx_full,_Bool,FuriHalNfcTxRxContext*
-Function,-,furi_hal_os_init,void,
-Function,+,furi_hal_os_tick,void,
-Function,+,furi_hal_power_check_otg_status,void,
-Function,+,furi_hal_power_debug_get,void,"PropertyValueCallback, void*"
-Function,+,furi_hal_power_disable_external_3_3v,void,
-Function,+,furi_hal_power_disable_otg,void,
-Function,+,furi_hal_power_enable_external_3_3v,void,
-Function,+,furi_hal_power_enable_otg,void,
-Function,+,furi_hal_power_gauge_is_ok,_Bool,
-Function,+,furi_hal_power_get_bat_health_pct,uint8_t,
-Function,+,furi_hal_power_get_battery_charge_voltage_limit,float,
-Function,+,furi_hal_power_get_battery_current,float,FuriHalPowerIC
-Function,+,furi_hal_power_get_battery_design_capacity,uint32_t,
-Function,+,furi_hal_power_get_battery_full_capacity,uint32_t,
-Function,+,furi_hal_power_get_battery_remaining_capacity,uint32_t,
-Function,+,furi_hal_power_get_battery_temperature,float,FuriHalPowerIC
-Function,+,furi_hal_power_get_battery_voltage,float,FuriHalPowerIC
-Function,+,furi_hal_power_get_pct,uint8_t,
-Function,+,furi_hal_power_get_usb_voltage,float,
-Function,+,furi_hal_power_info_get,void,"PropertyValueCallback, char, void*"
-Function,-,furi_hal_power_init,void,
-Function,+,furi_hal_power_insomnia_enter,void,
-Function,+,furi_hal_power_insomnia_exit,void,
-Function,-,furi_hal_power_insomnia_level,uint16_t,
-Function,+,furi_hal_power_is_charging,_Bool,
-Function,+,furi_hal_power_is_charging_done,_Bool,
-Function,+,furi_hal_power_is_otg_enabled,_Bool,
-Function,+,furi_hal_power_off,void,
-Function,+,furi_hal_power_reset,void,
-Function,+,furi_hal_power_set_battery_charge_voltage_limit,void,float
-Function,+,furi_hal_power_shutdown,void,
-Function,+,furi_hal_power_sleep,void,
-Function,+,furi_hal_power_sleep_available,_Bool,
-Function,+,furi_hal_power_suppress_charge_enter,void,
-Function,+,furi_hal_power_suppress_charge_exit,void,
-Function,+,furi_hal_pwm_set_params,void,"FuriHalPwmOutputId, uint32_t, uint8_t"
-Function,+,furi_hal_pwm_start,void,"FuriHalPwmOutputId, uint32_t, uint8_t"
-Function,+,furi_hal_pwm_stop,void,FuriHalPwmOutputId
-Function,+,furi_hal_random_fill_buf,void,"uint8_t*, uint32_t"
-Function,+,furi_hal_random_get,uint32_t,
-Function,+,furi_hal_region_get,const FuriHalRegion*,
-Function,+,furi_hal_region_get_band,const FuriHalRegionBand*,uint32_t
-Function,+,furi_hal_region_get_name,const char*,
-Function,+,furi_hal_region_init,void,
-Function,+,furi_hal_region_is_frequency_allowed,_Bool,uint32_t
-Function,+,furi_hal_region_is_provisioned,_Bool,
-Function,+,furi_hal_region_set,void,FuriHalRegion*
-Function,-,furi_hal_resources_deinit_early,void,
-Function,+,furi_hal_resources_get_ext_pin_number,int32_t,const GpioPin*
-Function,-,furi_hal_resources_init,void,
-Function,-,furi_hal_resources_init_early,void,
-Function,+,furi_hal_rfid_change_read_config,void,"float, float"
-Function,+,furi_hal_rfid_comp_set_callback,void,"FuriHalRfidCompCallback, void*"
-Function,+,furi_hal_rfid_comp_start,void,
-Function,+,furi_hal_rfid_comp_stop,void,
-Function,-,furi_hal_rfid_init,void,
-Function,+,furi_hal_rfid_pin_pull_pulldown,void,
-Function,+,furi_hal_rfid_pin_pull_release,void,
-Function,+,furi_hal_rfid_pins_emulate,void,
-Function,+,furi_hal_rfid_pins_read,void,
-Function,+,furi_hal_rfid_pins_reset,void,
-Function,+,furi_hal_rfid_set_emulate_period,void,uint32_t
-Function,+,furi_hal_rfid_set_emulate_pulse,void,uint32_t
-Function,+,furi_hal_rfid_set_read_period,void,uint32_t
-Function,+,furi_hal_rfid_set_read_pulse,void,uint32_t
-Function,+,furi_hal_rfid_tim_emulate,void,float
-Function,+,furi_hal_rfid_tim_emulate_dma_start,void,"uint32_t*, uint32_t*, size_t, FuriHalRfidDMACallback, void*"
-Function,+,furi_hal_rfid_tim_emulate_dma_stop,void,
-Function,+,furi_hal_rfid_tim_emulate_start,void,"FuriHalRfidEmulateCallback, void*"
-Function,+,furi_hal_rfid_tim_emulate_stop,void,
-Function,+,furi_hal_rfid_tim_read,void,"float, float"
-Function,+,furi_hal_rfid_tim_read_capture_start,void,"FuriHalRfidReadCaptureCallback, void*"
-Function,+,furi_hal_rfid_tim_read_capture_stop,void,
-Function,+,furi_hal_rfid_tim_read_start,void,
-Function,+,furi_hal_rfid_tim_read_stop,void,
-Function,+,furi_hal_rfid_tim_reset,void,
-Function,+,furi_hal_rtc_datetime_to_timestamp,uint32_t,FuriHalRtcDateTime*
-Function,-,furi_hal_rtc_deinit_early,void,
-Function,+,furi_hal_rtc_get_boot_mode,FuriHalRtcBootMode,
-Function,+,furi_hal_rtc_get_datetime,void,FuriHalRtcDateTime*
-Function,+,furi_hal_rtc_get_fault_data,uint32_t,
-Function,+,furi_hal_rtc_get_heap_track_mode,FuriHalRtcHeapTrackMode,
-Function,+,furi_hal_rtc_get_locale_dateformat,FuriHalRtcLocaleDateFormat,
-Function,+,furi_hal_rtc_get_locale_timeformat,FuriHalRtcLocaleTimeFormat,
-Function,+,furi_hal_rtc_get_locale_units,FuriHalRtcLocaleUnits,
-Function,+,furi_hal_rtc_get_log_level,uint8_t,
-Function,+,furi_hal_rtc_get_pin_fails,uint32_t,
-Function,+,furi_hal_rtc_get_register,uint32_t,FuriHalRtcRegister
-Function,+,furi_hal_rtc_get_timestamp,uint32_t,
-Function,-,furi_hal_rtc_init,void,
-Function,-,furi_hal_rtc_init_early,void,
-Function,+,furi_hal_rtc_is_flag_set,_Bool,FuriHalRtcFlag
-Function,+,furi_hal_rtc_reset_flag,void,FuriHalRtcFlag
-Function,+,furi_hal_rtc_set_boot_mode,void,FuriHalRtcBootMode
-Function,+,furi_hal_rtc_set_datetime,void,FuriHalRtcDateTime*
-Function,+,furi_hal_rtc_set_fault_data,void,uint32_t
-Function,+,furi_hal_rtc_set_flag,void,FuriHalRtcFlag
-Function,+,furi_hal_rtc_set_heap_track_mode,void,FuriHalRtcHeapTrackMode
-Function,+,furi_hal_rtc_set_locale_dateformat,void,FuriHalRtcLocaleDateFormat
-Function,+,furi_hal_rtc_set_locale_timeformat,void,FuriHalRtcLocaleTimeFormat
-Function,+,furi_hal_rtc_set_locale_units,void,FuriHalRtcLocaleUnits
-Function,+,furi_hal_rtc_set_log_level,void,uint8_t
-Function,+,furi_hal_rtc_set_pin_fails,void,uint32_t
-Function,+,furi_hal_rtc_set_register,void,"FuriHalRtcRegister, uint32_t"
-Function,+,furi_hal_rtc_sync_shadow,void,
-Function,+,furi_hal_rtc_validate_datetime,_Bool,FuriHalRtcDateTime*
-Function,-,furi_hal_set_is_normal_boot,void,_Bool
-Function,+,furi_hal_speaker_acquire,_Bool,uint32_t
-Function,-,furi_hal_speaker_deinit,void,
-Function,-,furi_hal_speaker_init,void,
-Function,+,furi_hal_speaker_is_mine,_Bool,
-Function,+,furi_hal_speaker_release,void,
-Function,+,furi_hal_speaker_set_volume,void,float
-Function,+,furi_hal_speaker_start,void,"float, float"
-Function,+,furi_hal_speaker_stop,void,
-Function,+,furi_hal_spi_acquire,void,FuriHalSpiBusHandle*
-Function,+,furi_hal_spi_bus_deinit,void,FuriHalSpiBus*
-Function,+,furi_hal_spi_bus_handle_deinit,void,FuriHalSpiBusHandle*
-Function,+,furi_hal_spi_bus_handle_init,void,FuriHalSpiBusHandle*
-Function,+,furi_hal_spi_bus_init,void,FuriHalSpiBus*
-Function,+,furi_hal_spi_bus_rx,_Bool,"FuriHalSpiBusHandle*, uint8_t*, size_t, uint32_t"
-Function,+,furi_hal_spi_bus_trx,_Bool,"FuriHalSpiBusHandle*, const uint8_t*, uint8_t*, size_t, uint32_t"
-Function,+,furi_hal_spi_bus_trx_dma,_Bool,"FuriHalSpiBusHandle*, uint8_t*, uint8_t*, size_t, uint32_t"
-Function,+,furi_hal_spi_bus_tx,_Bool,"FuriHalSpiBusHandle*, const uint8_t*, size_t, uint32_t"
-Function,-,furi_hal_spi_config_deinit_early,void,
-Function,-,furi_hal_spi_config_init,void,
-Function,-,furi_hal_spi_config_init_early,void,
-Function,-,furi_hal_spi_dma_init,void,
-Function,+,furi_hal_spi_release,void,FuriHalSpiBusHandle*
-Function,+,furi_hal_subghz_check_radio,_Bool,
-Function,+,furi_hal_subghz_disable_ext_power,void,
-Function,-,furi_hal_subghz_dump_state,void,
-Function,+,furi_hal_subghz_enable_ext_power,_Bool,
-Function,+,furi_hal_subghz_flush_rx,void,
-Function,+,furi_hal_subghz_flush_tx,void,
-Function,+,furi_hal_subghz_get_extend_settings,void,"_Bool*, _Bool*"
-Function,+,furi_hal_subghz_get_external_power_disable,_Bool,
-Function,+,furi_hal_subghz_get_lqi,uint8_t,
-Function,+,furi_hal_subghz_get_radio_type,SubGhzRadioType,
-Function,+,furi_hal_subghz_get_rolling_counter_mult,uint8_t,
-Function,+,furi_hal_subghz_get_rssi,float,
-Function,+,furi_hal_subghz_get_timestamp_file_names,_Bool,
-Function,+,furi_hal_subghz_idle,void,
-Function,-,furi_hal_subghz_init,void,
-Function,+,furi_hal_subghz_init_check,_Bool,
-Function,+,furi_hal_subghz_init_radio_type,_Bool,SubGhzRadioType
-Function,+,furi_hal_subghz_is_async_tx_complete,_Bool,
-Function,+,furi_hal_subghz_is_frequency_valid,_Bool,uint32_t
-Function,+,furi_hal_subghz_is_rx_data_crc_valid,_Bool,
-Function,+,furi_hal_subghz_is_tx_allowed,_Bool,uint32_t
-Function,+,furi_hal_subghz_load_custom_preset,void,uint8_t*
-Function,+,furi_hal_subghz_load_patable,void,const uint8_t[8]
-Function,+,furi_hal_subghz_load_preset,void,FuriHalSubGhzPreset
-Function,+,furi_hal_subghz_load_registers,void,uint8_t*
-Function,+,furi_hal_subghz_read_packet,void,"uint8_t*, uint8_t*"
-Function,+,furi_hal_subghz_reset,void,
-Function,+,furi_hal_subghz_rx,void,
-Function,+,furi_hal_subghz_rx_pipe_not_empty,_Bool,
-Function,+,furi_hal_subghz_select_radio_type,void,SubGhzRadioType
-Function,+,furi_hal_subghz_set_async_mirror_pin,void,const GpioPin*
-Function,+,furi_hal_subghz_set_extend_settings,void,"_Bool, _Bool"
-Function,+,furi_hal_subghz_set_external_power_disable,void,_Bool
-Function,+,furi_hal_subghz_set_frequency,uint32_t,uint32_t
-Function,+,furi_hal_subghz_set_frequency_and_path,uint32_t,uint32_t
-Function,+,furi_hal_subghz_set_path,void,FuriHalSubGhzPath
-Function,+,furi_hal_subghz_set_rolling_counter_mult,void,uint8_t
-Function,+,furi_hal_subghz_set_timestamp_file_names,void,_Bool
-Function,-,furi_hal_subghz_shutdown,void,
-Function,+,furi_hal_subghz_sleep,void,
-Function,+,furi_hal_subghz_start_async_rx,void,"FuriHalSubGhzCaptureCallback, void*"
-Function,+,furi_hal_subghz_start_async_tx,_Bool,"FuriHalSubGhzAsyncTxCallback, void*"
-Function,+,furi_hal_subghz_stop_async_rx,void,
-Function,+,furi_hal_subghz_stop_async_tx,void,
-Function,+,furi_hal_subghz_tx,_Bool,
-Function,+,furi_hal_subghz_write_packet,void,"const uint8_t*, uint8_t"
-Function,+,furi_hal_switch,void,void*
-Function,+,furi_hal_uart_deinit,void,FuriHalUartId
-Function,+,furi_hal_uart_init,void,"FuriHalUartId, uint32_t"
-Function,+,furi_hal_uart_resume,void,FuriHalUartId
-Function,+,furi_hal_uart_set_br,void,"FuriHalUartId, uint32_t"
-Function,+,furi_hal_uart_set_irq_cb,void,"FuriHalUartId, void (*)(UartIrqEvent, uint8_t, void*), void*"
-Function,+,furi_hal_uart_suspend,void,FuriHalUartId
-Function,+,furi_hal_uart_tx,void,"FuriHalUartId, uint8_t*, size_t"
-Function,+,furi_hal_usb_disable,void,
-Function,+,furi_hal_usb_enable,void,
-Function,+,furi_hal_usb_get_config,FuriHalUsbInterface*,
-Function,-,furi_hal_usb_init,void,
-Function,+,furi_hal_usb_is_locked,_Bool,
-Function,+,furi_hal_usb_lock,void,
-Function,+,furi_hal_usb_reinit,void,
-Function,+,furi_hal_usb_set_config,_Bool,"FuriHalUsbInterface*, void*"
-Function,-,furi_hal_usb_set_state_callback,void,"FuriHalUsbStateCallback, void*"
-Function,+,furi_hal_usb_unlock,void,
-Function,+,furi_hal_version_do_i_belong_here,_Bool,
-Function,+,furi_hal_version_get_ble_local_device_name_ptr,const char*,
-Function,+,furi_hal_version_get_ble_mac,const uint8_t*,
-Function,+,furi_hal_version_get_device_name_ptr,const char*,
-Function,+,furi_hal_version_get_fcc_id,const char*,
-Function,+,furi_hal_version_get_firmware_version,const Version*,
-Function,+,furi_hal_version_get_hw_body,uint8_t,
-Function,+,furi_hal_version_get_hw_color,FuriHalVersionColor,
-Function,+,furi_hal_version_get_hw_connect,uint8_t,
-Function,+,furi_hal_version_get_hw_display,FuriHalVersionDisplay,
-Function,+,furi_hal_version_get_hw_region,FuriHalVersionRegion,
-Function,+,furi_hal_version_get_hw_region_name,const char*,
-Function,+,furi_hal_version_get_hw_region_name_otp,const char*,
-Function,+,furi_hal_version_get_hw_region_otp,FuriHalVersionRegion,
-Function,+,furi_hal_version_get_hw_target,uint8_t,
-Function,+,furi_hal_version_get_hw_timestamp,uint32_t,
-Function,+,furi_hal_version_get_hw_version,uint8_t,
-Function,+,furi_hal_version_get_ic_id,const char*,
-Function,+,furi_hal_version_get_model_code,const char*,
-Function,+,furi_hal_version_get_model_name,const char*,
-Function,+,furi_hal_version_get_name_ptr,const char*,
-Function,+,furi_hal_version_get_otp_version,FuriHalVersionOtpVersion,
-Function,-,furi_hal_version_init,void,
-Function,+,furi_hal_version_set_custom_name,void,const char*
-Function,+,furi_hal_version_uid,const uint8_t*,
-Function,+,furi_hal_version_uid_size,size_t,
-Function,-,furi_hal_vibro_init,void,
-Function,+,furi_hal_vibro_on,void,_Bool
-Function,-,furi_init,void,
-Function,+,furi_kernel_get_tick_frequency,uint32_t,
-Function,+,furi_kernel_is_irq_or_masked,_Bool,
-Function,+,furi_kernel_lock,int32_t,
-Function,+,furi_kernel_restore_lock,int32_t,int32_t
-Function,+,furi_kernel_unlock,int32_t,
-Function,+,furi_log_get_level,FuriLogLevel,
-Function,-,furi_log_init,void,
-Function,+,furi_log_print_format,void,"FuriLogLevel, const char*, const char*, ..."
-Function,+,furi_log_print_raw_format,void,"FuriLogLevel, const char*, ..."
-Function,+,furi_log_set_level,void,FuriLogLevel
-Function,-,furi_log_set_puts,void,FuriLogPuts
-Function,-,furi_log_set_timestamp,void,FuriLogTimestamp
-Function,+,furi_message_queue_alloc,FuriMessageQueue*,"uint32_t, uint32_t"
-Function,+,furi_message_queue_free,void,FuriMessageQueue*
-Function,+,furi_message_queue_get,FuriStatus,"FuriMessageQueue*, void*, uint32_t"
-Function,+,furi_message_queue_get_capacity,uint32_t,FuriMessageQueue*
-Function,+,furi_message_queue_get_count,uint32_t,FuriMessageQueue*
-Function,+,furi_message_queue_get_message_size,uint32_t,FuriMessageQueue*
-Function,+,furi_message_queue_get_space,uint32_t,FuriMessageQueue*
-Function,+,furi_message_queue_put,FuriStatus,"FuriMessageQueue*, const void*, uint32_t"
-Function,+,furi_message_queue_reset,FuriStatus,FuriMessageQueue*
-Function,+,furi_ms_to_ticks,uint32_t,uint32_t
-Function,+,furi_mutex_acquire,FuriStatus,"FuriMutex*, uint32_t"
-Function,+,furi_mutex_alloc,FuriMutex*,FuriMutexType
-Function,+,furi_mutex_free,void,FuriMutex*
-Function,+,furi_mutex_get_owner,FuriThreadId,FuriMutex*
-Function,+,furi_mutex_release,FuriStatus,FuriMutex*
-Function,+,furi_pubsub_alloc,FuriPubSub*,
-Function,-,furi_pubsub_free,void,FuriPubSub*
-Function,+,furi_pubsub_publish,void,"FuriPubSub*, void*"
-Function,+,furi_pubsub_subscribe,FuriPubSubSubscription*,"FuriPubSub*, FuriPubSubCallback, void*"
-Function,+,furi_pubsub_unsubscribe,void,"FuriPubSub*, FuriPubSubSubscription*"
-Function,+,furi_record_close,void,const char*
-Function,+,furi_record_create,void,"const char*, void*"
-Function,-,furi_record_destroy,_Bool,const char*
-Function,+,furi_record_exists,_Bool,const char*
-Function,-,furi_record_init,void,
-Function,+,furi_record_open,void*,const char*
-Function,+,furi_run,void,
-Function,+,furi_semaphore_acquire,FuriStatus,"FuriSemaphore*, uint32_t"
-Function,+,furi_semaphore_alloc,FuriSemaphore*,"uint32_t, uint32_t"
-Function,+,furi_semaphore_free,void,FuriSemaphore*
-Function,+,furi_semaphore_get_count,uint32_t,FuriSemaphore*
-Function,+,furi_semaphore_release,FuriStatus,FuriSemaphore*
-Function,+,furi_stream_buffer_alloc,FuriStreamBuffer*,"size_t, size_t"
-Function,+,furi_stream_buffer_bytes_available,size_t,FuriStreamBuffer*
-Function,+,furi_stream_buffer_free,void,FuriStreamBuffer*
-Function,+,furi_stream_buffer_is_empty,_Bool,FuriStreamBuffer*
-Function,+,furi_stream_buffer_is_full,_Bool,FuriStreamBuffer*
-Function,+,furi_stream_buffer_receive,size_t,"FuriStreamBuffer*, void*, size_t, uint32_t"
-Function,+,furi_stream_buffer_reset,FuriStatus,FuriStreamBuffer*
-Function,+,furi_stream_buffer_send,size_t,"FuriStreamBuffer*, const void*, size_t, uint32_t"
-Function,+,furi_stream_buffer_spaces_available,size_t,FuriStreamBuffer*
-Function,+,furi_stream_set_trigger_level,_Bool,"FuriStreamBuffer*, size_t"
-Function,+,furi_string_alloc,FuriString*,
-Function,+,furi_string_alloc_move,FuriString*,FuriString*
-Function,+,furi_string_alloc_printf,FuriString*,"const char[], ..."
-Function,+,furi_string_alloc_set,FuriString*,const FuriString*
-Function,+,furi_string_alloc_set_str,FuriString*,const char[]
-Function,+,furi_string_alloc_vprintf,FuriString*,"const char[], va_list"
-Function,+,furi_string_cat,void,"FuriString*, const FuriString*"
-Function,+,furi_string_cat_printf,int,"FuriString*, const char[], ..."
-Function,+,furi_string_cat_str,void,"FuriString*, const char[]"
-Function,+,furi_string_cat_vprintf,int,"FuriString*, const char[], va_list"
-Function,+,furi_string_cmp,int,"const FuriString*, const FuriString*"
-Function,+,furi_string_cmp_str,int,"const FuriString*, const char[]"
-Function,+,furi_string_cmpi,int,"const FuriString*, const FuriString*"
-Function,+,furi_string_cmpi_str,int,"const FuriString*, const char[]"
-Function,+,furi_string_empty,_Bool,const FuriString*
-Function,+,furi_string_end_with,_Bool,"const FuriString*, const FuriString*"
-Function,+,furi_string_end_with_str,_Bool,"const FuriString*, const char[]"
-Function,+,furi_string_equal,_Bool,"const FuriString*, const FuriString*"
-Function,+,furi_string_equal_str,_Bool,"const FuriString*, const char[]"
-Function,+,furi_string_free,void,FuriString*
-Function,+,furi_string_get_char,char,"const FuriString*, size_t"
-Function,+,furi_string_get_cstr,const char*,const FuriString*
-Function,+,furi_string_hash,size_t,const FuriString*
-Function,+,furi_string_left,void,"FuriString*, size_t"
-Function,+,furi_string_mid,void,"FuriString*, size_t, size_t"
-Function,+,furi_string_move,void,"FuriString*, FuriString*"
-Function,+,furi_string_printf,int,"FuriString*, const char[], ..."
-Function,+,furi_string_push_back,void,"FuriString*, char"
-Function,+,furi_string_replace,size_t,"FuriString*, FuriString*, FuriString*, size_t"
-Function,+,furi_string_replace_all,void,"FuriString*, const FuriString*, const FuriString*"
-Function,+,furi_string_replace_all_str,void,"FuriString*, const char[], const char[]"
-Function,+,furi_string_replace_at,void,"FuriString*, size_t, size_t, const char[]"
-Function,+,furi_string_replace_str,size_t,"FuriString*, const char[], const char[], size_t"
-Function,+,furi_string_reserve,void,"FuriString*, size_t"
-Function,+,furi_string_reset,void,FuriString*
-Function,+,furi_string_right,void,"FuriString*, size_t"
-Function,+,furi_string_search,size_t,"const FuriString*, const FuriString*, size_t"
-Function,+,furi_string_search_char,size_t,"const FuriString*, char, size_t"
-Function,+,furi_string_search_rchar,size_t,"const FuriString*, char, size_t"
-Function,+,furi_string_search_str,size_t,"const FuriString*, const char[], size_t"
-Function,+,furi_string_set,void,"FuriString*, FuriString*"
-Function,+,furi_string_set_char,void,"FuriString*, size_t, const char"
-Function,+,furi_string_set_n,void,"FuriString*, const FuriString*, size_t, size_t"
-Function,+,furi_string_set_str,void,"FuriString*, const char[]"
-Function,+,furi_string_set_strn,void,"FuriString*, const char[], size_t"
-Function,+,furi_string_size,size_t,const FuriString*
-Function,+,furi_string_start_with,_Bool,"const FuriString*, const FuriString*"
-Function,+,furi_string_start_with_str,_Bool,"const FuriString*, const char[]"
-Function,+,furi_string_swap,void,"FuriString*, FuriString*"
-Function,+,furi_string_trim,void,"FuriString*, const char[]"
-Function,+,furi_string_utf8_decode,void,"char, FuriStringUTF8State*, FuriStringUnicodeValue*"
-Function,+,furi_string_utf8_length,size_t,FuriString*
-Function,+,furi_string_utf8_push,void,"FuriString*, FuriStringUnicodeValue"
-Function,+,furi_string_vprintf,int,"FuriString*, const char[], va_list"
-Function,+,furi_thread_alloc,FuriThread*,
-Function,+,furi_thread_alloc_ex,FuriThread*,"const char*, uint32_t, FuriThreadCallback, void*"
-Function,+,furi_thread_catch,void,
-Function,-,furi_thread_disable_heap_trace,void,FuriThread*
-Function,+,furi_thread_enable_heap_trace,void,FuriThread*
-Function,+,furi_thread_enumerate,uint32_t,"FuriThreadId*, uint32_t"
-Function,+,furi_thread_flags_clear,uint32_t,uint32_t
-Function,+,furi_thread_flags_get,uint32_t,
-Function,+,furi_thread_flags_set,uint32_t,"FuriThreadId, uint32_t"
-Function,+,furi_thread_flags_wait,uint32_t,"uint32_t, uint32_t, uint32_t"
-Function,+,furi_thread_free,void,FuriThread*
-Function,+,furi_thread_get_appid,const char*,FuriThreadId
-Function,+,furi_thread_get_current,FuriThread*,
-Function,+,furi_thread_get_current_id,FuriThreadId,
-Function,+,furi_thread_get_current_priority,FuriThreadPriority,
-Function,+,furi_thread_get_heap_size,size_t,FuriThread*
-Function,+,furi_thread_get_id,FuriThreadId,FuriThread*
-Function,+,furi_thread_get_name,const char*,FuriThreadId
-Function,+,furi_thread_get_return_code,int32_t,FuriThread*
-Function,+,furi_thread_get_stack_space,uint32_t,FuriThreadId
-Function,+,furi_thread_get_state,FuriThreadState,FuriThread*
-Function,+,furi_thread_get_stdout_callback,FuriThreadStdoutWriteCallback,
-Function,+,furi_thread_is_suspended,_Bool,FuriThreadId
-Function,+,furi_thread_join,_Bool,FuriThread*
-Function,+,furi_thread_mark_as_service,void,FuriThread*
-Function,+,furi_thread_resume,void,FuriThreadId
-Function,+,furi_thread_set_appid,void,"FuriThread*, const char*"
-Function,+,furi_thread_set_callback,void,"FuriThread*, FuriThreadCallback"
-Function,+,furi_thread_set_context,void,"FuriThread*, void*"
-Function,+,furi_thread_set_current_priority,void,FuriThreadPriority
-Function,+,furi_thread_set_name,void,"FuriThread*, const char*"
-Function,+,furi_thread_set_priority,void,"FuriThread*, FuriThreadPriority"
-Function,+,furi_thread_set_stack_size,void,"FuriThread*, size_t"
-Function,+,furi_thread_set_state_callback,void,"FuriThread*, FuriThreadStateCallback"
-Function,+,furi_thread_set_state_context,void,"FuriThread*, void*"
-Function,+,furi_thread_set_stdout_callback,_Bool,FuriThreadStdoutWriteCallback
-Function,+,furi_thread_start,void,FuriThread*
-Function,+,furi_thread_stdout_flush,int32_t,
-Function,+,furi_thread_stdout_write,size_t,"const char*, size_t"
-Function,+,furi_thread_suspend,void,FuriThreadId
-Function,+,furi_thread_yield,void,
-Function,+,furi_timer_alloc,FuriTimer*,"FuriTimerCallback, FuriTimerType, void*"
-Function,+,furi_timer_free,void,FuriTimer*
-Function,+,furi_timer_is_running,uint32_t,FuriTimer*
-Function,+,furi_timer_start,FuriStatus,"FuriTimer*, uint32_t"
-Function,+,furi_timer_stop,FuriStatus,FuriTimer*
+Function,+,furry_delay_ms,void,uint32_t
+Function,+,furry_delay_tick,void,uint32_t
+Function,+,furry_delay_until_tick,FurryStatus,uint32_t
+Function,+,furry_delay_us,void,uint32_t
+Function,+,furry_event_flag_alloc,FurryEventFlag*,
+Function,+,furry_event_flag_clear,uint32_t,"FurryEventFlag*, uint32_t"
+Function,+,furry_event_flag_free,void,FurryEventFlag*
+Function,+,furry_event_flag_get,uint32_t,FurryEventFlag*
+Function,+,furry_event_flag_set,uint32_t,"FurryEventFlag*, uint32_t"
+Function,+,furry_event_flag_wait,uint32_t,"FurryEventFlag*, uint32_t, uint32_t, uint32_t"
+Function,+,furry_get_tick,uint32_t,
+Function,+,furry_hal_bt_change_app,_Bool,"FurryHalBtProfile, GapEventCallback, void*"
+Function,+,furry_hal_bt_clear_white_list,_Bool,
+Function,+,furry_hal_bt_dump_state,void,FurryString*
+Function,+,furry_hal_bt_ensure_c2_mode,_Bool,BleGlueC2Mode
+Function,+,furry_hal_bt_get_conn_rssi,uint32_t,uint8_t*
+Function,+,furry_hal_bt_get_key_storage_buff,void,"uint8_t**, uint16_t*"
+Function,+,furry_hal_bt_get_profile_adv_name,const char*,FurryHalBtProfile
+Function,+,furry_hal_bt_get_profile_mac_addr,const uint8_t*,FurryHalBtProfile
+Function,+,furry_hal_bt_get_profile_pairing_method,GapPairing,FurryHalBtProfile
+Function,+,furry_hal_bt_get_radio_stack,FurryHalBtStack,
+Function,+,furry_hal_bt_get_rssi,float,
+Function,+,furry_hal_bt_get_transmitted_packets,uint32_t,
+Function,+,furry_hal_bt_hid_consumer_key_press,_Bool,uint16_t
+Function,+,furry_hal_bt_hid_consumer_key_release,_Bool,uint16_t
+Function,+,furry_hal_bt_hid_consumer_key_release_all,_Bool,
+Function,+,furry_hal_bt_hid_get_led_state,uint8_t,
+Function,+,furry_hal_bt_hid_kb_press,_Bool,uint16_t
+Function,+,furry_hal_bt_hid_kb_release,_Bool,uint16_t
+Function,+,furry_hal_bt_hid_kb_release_all,_Bool,
+Function,+,furry_hal_bt_hid_mouse_move,_Bool,"int8_t, int8_t"
+Function,+,furry_hal_bt_hid_mouse_press,_Bool,uint8_t
+Function,+,furry_hal_bt_hid_mouse_release,_Bool,uint8_t
+Function,+,furry_hal_bt_hid_mouse_release_all,_Bool,
+Function,+,furry_hal_bt_hid_mouse_scroll,_Bool,int8_t
+Function,+,furry_hal_bt_hid_start,void,
+Function,+,furry_hal_bt_hid_stop,void,
+Function,-,furry_hal_bt_init,void,
+Function,+,furry_hal_bt_is_active,_Bool,
+Function,+,furry_hal_bt_is_alive,_Bool,
+Function,+,furry_hal_bt_is_ble_gatt_gap_supported,_Bool,
+Function,+,furry_hal_bt_is_connected,_Bool,
+Function,+,furry_hal_bt_is_testing_supported,_Bool,
+Function,+,furry_hal_bt_lock_core2,void,
+Function,+,furry_hal_bt_nvm_sram_sem_acquire,void,
+Function,+,furry_hal_bt_nvm_sram_sem_release,void,
+Function,+,furry_hal_bt_reinit,void,
+Function,+,furry_hal_bt_serial_notify_buffer_is_empty,void,
+Function,+,furry_hal_bt_serial_set_event_callback,void,"uint16_t, FurryHalBtSerialCallback, void*"
+Function,+,furry_hal_bt_serial_set_rpc_status,void,FurryHalBtSerialRpcStatus
+Function,+,furry_hal_bt_serial_start,void,
+Function,+,furry_hal_bt_serial_stop,void,
+Function,+,furry_hal_bt_serial_tx,_Bool,"uint8_t*, uint16_t"
+Function,+,furry_hal_bt_set_key_storage_change_callback,void,"BleGlueKeyStorageChangedCallback, void*"
+Function,+,furry_hal_bt_set_profile_adv_name,void,"FurryHalBtProfile, const char[( 18 + 1 )]"
+Function,+,furry_hal_bt_set_profile_mac_addr,void,"FurryHalBtProfile, const uint8_t[( 6 )]"
+Function,+,furry_hal_bt_set_profile_pairing_method,void,"FurryHalBtProfile, GapPairing"
+Function,+,furry_hal_bt_start_advertising,void,
+Function,+,furry_hal_bt_start_app,_Bool,"FurryHalBtProfile, GapEventCallback, void*"
+Function,+,furry_hal_bt_start_packet_rx,void,"uint8_t, uint8_t"
+Function,+,furry_hal_bt_start_packet_tx,void,"uint8_t, uint8_t, uint8_t"
+Function,+,furry_hal_bt_start_radio_stack,_Bool,
+Function,+,furry_hal_bt_start_rx,void,uint8_t
+Function,+,furry_hal_bt_start_tone_tx,void,"uint8_t, uint8_t"
+Function,+,furry_hal_bt_stop_advertising,void,
+Function,+,furry_hal_bt_stop_packet_test,uint16_t,
+Function,+,furry_hal_bt_stop_rx,void,
+Function,+,furry_hal_bt_stop_tone_tx,void,
+Function,+,furry_hal_bt_unlock_core2,void,
+Function,+,furry_hal_bt_update_battery_level,void,uint8_t
+Function,+,furry_hal_bt_update_power_state,void,
+Function,+,furry_hal_cdc_get_ctrl_line_state,uint8_t,uint8_t
+Function,+,furry_hal_cdc_get_port_settings,usb_cdc_line_coding*,uint8_t
+Function,+,furry_hal_cdc_receive,int32_t,"uint8_t, uint8_t*, uint16_t"
+Function,+,furry_hal_cdc_send,void,"uint8_t, uint8_t*, uint16_t"
+Function,+,furry_hal_cdc_set_callbacks,void,"uint8_t, CdcCallbacks*, void*"
+Function,-,furry_hal_clock_deinit_early,void,
+Function,-,furry_hal_clock_init,void,
+Function,-,furry_hal_clock_init_early,void,
+Function,+,furry_hal_clock_mco_disable,void,
+Function,+,furry_hal_clock_mco_enable,void,"FurryHalClockMcoSourceId, FurryHalClockMcoDivisorId"
+Function,-,furry_hal_clock_resume_tick,void,
+Function,-,furry_hal_clock_suspend_tick,void,
+Function,-,furry_hal_clock_switch_to_hsi,void,
+Function,-,furry_hal_clock_switch_to_pll,void,
+Function,+,furry_hal_console_disable,void,
+Function,+,furry_hal_console_enable,void,
+Function,+,furry_hal_console_init,void,
+Function,+,furry_hal_console_printf,void,"const char[], ..."
+Function,+,furry_hal_console_puts,void,const char*
+Function,+,furry_hal_console_set_tx_callback,void,"FurryHalConsoleTxCallback, void*"
+Function,+,furry_hal_console_tx,void,"const uint8_t*, size_t"
+Function,+,furry_hal_console_tx_with_new_line,void,"const uint8_t*, size_t"
+Function,+,furry_hal_cortex_delay_us,void,uint32_t
+Function,-,furry_hal_cortex_init_early,void,
+Function,+,furry_hal_cortex_instructions_per_microsecond,uint32_t,
+Function,+,furry_hal_cortex_timer_get,FurryHalCortexTimer,uint32_t
+Function,+,furry_hal_cortex_timer_is_expired,_Bool,FurryHalCortexTimer
+Function,+,furry_hal_cortex_timer_wait,void,FurryHalCortexTimer
+Function,+,furry_hal_crypto_decrypt,_Bool,"const uint8_t*, uint8_t*, size_t"
+Function,+,furry_hal_crypto_encrypt,_Bool,"const uint8_t*, uint8_t*, size_t"
+Function,-,furry_hal_crypto_init,void,
+Function,+,furry_hal_crypto_store_add_key,_Bool,"FurryHalCryptoKey*, uint8_t*"
+Function,+,furry_hal_crypto_store_load_key,_Bool,"uint8_t, const uint8_t*"
+Function,+,furry_hal_crypto_store_unload_key,_Bool,uint8_t
+Function,+,furry_hal_crypto_verify_enclave,_Bool,"uint8_t*, uint8_t*"
+Function,+,furry_hal_crypto_verify_key,_Bool,uint8_t
+Function,+,furry_hal_debug_disable,void,
+Function,+,furry_hal_debug_enable,void,
+Function,+,furry_hal_debug_is_gdb_session_active,_Bool,
+Function,-,furry_hal_deinit_early,void,
+Function,-,furry_hal_flash_erase,void,uint8_t
+Function,-,furry_hal_flash_get_base,size_t,
+Function,-,furry_hal_flash_get_cycles_count,size_t,
+Function,-,furry_hal_flash_get_free_end_address,const void*,
+Function,-,furry_hal_flash_get_free_page_count,size_t,
+Function,-,furry_hal_flash_get_free_page_start_address,size_t,
+Function,-,furry_hal_flash_get_free_start_address,const void*,
+Function,-,furry_hal_flash_get_page_number,int16_t,size_t
+Function,-,furry_hal_flash_get_page_size,size_t,
+Function,-,furry_hal_flash_get_read_block_size,size_t,
+Function,-,furry_hal_flash_get_write_block_size,size_t,
+Function,-,furry_hal_flash_init,void,
+Function,-,furry_hal_flash_ob_apply,void,
+Function,-,furry_hal_flash_ob_get_raw_ptr,const FurryHalFlashRawOptionByteData*,
+Function,-,furry_hal_flash_ob_set_word,_Bool,"size_t, const uint32_t"
+Function,-,furry_hal_flash_program_page,void,"const uint8_t, const uint8_t*, uint16_t"
+Function,-,furry_hal_flash_write_dword,void,"size_t, uint64_t"
+Function,+,furry_hal_gpio_add_int_callback,void,"const GpioPin*, GpioExtiCallback, void*"
+Function,+,furry_hal_gpio_disable_int_callback,void,const GpioPin*
+Function,+,furry_hal_gpio_enable_int_callback,void,const GpioPin*
+Function,+,furry_hal_gpio_init,void,"const GpioPin*, const GpioMode, const GpioPull, const GpioSpeed"
+Function,+,furry_hal_gpio_init_ex,void,"const GpioPin*, const GpioMode, const GpioPull, const GpioSpeed, const GpioAltFn"
+Function,+,furry_hal_gpio_init_simple,void,"const GpioPin*, const GpioMode"
+Function,+,furry_hal_gpio_remove_int_callback,void,const GpioPin*
+Function,+,furry_hal_hid_consumer_key_press,_Bool,uint16_t
+Function,+,furry_hal_hid_consumer_key_release,_Bool,uint16_t
+Function,+,furry_hal_hid_get_led_state,uint8_t,
+Function,+,furry_hal_hid_is_connected,_Bool,
+Function,+,furry_hal_hid_kb_press,_Bool,uint16_t
+Function,+,furry_hal_hid_kb_release,_Bool,uint16_t
+Function,+,furry_hal_hid_kb_release_all,_Bool,
+Function,+,furry_hal_hid_mouse_move,_Bool,"int8_t, int8_t"
+Function,+,furry_hal_hid_mouse_press,_Bool,uint8_t
+Function,+,furry_hal_hid_mouse_release,_Bool,uint8_t
+Function,+,furry_hal_hid_mouse_scroll,_Bool,int8_t
+Function,+,furry_hal_hid_set_state_callback,void,"HidStateCallback, void*"
+Function,+,furry_hal_hid_u2f_get_request,uint32_t,uint8_t*
+Function,+,furry_hal_hid_u2f_is_connected,_Bool,
+Function,+,furry_hal_hid_u2f_send_response,void,"uint8_t*, uint8_t"
+Function,+,furry_hal_hid_u2f_set_callback,void,"HidU2fCallback, void*"
+Function,+,furry_hal_i2c_acquire,void,FurryHalI2cBusHandle*
+Function,-,furry_hal_i2c_deinit_early,void,
+Function,-,furry_hal_i2c_init,void,
+Function,-,furry_hal_i2c_init_early,void,
+Function,+,furry_hal_i2c_is_device_ready,_Bool,"FurryHalI2cBusHandle*, uint8_t, uint32_t"
+Function,+,furry_hal_i2c_read_mem,_Bool,"FurryHalI2cBusHandle*, uint8_t, uint8_t, uint8_t*, uint8_t, uint32_t"
+Function,+,furry_hal_i2c_read_reg_16,_Bool,"FurryHalI2cBusHandle*, uint8_t, uint8_t, uint16_t*, uint32_t"
+Function,+,furry_hal_i2c_read_reg_8,_Bool,"FurryHalI2cBusHandle*, uint8_t, uint8_t, uint8_t*, uint32_t"
+Function,+,furry_hal_i2c_release,void,FurryHalI2cBusHandle*
+Function,+,furry_hal_i2c_rx,_Bool,"FurryHalI2cBusHandle*, const uint8_t, uint8_t*, const uint8_t, uint32_t"
+Function,+,furry_hal_i2c_trx,_Bool,"FurryHalI2cBusHandle*, const uint8_t, const uint8_t*, const uint8_t, uint8_t*, const uint8_t, uint32_t"
+Function,+,furry_hal_i2c_tx,_Bool,"FurryHalI2cBusHandle*, const uint8_t, const uint8_t*, const uint8_t, uint32_t"
+Function,+,furry_hal_i2c_write_mem,_Bool,"FurryHalI2cBusHandle*, uint8_t, uint8_t, uint8_t*, uint8_t, uint32_t"
+Function,+,furry_hal_i2c_write_reg_16,_Bool,"FurryHalI2cBusHandle*, uint8_t, uint8_t, uint16_t, uint32_t"
+Function,+,furry_hal_i2c_write_reg_8,_Bool,"FurryHalI2cBusHandle*, uint8_t, uint8_t, uint8_t, uint32_t"
+Function,+,furry_hal_ibutton_emulate_set_next,void,uint32_t
+Function,+,furry_hal_ibutton_emulate_start,void,"uint32_t, FurryHalIbuttonEmulateCallback, void*"
+Function,+,furry_hal_ibutton_emulate_stop,void,
+Function,-,furry_hal_ibutton_init,void,
+Function,+,furry_hal_ibutton_pin_configure,void,
+Function,+,furry_hal_ibutton_pin_reset,void,
+Function,+,furry_hal_ibutton_pin_write,void,const _Bool
+Function,+,furry_hal_info_get,void,"PropertyValueCallback, char, void*"
+Function,+,furry_hal_infrared_async_rx_set_capture_isr_callback,void,"FurryHalInfraredRxCaptureCallback, void*"
+Function,+,furry_hal_infrared_async_rx_set_timeout,void,uint32_t
+Function,+,furry_hal_infrared_async_rx_set_timeout_isr_callback,void,"FurryHalInfraredRxTimeoutCallback, void*"
+Function,+,furry_hal_infrared_async_rx_start,void,
+Function,+,furry_hal_infrared_async_rx_stop,void,
+Function,+,furry_hal_infrared_async_tx_set_data_isr_callback,void,"FurryHalInfraredTxGetDataISRCallback, void*"
+Function,+,furry_hal_infrared_async_tx_set_signal_sent_isr_callback,void,"FurryHalInfraredTxSignalSentISRCallback, void*"
+Function,+,furry_hal_infrared_async_tx_start,void,"uint32_t, float"
+Function,+,furry_hal_infrared_async_tx_stop,void,
+Function,+,furry_hal_infrared_async_tx_wait_termination,void,
+Function,+,furry_hal_infrared_get_debug_out_status,_Bool,
+Function,+,furry_hal_infrared_is_busy,_Bool,
+Function,+,furry_hal_infrared_set_debug_out,void,_Bool
+Function,-,furry_hal_init,void,
+Function,-,furry_hal_init_early,void,
+Function,-,furry_hal_interrupt_init,void,
+Function,+,furry_hal_interrupt_set_isr,void,"FurryHalInterruptId, FurryHalInterruptISR, void*"
+Function,+,furry_hal_interrupt_set_isr_ex,void,"FurryHalInterruptId, uint16_t, FurryHalInterruptISR, void*"
+Function,-,furry_hal_is_normal_boot,_Bool,
+Function,+,furry_hal_light_blink_set_color,void,Light
+Function,+,furry_hal_light_blink_start,void,"Light, uint8_t, uint16_t, uint16_t"
+Function,+,furry_hal_light_blink_stop,void,
+Function,-,furry_hal_light_init,void,
+Function,+,furry_hal_light_sequence,void,const char*
+Function,+,furry_hal_light_set,void,"Light, uint8_t"
+Function,+,furry_hal_memory_alloc,void*,size_t
+Function,+,furry_hal_memory_get_free,size_t,
+Function,+,furry_hal_memory_init,void,
+Function,+,furry_hal_memory_max_pool_block,size_t,
+Function,+,furry_hal_mpu_disable,void,
+Function,+,furry_hal_mpu_enable,void,
+Function,-,furry_hal_mpu_init,void,
+Function,+,furry_hal_mpu_protect_disable,void,FurryHalMpuRegion
+Function,+,furry_hal_mpu_protect_no_access,void,"FurryHalMpuRegion, uint32_t, FurryHalMPURegionSize"
+Function,+,furry_hal_mpu_protect_read_only,void,"FurryHalMpuRegion, uint32_t, FurryHalMPURegionSize"
+Function,+,furry_hal_nfc_activate_nfca,_Bool,"uint32_t, uint32_t*"
+Function,+,furry_hal_nfc_deinit,void,
+Function,+,furry_hal_nfc_detect,_Bool,"FurryHalNfcDevData*, uint32_t"
+Function,+,furry_hal_nfc_emulate_nfca,_Bool,"uint8_t*, uint8_t, uint8_t*, uint8_t, FurryHalNfcEmulateCallback, void*, uint32_t"
+Function,+,furry_hal_nfc_exit_sleep,void,
+Function,+,furry_hal_nfc_field_off,void,
+Function,+,furry_hal_nfc_field_on,void,
+Function,+,furry_hal_nfc_init,void,
+Function,+,furry_hal_nfc_is_busy,_Bool,
+Function,+,furry_hal_nfc_is_init,_Bool,
+Function,+,furry_hal_nfc_listen,_Bool,"uint8_t*, uint8_t, uint8_t*, uint8_t, _Bool, uint32_t"
+Function,+,furry_hal_nfc_listen_rx,_Bool,"FurryHalNfcTxRxContext*, uint32_t"
+Function,+,furry_hal_nfc_listen_sleep,void,
+Function,+,furry_hal_nfc_listen_start,void,FurryHalNfcDevData*
+Function,+,furry_hal_nfc_ll_poll,void,
+Function,+,furry_hal_nfc_ll_set_error_handling,void,FurryHalNfcErrorHandling
+Function,+,furry_hal_nfc_ll_set_fdt_listen,void,uint32_t
+Function,+,furry_hal_nfc_ll_set_fdt_poll,void,uint32_t
+Function,+,furry_hal_nfc_ll_set_guard_time,void,uint32_t
+Function,+,furry_hal_nfc_ll_set_mode,FurryHalNfcReturn,"FurryHalNfcMode, FurryHalNfcBitrate, FurryHalNfcBitrate"
+Function,+,furry_hal_nfc_ll_txrx,FurryHalNfcReturn,"uint8_t*, uint16_t, uint8_t*, uint16_t, uint16_t*, uint32_t, uint32_t"
+Function,+,furry_hal_nfc_ll_txrx_bits,FurryHalNfcReturn,"uint8_t*, uint16_t, uint8_t*, uint16_t, uint16_t*, uint32_t, uint32_t"
+Function,+,furry_hal_nfc_ll_txrx_off,void,
+Function,+,furry_hal_nfc_ll_txrx_on,void,
+Function,+,furry_hal_nfc_sleep,void,
+Function,+,furry_hal_nfc_start_sleep,void,
+Function,+,furry_hal_nfc_stop,void,
+Function,+,furry_hal_nfc_stop_cmd,void,
+Function,+,furry_hal_nfc_tx_rx,_Bool,"FurryHalNfcTxRxContext*, uint16_t"
+Function,+,furry_hal_nfc_tx_rx_full,_Bool,FurryHalNfcTxRxContext*
+Function,-,furry_hal_os_init,void,
+Function,+,furry_hal_os_tick,void,
+Function,+,furry_hal_power_check_otg_status,void,
+Function,+,furry_hal_power_debug_get,void,"PropertyValueCallback, void*"
+Function,+,furry_hal_power_disable_external_3_3v,void,
+Function,+,furry_hal_power_disable_otg,void,
+Function,+,furry_hal_power_enable_external_3_3v,void,
+Function,+,furry_hal_power_enable_otg,void,
+Function,+,furry_hal_power_gauge_is_ok,_Bool,
+Function,+,furry_hal_power_get_bat_health_pct,uint8_t,
+Function,+,furry_hal_power_get_battery_charge_voltage_limit,float,
+Function,+,furry_hal_power_get_battery_current,float,FurryHalPowerIC
+Function,+,furry_hal_power_get_battery_design_capacity,uint32_t,
+Function,+,furry_hal_power_get_battery_full_capacity,uint32_t,
+Function,+,furry_hal_power_get_battery_remaining_capacity,uint32_t,
+Function,+,furry_hal_power_get_battery_temperature,float,FurryHalPowerIC
+Function,+,furry_hal_power_get_battery_voltage,float,FurryHalPowerIC
+Function,+,furry_hal_power_get_pct,uint8_t,
+Function,+,furry_hal_power_get_usb_voltage,float,
+Function,+,furry_hal_power_info_get,void,"PropertyValueCallback, char, void*"
+Function,-,furry_hal_power_init,void,
+Function,+,furry_hal_power_insomnia_enter,void,
+Function,+,furry_hal_power_insomnia_exit,void,
+Function,-,furry_hal_power_insomnia_level,uint16_t,
+Function,+,furry_hal_power_is_charging,_Bool,
+Function,+,furry_hal_power_is_charging_done,_Bool,
+Function,+,furry_hal_power_is_otg_enabled,_Bool,
+Function,+,furry_hal_power_off,void,
+Function,+,furry_hal_power_reset,void,
+Function,+,furry_hal_power_set_battery_charge_voltage_limit,void,float
+Function,+,furry_hal_power_shutdown,void,
+Function,+,furry_hal_power_sleep,void,
+Function,+,furry_hal_power_sleep_available,_Bool,
+Function,+,furry_hal_power_suppress_charge_enter,void,
+Function,+,furry_hal_power_suppress_charge_exit,void,
+Function,+,furry_hal_pwm_set_params,void,"FurryHalPwmOutputId, uint32_t, uint8_t"
+Function,+,furry_hal_pwm_start,void,"FurryHalPwmOutputId, uint32_t, uint8_t"
+Function,+,furry_hal_pwm_stop,void,FurryHalPwmOutputId
+Function,+,furry_hal_random_fill_buf,void,"uint8_t*, uint32_t"
+Function,+,furry_hal_random_get,uint32_t,
+Function,+,furry_hal_region_get,const FurryHalRegion*,
+Function,+,furry_hal_region_get_band,const FurryHalRegionBand*,uint32_t
+Function,+,furry_hal_region_get_name,const char*,
+Function,+,furry_hal_region_init,void,
+Function,+,furry_hal_region_is_frequency_allowed,_Bool,uint32_t
+Function,+,furry_hal_region_is_provisioned,_Bool,
+Function,+,furry_hal_region_set,void,FurryHalRegion*
+Function,-,furry_hal_resources_deinit_early,void,
+Function,+,furry_hal_resources_get_ext_pin_number,int32_t,const GpioPin*
+Function,-,furry_hal_resources_init,void,
+Function,-,furry_hal_resources_init_early,void,
+Function,+,furry_hal_rfid_change_read_config,void,"float, float"
+Function,+,furry_hal_rfid_comp_set_callback,void,"FurryHalRfidCompCallback, void*"
+Function,+,furry_hal_rfid_comp_start,void,
+Function,+,furry_hal_rfid_comp_stop,void,
+Function,-,furry_hal_rfid_init,void,
+Function,+,furry_hal_rfid_pin_pull_pulldown,void,
+Function,+,furry_hal_rfid_pin_pull_release,void,
+Function,+,furry_hal_rfid_pins_emulate,void,
+Function,+,furry_hal_rfid_pins_read,void,
+Function,+,furry_hal_rfid_pins_reset,void,
+Function,+,furry_hal_rfid_set_emulate_period,void,uint32_t
+Function,+,furry_hal_rfid_set_emulate_pulse,void,uint32_t
+Function,+,furry_hal_rfid_set_read_period,void,uint32_t
+Function,+,furry_hal_rfid_set_read_pulse,void,uint32_t
+Function,+,furry_hal_rfid_tim_emulate,void,float
+Function,+,furry_hal_rfid_tim_emulate_dma_start,void,"uint32_t*, uint32_t*, size_t, FurryHalRfidDMACallback, void*"
+Function,+,furry_hal_rfid_tim_emulate_dma_stop,void,
+Function,+,furry_hal_rfid_tim_emulate_start,void,"FurryHalRfidEmulateCallback, void*"
+Function,+,furry_hal_rfid_tim_emulate_stop,void,
+Function,+,furry_hal_rfid_tim_read,void,"float, float"
+Function,+,furry_hal_rfid_tim_read_capture_start,void,"FurryHalRfidReadCaptureCallback, void*"
+Function,+,furry_hal_rfid_tim_read_capture_stop,void,
+Function,+,furry_hal_rfid_tim_read_start,void,
+Function,+,furry_hal_rfid_tim_read_stop,void,
+Function,+,furry_hal_rfid_tim_reset,void,
+Function,+,furry_hal_rtc_datetime_to_timestamp,uint32_t,FurryHalRtcDateTime*
+Function,-,furry_hal_rtc_deinit_early,void,
+Function,+,furry_hal_rtc_get_boot_mode,FurryHalRtcBootMode,
+Function,+,furry_hal_rtc_get_datetime,void,FurryHalRtcDateTime*
+Function,+,furry_hal_rtc_get_fault_data,uint32_t,
+Function,+,furry_hal_rtc_get_heap_track_mode,FurryHalRtcHeapTrackMode,
+Function,+,furry_hal_rtc_get_locale_dateformat,FurryHalRtcLocaleDateFormat,
+Function,+,furry_hal_rtc_get_locale_timeformat,FurryHalRtcLocaleTimeFormat,
+Function,+,furry_hal_rtc_get_locale_units,FurryHalRtcLocaleUnits,
+Function,+,furry_hal_rtc_get_log_level,uint8_t,
+Function,+,furry_hal_rtc_get_pin_fails,uint32_t,
+Function,+,furry_hal_rtc_get_register,uint32_t,FurryHalRtcRegister
+Function,+,furry_hal_rtc_get_timestamp,uint32_t,
+Function,-,furry_hal_rtc_init,void,
+Function,-,furry_hal_rtc_init_early,void,
+Function,+,furry_hal_rtc_is_flag_set,_Bool,FurryHalRtcFlag
+Function,+,furry_hal_rtc_reset_flag,void,FurryHalRtcFlag
+Function,+,furry_hal_rtc_set_boot_mode,void,FurryHalRtcBootMode
+Function,+,furry_hal_rtc_set_datetime,void,FurryHalRtcDateTime*
+Function,+,furry_hal_rtc_set_fault_data,void,uint32_t
+Function,+,furry_hal_rtc_set_flag,void,FurryHalRtcFlag
+Function,+,furry_hal_rtc_set_heap_track_mode,void,FurryHalRtcHeapTrackMode
+Function,+,furry_hal_rtc_set_locale_dateformat,void,FurryHalRtcLocaleDateFormat
+Function,+,furry_hal_rtc_set_locale_timeformat,void,FurryHalRtcLocaleTimeFormat
+Function,+,furry_hal_rtc_set_locale_units,void,FurryHalRtcLocaleUnits
+Function,+,furry_hal_rtc_set_log_level,void,uint8_t
+Function,+,furry_hal_rtc_set_pin_fails,void,uint32_t
+Function,+,furry_hal_rtc_set_register,void,"FurryHalRtcRegister, uint32_t"
+Function,+,furry_hal_rtc_sync_shadow,void,
+Function,+,furry_hal_rtc_validate_datetime,_Bool,FurryHalRtcDateTime*
+Function,-,furry_hal_set_is_normal_boot,void,_Bool
+Function,+,furry_hal_speaker_acquire,_Bool,uint32_t
+Function,-,furry_hal_speaker_deinit,void,
+Function,-,furry_hal_speaker_init,void,
+Function,+,furry_hal_speaker_is_mine,_Bool,
+Function,+,furry_hal_speaker_release,void,
+Function,+,furry_hal_speaker_set_volume,void,float
+Function,+,furry_hal_speaker_start,void,"float, float"
+Function,+,furry_hal_speaker_stop,void,
+Function,+,furry_hal_spi_acquire,void,FurryHalSpiBusHandle*
+Function,+,furry_hal_spi_bus_deinit,void,FurryHalSpiBus*
+Function,+,furry_hal_spi_bus_handle_deinit,void,FurryHalSpiBusHandle*
+Function,+,furry_hal_spi_bus_handle_init,void,FurryHalSpiBusHandle*
+Function,+,furry_hal_spi_bus_init,void,FurryHalSpiBus*
+Function,+,furry_hal_spi_bus_rx,_Bool,"FurryHalSpiBusHandle*, uint8_t*, size_t, uint32_t"
+Function,+,furry_hal_spi_bus_trx,_Bool,"FurryHalSpiBusHandle*, const uint8_t*, uint8_t*, size_t, uint32_t"
+Function,+,furry_hal_spi_bus_trx_dma,_Bool,"FurryHalSpiBusHandle*, uint8_t*, uint8_t*, size_t, uint32_t"
+Function,+,furry_hal_spi_bus_tx,_Bool,"FurryHalSpiBusHandle*, const uint8_t*, size_t, uint32_t"
+Function,-,furry_hal_spi_config_deinit_early,void,
+Function,-,furry_hal_spi_config_init,void,
+Function,-,furry_hal_spi_config_init_early,void,
+Function,-,furry_hal_spi_dma_init,void,
+Function,+,furry_hal_spi_release,void,FurryHalSpiBusHandle*
+Function,+,furry_hal_subghz_check_radio,_Bool,
+Function,+,furry_hal_subghz_disable_ext_power,void,
+Function,-,furry_hal_subghz_dump_state,void,
+Function,+,furry_hal_subghz_enable_ext_power,_Bool,
+Function,+,furry_hal_subghz_flush_rx,void,
+Function,+,furry_hal_subghz_flush_tx,void,
+Function,+,furry_hal_subghz_get_extend_settings,void,"_Bool*, _Bool*"
+Function,+,furry_hal_subghz_get_external_power_disable,_Bool,
+Function,+,furry_hal_subghz_get_lqi,uint8_t,
+Function,+,furry_hal_subghz_get_radio_type,SubGhzRadioType,
+Function,+,furry_hal_subghz_get_rolling_counter_mult,uint8_t,
+Function,+,furry_hal_subghz_get_rssi,float,
+Function,+,furry_hal_subghz_get_timestamp_file_names,_Bool,
+Function,+,furry_hal_subghz_idle,void,
+Function,-,furry_hal_subghz_init,void,
+Function,+,furry_hal_subghz_init_check,_Bool,
+Function,+,furry_hal_subghz_init_radio_type,_Bool,SubGhzRadioType
+Function,+,furry_hal_subghz_is_async_tx_complete,_Bool,
+Function,+,furry_hal_subghz_is_frequency_valid,_Bool,uint32_t
+Function,+,furry_hal_subghz_is_rx_data_crc_valid,_Bool,
+Function,+,furry_hal_subghz_is_tx_allowed,_Bool,uint32_t
+Function,+,furry_hal_subghz_load_custom_preset,void,uint8_t*
+Function,+,furry_hal_subghz_load_patable,void,const uint8_t[8]
+Function,+,furry_hal_subghz_load_preset,void,FurryHalSubGhzPreset
+Function,+,furry_hal_subghz_load_registers,void,uint8_t*
+Function,+,furry_hal_subghz_read_packet,void,"uint8_t*, uint8_t*"
+Function,+,furry_hal_subghz_reset,void,
+Function,+,furry_hal_subghz_rx,void,
+Function,+,furry_hal_subghz_rx_pipe_not_empty,_Bool,
+Function,+,furry_hal_subghz_select_radio_type,void,SubGhzRadioType
+Function,+,furry_hal_subghz_set_async_mirror_pin,void,const GpioPin*
+Function,+,furry_hal_subghz_set_extend_settings,void,"_Bool, _Bool"
+Function,+,furry_hal_subghz_set_external_power_disable,void,_Bool
+Function,+,furry_hal_subghz_set_frequency,uint32_t,uint32_t
+Function,+,furry_hal_subghz_set_frequency_and_path,uint32_t,uint32_t
+Function,+,furry_hal_subghz_set_path,void,FurryHalSubGhzPath
+Function,+,furry_hal_subghz_set_rolling_counter_mult,void,uint8_t
+Function,+,furry_hal_subghz_set_timestamp_file_names,void,_Bool
+Function,-,furry_hal_subghz_shutdown,void,
+Function,+,furry_hal_subghz_sleep,void,
+Function,+,furry_hal_subghz_start_async_rx,void,"FurryHalSubGhzCaptureCallback, void*"
+Function,+,furry_hal_subghz_start_async_tx,_Bool,"FurryHalSubGhzAsyncTxCallback, void*"
+Function,+,furry_hal_subghz_stop_async_rx,void,
+Function,+,furry_hal_subghz_stop_async_tx,void,
+Function,+,furry_hal_subghz_tx,_Bool,
+Function,+,furry_hal_subghz_write_packet,void,"const uint8_t*, uint8_t"
+Function,+,furry_hal_switch,void,void*
+Function,+,furry_hal_uart_deinit,void,FurryHalUartId
+Function,+,furry_hal_uart_init,void,"FurryHalUartId, uint32_t"
+Function,+,furry_hal_uart_resume,void,FurryHalUartId
+Function,+,furry_hal_uart_set_br,void,"FurryHalUartId, uint32_t"
+Function,+,furry_hal_uart_set_irq_cb,void,"FurryHalUartId, void (*)(UartIrqEvent, uint8_t, void*), void*"
+Function,+,furry_hal_uart_suspend,void,FurryHalUartId
+Function,+,furry_hal_uart_tx,void,"FurryHalUartId, uint8_t*, size_t"
+Function,+,furry_hal_usb_disable,void,
+Function,+,furry_hal_usb_enable,void,
+Function,+,furry_hal_usb_get_config,FurryHalUsbInterface*,
+Function,-,furry_hal_usb_init,void,
+Function,+,furry_hal_usb_is_locked,_Bool,
+Function,+,furry_hal_usb_lock,void,
+Function,+,furry_hal_usb_reinit,void,
+Function,+,furry_hal_usb_set_config,_Bool,"FurryHalUsbInterface*, void*"
+Function,-,furry_hal_usb_set_state_callback,void,"FurryHalUsbStateCallback, void*"
+Function,+,furry_hal_usb_unlock,void,
+Function,+,furry_hal_version_do_i_belong_here,_Bool,
+Function,+,furry_hal_version_get_ble_local_device_name_ptr,const char*,
+Function,+,furry_hal_version_get_ble_mac,const uint8_t*,
+Function,+,furry_hal_version_get_device_name_ptr,const char*,
+Function,+,furry_hal_version_get_fcc_id,const char*,
+Function,+,furry_hal_version_get_firmware_version,const Version*,
+Function,+,furry_hal_version_get_hw_body,uint8_t,
+Function,+,furry_hal_version_get_hw_color,FurryHalVersionColor,
+Function,+,furry_hal_version_get_hw_connect,uint8_t,
+Function,+,furry_hal_version_get_hw_display,FurryHalVersionDisplay,
+Function,+,furry_hal_version_get_hw_region,FurryHalVersionRegion,
+Function,+,furry_hal_version_get_hw_region_name,const char*,
+Function,+,furry_hal_version_get_hw_region_name_otp,const char*,
+Function,+,furry_hal_version_get_hw_region_otp,FurryHalVersionRegion,
+Function,+,furry_hal_version_get_hw_target,uint8_t,
+Function,+,furry_hal_version_get_hw_timestamp,uint32_t,
+Function,+,furry_hal_version_get_hw_version,uint8_t,
+Function,+,furry_hal_version_get_ic_id,const char*,
+Function,+,furry_hal_version_get_model_code,const char*,
+Function,+,furry_hal_version_get_model_name,const char*,
+Function,+,furry_hal_version_get_name_ptr,const char*,
+Function,+,furry_hal_version_get_otp_version,FurryHalVersionOtpVersion,
+Function,-,furry_hal_version_init,void,
+Function,+,furry_hal_version_set_custom_name,void,const char*
+Function,+,furry_hal_version_uid,const uint8_t*,
+Function,+,furry_hal_version_uid_size,size_t,
+Function,-,furry_hal_vibro_init,void,
+Function,+,furry_hal_vibro_on,void,_Bool
+Function,-,furry_init,void,
+Function,+,furry_kernel_get_tick_frequency,uint32_t,
+Function,+,furry_kernel_is_irq_or_masked,_Bool,
+Function,+,furry_kernel_lock,int32_t,
+Function,+,furry_kernel_restore_lock,int32_t,int32_t
+Function,+,furry_kernel_unlock,int32_t,
+Function,+,furry_log_get_level,FurryLogLevel,
+Function,-,furry_log_init,void,
+Function,+,furry_log_print_format,void,"FurryLogLevel, const char*, const char*, ..."
+Function,+,furry_log_print_raw_format,void,"FurryLogLevel, const char*, ..."
+Function,+,furry_log_set_level,void,FurryLogLevel
+Function,-,furry_log_set_puts,void,FurryLogPuts
+Function,-,furry_log_set_timestamp,void,FurryLogTimestamp
+Function,+,furry_message_queue_alloc,FurryMessageQueue*,"uint32_t, uint32_t"
+Function,+,furry_message_queue_free,void,FurryMessageQueue*
+Function,+,furry_message_queue_get,FurryStatus,"FurryMessageQueue*, void*, uint32_t"
+Function,+,furry_message_queue_get_capacity,uint32_t,FurryMessageQueue*
+Function,+,furry_message_queue_get_count,uint32_t,FurryMessageQueue*
+Function,+,furry_message_queue_get_message_size,uint32_t,FurryMessageQueue*
+Function,+,furry_message_queue_get_space,uint32_t,FurryMessageQueue*
+Function,+,furry_message_queue_put,FurryStatus,"FurryMessageQueue*, const void*, uint32_t"
+Function,+,furry_message_queue_reset,FurryStatus,FurryMessageQueue*
+Function,+,furry_ms_to_ticks,uint32_t,uint32_t
+Function,+,furry_mutex_acquire,FurryStatus,"FurryMutex*, uint32_t"
+Function,+,furry_mutex_alloc,FurryMutex*,FurryMutexType
+Function,+,furry_mutex_free,void,FurryMutex*
+Function,+,furry_mutex_get_owner,FurryThreadId,FurryMutex*
+Function,+,furry_mutex_release,FurryStatus,FurryMutex*
+Function,+,furry_pubsub_alloc,FurryPubSub*,
+Function,-,furry_pubsub_free,void,FurryPubSub*
+Function,+,furry_pubsub_publish,void,"FurryPubSub*, void*"
+Function,+,furry_pubsub_subscribe,FurryPubSubSubscription*,"FurryPubSub*, FurryPubSubCallback, void*"
+Function,+,furry_pubsub_unsubscribe,void,"FurryPubSub*, FurryPubSubSubscription*"
+Function,+,furry_record_close,void,const char*
+Function,+,furry_record_create,void,"const char*, void*"
+Function,-,furry_record_destroy,_Bool,const char*
+Function,+,furry_record_exists,_Bool,const char*
+Function,-,furry_record_init,void,
+Function,+,furry_record_open,void*,const char*
+Function,+,furry_run,void,
+Function,+,furry_semaphore_acquire,FurryStatus,"FurrySemaphore*, uint32_t"
+Function,+,furry_semaphore_alloc,FurrySemaphore*,"uint32_t, uint32_t"
+Function,+,furry_semaphore_free,void,FurrySemaphore*
+Function,+,furry_semaphore_get_count,uint32_t,FurrySemaphore*
+Function,+,furry_semaphore_release,FurryStatus,FurrySemaphore*
+Function,+,furry_stream_buffer_alloc,FurryStreamBuffer*,"size_t, size_t"
+Function,+,furry_stream_buffer_bytes_available,size_t,FurryStreamBuffer*
+Function,+,furry_stream_buffer_free,void,FurryStreamBuffer*
+Function,+,furry_stream_buffer_is_empty,_Bool,FurryStreamBuffer*
+Function,+,furry_stream_buffer_is_full,_Bool,FurryStreamBuffer*
+Function,+,furry_stream_buffer_receive,size_t,"FurryStreamBuffer*, void*, size_t, uint32_t"
+Function,+,furry_stream_buffer_reset,FurryStatus,FurryStreamBuffer*
+Function,+,furry_stream_buffer_send,size_t,"FurryStreamBuffer*, const void*, size_t, uint32_t"
+Function,+,furry_stream_buffer_spaces_available,size_t,FurryStreamBuffer*
+Function,+,furry_stream_set_trigger_level,_Bool,"FurryStreamBuffer*, size_t"
+Function,+,furry_string_alloc,FurryString*,
+Function,+,furry_string_alloc_move,FurryString*,FurryString*
+Function,+,furry_string_alloc_printf,FurryString*,"const char[], ..."
+Function,+,furry_string_alloc_set,FurryString*,const FurryString*
+Function,+,furry_string_alloc_set_str,FurryString*,const char[]
+Function,+,furry_string_alloc_vprintf,FurryString*,"const char[], va_list"
+Function,+,furry_string_cat,void,"FurryString*, const FurryString*"
+Function,+,furry_string_cat_printf,int,"FurryString*, const char[], ..."
+Function,+,furry_string_cat_str,void,"FurryString*, const char[]"
+Function,+,furry_string_cat_vprintf,int,"FurryString*, const char[], va_list"
+Function,+,furry_string_cmp,int,"const FurryString*, const FurryString*"
+Function,+,furry_string_cmp_str,int,"const FurryString*, const char[]"
+Function,+,furry_string_cmpi,int,"const FurryString*, const FurryString*"
+Function,+,furry_string_cmpi_str,int,"const FurryString*, const char[]"
+Function,+,furry_string_empty,_Bool,const FurryString*
+Function,+,furry_string_end_with,_Bool,"const FurryString*, const FurryString*"
+Function,+,furry_string_end_with_str,_Bool,"const FurryString*, const char[]"
+Function,+,furry_string_equal,_Bool,"const FurryString*, const FurryString*"
+Function,+,furry_string_equal_str,_Bool,"const FurryString*, const char[]"
+Function,+,furry_string_free,void,FurryString*
+Function,+,furry_string_get_char,char,"const FurryString*, size_t"
+Function,+,furry_string_get_cstr,const char*,const FurryString*
+Function,+,furry_string_hash,size_t,const FurryString*
+Function,+,furry_string_left,void,"FurryString*, size_t"
+Function,+,furry_string_mid,void,"FurryString*, size_t, size_t"
+Function,+,furry_string_move,void,"FurryString*, FurryString*"
+Function,+,furry_string_printf,int,"FurryString*, const char[], ..."
+Function,+,furry_string_push_back,void,"FurryString*, char"
+Function,+,furry_string_replace,size_t,"FurryString*, FurryString*, FurryString*, size_t"
+Function,+,furry_string_replace_all,void,"FurryString*, const FurryString*, const FurryString*"
+Function,+,furry_string_replace_all_str,void,"FurryString*, const char[], const char[]"
+Function,+,furry_string_replace_at,void,"FurryString*, size_t, size_t, const char[]"
+Function,+,furry_string_replace_str,size_t,"FurryString*, const char[], const char[], size_t"
+Function,+,furry_string_reserve,void,"FurryString*, size_t"
+Function,+,furry_string_reset,void,FurryString*
+Function,+,furry_string_right,void,"FurryString*, size_t"
+Function,+,furry_string_search,size_t,"const FurryString*, const FurryString*, size_t"
+Function,+,furry_string_search_char,size_t,"const FurryString*, char, size_t"
+Function,+,furry_string_search_rchar,size_t,"const FurryString*, char, size_t"
+Function,+,furry_string_search_str,size_t,"const FurryString*, const char[], size_t"
+Function,+,furry_string_set,void,"FurryString*, FurryString*"
+Function,+,furry_string_set_char,void,"FurryString*, size_t, const char"
+Function,+,furry_string_set_n,void,"FurryString*, const FurryString*, size_t, size_t"
+Function,+,furry_string_set_str,void,"FurryString*, const char[]"
+Function,+,furry_string_set_strn,void,"FurryString*, const char[], size_t"
+Function,+,furry_string_size,size_t,const FurryString*
+Function,+,furry_string_start_with,_Bool,"const FurryString*, const FurryString*"
+Function,+,furry_string_start_with_str,_Bool,"const FurryString*, const char[]"
+Function,+,furry_string_swap,void,"FurryString*, FurryString*"
+Function,+,furry_string_trim,void,"FurryString*, const char[]"
+Function,+,furry_string_utf8_decode,void,"char, FurryStringUTF8State*, FurryStringUnicodeValue*"
+Function,+,furry_string_utf8_length,size_t,FurryString*
+Function,+,furry_string_utf8_push,void,"FurryString*, FurryStringUnicodeValue"
+Function,+,furry_string_vprintf,int,"FurryString*, const char[], va_list"
+Function,+,furry_thread_alloc,FurryThread*,
+Function,+,furry_thread_alloc_ex,FurryThread*,"const char*, uint32_t, FurryThreadCallback, void*"
+Function,+,furry_thread_catch,void,
+Function,-,furry_thread_disable_heap_trace,void,FurryThread*
+Function,+,furry_thread_enable_heap_trace,void,FurryThread*
+Function,+,furry_thread_enumerate,uint32_t,"FurryThreadId*, uint32_t"
+Function,+,furry_thread_flags_clear,uint32_t,uint32_t
+Function,+,furry_thread_flags_get,uint32_t,
+Function,+,furry_thread_flags_set,uint32_t,"FurryThreadId, uint32_t"
+Function,+,furry_thread_flags_wait,uint32_t,"uint32_t, uint32_t, uint32_t"
+Function,+,furry_thread_free,void,FurryThread*
+Function,+,furry_thread_get_appid,const char*,FurryThreadId
+Function,+,furry_thread_get_current,FurryThread*,
+Function,+,furry_thread_get_current_id,FurryThreadId,
+Function,+,furry_thread_get_current_priority,FurryThreadPriority,
+Function,+,furry_thread_get_heap_size,size_t,FurryThread*
+Function,+,furry_thread_get_id,FurryThreadId,FurryThread*
+Function,+,furry_thread_get_name,const char*,FurryThreadId
+Function,+,furry_thread_get_return_code,int32_t,FurryThread*
+Function,+,furry_thread_get_stack_space,uint32_t,FurryThreadId
+Function,+,furry_thread_get_state,FurryThreadState,FurryThread*
+Function,+,furry_thread_get_stdout_callback,FurryThreadStdoutWriteCallback,
+Function,+,furry_thread_is_suspended,_Bool,FurryThreadId
+Function,+,furry_thread_join,_Bool,FurryThread*
+Function,+,furry_thread_mark_as_service,void,FurryThread*
+Function,+,furry_thread_resume,void,FurryThreadId
+Function,+,furry_thread_set_appid,void,"FurryThread*, const char*"
+Function,+,furry_thread_set_callback,void,"FurryThread*, FurryThreadCallback"
+Function,+,furry_thread_set_context,void,"FurryThread*, void*"
+Function,+,furry_thread_set_current_priority,void,FurryThreadPriority
+Function,+,furry_thread_set_name,void,"FurryThread*, const char*"
+Function,+,furry_thread_set_priority,void,"FurryThread*, FurryThreadPriority"
+Function,+,furry_thread_set_stack_size,void,"FurryThread*, size_t"
+Function,+,furry_thread_set_state_callback,void,"FurryThread*, FurryThreadStateCallback"
+Function,+,furry_thread_set_state_context,void,"FurryThread*, void*"
+Function,+,furry_thread_set_stdout_callback,_Bool,FurryThreadStdoutWriteCallback
+Function,+,furry_thread_start,void,FurryThread*
+Function,+,furry_thread_stdout_flush,int32_t,
+Function,+,furry_thread_stdout_write,size_t,"const char*, size_t"
+Function,+,furry_thread_suspend,void,FurryThreadId
+Function,+,furry_thread_yield,void,
+Function,+,furry_timer_alloc,FurryTimer*,"FurryTimerCallback, FurryTimerType, void*"
+Function,+,furry_timer_free,void,FurryTimer*
+Function,+,furry_timer_is_running,uint32_t,FurryTimer*
+Function,+,furry_timer_start,FurryStatus,"FurryTimer*, uint32_t"
+Function,+,furry_timer_stop,FurryStatus,FurryTimer*
 Function,-,fwrite,size_t,"const void*, size_t, size_t, FILE*"
 Function,-,fwrite_unlocked,size_t,"const void*, size_t, size_t, FILE*"
 Function,-,gamma,double,double
@@ -1746,9 +1746,9 @@ Function,+,ibutton_protocols_get_protocol_count,uint32_t,
 Function,+,ibutton_protocols_is_valid,_Bool,"iButtonProtocols*, const iButtonKey*"
 Function,+,ibutton_protocols_load,_Bool,"iButtonProtocols*, iButtonKey*, const char*"
 Function,+,ibutton_protocols_read,_Bool,"iButtonProtocols*, iButtonKey*"
-Function,+,ibutton_protocols_render_brief_data,void,"iButtonProtocols*, const iButtonKey*, FuriString*"
-Function,+,ibutton_protocols_render_data,void,"iButtonProtocols*, const iButtonKey*, FuriString*"
-Function,+,ibutton_protocols_render_error,void,"iButtonProtocols*, const iButtonKey*, FuriString*"
+Function,+,ibutton_protocols_render_brief_data,void,"iButtonProtocols*, const iButtonKey*, FurryString*"
+Function,+,ibutton_protocols_render_data,void,"iButtonProtocols*, const iButtonKey*, FurryString*"
+Function,+,ibutton_protocols_render_error,void,"iButtonProtocols*, const iButtonKey*, FurryString*"
 Function,+,ibutton_protocols_save,_Bool,"iButtonProtocols*, const iButtonKey*, const char*"
 Function,+,ibutton_protocols_write_blank,_Bool,"iButtonProtocols*, iButtonKey*"
 Function,+,ibutton_protocols_write_copy,_Bool,"iButtonProtocols*, iButtonKey*"
@@ -1909,7 +1909,7 @@ Function,-,llrintl,long long int,long double
 Function,-,llround,long long int,double
 Function,-,llroundf,long long int,float
 Function,-,llroundl,long long int,long double
-Function,+,loader_get_pubsub,FuriPubSub*,Loader*
+Function,+,loader_get_pubsub,FurryPubSub*,Loader*
 Function,+,loader_is_locked,_Bool,const Loader*
 Function,+,loader_lock,_Bool,Loader*
 Function,+,loader_show_menu,void,
@@ -1922,8 +1922,8 @@ Function,+,loading_free,void,Loading*
 Function,+,loading_get_view,View*,Loading*
 Function,+,locale_celsius_to_fahrenheit,float,float
 Function,+,locale_fahrenheit_to_celsius,float,float
-Function,+,locale_format_date,void,"FuriString*, const FuriHalRtcDateTime*, const LocaleDateFormat, const char*"
-Function,+,locale_format_time,void,"FuriString*, const FuriHalRtcDateTime*, const LocaleTimeFormat, const _Bool"
+Function,+,locale_format_date,void,"FurryString*, const FurryHalRtcDateTime*, const LocaleDateFormat, const char*"
+Function,+,locale_format_time,void,"FurryString*, const FurryHalRtcDateTime*, const LocaleTimeFormat, const _Bool"
 Function,+,locale_get_date_format,LocaleDateFormat,
 Function,+,locale_get_measurement_unit,LocaleMeasurementUnits,
 Function,+,locale_get_time_format,LocaleTimeFormat,
@@ -2007,10 +2007,10 @@ Function,-,memmgr_alloc_from_pool,void*,size_t
 Function,+,memmgr_get_free_heap,size_t,
 Function,+,memmgr_get_minimum_free_heap,size_t,
 Function,+,memmgr_get_total_heap,size_t,
-Function,+,memmgr_heap_disable_thread_trace,void,FuriThreadId
-Function,+,memmgr_heap_enable_thread_trace,void,FuriThreadId
+Function,+,memmgr_heap_disable_thread_trace,void,FurryThreadId
+Function,+,memmgr_heap_enable_thread_trace,void,FurryThreadId
 Function,+,memmgr_heap_get_max_free_block,size_t,
-Function,+,memmgr_heap_get_thread_memory,size_t,FuriThreadId
+Function,+,memmgr_heap_get_thread_memory,size_t,FurryThreadId
 Function,+,memmgr_heap_printf_free_blocks,void,
 Function,-,memmgr_pool_get_free,size_t,
 Function,-,memmgr_pool_get_max_block,size_t,
@@ -2024,31 +2024,31 @@ Function,+,menu_free,void,Menu*
 Function,+,menu_get_view,View*,Menu*
 Function,+,menu_reset,void,Menu*
 Function,+,menu_set_selected_item,void,"Menu*, uint32_t"
-Function,-,mf_classic_auth_attempt,_Bool,"FuriHalNfcTxRxContext*, Crypto1*, MfClassicAuthContext*, uint64_t"
+Function,-,mf_classic_auth_attempt,_Bool,"FurryHalNfcTxRxContext*, Crypto1*, MfClassicAuthContext*, uint64_t"
 Function,-,mf_classic_auth_init_context,void,"MfClassicAuthContext*, uint8_t"
-Function,-,mf_classic_auth_write_block,_Bool,"FuriHalNfcTxRxContext*, MfClassicBlock*, uint8_t, MfClassicKey, uint64_t"
-Function,-,mf_classic_authenticate,_Bool,"FuriHalNfcTxRxContext*, uint8_t, uint64_t, MfClassicKey"
-Function,-,mf_classic_authenticate_skip_activate,_Bool,"FuriHalNfcTxRxContext*, uint8_t, uint64_t, MfClassicKey, _Bool, uint32_t"
+Function,-,mf_classic_auth_write_block,_Bool,"FurryHalNfcTxRxContext*, MfClassicBlock*, uint8_t, MfClassicKey, uint64_t"
+Function,-,mf_classic_authenticate,_Bool,"FurryHalNfcTxRxContext*, uint8_t, uint64_t, MfClassicKey"
+Function,-,mf_classic_authenticate_skip_activate,_Bool,"FurryHalNfcTxRxContext*, uint8_t, uint64_t, MfClassicKey, _Bool, uint32_t"
 Function,-,mf_classic_block_to_value,_Bool,"const uint8_t*, int32_t*, uint8_t*"
-Function,-,mf_classic_check_card_type,_Bool,FuriHalNfcADevData*
+Function,-,mf_classic_check_card_type,_Bool,FurryHalNfcADevData*
 Function,-,mf_classic_dict_add_key,_Bool,"MfClassicDict*, uint8_t*"
-Function,-,mf_classic_dict_add_key_str,_Bool,"MfClassicDict*, FuriString*"
+Function,-,mf_classic_dict_add_key_str,_Bool,"MfClassicDict*, FurryString*"
 Function,-,mf_classic_dict_alloc,MfClassicDict*,MfClassicDictType
 Function,-,mf_classic_dict_check_presence,_Bool,MfClassicDictType
 Function,-,mf_classic_dict_delete_index,_Bool,"MfClassicDict*, uint32_t"
 Function,-,mf_classic_dict_find_index,_Bool,"MfClassicDict*, uint8_t*, uint32_t*"
-Function,-,mf_classic_dict_find_index_str,_Bool,"MfClassicDict*, FuriString*, uint32_t*"
+Function,-,mf_classic_dict_find_index_str,_Bool,"MfClassicDict*, FurryString*, uint32_t*"
 Function,-,mf_classic_dict_free,void,MfClassicDict*
 Function,-,mf_classic_dict_get_key_at_index,_Bool,"MfClassicDict*, uint64_t*, uint32_t"
-Function,-,mf_classic_dict_get_key_at_index_str,_Bool,"MfClassicDict*, FuriString*, uint32_t"
+Function,-,mf_classic_dict_get_key_at_index_str,_Bool,"MfClassicDict*, FurryString*, uint32_t"
 Function,-,mf_classic_dict_get_next_key,_Bool,"MfClassicDict*, uint64_t*"
-Function,-,mf_classic_dict_get_next_key_str,_Bool,"MfClassicDict*, FuriString*"
+Function,-,mf_classic_dict_get_next_key_str,_Bool,"MfClassicDict*, FurryString*"
 Function,-,mf_classic_dict_get_total_keys,uint32_t,MfClassicDict*
 Function,-,mf_classic_dict_is_key_present,_Bool,"MfClassicDict*, uint8_t*"
-Function,-,mf_classic_dict_is_key_present_str,_Bool,"MfClassicDict*, FuriString*"
+Function,-,mf_classic_dict_is_key_present_str,_Bool,"MfClassicDict*, FurryString*"
 Function,-,mf_classic_dict_rewind,_Bool,MfClassicDict*
-Function,-,mf_classic_emulator,_Bool,"MfClassicEmulator*, FuriHalNfcTxRxContext*"
-Function,-,mf_classic_get_classic_type,MfClassicType,FuriHalNfcADevData*
+Function,-,mf_classic_emulator,_Bool,"MfClassicEmulator*, FurryHalNfcTxRxContext*"
+Function,-,mf_classic_get_classic_type,MfClassicType,FurryHalNfcADevData*
 Function,-,mf_classic_get_read_sectors_and_keys,void,"MfClassicData*, uint8_t*, uint8_t*"
 Function,-,mf_classic_get_sector_by_block,uint8_t,uint8_t
 Function,-,mf_classic_get_sector_trailer_block_num_by_sector,uint8_t,uint8_t
@@ -2056,7 +2056,7 @@ Function,-,mf_classic_get_sector_trailer_by_sector,MfClassicSectorTrailer*,"MfCl
 Function,-,mf_classic_get_total_block_num,uint16_t,MfClassicType
 Function,-,mf_classic_get_total_sectors_num,uint8_t,MfClassicType
 Function,-,mf_classic_get_type_str,const char*,MfClassicType
-Function,-,mf_classic_halt,void,"FuriHalNfcTxRxContext*, Crypto1*"
+Function,-,mf_classic_halt,void,"FurryHalNfcTxRxContext*, Crypto1*"
 Function,-,mf_classic_is_allowed_access_data_block,_Bool,"MfClassicData*, uint8_t, MfClassicKey, MfClassicAction"
 Function,-,mf_classic_is_allowed_access_sector_trailer,_Bool,"MfClassicData*, uint8_t, MfClassicKey, MfClassicAction"
 Function,-,mf_classic_is_block_read,_Bool,"MfClassicData*, uint8_t"
@@ -2066,30 +2066,30 @@ Function,-,mf_classic_is_sector_data_read,_Bool,"MfClassicData*, uint8_t"
 Function,-,mf_classic_is_sector_read,_Bool,"MfClassicData*, uint8_t"
 Function,-,mf_classic_is_sector_trailer,_Bool,uint8_t
 Function,-,mf_classic_is_value_block,_Bool,"MfClassicData*, uint8_t"
-Function,-,mf_classic_read_block,_Bool,"FuriHalNfcTxRxContext*, Crypto1*, uint8_t, MfClassicBlock*"
-Function,-,mf_classic_read_card,uint8_t,"FuriHalNfcTxRxContext*, MfClassicReader*, MfClassicData*"
-Function,-,mf_classic_read_sector,void,"FuriHalNfcTxRxContext*, MfClassicData*, uint8_t"
+Function,-,mf_classic_read_block,_Bool,"FurryHalNfcTxRxContext*, Crypto1*, uint8_t, MfClassicBlock*"
+Function,-,mf_classic_read_card,uint8_t,"FurryHalNfcTxRxContext*, MfClassicReader*, MfClassicData*"
+Function,-,mf_classic_read_sector,void,"FurryHalNfcTxRxContext*, MfClassicData*, uint8_t"
 Function,-,mf_classic_reader_add_sector,void,"MfClassicReader*, uint8_t, uint64_t, uint64_t"
 Function,-,mf_classic_set_block_read,void,"MfClassicData*, uint8_t, MfClassicBlock*"
 Function,-,mf_classic_set_key_found,void,"MfClassicData*, uint8_t, MfClassicKey, uint64_t"
 Function,-,mf_classic_set_key_not_found,void,"MfClassicData*, uint8_t, MfClassicKey"
 Function,-,mf_classic_set_sector_data_not_read,void,MfClassicData*
-Function,-,mf_classic_transfer,_Bool,"FuriHalNfcTxRxContext*, Crypto1*, uint8_t"
-Function,-,mf_classic_update_card,uint8_t,"FuriHalNfcTxRxContext*, MfClassicData*"
-Function,-,mf_classic_value_cmd,_Bool,"FuriHalNfcTxRxContext*, Crypto1*, uint8_t, uint8_t, int32_t"
-Function,-,mf_classic_value_cmd_full,_Bool,"FuriHalNfcTxRxContext*, MfClassicBlock*, uint8_t, MfClassicKey, uint64_t, int32_t"
+Function,-,mf_classic_transfer,_Bool,"FurryHalNfcTxRxContext*, Crypto1*, uint8_t"
+Function,-,mf_classic_update_card,uint8_t,"FurryHalNfcTxRxContext*, MfClassicData*"
+Function,-,mf_classic_value_cmd,_Bool,"FurryHalNfcTxRxContext*, Crypto1*, uint8_t, uint8_t, int32_t"
+Function,-,mf_classic_value_cmd_full,_Bool,"FurryHalNfcTxRxContext*, MfClassicBlock*, uint8_t, MfClassicKey, uint64_t, int32_t"
 Function,-,mf_classic_value_to_block,void,"int32_t, uint8_t, uint8_t*"
-Function,-,mf_classic_write_block,_Bool,"FuriHalNfcTxRxContext*, Crypto1*, uint8_t, MfClassicBlock*"
-Function,-,mf_classic_write_sector,_Bool,"FuriHalNfcTxRxContext*, MfClassicData*, MfClassicData*, uint8_t"
-Function,-,mf_df_cat_application,void,"MifareDesfireApplication*, FuriString*"
-Function,-,mf_df_cat_application_info,void,"MifareDesfireApplication*, FuriString*"
-Function,-,mf_df_cat_card_info,void,"MifareDesfireData*, FuriString*"
-Function,-,mf_df_cat_data,void,"MifareDesfireData*, FuriString*"
-Function,-,mf_df_cat_file,void,"MifareDesfireFile*, FuriString*"
-Function,-,mf_df_cat_free_mem,void,"MifareDesfireFreeMemory*, FuriString*"
-Function,-,mf_df_cat_key_settings,void,"MifareDesfireKeySettings*, FuriString*"
-Function,-,mf_df_cat_version,void,"MifareDesfireVersion*, FuriString*"
-Function,-,mf_df_check_card_type,_Bool,FuriHalNfcADevData*
+Function,-,mf_classic_write_block,_Bool,"FurryHalNfcTxRxContext*, Crypto1*, uint8_t, MfClassicBlock*"
+Function,-,mf_classic_write_sector,_Bool,"FurryHalNfcTxRxContext*, MfClassicData*, MfClassicData*, uint8_t"
+Function,-,mf_df_cat_application,void,"MifareDesfireApplication*, FurryString*"
+Function,-,mf_df_cat_application_info,void,"MifareDesfireApplication*, FurryString*"
+Function,-,mf_df_cat_card_info,void,"MifareDesfireData*, FurryString*"
+Function,-,mf_df_cat_data,void,"MifareDesfireData*, FurryString*"
+Function,-,mf_df_cat_file,void,"MifareDesfireFile*, FurryString*"
+Function,-,mf_df_cat_free_mem,void,"MifareDesfireFreeMemory*, FurryString*"
+Function,-,mf_df_cat_key_settings,void,"MifareDesfireKeySettings*, FurryString*"
+Function,-,mf_df_cat_version,void,"MifareDesfireVersion*, FurryString*"
+Function,-,mf_df_check_card_type,_Bool,FurryHalNfcADevData*
 Function,-,mf_df_clear,void,MifareDesfireData*
 Function,-,mf_df_parse_get_application_ids_response,_Bool,"uint8_t*, uint16_t, MifareDesfireApplication**"
 Function,-,mf_df_parse_get_file_ids_response,_Bool,"uint8_t*, uint16_t, MifareDesfireFile**"
@@ -2111,25 +2111,25 @@ Function,-,mf_df_prepare_get_version,uint16_t,uint8_t*
 Function,-,mf_df_prepare_read_data,uint16_t,"uint8_t*, uint8_t, uint32_t, uint32_t"
 Function,-,mf_df_prepare_read_records,uint16_t,"uint8_t*, uint8_t, uint32_t, uint32_t"
 Function,-,mf_df_prepare_select_application,uint16_t,"uint8_t*, uint8_t[3]"
-Function,-,mf_df_read_card,_Bool,"FuriHalNfcTxRxContext*, MifareDesfireData*"
-Function,-,mf_ul_check_card_type,_Bool,FuriHalNfcADevData*
+Function,-,mf_df_read_card,_Bool,"FurryHalNfcTxRxContext*, MifareDesfireData*"
+Function,-,mf_ul_check_card_type,_Bool,FurryHalNfcADevData*
 Function,-,mf_ul_is_full_capture,_Bool,MfUltralightData*
 Function,-,mf_ul_prepare_emulation,void,"MfUltralightEmulator*, MfUltralightData*"
 Function,-,mf_ul_prepare_emulation_response,_Bool,"uint8_t*, uint16_t, uint8_t*, uint16_t*, uint32_t*, void*"
-Function,-,mf_ul_pwdgen_amiibo,uint32_t,FuriHalNfcDevData*
-Function,-,mf_ul_pwdgen_xiaomi,uint32_t,FuriHalNfcDevData*
-Function,-,mf_ul_read_card,_Bool,"FuriHalNfcTxRxContext*, MfUltralightReader*, MfUltralightData*"
+Function,-,mf_ul_pwdgen_amiibo,uint32_t,FurryHalNfcDevData*
+Function,-,mf_ul_pwdgen_xiaomi,uint32_t,FurryHalNfcDevData*
+Function,-,mf_ul_read_card,_Bool,"FurryHalNfcTxRxContext*, MfUltralightReader*, MfUltralightData*"
 Function,-,mf_ul_reset,void,MfUltralightData*
 Function,-,mf_ul_reset_emulation,void,"MfUltralightEmulator*, _Bool"
-Function,-,mf_ultralight_authenticate,_Bool,"FuriHalNfcTxRxContext*, uint32_t, uint16_t*"
-Function,-,mf_ultralight_fast_read_pages,_Bool,"FuriHalNfcTxRxContext*, MfUltralightReader*, MfUltralightData*"
+Function,-,mf_ultralight_authenticate,_Bool,"FurryHalNfcTxRxContext*, uint32_t, uint16_t*"
+Function,-,mf_ultralight_fast_read_pages,_Bool,"FurryHalNfcTxRxContext*, MfUltralightReader*, MfUltralightData*"
 Function,-,mf_ultralight_get_config_pages,MfUltralightConfigPages*,MfUltralightData*
-Function,-,mf_ultralight_read_counters,_Bool,"FuriHalNfcTxRxContext*, MfUltralightData*"
-Function,-,mf_ultralight_read_pages,_Bool,"FuriHalNfcTxRxContext*, MfUltralightReader*, MfUltralightData*"
-Function,-,mf_ultralight_read_pages_direct,_Bool,"FuriHalNfcTxRxContext*, uint8_t, uint8_t*"
-Function,-,mf_ultralight_read_signature,_Bool,"FuriHalNfcTxRxContext*, MfUltralightData*"
-Function,-,mf_ultralight_read_tearing_flags,_Bool,"FuriHalNfcTxRxContext*, MfUltralightData*"
-Function,-,mf_ultralight_read_version,_Bool,"FuriHalNfcTxRxContext*, MfUltralightReader*, MfUltralightData*"
+Function,-,mf_ultralight_read_counters,_Bool,"FurryHalNfcTxRxContext*, MfUltralightData*"
+Function,-,mf_ultralight_read_pages,_Bool,"FurryHalNfcTxRxContext*, MfUltralightReader*, MfUltralightData*"
+Function,-,mf_ultralight_read_pages_direct,_Bool,"FurryHalNfcTxRxContext*, uint8_t, uint8_t*"
+Function,-,mf_ultralight_read_signature,_Bool,"FurryHalNfcTxRxContext*, MfUltralightData*"
+Function,-,mf_ultralight_read_tearing_flags,_Bool,"FurryHalNfcTxRxContext*, MfUltralightData*"
+Function,-,mf_ultralight_read_version,_Bool,"FurryHalNfcTxRxContext*, MfUltralightReader*, MfUltralightData*"
 Function,-,mkdtemp,char*,char*
 Function,-,mkostemp,int,"char*, int"
 Function,-,mkostemps,int,"char*, int, int"
@@ -2178,13 +2178,13 @@ Function,-,nfca_signal_alloc,NfcaSignal*,
 Function,-,nfca_signal_encode,void,"NfcaSignal*, uint8_t*, uint16_t, uint8_t*"
 Function,-,nfca_signal_free,void,NfcaSignal*
 Function,+,nfcv_emu_deinit,void,NfcVData*
-Function,+,nfcv_emu_init,void,"FuriHalNfcDevData*, NfcVData*"
-Function,+,nfcv_emu_loop,_Bool,"FuriHalNfcTxRxContext*, FuriHalNfcDevData*, NfcVData*, uint32_t"
-Function,+,nfcv_emu_send,void,"FuriHalNfcTxRxContext*, NfcVData*, uint8_t*, uint8_t, NfcVSendFlags, uint32_t"
+Function,+,nfcv_emu_init,void,"FurryHalNfcDevData*, NfcVData*"
+Function,+,nfcv_emu_loop,_Bool,"FurryHalNfcTxRxContext*, FurryHalNfcDevData*, NfcVData*, uint32_t"
+Function,+,nfcv_emu_send,void,"FurryHalNfcTxRxContext*, NfcVData*, uint8_t*, uint8_t, NfcVSendFlags, uint32_t"
 Function,-,nfcv_inventory,ReturnCode,uint8_t*
 Function,-,nfcv_read_blocks,ReturnCode,"NfcVReader*, NfcVData*"
-Function,-,nfcv_read_card,_Bool,"NfcVReader*, FuriHalNfcDevData*, NfcVData*"
-Function,-,nfcv_read_sysinfo,ReturnCode,"FuriHalNfcDevData*, NfcVData*"
+Function,-,nfcv_read_card,_Bool,"NfcVReader*, FurryHalNfcDevData*, NfcVData*"
+Function,-,nfcv_read_sysinfo,ReturnCode,"FurryHalNfcDevData*, NfcVData*"
 Function,+,notification_internal_message,void,"NotificationApp*, const NotificationSequence*"
 Function,+,notification_internal_message_block,void,"NotificationApp*, const NotificationSequence*"
 Function,+,notification_message,void,"NotificationApp*, const NotificationSequence*"
@@ -2219,14 +2219,14 @@ Function,+,onewire_slave_set_result_callback,void,"OneWireSlave*, OneWireSlaveRe
 Function,+,onewire_slave_start,void,OneWireSlave*
 Function,+,onewire_slave_stop,void,OneWireSlave*
 Function,-,open_memstream,FILE*,"char**, size_t*"
-Function,+,path_append,void,"FuriString*, const char*"
-Function,+,path_concat,void,"const char*, const char*, FuriString*"
+Function,+,path_append,void,"FurryString*, const char*"
+Function,+,path_concat,void,"const char*, const char*, FurryString*"
 Function,+,path_contains_only_ascii,_Bool,const char*
-Function,+,path_extract_basename,void,"const char*, FuriString*"
-Function,+,path_extract_dirname,void,"const char*, FuriString*"
-Function,+,path_extract_extension,void,"FuriString*, char*, size_t"
-Function,+,path_extract_filename,void,"FuriString*, FuriString*, _Bool"
-Function,+,path_extract_filename_no_ext,void,"const char*, FuriString*"
+Function,+,path_extract_basename,void,"const char*, FurryString*"
+Function,+,path_extract_dirname,void,"const char*, FurryString*"
+Function,+,path_extract_extension,void,"FurryString*, char*, size_t"
+Function,+,path_extract_filename,void,"FurryString*, FurryString*, _Bool"
+Function,+,path_extract_filename_no_ext,void,"const char*, FurryString*"
 Function,-,pcTaskGetName,char*,TaskHandle_t
 Function,-,pcTimerGetName,const char*,TimerHandle_t
 Function,-,pclose,int,FILE*
@@ -2263,15 +2263,15 @@ Function,-,pow10,double,double
 Function,-,pow10f,float,float
 Function,+,power_enable_low_battery_level_notification,void,"Power*, _Bool"
 Function,+,power_get_info,void,"Power*, PowerInfo*"
-Function,+,power_get_pubsub,FuriPubSub*,Power*
-Function,+,power_get_settings_events_pubsub,FuriPubSub*,Power*
+Function,+,power_get_pubsub,FurryPubSub*,Power*
+Function,+,power_get_settings_events_pubsub,FurryPubSub*,Power*
 Function,+,power_is_battery_healthy,_Bool,Power*
 Function,+,power_off,void,Power*
 Function,+,power_reboot,void,PowerBootMode
 Function,+,power_trigger_ui_update,void,Power*
 Function,+,powf,float,"float, float"
 Function,-,powl,long double,"long double, long double"
-Function,+,pretty_format_bytes_hex_canonical,void,"FuriString*, size_t, const char*, const uint8_t*, size_t"
+Function,+,pretty_format_bytes_hex_canonical,void,"FurryString*, size_t, const char*, const uint8_t*, size_t"
 Function,-,printf,int,"const char*, ..."
 Function,-,prng_successor,uint32_t,"uint32_t, uint32_t"
 Function,+,property_value_out,void,"PropertyValueContext*, const char*, unsigned int, ..."
@@ -2292,8 +2292,8 @@ Function,+,protocol_dict_get_name,const char*,"ProtocolDict*, size_t"
 Function,+,protocol_dict_get_protocol_by_name,ProtocolId,"ProtocolDict*, const char*"
 Function,+,protocol_dict_get_validate_count,uint32_t,"ProtocolDict*, size_t"
 Function,+,protocol_dict_get_write_data,_Bool,"ProtocolDict*, size_t, void*"
-Function,+,protocol_dict_render_brief_data,void,"ProtocolDict*, FuriString*, size_t"
-Function,+,protocol_dict_render_data,void,"ProtocolDict*, FuriString*, size_t"
+Function,+,protocol_dict_render_brief_data,void,"ProtocolDict*, FurryString*, size_t"
+Function,+,protocol_dict_render_data,void,"ProtocolDict*, FurryString*, size_t"
 Function,+,protocol_dict_set_data,void,"ProtocolDict*, size_t, const uint8_t*, size_t"
 Function,-,pselect,int,"int, fd_set*, fd_set*, fd_set*, const timespec*, const sigset_t*"
 Function,-,pulse_reader_alloc,PulseReader*,"const GpioPin*, uint32_t"
@@ -2623,7 +2623,7 @@ Function,+,storage_common_migrate,FS_Error,"Storage*, const char*, const char*"
 Function,+,storage_common_mkdir,FS_Error,"Storage*, const char*"
 Function,+,storage_common_remove,FS_Error,"Storage*, const char*"
 Function,+,storage_common_rename,FS_Error,"Storage*, const char*, const char*"
-Function,+,storage_common_resolve_path_and_ensure_app_directory,void,"Storage*, FuriString*"
+Function,+,storage_common_resolve_path_and_ensure_app_directory,void,"Storage*, FurryString*"
 Function,+,storage_common_stat,FS_Error,"Storage*, const char*, FileInfo*"
 Function,+,storage_common_timestamp,FS_Error,"Storage*, const char*, uint32_t*"
 Function,+,storage_dir_close,_Bool,File*
@@ -2651,8 +2651,8 @@ Function,-,storage_file_sync,_Bool,File*
 Function,+,storage_file_tell,uint64_t,File*
 Function,+,storage_file_truncate,_Bool,File*
 Function,+,storage_file_write,uint16_t,"File*, const void*, uint16_t"
-Function,+,storage_get_next_filename,void,"Storage*, const char*, const char*, const char*, FuriString*, uint8_t"
-Function,+,storage_get_pubsub,FuriPubSub*,Storage*
+Function,+,storage_get_next_filename,void,"Storage*, const char*, const char*, const char*, FurryString*, uint8_t"
+Function,+,storage_get_pubsub,FurryPubSub*,Storage*
 Function,+,storage_int_backup,FS_Error,"Storage*, const char*"
 Function,+,storage_int_restore,FS_Error,"Storage*, const char*, Storage_name_converter"
 Function,+,storage_sd_format,FS_Error,Storage*
@@ -2684,7 +2684,7 @@ Function,+,stream_delete_and_insert,_Bool,"Stream*, size_t, StreamWriteCB, const
 Function,+,stream_delete_and_insert_char,_Bool,"Stream*, size_t, char"
 Function,+,stream_delete_and_insert_cstring,_Bool,"Stream*, size_t, const char*"
 Function,+,stream_delete_and_insert_format,_Bool,"Stream*, size_t, const char*, ..."
-Function,+,stream_delete_and_insert_string,_Bool,"Stream*, size_t, FuriString*"
+Function,+,stream_delete_and_insert_string,_Bool,"Stream*, size_t, FurryString*"
 Function,+,stream_delete_and_insert_vaformat,_Bool,"Stream*, size_t, const char*, va_list"
 Function,+,stream_dump_data,void,Stream*
 Function,+,stream_eof,_Bool,Stream*
@@ -2693,11 +2693,11 @@ Function,+,stream_insert,_Bool,"Stream*, const uint8_t*, size_t"
 Function,+,stream_insert_char,_Bool,"Stream*, char"
 Function,+,stream_insert_cstring,_Bool,"Stream*, const char*"
 Function,+,stream_insert_format,_Bool,"Stream*, const char*, ..."
-Function,+,stream_insert_string,_Bool,"Stream*, FuriString*"
+Function,+,stream_insert_string,_Bool,"Stream*, FurryString*"
 Function,+,stream_insert_vaformat,_Bool,"Stream*, const char*, va_list"
 Function,+,stream_load_from_file,size_t,"Stream*, Storage*, const char*"
 Function,+,stream_read,size_t,"Stream*, uint8_t*, size_t"
-Function,+,stream_read_line,_Bool,"Stream*, FuriString*"
+Function,+,stream_read_line,_Bool,"Stream*, FurryString*"
 Function,+,stream_rewind,_Bool,Stream*
 Function,+,stream_save_to_file,size_t,"Stream*, Storage*, const char*, FS_OpenMode"
 Function,+,stream_seek,_Bool,"Stream*, int32_t, StreamOffset"
@@ -2709,7 +2709,7 @@ Function,+,stream_write,size_t,"Stream*, const uint8_t*, size_t"
 Function,+,stream_write_char,size_t,"Stream*, char"
 Function,+,stream_write_cstring,size_t,"Stream*, const char*"
 Function,+,stream_write_format,size_t,"Stream*, const char*, ..."
-Function,+,stream_write_string,size_t,"Stream*, FuriString*"
+Function,+,stream_write_string,size_t,"Stream*, FurryString*"
 Function,+,stream_write_vaformat,size_t,"Stream*, const char*, va_list"
 Function,-,strerror,char*,int
 Function,-,strerror_l,char*,"int, locale_t"
@@ -2759,7 +2759,7 @@ Function,-,strxfrm,size_t,"char*, const char*, size_t"
 Function,-,strxfrm_l,size_t,"char*, const char*, size_t, locale_t"
 Function,+,subghz_block_generic_deserialize,SubGhzProtocolStatus,"SubGhzBlockGeneric*, FlipperFormat*"
 Function,+,subghz_block_generic_deserialize_check_count_bit,SubGhzProtocolStatus,"SubGhzBlockGeneric*, FlipperFormat*, uint16_t"
-Function,+,subghz_block_generic_get_preset_name,void,"const char*, FuriString*"
+Function,+,subghz_block_generic_get_preset_name,void,"const char*, FurryString*"
 Function,+,subghz_block_generic_serialize,SubGhzProtocolStatus,"SubGhzBlockGeneric*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_custom_btn_get,uint8_t,
 Function,-,subghz_custom_btn_get_original,uint8_t,
@@ -2814,7 +2814,7 @@ Function,-,subghz_protocol_decoder_alutech_at_4n_deserialize,SubGhzProtocolStatu
 Function,-,subghz_protocol_decoder_alutech_at_4n_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_alutech_at_4n_free,void,void*
 Function,-,subghz_protocol_decoder_alutech_at_4n_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_alutech_at_4n_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_alutech_at_4n_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_alutech_at_4n_reset,void,void*
 Function,-,subghz_protocol_decoder_alutech_at_4n_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_ansonic_alloc,void*,SubGhzEnvironment*
@@ -2822,12 +2822,12 @@ Function,-,subghz_protocol_decoder_ansonic_deserialize,SubGhzProtocolStatus,"voi
 Function,-,subghz_protocol_decoder_ansonic_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_ansonic_free,void,void*
 Function,-,subghz_protocol_decoder_ansonic_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_ansonic_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_ansonic_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_ansonic_reset,void,void*
 Function,-,subghz_protocol_decoder_ansonic_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,+,subghz_protocol_decoder_base_deserialize,SubGhzProtocolStatus,"SubGhzProtocolDecoderBase*, FlipperFormat*"
 Function,+,subghz_protocol_decoder_base_get_hash_data,uint8_t,SubGhzProtocolDecoderBase*
-Function,+,subghz_protocol_decoder_base_get_string,_Bool,"SubGhzProtocolDecoderBase*, FuriString*"
+Function,+,subghz_protocol_decoder_base_get_string,_Bool,"SubGhzProtocolDecoderBase*, FurryString*"
 Function,+,subghz_protocol_decoder_base_serialize,SubGhzProtocolStatus,"SubGhzProtocolDecoderBase*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_base_set_decoder_callback,void,"SubGhzProtocolDecoderBase*, SubGhzProtocolDecoderBaseRxCallback, void*"
 Function,-,subghz_protocol_decoder_bett_alloc,void*,SubGhzEnvironment*
@@ -2835,7 +2835,7 @@ Function,-,subghz_protocol_decoder_bett_deserialize,SubGhzProtocolStatus,"void*,
 Function,-,subghz_protocol_decoder_bett_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_bett_free,void,void*
 Function,-,subghz_protocol_decoder_bett_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_bett_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_bett_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_bett_reset,void,void*
 Function,-,subghz_protocol_decoder_bett_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_bin_raw_alloc,void*,SubGhzEnvironment*
@@ -2844,7 +2844,7 @@ Function,-,subghz_protocol_decoder_bin_raw_deserialize,SubGhzProtocolStatus,"voi
 Function,-,subghz_protocol_decoder_bin_raw_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_bin_raw_free,void,void*
 Function,-,subghz_protocol_decoder_bin_raw_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_bin_raw_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_bin_raw_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_bin_raw_reset,void,void*
 Function,-,subghz_protocol_decoder_bin_raw_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_came_alloc,void*,SubGhzEnvironment*
@@ -2853,14 +2853,14 @@ Function,-,subghz_protocol_decoder_came_atomo_deserialize,SubGhzProtocolStatus,"
 Function,-,subghz_protocol_decoder_came_atomo_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_came_atomo_free,void,void*
 Function,-,subghz_protocol_decoder_came_atomo_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_came_atomo_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_came_atomo_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_came_atomo_reset,void,void*
 Function,-,subghz_protocol_decoder_came_atomo_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_came_deserialize,SubGhzProtocolStatus,"void*, FlipperFormat*"
 Function,-,subghz_protocol_decoder_came_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_came_free,void,void*
 Function,-,subghz_protocol_decoder_came_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_came_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_came_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_came_reset,void,void*
 Function,-,subghz_protocol_decoder_came_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_came_twee_alloc,void*,SubGhzEnvironment*
@@ -2868,7 +2868,7 @@ Function,-,subghz_protocol_decoder_came_twee_deserialize,SubGhzProtocolStatus,"v
 Function,-,subghz_protocol_decoder_came_twee_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_came_twee_free,void,void*
 Function,-,subghz_protocol_decoder_came_twee_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_came_twee_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_came_twee_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_came_twee_reset,void,void*
 Function,-,subghz_protocol_decoder_came_twee_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_chamb_code_alloc,void*,SubGhzEnvironment*
@@ -2876,7 +2876,7 @@ Function,-,subghz_protocol_decoder_chamb_code_deserialize,SubGhzProtocolStatus,"
 Function,-,subghz_protocol_decoder_chamb_code_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_chamb_code_free,void,void*
 Function,-,subghz_protocol_decoder_chamb_code_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_chamb_code_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_chamb_code_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_chamb_code_reset,void,void*
 Function,-,subghz_protocol_decoder_chamb_code_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_clemsa_alloc,void*,SubGhzEnvironment*
@@ -2884,7 +2884,7 @@ Function,-,subghz_protocol_decoder_clemsa_deserialize,SubGhzProtocolStatus,"void
 Function,-,subghz_protocol_decoder_clemsa_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_clemsa_free,void,void*
 Function,-,subghz_protocol_decoder_clemsa_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_clemsa_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_clemsa_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_clemsa_reset,void,void*
 Function,-,subghz_protocol_decoder_clemsa_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_doitrand_alloc,void*,SubGhzEnvironment*
@@ -2892,7 +2892,7 @@ Function,-,subghz_protocol_decoder_doitrand_deserialize,SubGhzProtocolStatus,"vo
 Function,-,subghz_protocol_decoder_doitrand_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_doitrand_free,void,void*
 Function,-,subghz_protocol_decoder_doitrand_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_doitrand_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_doitrand_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_doitrand_reset,void,void*
 Function,-,subghz_protocol_decoder_doitrand_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_dooya_alloc,void*,SubGhzEnvironment*
@@ -2900,7 +2900,7 @@ Function,-,subghz_protocol_decoder_dooya_deserialize,SubGhzProtocolStatus,"void*
 Function,-,subghz_protocol_decoder_dooya_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_dooya_free,void,void*
 Function,-,subghz_protocol_decoder_dooya_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_dooya_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_dooya_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_dooya_reset,void,void*
 Function,-,subghz_protocol_decoder_dooya_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_faac_slh_alloc,void*,SubGhzEnvironment*
@@ -2908,7 +2908,7 @@ Function,-,subghz_protocol_decoder_faac_slh_deserialize,SubGhzProtocolStatus,"vo
 Function,-,subghz_protocol_decoder_faac_slh_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_faac_slh_free,void,void*
 Function,-,subghz_protocol_decoder_faac_slh_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_faac_slh_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_faac_slh_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_faac_slh_reset,void,void*
 Function,-,subghz_protocol_decoder_faac_slh_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_gate_tx_alloc,void*,SubGhzEnvironment*
@@ -2916,7 +2916,7 @@ Function,-,subghz_protocol_decoder_gate_tx_deserialize,SubGhzProtocolStatus,"voi
 Function,-,subghz_protocol_decoder_gate_tx_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_gate_tx_free,void,void*
 Function,-,subghz_protocol_decoder_gate_tx_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_gate_tx_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_gate_tx_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_gate_tx_reset,void,void*
 Function,-,subghz_protocol_decoder_gate_tx_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_holtek_alloc,void*,SubGhzEnvironment*
@@ -2924,7 +2924,7 @@ Function,-,subghz_protocol_decoder_holtek_deserialize,SubGhzProtocolStatus,"void
 Function,-,subghz_protocol_decoder_holtek_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_holtek_free,void,void*
 Function,-,subghz_protocol_decoder_holtek_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_holtek_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_holtek_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_holtek_reset,void,void*
 Function,-,subghz_protocol_decoder_holtek_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_holtek_th12x_alloc,void*,SubGhzEnvironment*
@@ -2932,7 +2932,7 @@ Function,-,subghz_protocol_decoder_holtek_th12x_deserialize,SubGhzProtocolStatus
 Function,-,subghz_protocol_decoder_holtek_th12x_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_holtek_th12x_free,void,void*
 Function,-,subghz_protocol_decoder_holtek_th12x_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_holtek_th12x_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_holtek_th12x_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_holtek_th12x_reset,void,void*
 Function,-,subghz_protocol_decoder_holtek_th12x_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_honeywell_wdb_alloc,void*,SubGhzEnvironment*
@@ -2940,7 +2940,7 @@ Function,-,subghz_protocol_decoder_honeywell_wdb_deserialize,SubGhzProtocolStatu
 Function,-,subghz_protocol_decoder_honeywell_wdb_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_honeywell_wdb_free,void,void*
 Function,-,subghz_protocol_decoder_honeywell_wdb_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_honeywell_wdb_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_honeywell_wdb_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_honeywell_wdb_reset,void,void*
 Function,-,subghz_protocol_decoder_honeywell_wdb_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_hormann_alloc,void*,SubGhzEnvironment*
@@ -2948,7 +2948,7 @@ Function,-,subghz_protocol_decoder_hormann_deserialize,SubGhzProtocolStatus,"voi
 Function,-,subghz_protocol_decoder_hormann_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_hormann_free,void,void*
 Function,-,subghz_protocol_decoder_hormann_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_hormann_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_hormann_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_hormann_reset,void,void*
 Function,-,subghz_protocol_decoder_hormann_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_ido_alloc,void*,SubGhzEnvironment*
@@ -2956,7 +2956,7 @@ Function,-,subghz_protocol_decoder_ido_deserialize,SubGhzProtocolStatus,"void*, 
 Function,-,subghz_protocol_decoder_ido_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_ido_free,void,void*
 Function,-,subghz_protocol_decoder_ido_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_ido_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_ido_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_ido_reset,void,void*
 Function,-,subghz_protocol_decoder_ido_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_intertechno_v3_alloc,void*,SubGhzEnvironment*
@@ -2964,7 +2964,7 @@ Function,-,subghz_protocol_decoder_intertechno_v3_deserialize,SubGhzProtocolStat
 Function,-,subghz_protocol_decoder_intertechno_v3_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_intertechno_v3_free,void,void*
 Function,-,subghz_protocol_decoder_intertechno_v3_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_intertechno_v3_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_intertechno_v3_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_intertechno_v3_reset,void,void*
 Function,-,subghz_protocol_decoder_intertechno_v3_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_keeloq_alloc,void*,SubGhzEnvironment*
@@ -2972,7 +2972,7 @@ Function,-,subghz_protocol_decoder_keeloq_deserialize,SubGhzProtocolStatus,"void
 Function,-,subghz_protocol_decoder_keeloq_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_keeloq_free,void,void*
 Function,-,subghz_protocol_decoder_keeloq_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_keeloq_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_keeloq_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_keeloq_reset,void,void*
 Function,-,subghz_protocol_decoder_keeloq_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_kia_alloc,void*,SubGhzEnvironment*
@@ -2980,7 +2980,7 @@ Function,-,subghz_protocol_decoder_kia_deserialize,SubGhzProtocolStatus,"void*, 
 Function,-,subghz_protocol_decoder_kia_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_kia_free,void,void*
 Function,-,subghz_protocol_decoder_kia_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_kia_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_kia_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_kia_reset,void,void*
 Function,-,subghz_protocol_decoder_kia_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_kinggates_stylo_4k_alloc,void*,SubGhzEnvironment*
@@ -2988,7 +2988,7 @@ Function,-,subghz_protocol_decoder_kinggates_stylo_4k_deserialize,SubGhzProtocol
 Function,-,subghz_protocol_decoder_kinggates_stylo_4k_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_kinggates_stylo_4k_free,void,void*
 Function,-,subghz_protocol_decoder_kinggates_stylo_4k_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_kinggates_stylo_4k_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_kinggates_stylo_4k_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_kinggates_stylo_4k_reset,void,void*
 Function,-,subghz_protocol_decoder_kinggates_stylo_4k_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_linear_alloc,void*,SubGhzEnvironment*
@@ -2997,14 +2997,14 @@ Function,-,subghz_protocol_decoder_linear_delta3_deserialize,SubGhzProtocolStatu
 Function,-,subghz_protocol_decoder_linear_delta3_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_linear_delta3_free,void,void*
 Function,-,subghz_protocol_decoder_linear_delta3_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_linear_delta3_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_linear_delta3_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_linear_delta3_reset,void,void*
 Function,-,subghz_protocol_decoder_linear_delta3_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_linear_deserialize,SubGhzProtocolStatus,"void*, FlipperFormat*"
 Function,-,subghz_protocol_decoder_linear_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_linear_free,void,void*
 Function,-,subghz_protocol_decoder_linear_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_linear_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_linear_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_linear_reset,void,void*
 Function,-,subghz_protocol_decoder_linear_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_magellan_alloc,void*,SubGhzEnvironment*
@@ -3012,7 +3012,7 @@ Function,-,subghz_protocol_decoder_magellan_deserialize,SubGhzProtocolStatus,"vo
 Function,-,subghz_protocol_decoder_magellan_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_magellan_free,void,void*
 Function,-,subghz_protocol_decoder_magellan_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_magellan_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_magellan_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_magellan_reset,void,void*
 Function,-,subghz_protocol_decoder_magellan_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_marantec_alloc,void*,SubGhzEnvironment*
@@ -3020,7 +3020,7 @@ Function,-,subghz_protocol_decoder_marantec_deserialize,SubGhzProtocolStatus,"vo
 Function,-,subghz_protocol_decoder_marantec_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_marantec_free,void,void*
 Function,-,subghz_protocol_decoder_marantec_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_marantec_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_marantec_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_marantec_reset,void,void*
 Function,-,subghz_protocol_decoder_marantec_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_megacode_alloc,void*,SubGhzEnvironment*
@@ -3028,7 +3028,7 @@ Function,-,subghz_protocol_decoder_megacode_deserialize,SubGhzProtocolStatus,"vo
 Function,-,subghz_protocol_decoder_megacode_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_megacode_free,void,void*
 Function,-,subghz_protocol_decoder_megacode_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_megacode_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_megacode_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_megacode_reset,void,void*
 Function,-,subghz_protocol_decoder_megacode_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_nero_radio_alloc,void*,SubGhzEnvironment*
@@ -3036,7 +3036,7 @@ Function,-,subghz_protocol_decoder_nero_radio_deserialize,SubGhzProtocolStatus,"
 Function,-,subghz_protocol_decoder_nero_radio_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_nero_radio_free,void,void*
 Function,-,subghz_protocol_decoder_nero_radio_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_nero_radio_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_nero_radio_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_nero_radio_reset,void,void*
 Function,-,subghz_protocol_decoder_nero_radio_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_nero_sketch_alloc,void*,SubGhzEnvironment*
@@ -3044,7 +3044,7 @@ Function,-,subghz_protocol_decoder_nero_sketch_deserialize,SubGhzProtocolStatus,
 Function,-,subghz_protocol_decoder_nero_sketch_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_nero_sketch_free,void,void*
 Function,-,subghz_protocol_decoder_nero_sketch_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_nero_sketch_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_nero_sketch_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_nero_sketch_reset,void,void*
 Function,-,subghz_protocol_decoder_nero_sketch_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_nice_flo_alloc,void*,SubGhzEnvironment*
@@ -3052,7 +3052,7 @@ Function,-,subghz_protocol_decoder_nice_flo_deserialize,SubGhzProtocolStatus,"vo
 Function,-,subghz_protocol_decoder_nice_flo_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_nice_flo_free,void,void*
 Function,-,subghz_protocol_decoder_nice_flo_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_nice_flo_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_nice_flo_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_nice_flo_reset,void,void*
 Function,-,subghz_protocol_decoder_nice_flo_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_nice_flor_s_alloc,void*,SubGhzEnvironment*
@@ -3060,7 +3060,7 @@ Function,-,subghz_protocol_decoder_nice_flor_s_deserialize,SubGhzProtocolStatus,
 Function,-,subghz_protocol_decoder_nice_flor_s_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_nice_flor_s_free,void,void*
 Function,-,subghz_protocol_decoder_nice_flor_s_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_nice_flor_s_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_nice_flor_s_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_nice_flor_s_reset,void,void*
 Function,-,subghz_protocol_decoder_nice_flor_s_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_phoenix_v2_alloc,void*,SubGhzEnvironment*
@@ -3068,7 +3068,7 @@ Function,-,subghz_protocol_decoder_phoenix_v2_deserialize,SubGhzProtocolStatus,"
 Function,-,subghz_protocol_decoder_phoenix_v2_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_phoenix_v2_free,void,void*
 Function,-,subghz_protocol_decoder_phoenix_v2_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_phoenix_v2_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_phoenix_v2_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_phoenix_v2_reset,void,void*
 Function,-,subghz_protocol_decoder_phoenix_v2_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_power_smart_alloc,void*,SubGhzEnvironment*
@@ -3076,7 +3076,7 @@ Function,-,subghz_protocol_decoder_power_smart_deserialize,SubGhzProtocolStatus,
 Function,-,subghz_protocol_decoder_power_smart_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_power_smart_free,void,void*
 Function,-,subghz_protocol_decoder_power_smart_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_power_smart_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_power_smart_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_power_smart_reset,void,void*
 Function,-,subghz_protocol_decoder_power_smart_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,+,subghz_protocol_decoder_princeton_alloc,void*,SubGhzEnvironment*
@@ -3084,21 +3084,21 @@ Function,-,subghz_protocol_decoder_princeton_deserialize,SubGhzProtocolStatus,"v
 Function,+,subghz_protocol_decoder_princeton_feed,void,"void*, _Bool, uint32_t"
 Function,+,subghz_protocol_decoder_princeton_free,void,void*
 Function,+,subghz_protocol_decoder_princeton_get_hash_data,uint8_t,void*
-Function,+,subghz_protocol_decoder_princeton_get_string,void,"void*, FuriString*"
+Function,+,subghz_protocol_decoder_princeton_get_string,void,"void*, FurryString*"
 Function,+,subghz_protocol_decoder_princeton_reset,void,void*
 Function,-,subghz_protocol_decoder_princeton_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,+,subghz_protocol_decoder_raw_alloc,void*,SubGhzEnvironment*
 Function,+,subghz_protocol_decoder_raw_deserialize,SubGhzProtocolStatus,"void*, FlipperFormat*"
 Function,+,subghz_protocol_decoder_raw_feed,void,"void*, _Bool, uint32_t"
 Function,+,subghz_protocol_decoder_raw_free,void,void*
-Function,+,subghz_protocol_decoder_raw_get_string,void,"void*, FuriString*"
+Function,+,subghz_protocol_decoder_raw_get_string,void,"void*, FurryString*"
 Function,+,subghz_protocol_decoder_raw_reset,void,void*
 Function,-,subghz_protocol_decoder_scher_khan_alloc,void*,SubGhzEnvironment*
 Function,-,subghz_protocol_decoder_scher_khan_deserialize,SubGhzProtocolStatus,"void*, FlipperFormat*"
 Function,-,subghz_protocol_decoder_scher_khan_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_scher_khan_free,void,void*
 Function,-,subghz_protocol_decoder_scher_khan_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_scher_khan_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_scher_khan_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_scher_khan_reset,void,void*
 Function,-,subghz_protocol_decoder_scher_khan_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_secplus_v1_alloc,void*,SubGhzEnvironment*
@@ -3106,7 +3106,7 @@ Function,-,subghz_protocol_decoder_secplus_v1_deserialize,SubGhzProtocolStatus,"
 Function,-,subghz_protocol_decoder_secplus_v1_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_secplus_v1_free,void,void*
 Function,-,subghz_protocol_decoder_secplus_v1_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_secplus_v1_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_secplus_v1_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_secplus_v1_reset,void,void*
 Function,-,subghz_protocol_decoder_secplus_v1_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_secplus_v2_alloc,void*,SubGhzEnvironment*
@@ -3114,7 +3114,7 @@ Function,-,subghz_protocol_decoder_secplus_v2_deserialize,SubGhzProtocolStatus,"
 Function,-,subghz_protocol_decoder_secplus_v2_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_secplus_v2_free,void,void*
 Function,-,subghz_protocol_decoder_secplus_v2_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_secplus_v2_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_secplus_v2_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_secplus_v2_reset,void,void*
 Function,-,subghz_protocol_decoder_secplus_v2_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_smc5326_alloc,void*,SubGhzEnvironment*
@@ -3122,7 +3122,7 @@ Function,-,subghz_protocol_decoder_smc5326_deserialize,SubGhzProtocolStatus,"voi
 Function,-,subghz_protocol_decoder_smc5326_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_smc5326_free,void,void*
 Function,-,subghz_protocol_decoder_smc5326_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_smc5326_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_smc5326_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_smc5326_reset,void,void*
 Function,-,subghz_protocol_decoder_smc5326_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_somfy_keytis_alloc,void*,SubGhzEnvironment*
@@ -3130,7 +3130,7 @@ Function,-,subghz_protocol_decoder_somfy_keytis_deserialize,SubGhzProtocolStatus
 Function,-,subghz_protocol_decoder_somfy_keytis_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_somfy_keytis_free,void,void*
 Function,-,subghz_protocol_decoder_somfy_keytis_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_somfy_keytis_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_somfy_keytis_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_somfy_keytis_reset,void,void*
 Function,-,subghz_protocol_decoder_somfy_keytis_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_somfy_telis_alloc,void*,SubGhzEnvironment*
@@ -3138,7 +3138,7 @@ Function,-,subghz_protocol_decoder_somfy_telis_deserialize,SubGhzProtocolStatus,
 Function,-,subghz_protocol_decoder_somfy_telis_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_somfy_telis_free,void,void*
 Function,-,subghz_protocol_decoder_somfy_telis_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_somfy_telis_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_somfy_telis_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_somfy_telis_reset,void,void*
 Function,-,subghz_protocol_decoder_somfy_telis_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_decoder_star_line_alloc,void*,SubGhzEnvironment*
@@ -3146,7 +3146,7 @@ Function,-,subghz_protocol_decoder_star_line_deserialize,SubGhzProtocolStatus,"v
 Function,-,subghz_protocol_decoder_star_line_feed,void,"void*, _Bool, uint32_t"
 Function,-,subghz_protocol_decoder_star_line_free,void,void*
 Function,-,subghz_protocol_decoder_star_line_get_hash_data,uint8_t,void*
-Function,-,subghz_protocol_decoder_star_line_get_string,void,"void*, FuriString*"
+Function,-,subghz_protocol_decoder_star_line_get_string,void,"void*, FurryString*"
 Function,-,subghz_protocol_decoder_star_line_reset,void,void*
 Function,-,subghz_protocol_decoder_star_line_serialize,SubGhzProtocolStatus,"void*, FlipperFormat*, SubGhzRadioPreset*"
 Function,-,subghz_protocol_encoder_alutech_at_4n_alloc,void*,SubGhzEnvironment*
@@ -4627,7 +4627,7 @@ Function,-,vTimerSetReloadMode,void,"TimerHandle_t, const UBaseType_t"
 Function,-,vTimerSetTimerID,void,"TimerHandle_t, void*"
 Function,-,vTimerSetTimerNumber,void,"TimerHandle_t, UBaseType_t"
 Function,+,validator_is_file_alloc_init,ValidatorIsFile*,"const char*, const char*, const char*"
-Function,+,validator_is_file_callback,_Bool,"const char*, FuriString*, void*"
+Function,+,validator_is_file_callback,_Bool,"const char*, FurryString*, void*"
 Function,+,validator_is_file_free,void,ValidatorIsFile*
 Function,+,value_index_bool,uint8_t,"const _Bool, const _Bool[], uint8_t"
 Function,+,value_index_float,uint8_t,"const float, const float[], uint8_t"
@@ -4813,27 +4813,27 @@ Variable,-,_timezone,long,
 Variable,-,_tzname,char*[2],
 Variable,+,cli_vcp,CliSession,
 Variable,+,firmware_api_interface,const ElfApiInterface*,
-Variable,+,furi_hal_i2c_bus_external,FuriHalI2cBus,
-Variable,+,furi_hal_i2c_bus_power,FuriHalI2cBus,
-Variable,+,furi_hal_i2c_handle_external,FuriHalI2cBusHandle,
-Variable,+,furi_hal_i2c_handle_power,FuriHalI2cBusHandle,
-Variable,+,furi_hal_sd_spi_handle,FuriHalSpiBusHandle*,
-Variable,+,furi_hal_spi_bus_d,FuriHalSpiBus,
-Variable,+,furi_hal_spi_bus_handle_display,FuriHalSpiBusHandle,
-Variable,+,furi_hal_spi_bus_handle_external,FuriHalSpiBusHandle,
-Variable,+,furi_hal_spi_bus_handle_nfc,FuriHalSpiBusHandle,
-Variable,+,furi_hal_spi_bus_handle_sd_fast,FuriHalSpiBusHandle,
-Variable,+,furi_hal_spi_bus_handle_sd_slow,FuriHalSpiBusHandle,
-Variable,+,furi_hal_spi_bus_handle_subghz,FuriHalSpiBusHandle,
-Variable,+,furi_hal_spi_bus_handle_subghz_ext,FuriHalSpiBusHandle,
-Variable,+,furi_hal_spi_bus_handle_subghz_int,FuriHalSpiBusHandle,
-Variable,+,furi_hal_spi_bus_r,FuriHalSpiBus,
-Variable,+,furi_hal_spi_preset_1edge_low_16m,const LL_SPI_InitTypeDef,
-Variable,+,furi_hal_spi_preset_1edge_low_2m,const LL_SPI_InitTypeDef,
-Variable,+,furi_hal_spi_preset_1edge_low_4m,const LL_SPI_InitTypeDef,
-Variable,+,furi_hal_spi_preset_1edge_low_8m,const LL_SPI_InitTypeDef,
-Variable,+,furi_hal_spi_preset_2edge_low_8m,const LL_SPI_InitTypeDef,
-Variable,+,furi_hal_subghz,volatile FuriHalSubGhz,
+Variable,+,furry_hal_i2c_bus_external,FurryHalI2cBus,
+Variable,+,furry_hal_i2c_bus_power,FurryHalI2cBus,
+Variable,+,furry_hal_i2c_handle_external,FurryHalI2cBusHandle,
+Variable,+,furry_hal_i2c_handle_power,FurryHalI2cBusHandle,
+Variable,+,furry_hal_sd_spi_handle,FurryHalSpiBusHandle*,
+Variable,+,furry_hal_spi_bus_d,FurryHalSpiBus,
+Variable,+,furry_hal_spi_bus_handle_display,FurryHalSpiBusHandle,
+Variable,+,furry_hal_spi_bus_handle_external,FurryHalSpiBusHandle,
+Variable,+,furry_hal_spi_bus_handle_nfc,FurryHalSpiBusHandle,
+Variable,+,furry_hal_spi_bus_handle_sd_fast,FurryHalSpiBusHandle,
+Variable,+,furry_hal_spi_bus_handle_sd_slow,FurryHalSpiBusHandle,
+Variable,+,furry_hal_spi_bus_handle_subghz,FurryHalSpiBusHandle,
+Variable,+,furry_hal_spi_bus_handle_subghz_ext,FurryHalSpiBusHandle,
+Variable,+,furry_hal_spi_bus_handle_subghz_int,FurryHalSpiBusHandle,
+Variable,+,furry_hal_spi_bus_r,FurryHalSpiBus,
+Variable,+,furry_hal_spi_preset_1edge_low_16m,const LL_SPI_InitTypeDef,
+Variable,+,furry_hal_spi_preset_1edge_low_2m,const LL_SPI_InitTypeDef,
+Variable,+,furry_hal_spi_preset_1edge_low_4m,const LL_SPI_InitTypeDef,
+Variable,+,furry_hal_spi_preset_1edge_low_8m,const LL_SPI_InitTypeDef,
+Variable,+,furry_hal_spi_preset_2edge_low_8m,const LL_SPI_InitTypeDef,
+Variable,+,furry_hal_subghz,volatile FurryHalSubGhz,
 Variable,+,gpio_button_back,const GpioPin,
 Variable,+,gpio_button_down,const GpioPin,
 Variable,+,gpio_button_left,const GpioPin,
@@ -7037,8 +7037,8 @@ Variable,-,u8x8_font_victoriabold8_u,const uint8_t[],
 Variable,-,u8x8_font_victoriamedium8_n,const uint8_t[],
 Variable,-,u8x8_font_victoriamedium8_r,const uint8_t[],
 Variable,-,u8x8_font_victoriamedium8_u,const uint8_t[],
-Variable,+,usb_cdc_dual,FuriHalUsbInterface,
-Variable,+,usb_cdc_single,FuriHalUsbInterface,
-Variable,+,usb_hid,FuriHalUsbInterface,
-Variable,+,usb_hid_u2f,FuriHalUsbInterface,
+Variable,+,usb_cdc_dual,FurryHalUsbInterface,
+Variable,+,usb_cdc_single,FurryHalUsbInterface,
+Variable,+,usb_hid,FurryHalUsbInterface,
+Variable,+,usb_hid_u2f,FurryHalUsbInterface,
 Variable,+,usbd_devfs,const usbd_driver,

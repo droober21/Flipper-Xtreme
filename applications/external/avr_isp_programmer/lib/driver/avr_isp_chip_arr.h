@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 #define F_AVR8L 1 // TPI programming, ATtiny(4|5|9|10|20|40|102|104)
 #define F_AVR8 2 // ISP programming with SPI, "classic" AVRs

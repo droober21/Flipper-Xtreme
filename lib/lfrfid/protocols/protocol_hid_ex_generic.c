@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <toolbox/protocols/protocol.h>
 #include <lfrfid/tools/fsk_demod.h>
 #include <lfrfid/tools/fsk_osc.h>
@@ -192,10 +192,10 @@ bool protocol_hid_ex_generic_write_data(ProtocolHIDEx* protocol, void* data) {
     return result;
 };
 
-void protocol_hid_ex_generic_render_data(ProtocolHIDEx* protocol, FuriString* result) {
+void protocol_hid_ex_generic_render_data(ProtocolHIDEx* protocol, FurryString* result) {
     // TODO: parser and render functions
     UNUSED(protocol);
-    furi_string_printf(result, "Generic HID Extended\r\nData: Unknown");
+    furry_string_printf(result, "Generic HID Extended\r\nData: Unknown");
 };
 
 const ProtocolBase protocol_hid_ex_generic = {

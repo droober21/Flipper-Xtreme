@@ -1,6 +1,6 @@
 #include "assets_icons.h"
 #include "toolbox/path.h"
-#include <furi.h>
+#include <furry.h>
 #include "../archive_i.h"
 #include "archive_browser_view.h"
 #include "../helpers/archive_browser.h"
@@ -42,8 +42,8 @@ void archive_browser_set_callback(
     ArchiveBrowserView* browser,
     ArchiveBrowserViewCallback callback,
     void* context) {
-    furi_assert(browser);
-    furi_assert(callback);
+    furry_assert(browser);
+    furry_assert(callback);
     browser->callback = callback;
     browser->context = context;
 }
@@ -51,25 +51,25 @@ void archive_browser_set_callback(
 static void render_item_menu(Canvas* canvas, ArchiveBrowserViewModel* model) {
     if(menu_array_size(model->context_menu) == 0) {
         // Context menu is empty, init array
-        FuriString* item_run = furi_string_alloc_set("Run In App");
-        FuriString* item_pin = furi_string_alloc_set("Pin");
-        FuriString* item_info = furi_string_alloc_set("Info");
-        FuriString* item_show = furi_string_alloc_set("Show");
-        FuriString* item_rename = furi_string_alloc_set("Rename");
-        FuriString* item_delete = furi_string_alloc_set("Delete");
+        FurryString* item_run = furry_string_alloc_set("Run In App");
+        FurryString* item_pin = furry_string_alloc_set("Pin");
+        FurryString* item_info = furry_string_alloc_set("Info");
+        FurryString* item_show = furry_string_alloc_set("Show");
+        FurryString* item_rename = furry_string_alloc_set("Rename");
+        FurryString* item_delete = furry_string_alloc_set("Delete");
 
         // Need init context menu
         ArchiveFile_t* selected =
             files_array_get(model->files, model->item_idx - model->array_offset);
 
         if((selected->fav) || (model->tab_idx == ArchiveTabFavorites)) {
-            furi_string_set(item_pin, "Unpin");
+            furry_string_set(item_pin, "Unpin");
         }
 
         if(model->tab_idx == ArchiveTabFavorites) {
-            //FURI_LOG_D(TAG, "ArchiveTabFavorites");
+            //FURRY_LOG_D(TAG, "ArchiveTabFavorites");
 
-            furi_string_set(item_rename, "Move");
+            furry_string_set(item_rename, "Move");
 
             archive_menu_add_item(
                 menu_array_push_raw(model->context_menu),
@@ -90,7 +90,7 @@ static void render_item_menu(Canvas* canvas, ArchiveBrowserViewModel* model) {
                 item_rename,
                 ArchiveBrowserEventFileMenuRename);
         } else if(selected->type == ArchiveFileTypeFolder) {
-            //FURI_LOG_D(TAG, "Directory type");
+            //FURRY_LOG_D(TAG, "Directory type");
             archive_menu_add_item(
                 menu_array_push_raw(model->context_menu),
                 item_pin,
@@ -104,7 +104,7 @@ static void render_item_menu(Canvas* canvas, ArchiveBrowserViewModel* model) {
                 item_delete,
                 ArchiveBrowserEventFileMenuDelete);
         } else if(!archive_is_known_app(selected->type)) {
-            //FURI_LOG_D(TAG, "Unknown type");
+            //FURRY_LOG_D(TAG, "Unknown type");
 
             archive_menu_add_item(
                 menu_array_push_raw(model->context_menu),
@@ -125,7 +125,7 @@ static void render_item_menu(Canvas* canvas, ArchiveBrowserViewModel* model) {
                 item_delete,
                 ArchiveBrowserEventFileMenuDelete);
         } else if(selected->is_app) {
-            //FURI_LOG_D(TAG, "3 types");
+            //FURRY_LOG_D(TAG, "3 types");
             archive_menu_add_item(
                 menu_array_push_raw(model->context_menu),
                 item_run,
@@ -149,7 +149,7 @@ static void render_item_menu(Canvas* canvas, ArchiveBrowserViewModel* model) {
                 item_delete,
                 ArchiveBrowserEventFileMenuDelete);
         } else {
-            //FURI_LOG_D(TAG, "All menu");
+            //FURRY_LOG_D(TAG, "All menu");
             archive_menu_add_item(
                 menu_array_push_raw(model->context_menu),
                 item_run,
@@ -178,14 +178,14 @@ static void render_item_menu(Canvas* canvas, ArchiveBrowserViewModel* model) {
                 ArchiveBrowserEventFileMenuDelete);
         }
 
-        furi_string_free(item_run);
-        furi_string_free(item_pin);
-        furi_string_free(item_info);
-        furi_string_free(item_show);
-        furi_string_free(item_rename);
-        furi_string_free(item_delete);
+        furry_string_free(item_run);
+        furry_string_free(item_pin);
+        furry_string_free(item_info);
+        furry_string_free(item_show);
+        furry_string_free(item_rename);
+        furry_string_free(item_delete);
     } /*else {
-        FURI_LOG_D(TAG, "menu_array_size already set: %d", menu_array_size(model->context_menu));
+        FURRY_LOG_D(TAG, "menu_array_size already set: %d", menu_array_size(model->context_menu));
     }*/
     size_t size_menu = menu_array_size(model->context_menu);
     const uint8_t menu_height = 48;
@@ -197,7 +197,7 @@ static void render_item_menu(Canvas* canvas, ArchiveBrowserViewModel* model) {
     canvas_set_color(canvas, ColorBlack);
     elements_slightly_rounded_frame(canvas, 70, 2, 58, calc_height + 4);
 
-    /*FURI_LOG_D(
+    /*FURRY_LOG_D(
         TAG,
         "size_menu: %d, calc_height: %d, menu_idx: %d",
         size_menu,
@@ -205,7 +205,7 @@ static void render_item_menu(Canvas* canvas, ArchiveBrowserViewModel* model) {
         model->menu_idx);*/
     for(size_t i = 0; i < size_menu; i++) {
         ArchiveContextMenuItem_t* current = menu_array_get(model->context_menu, i);
-        canvas_draw_str(canvas, 82, 11 + i * line_height, furi_string_get_cstr(current->text));
+        canvas_draw_str(canvas, 82, 11 + i * line_height, furry_string_get_cstr(current->text));
     }
 
     canvas_draw_icon(canvas, 74, 4 + model->menu_idx * line_height, &I_ButtonRight_4x7);
@@ -233,7 +233,7 @@ static void archive_draw_frame(Canvas* canvas, uint16_t idx, bool scrollbar, boo
 }
 
 static void archive_draw_loading(Canvas* canvas, ArchiveBrowserViewModel* model) {
-    furi_assert(model);
+    furry_assert(model);
 
     uint8_t x = 128 / 2 - 24 / 2;
     uint8_t y = 64 / 2 - 24 / 2;
@@ -242,14 +242,14 @@ static void archive_draw_loading(Canvas* canvas, ArchiveBrowserViewModel* model)
 }
 
 static void draw_list(Canvas* canvas, ArchiveBrowserViewModel* model) {
-    furi_assert(model);
+    furry_assert(model);
 
     size_t array_size = files_array_size(model->files);
     bool scrollbar = model->item_cnt > 4;
 
     for(uint32_t i = 0; i < MIN(model->item_cnt, MENU_ITEMS); ++i) {
-        FuriString* str_buf;
-        str_buf = furi_string_alloc();
+        FurryString* str_buf;
+        str_buf = furry_string_alloc();
         int32_t idx = CLAMP((uint32_t)(i + model->list_offset), model->item_cnt, 0u);
         uint8_t x_offset = (model->move_fav && model->item_idx == idx) ? MOVE_OFFSET : 0;
 
@@ -263,7 +263,7 @@ static void draw_list(Canvas* canvas, ArchiveBrowserViewModel* model) {
             if(file_type == ArchiveFileTypeApplication) {
                 if(file->custom_icon_data) {
                     custom_icon_data = file->custom_icon_data;
-                    furi_string_set(str_buf, file->custom_name);
+                    furry_string_set(str_buf, file->custom_name);
                 } else {
                     file_type = ArchiveFileTypeUnknown;
                     path_extract_filename(file->path, str_buf, archive_is_known_app(file->type));
@@ -272,7 +272,7 @@ static void draw_list(Canvas* canvas, ArchiveBrowserViewModel* model) {
                 path_extract_filename(file->path, str_buf, archive_is_known_app(file->type));
             }
         } else {
-            furi_string_set(str_buf, "---");
+            furry_string_set(str_buf, "---");
         }
 
         size_t scroll_counter = model->scroll_counter;
@@ -307,7 +307,7 @@ static void draw_list(Canvas* canvas, ArchiveBrowserViewModel* model) {
             (model->item_idx != idx),
             false);
 
-        furi_string_free(str_buf);
+        furry_string_free(str_buf);
     }
 
     if(scrollbar) {
@@ -320,7 +320,7 @@ static void draw_list(Canvas* canvas, ArchiveBrowserViewModel* model) {
 }
 
 static void archive_render_status_bar(Canvas* canvas, ArchiveBrowserViewModel* model) {
-    furi_assert(model);
+    furry_assert(model);
 
     const char* tab_name = ArchiveTabNames[model->tab_idx];
 
@@ -371,7 +371,7 @@ static void archive_view_render(Canvas* canvas, void* mdl) {
 }
 
 View* archive_browser_get_view(ArchiveBrowserView* browser) {
-    furi_assert(browser);
+    furry_assert(browser);
     return browser->view;
 }
 
@@ -396,8 +396,8 @@ static bool is_file_list_load_required(ArchiveBrowserViewModel* model) {
 }
 
 static bool archive_view_input(InputEvent* event, void* context) {
-    furi_assert(event);
-    furi_assert(context);
+    furry_assert(event);
+    furry_assert(context);
 
     ArchiveBrowserView* browser = context;
 
@@ -530,24 +530,24 @@ static bool archive_view_input(InputEvent* event, void* context) {
 }
 
 static void browser_scroll_timer(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     ArchiveBrowserView* browser = context;
     with_view_model(
         browser->view, ArchiveBrowserViewModel * model, { model->scroll_counter++; }, true);
 }
 
 static void browser_view_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     ArchiveBrowserView* browser = context;
     with_view_model(
         browser->view, ArchiveBrowserViewModel * model, { model->scroll_counter = 0; }, true);
-    furi_timer_start(browser->scroll_timer, SCROLL_INTERVAL);
+    furry_timer_start(browser->scroll_timer, SCROLL_INTERVAL);
 }
 
 static void browser_view_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     ArchiveBrowserView* browser = context;
-    furi_timer_stop(browser->scroll_timer);
+    furry_timer_stop(browser->scroll_timer);
 }
 
 ArchiveBrowserView* browser_alloc() {
@@ -560,9 +560,9 @@ ArchiveBrowserView* browser_alloc() {
     view_set_enter_callback(browser->view, browser_view_enter);
     view_set_exit_callback(browser->view, browser_view_exit);
 
-    browser->scroll_timer = furi_timer_alloc(browser_scroll_timer, FuriTimerTypePeriodic, browser);
+    browser->scroll_timer = furry_timer_alloc(browser_scroll_timer, FurryTimerTypePeriodic, browser);
 
-    browser->path = furi_string_alloc_set(archive_get_default_path(TAB_DEFAULT));
+    browser->path = furry_string_alloc_set(archive_get_default_path(TAB_DEFAULT));
 
     with_view_model(
         browser->view,
@@ -578,9 +578,9 @@ ArchiveBrowserView* browser_alloc() {
 }
 
 void browser_free(ArchiveBrowserView* browser) {
-    furi_assert(browser);
+    furry_assert(browser);
 
-    furi_timer_free(browser->scroll_timer);
+    furry_timer_free(browser->scroll_timer);
 
     if(browser->worker_running) {
         file_browser_worker_free(browser->worker);
@@ -595,7 +595,7 @@ void browser_free(ArchiveBrowserView* browser) {
         },
         false);
 
-    furi_string_free(browser->path);
+    furry_string_free(browser->path);
 
     view_free(browser->view);
     free(browser);

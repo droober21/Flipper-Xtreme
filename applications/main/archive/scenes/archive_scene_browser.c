@@ -25,8 +25,8 @@ static const char* flipper_app_name[] = {
 };
 
 static void archive_loader_callback(const void* message, void* context) {
-    furi_assert(message);
-    furi_assert(context);
+    furry_assert(message);
+    furry_assert(context);
     const LoaderEvent* event = message;
     ArchiveApp* archive = (ArchiveApp*)context;
 
@@ -38,25 +38,25 @@ static void archive_loader_callback(const void* message, void* context) {
 
 static void archive_run_in_app(ArchiveBrowserView* browser, ArchiveFile_t* selected) {
     UNUSED(browser);
-    Loader* loader = furi_record_open(RECORD_LOADER);
+    Loader* loader = furry_record_open(RECORD_LOADER);
 
     LoaderStatus status;
     if(selected->is_app) {
-        char* param = strrchr(furi_string_get_cstr(selected->path), '/');
+        char* param = strrchr(furry_string_get_cstr(selected->path), '/');
         if(param != NULL) {
             param++;
         }
         status = loader_start(loader, flipper_app_name[selected->type], param);
     } else {
         status = loader_start(
-            loader, flipper_app_name[selected->type], furi_string_get_cstr(selected->path));
+            loader, flipper_app_name[selected->type], furry_string_get_cstr(selected->path));
     }
 
     if(status != LoaderStatusOk) {
-        FURI_LOG_E(TAG, "loader_start failed: %d", status);
+        FURRY_LOG_E(TAG, "loader_start failed: %d", status);
     }
 
-    furi_record_close(RECORD_LOADER);
+    furry_record_close(RECORD_LOADER);
 }
 
 void archive_scene_browser_callback(ArchiveBrowserEvent event, void* context) {
@@ -73,10 +73,10 @@ void archive_scene_browser_on_enter(void* context) {
     archive_update_focus(browser, archive->text_store);
     view_dispatcher_switch_to_view(archive->view_dispatcher, ArchiveViewBrowser);
 
-    Loader* loader = furi_record_open(RECORD_LOADER);
+    Loader* loader = furry_record_open(RECORD_LOADER);
     archive->loader_stop_subscription =
-        furi_pubsub_subscribe(loader_get_pubsub(loader), archive_loader_callback, archive);
-    furi_record_close(RECORD_LOADER);
+        furry_pubsub_subscribe(loader_get_pubsub(loader), archive_loader_callback, archive);
+    furry_record_close(RECORD_LOADER);
 
     uint32_t state = scene_manager_get_scene_state(archive->scene_manager, ArchiveAppSceneBrowser);
 
@@ -183,13 +183,13 @@ bool archive_scene_browser_on_event(void* context, SceneManagerEvent event) {
             consumed = true;
             break;
         case ArchiveBrowserEventEnterFavMove:
-            furi_string_set(archive->fav_move_str, selected->path);
+            furry_string_set(archive->fav_move_str, selected->path);
             archive_show_file_menu(browser, false);
             archive_favorites_move_mode(archive->browser, true);
             consumed = true;
             break;
         case ArchiveBrowserEventExitFavMove:
-            archive_update_focus(browser, furi_string_get_cstr(archive->fav_move_str));
+            archive_update_focus(browser, furry_string_get_cstr(archive->fav_move_str));
             archive_favorites_move_mode(archive->browser, false);
             consumed = true;
             break;
@@ -219,10 +219,10 @@ bool archive_scene_browser_on_event(void* context, SceneManagerEvent event) {
             if(!archive_is_home(browser)) {
                 archive_leave_dir(browser);
             } else {
-                Loader* loader = furi_record_open(RECORD_LOADER);
-                furi_pubsub_unsubscribe(
+                Loader* loader = furry_record_open(RECORD_LOADER);
+                furry_pubsub_unsubscribe(
                     loader_get_pubsub(loader), archive->loader_stop_subscription);
-                furi_record_close(RECORD_LOADER);
+                furry_record_close(RECORD_LOADER);
 
                 view_dispatcher_stop(archive->view_dispatcher);
             }
@@ -239,7 +239,7 @@ bool archive_scene_browser_on_event(void* context, SceneManagerEvent event) {
 void archive_scene_browser_on_exit(void* context) {
     ArchiveApp* archive = (ArchiveApp*)context;
 
-    Loader* loader = furi_record_open(RECORD_LOADER);
-    furi_pubsub_unsubscribe(loader_get_pubsub(loader), archive->loader_stop_subscription);
-    furi_record_close(RECORD_LOADER);
+    Loader* loader = furry_record_open(RECORD_LOADER);
+    furry_pubsub_unsubscribe(loader_get_pubsub(loader), archive->loader_stop_subscription);
+    furry_record_close(RECORD_LOADER);
 }

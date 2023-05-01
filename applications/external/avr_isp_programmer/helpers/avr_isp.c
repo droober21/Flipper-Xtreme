@@ -2,7 +2,7 @@
 #include "../lib/driver/avr_isp_prog_cmd.h"
 #include "../lib/driver/avr_isp_spi_sw.h"
 
-#include <furi.h>
+#include <furry.h>
 
 #define AVR_ISP_PROG_TX_RX_BUF_SIZE 320
 #define TAG "AvrIsp"
@@ -20,15 +20,15 @@ AvrIsp* avr_isp_alloc(void) {
 }
 
 void avr_isp_free(AvrIsp* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     if(instance->spi) avr_isp_end_pmode(instance);
     free(instance);
 }
 
 void avr_isp_set_tx_callback(AvrIsp* instance, AvrIspCallback callback, void* context) {
-    furi_assert(instance);
-    furi_assert(context);
+    furry_assert(instance);
+    furry_assert(context);
 
     instance->callback = callback;
     instance->context = context;
@@ -40,7 +40,7 @@ uint8_t avr_isp_spi_transaction(
     uint8_t addr_hi,
     uint8_t addr_lo,
     uint8_t data) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     avr_isp_spi_sw_txrx(instance->spi, cmd);
     avr_isp_spi_sw_txrx(instance->spi, addr_hi);
@@ -49,7 +49,7 @@ uint8_t avr_isp_spi_transaction(
 }
 
 static bool avr_isp_set_pmode(AvrIsp* instance, uint8_t a, uint8_t b, uint8_t c, uint8_t d) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     uint8_t res = 0;
     avr_isp_spi_sw_txrx(instance->spi, a);
@@ -60,7 +60,7 @@ static bool avr_isp_set_pmode(AvrIsp* instance, uint8_t a, uint8_t b, uint8_t c,
 }
 
 void avr_isp_end_pmode(AvrIsp* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     if(instance->pmode) {
         avr_isp_spi_sw_res_set(instance->spi, true);
@@ -74,7 +74,7 @@ void avr_isp_end_pmode(AvrIsp* instance) {
 }
 
 static bool avr_isp_start_pmode(AvrIsp* instance, AvrIspSpiSwSpeed spi_speed) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     // Reset target before driving PIN_SCK or PIN_MOSI
 
@@ -94,18 +94,18 @@ static bool avr_isp_start_pmode(AvrIsp* instance, AvrIspSpiSwSpeed spi_speed) {
     avr_isp_spi_sw_sck_set(instance->spi, false);
 
     // discharge PIN_SCK, value arbitrally chosen
-    furi_delay_ms(20);
+    furry_delay_ms(20);
     avr_isp_spi_sw_res_set(instance->spi, true);
 
     // Pulse must be minimum 2 target CPU speed cycles
     // so 100 usec is ok for CPU speeds above 20KHz
-    furi_delay_ms(1);
+    furry_delay_ms(1);
 
     avr_isp_spi_sw_res_set(instance->spi, false);
 
     // Send the enable programming command:
     // datasheet: must be > 20 msec
-    furi_delay_ms(50);
+    furry_delay_ms(50);
     if(avr_isp_set_pmode(instance, AVR_ISP_SET_PMODE)) {
         instance->pmode = true;
         return true;
@@ -114,7 +114,7 @@ static bool avr_isp_start_pmode(AvrIsp* instance, AvrIspSpiSwSpeed spi_speed) {
 }
 
 bool avr_isp_auto_set_spi_speed_start_pmode(AvrIsp* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     AvrIspSpiSwSpeed spi_speed[] = {
         AvrIspSpiSwSpeed1Mhz,
@@ -162,16 +162,16 @@ bool avr_isp_auto_set_spi_speed_start_pmode(AvrIsp* instance) {
 }
 
 static void avr_isp_commit(AvrIsp* instance, uint16_t addr, uint8_t data) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     avr_isp_spi_transaction(instance, AVR_ISP_COMMIT(addr));
     /* polling flash */
     if(data == 0xFF) {
-        furi_delay_ms(5);
+        furry_delay_ms(5);
     } else {
         /* polling flash */
-        uint32_t starttime = furi_get_tick();
-        while((furi_get_tick() - starttime) < 30) {
+        uint32_t starttime = furry_get_tick();
+        while((furry_get_tick() - starttime) < 30) {
             if(avr_isp_spi_transaction(instance, AVR_ISP_READ_FLASH_HI(addr)) != 0xFF) {
                 break;
             };
@@ -180,7 +180,7 @@ static void avr_isp_commit(AvrIsp* instance, uint16_t addr, uint8_t data) {
 }
 
 static uint16_t avr_isp_current_page(AvrIsp* instance, uint32_t addr, uint16_t page_size) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     uint16_t page = 0;
     switch(page_size) {
@@ -211,7 +211,7 @@ static bool avr_isp_flash_write_pages(
     uint16_t page_size,
     uint8_t* data,
     uint32_t data_size) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     size_t x = 0;
     uint16_t page = avr_isp_current_page(instance, addr, page_size);
@@ -230,13 +230,13 @@ static bool avr_isp_flash_write_pages(
 }
 
 bool avr_isp_erase_chip(AvrIsp* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     bool ret = false;
     if(!instance->pmode) avr_isp_auto_set_spi_speed_start_pmode(instance);
     if(instance->pmode) {
         avr_isp_spi_transaction(instance, AVR_ISP_ERASE_CHIP);
-        furi_delay_ms(100);
+        furry_delay_ms(100);
         avr_isp_end_pmode(instance);
         ret = true;
     }
@@ -245,11 +245,11 @@ bool avr_isp_erase_chip(AvrIsp* instance) {
 
 static bool
     avr_isp_eeprom_write(AvrIsp* instance, uint16_t addr, uint8_t* data, uint32_t data_size) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     for(uint16_t i = 0; i < data_size; i++) {
         avr_isp_spi_transaction(instance, AVR_ISP_WRITE_EEPROM(addr, data[i]));
-        furi_delay_ms(10);
+        furry_delay_ms(10);
         addr++;
     }
     return true;
@@ -263,7 +263,7 @@ bool avr_isp_write_page(
     uint16_t page_size,
     uint8_t* data,
     uint32_t data_size) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     bool ret = false;
     switch(mem_type) {
@@ -280,7 +280,7 @@ bool avr_isp_write_page(
         break;
 
     default:
-        furi_crash(TAG " Incorrect mem type.");
+        furry_crash(TAG " Incorrect mem type.");
         break;
     }
 
@@ -293,7 +293,7 @@ static bool avr_isp_flash_read_page(
     uint16_t page_size,
     uint8_t* data,
     uint32_t data_size) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     if(page_size > data_size) return false;
     for(uint16_t i = 0; i < page_size; i += 2) {
@@ -310,7 +310,7 @@ static bool avr_isp_eeprom_read_page(
     uint16_t page_size,
     uint8_t* data,
     uint32_t data_size) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     if(page_size > data_size) return false;
     for(uint16_t i = 0; i < page_size; i++) {
@@ -327,7 +327,7 @@ bool avr_isp_read_page(
     uint16_t page_size,
     uint8_t* data,
     uint32_t data_size) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     bool res = false;
     if(mem_type == STK_SET_FLASH_TYPE)
@@ -339,7 +339,7 @@ bool avr_isp_read_page(
 }
 
 AvrIspSignature avr_isp_read_signature(AvrIsp* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     AvrIspSignature signature;
     signature.vendor = avr_isp_spi_transaction(instance, AVR_ISP_READ_VENDOR);
@@ -349,11 +349,11 @@ AvrIspSignature avr_isp_read_signature(AvrIsp* instance) {
 }
 
 uint8_t avr_isp_read_lock_byte(AvrIsp* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     uint8_t data = 0;
-    uint32_t starttime = furi_get_tick();
-    while((furi_get_tick() - starttime) < 300) {
+    uint32_t starttime = furry_get_tick();
+    while((furry_get_tick() - starttime) < 300) {
         data = avr_isp_spi_transaction(instance, AVR_ISP_READ_LOCK_BYTE);
         if(avr_isp_spi_transaction(instance, AVR_ISP_READ_LOCK_BYTE) == data) {
             break;
@@ -364,7 +364,7 @@ uint8_t avr_isp_read_lock_byte(AvrIsp* instance) {
 }
 
 bool avr_isp_write_lock_byte(AvrIsp* instance, uint8_t lock) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     bool ret = false;
     if(avr_isp_read_lock_byte(instance) == lock) {
@@ -372,8 +372,8 @@ bool avr_isp_write_lock_byte(AvrIsp* instance, uint8_t lock) {
     } else {
         avr_isp_spi_transaction(instance, AVR_ISP_WRITE_LOCK_BYTE(lock));
         /* polling lock byte */
-        uint32_t starttime = furi_get_tick();
-        while((furi_get_tick() - starttime) < 30) {
+        uint32_t starttime = furry_get_tick();
+        while((furry_get_tick() - starttime) < 30) {
             if(avr_isp_spi_transaction(instance, AVR_ISP_READ_LOCK_BYTE) == lock) {
                 ret = true;
                 break;
@@ -384,11 +384,11 @@ bool avr_isp_write_lock_byte(AvrIsp* instance, uint8_t lock) {
 }
 
 uint8_t avr_isp_read_fuse_low(AvrIsp* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     uint8_t data = 0;
-    uint32_t starttime = furi_get_tick();
-    while((furi_get_tick() - starttime) < 300) {
+    uint32_t starttime = furry_get_tick();
+    while((furry_get_tick() - starttime) < 300) {
         data = avr_isp_spi_transaction(instance, AVR_ISP_READ_FUSE_LOW);
         if(avr_isp_spi_transaction(instance, AVR_ISP_READ_FUSE_LOW) == data) {
             break;
@@ -399,7 +399,7 @@ uint8_t avr_isp_read_fuse_low(AvrIsp* instance) {
 }
 
 bool avr_isp_write_fuse_low(AvrIsp* instance, uint8_t lfuse) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     bool ret = false;
     if(avr_isp_read_fuse_low(instance) == lfuse) {
@@ -407,8 +407,8 @@ bool avr_isp_write_fuse_low(AvrIsp* instance, uint8_t lfuse) {
     } else {
         avr_isp_spi_transaction(instance, AVR_ISP_WRITE_FUSE_LOW(lfuse));
         /* polling fuse */
-        uint32_t starttime = furi_get_tick();
-        while((furi_get_tick() - starttime) < 30) {
+        uint32_t starttime = furry_get_tick();
+        while((furry_get_tick() - starttime) < 30) {
             if(avr_isp_spi_transaction(instance, AVR_ISP_READ_FUSE_LOW) == lfuse) {
                 ret = true;
                 break;
@@ -419,11 +419,11 @@ bool avr_isp_write_fuse_low(AvrIsp* instance, uint8_t lfuse) {
 }
 
 uint8_t avr_isp_read_fuse_high(AvrIsp* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     uint8_t data = 0;
-    uint32_t starttime = furi_get_tick();
-    while((furi_get_tick() - starttime) < 300) {
+    uint32_t starttime = furry_get_tick();
+    while((furry_get_tick() - starttime) < 300) {
         data = avr_isp_spi_transaction(instance, AVR_ISP_READ_FUSE_HIGH);
         if(avr_isp_spi_transaction(instance, AVR_ISP_READ_FUSE_HIGH) == data) {
             break;
@@ -434,7 +434,7 @@ uint8_t avr_isp_read_fuse_high(AvrIsp* instance) {
 }
 
 bool avr_isp_write_fuse_high(AvrIsp* instance, uint8_t hfuse) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     bool ret = false;
     if(avr_isp_read_fuse_high(instance) == hfuse) {
@@ -442,8 +442,8 @@ bool avr_isp_write_fuse_high(AvrIsp* instance, uint8_t hfuse) {
     } else {
         avr_isp_spi_transaction(instance, AVR_ISP_WRITE_FUSE_HIGH(hfuse));
         /* polling fuse */
-        uint32_t starttime = furi_get_tick();
-        while((furi_get_tick() - starttime) < 30) {
+        uint32_t starttime = furry_get_tick();
+        while((furry_get_tick() - starttime) < 30) {
             if(avr_isp_spi_transaction(instance, AVR_ISP_READ_FUSE_HIGH) == hfuse) {
                 ret = true;
                 break;
@@ -454,11 +454,11 @@ bool avr_isp_write_fuse_high(AvrIsp* instance, uint8_t hfuse) {
 }
 
 uint8_t avr_isp_read_fuse_extended(AvrIsp* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     uint8_t data = 0;
-    uint32_t starttime = furi_get_tick();
-    while((furi_get_tick() - starttime) < 300) {
+    uint32_t starttime = furry_get_tick();
+    while((furry_get_tick() - starttime) < 300) {
         data = avr_isp_spi_transaction(instance, AVR_ISP_READ_FUSE_EXTENDED);
         if(avr_isp_spi_transaction(instance, AVR_ISP_READ_FUSE_EXTENDED) == data) {
             break;
@@ -469,7 +469,7 @@ uint8_t avr_isp_read_fuse_extended(AvrIsp* instance) {
 }
 
 bool avr_isp_write_fuse_extended(AvrIsp* instance, uint8_t efuse) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     bool ret = false;
     if(avr_isp_read_fuse_extended(instance) == efuse) {
@@ -477,8 +477,8 @@ bool avr_isp_write_fuse_extended(AvrIsp* instance, uint8_t efuse) {
     } else {
         avr_isp_spi_transaction(instance, AVR_ISP_WRITE_FUSE_EXTENDED(efuse));
         /* polling fuse */
-        uint32_t starttime = furi_get_tick();
-        while((furi_get_tick() - starttime) < 30) {
+        uint32_t starttime = furry_get_tick();
+        while((furry_get_tick() - starttime) < 30) {
             if(avr_isp_spi_transaction(instance, AVR_ISP_READ_FUSE_EXTENDED) == efuse) {
                 ret = true;
                 break;
@@ -489,8 +489,8 @@ bool avr_isp_write_fuse_extended(AvrIsp* instance, uint8_t efuse) {
 }
 
 void avr_isp_write_extended_addr(AvrIsp* instance, uint8_t extended_addr) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     avr_isp_spi_transaction(instance, AVR_ISP_EXTENDED_ADDR(extended_addr));
-    furi_delay_ms(10);
+    furry_delay_ms(10);
 }

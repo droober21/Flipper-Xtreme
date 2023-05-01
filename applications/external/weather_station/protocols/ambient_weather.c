@@ -99,13 +99,13 @@ void* ws_protocol_decoder_ambient_weather_alloc(SubGhzEnvironment* environment) 
 }
 
 void ws_protocol_decoder_ambient_weather_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderAmbient_Weather* instance = context;
     free(instance);
 }
 
 void ws_protocol_decoder_ambient_weather_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderAmbient_Weather* instance = context;
     manchester_advance(
         instance->manchester_saved_state,
@@ -163,7 +163,7 @@ static void ws_protocol_ambient_weather_remote_controller(WSBlockGeneric* instan
 }
 
 void ws_protocol_decoder_ambient_weather_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderAmbient_Weather* instance = context;
 
     ManchesterEvent event = ManchesterEventReset;
@@ -222,7 +222,7 @@ void ws_protocol_decoder_ambient_weather_feed(void* context, bool level, uint32_
 }
 
 uint8_t ws_protocol_decoder_ambient_weather_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderAmbient_Weather* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -232,14 +232,14 @@ SubGhzProtocolStatus ws_protocol_decoder_ambient_weather_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderAmbient_Weather* instance = context;
     return ws_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     ws_protocol_decoder_ambient_weather_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderAmbient_Weather* instance = context;
     return ws_block_generic_deserialize_check_count_bit(
         &instance->generic,
@@ -247,10 +247,10 @@ SubGhzProtocolStatus
         ws_protocol_ambient_weather_const.min_count_bit_for_found);
 }
 
-void ws_protocol_decoder_ambient_weather_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void ws_protocol_decoder_ambient_weather_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     WSProtocolDecoderAmbient_Weather* instance = context;
-    furi_string_printf(
+    furry_string_printf(
         output,
         "%s %dbit\r\n"
         "Key:0x%lX%08lX\r\n"

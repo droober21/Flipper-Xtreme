@@ -2,7 +2,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <furi.h>
+#include <furry.h>
 
 #define FREQUENCY 261.63f
 #define SLEEP 10
@@ -10,7 +10,7 @@
 #define LINE "-"
 #define SPACE " "
 
-typedef void (*MorseCodeWorkerCallback)(FuriString* buffer, void* context);
+typedef void (*MorseCodeWorkerCallback)(FurryString* buffer, void* context);
 
 typedef struct MorseCodeWorker MorseCodeWorker;
 

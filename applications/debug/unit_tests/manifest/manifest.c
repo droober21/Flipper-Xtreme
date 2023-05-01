@@ -1,4 +1,4 @@
-#include <furi.c>
+#include <furry.c>
 #include "../minunit.h"
 #include <update_util/resources/manifest.h>
 
@@ -18,7 +18,7 @@ MU_TEST(manifest_iteration_test) {
     bool result = true;
     size_t counters[5] = {0};
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     ResourceManifestReader* manifest_reader = resource_manifest_reader_alloc(storage);
     do {
         // Open manifest file
@@ -30,7 +30,7 @@ MU_TEST(manifest_iteration_test) {
         // Iterate forward
         ResourceManifestEntry* entry_ptr = NULL;
         while((entry_ptr = resource_manifest_reader_next(manifest_reader))) {
-            FURI_LOG_D(TAG, "F:%u:%s", entry_ptr->type, furi_string_get_cstr(entry_ptr->name));
+            FURRY_LOG_D(TAG, "F:%u:%s", entry_ptr->type, furry_string_get_cstr(entry_ptr->name));
             if(entry_ptr->type > 4) {
                 mu_fail("entry_ptr->type > 4\r\n");
                 result = false;
@@ -42,7 +42,7 @@ MU_TEST(manifest_iteration_test) {
 
         // Iterate backward
         while((entry_ptr = resource_manifest_reader_previous(manifest_reader))) {
-            FURI_LOG_D(TAG, "B:%u:%s", entry_ptr->type, furi_string_get_cstr(entry_ptr->name));
+            FURRY_LOG_D(TAG, "B:%u:%s", entry_ptr->type, furry_string_get_cstr(entry_ptr->name));
             if(entry_ptr->type > 4) {
                 mu_fail("entry_ptr->type > 4\r\n");
                 result = false;
@@ -53,7 +53,7 @@ MU_TEST(manifest_iteration_test) {
     } while(false);
 
     resource_manifest_reader_free(manifest_reader);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     mu_assert(counters[ResourceManifestEntryTypeUnknown] == 0, "Unknown counter != 0\r\n");
     mu_assert(counters[ResourceManifestEntryTypeVersion] == 0, "Version counter != 0\r\n");

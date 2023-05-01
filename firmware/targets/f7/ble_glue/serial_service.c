@@ -2,7 +2,7 @@
 #include "app_common.h"
 #include <ble/ble.h>
 
-#include <furi.h>
+#include <furry.h>
 
 #define TAG "BtSerialSvc"
 
@@ -12,7 +12,7 @@ typedef struct {
     uint16_t tx_char_handle;
     uint16_t flow_ctrl_char_handle;
     uint16_t rpc_status_char_handle;
-    FuriMutex* buff_size_mtx;
+    FurryMutex* buff_size_mtx;
     uint32_t buff_size;
     uint16_t bytes_ready_to_receive;
     SerialServiceEventCallback callback;
@@ -43,15 +43,15 @@ static SVCCTL_EvtAckStatus_t serial_svc_event_handler(void* event) {
             if(attribute_modified->Attr_Handle == serial_svc->rx_char_handle + 2) {
                 // Descriptor handle
                 ret = SVCCTL_EvtAckFlowEnable;
-                FURI_LOG_D(TAG, "RX descriptor event");
+                FURRY_LOG_D(TAG, "RX descriptor event");
             } else if(attribute_modified->Attr_Handle == serial_svc->rx_char_handle + 1) {
-                FURI_LOG_D(TAG, "Received %d bytes", attribute_modified->Attr_Data_Length);
+                FURRY_LOG_D(TAG, "Received %d bytes", attribute_modified->Attr_Data_Length);
                 if(serial_svc->callback) {
-                    furi_check(
-                        furi_mutex_acquire(serial_svc->buff_size_mtx, FuriWaitForever) ==
-                        FuriStatusOk);
+                    furry_check(
+                        furry_mutex_acquire(serial_svc->buff_size_mtx, FurryWaitForever) ==
+                        FurryStatusOk);
                     if(attribute_modified->Attr_Data_Length > serial_svc->bytes_ready_to_receive) {
-                        FURI_LOG_W(
+                        FURRY_LOG_W(
                             TAG,
                             "Received %d, while was ready to receive %d bytes. Can lead to buffer overflow!",
                             attribute_modified->Attr_Data_Length,
@@ -66,8 +66,8 @@ static SVCCTL_EvtAckStatus_t serial_svc_event_handler(void* event) {
                             .size = attribute_modified->Attr_Data_Length,
                         }};
                     uint32_t buff_free_size = serial_svc->callback(event, serial_svc->context);
-                    FURI_LOG_D(TAG, "Available buff size: %ld", buff_free_size);
-                    furi_check(furi_mutex_release(serial_svc->buff_size_mtx) == FuriStatusOk);
+                    FURRY_LOG_D(TAG, "Available buff size: %ld", buff_free_size);
+                    furry_check(furry_mutex_release(serial_svc->buff_size_mtx) == FurryStatusOk);
                 }
                 ret = SVCCTL_EvtAckFlowEnable;
             } else if(attribute_modified->Attr_Handle == serial_svc->rpc_status_char_handle + 1) {
@@ -83,7 +83,7 @@ static SVCCTL_EvtAckStatus_t serial_svc_event_handler(void* event) {
                 }
             }
         } else if(blecore_evt->ecode == ACI_GATT_SERVER_CONFIRMATION_VSEVT_CODE) {
-            FURI_LOG_T(TAG, "Ack received");
+            FURRY_LOG_T(TAG, "Ack received");
             if(serial_svc->callback) {
                 SerialServiceEvent event = {
                     .event = SerialServiceEventTypeDataSent,
@@ -104,7 +104,7 @@ static void serial_svc_update_rpc_char(SerialServiceRpcStatus status) {
         sizeof(SerialServiceRpcStatus),
         (uint8_t*)&status);
     if(ble_status) {
-        FURI_LOG_E(TAG, "Failed to update RPC status char: %d", ble_status);
+        FURRY_LOG_E(TAG, "Failed to update RPC status char: %d", ble_status);
     }
 }
 
@@ -118,7 +118,7 @@ void serial_svc_start() {
     status = aci_gatt_add_service(
         UUID_TYPE_128, (Service_UUID_t*)service_uuid, PRIMARY_SERVICE, 12, &serial_svc->svc_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add Serial service: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add Serial service: %d", status);
     }
 
     // Add RX characteristics
@@ -134,7 +134,7 @@ void serial_svc_start() {
         CHAR_VALUE_LEN_VARIABLE,
         &serial_svc->rx_char_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add RX characteristic: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add RX characteristic: %d", status);
     }
 
     // Add TX characteristic
@@ -150,7 +150,7 @@ void serial_svc_start() {
         CHAR_VALUE_LEN_VARIABLE,
         &serial_svc->tx_char_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add TX characteristic: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add TX characteristic: %d", status);
     }
     // Add Flow Control characteristic
     status = aci_gatt_add_char(
@@ -165,7 +165,7 @@ void serial_svc_start() {
         CHAR_VALUE_LEN_CONSTANT,
         &serial_svc->flow_ctrl_char_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add Flow Control characteristic: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add Flow Control characteristic: %d", status);
     }
     // Add RPC status characteristic
     status = aci_gatt_add_char(
@@ -180,18 +180,18 @@ void serial_svc_start() {
         CHAR_VALUE_LEN_CONSTANT,
         &serial_svc->rpc_status_char_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add RPC status characteristic: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add RPC status characteristic: %d", status);
     }
     serial_svc_update_rpc_char(SerialServiceRpcStatusNotActive);
     // Allocate buffer size mutex
-    serial_svc->buff_size_mtx = furi_mutex_alloc(FuriMutexTypeNormal);
+    serial_svc->buff_size_mtx = furry_mutex_alloc(FurryMutexTypeNormal);
 }
 
 void serial_svc_set_callbacks(
     uint16_t buff_size,
     SerialServiceEventCallback callback,
     void* context) {
-    furi_assert(serial_svc);
+    furry_assert(serial_svc);
     serial_svc->callback = callback;
     serial_svc->context = context;
     serial_svc->buff_size = buff_size;
@@ -206,12 +206,12 @@ void serial_svc_set_callbacks(
 }
 
 void serial_svc_notify_buffer_is_empty() {
-    furi_assert(serial_svc);
-    furi_assert(serial_svc->buff_size_mtx);
+    furry_assert(serial_svc);
+    furry_assert(serial_svc->buff_size_mtx);
 
-    furi_check(furi_mutex_acquire(serial_svc->buff_size_mtx, FuriWaitForever) == FuriStatusOk);
+    furry_check(furry_mutex_acquire(serial_svc->buff_size_mtx, FurryWaitForever) == FurryStatusOk);
     if(serial_svc->bytes_ready_to_receive == 0) {
-        FURI_LOG_D(TAG, "Buffer is empty. Notifying client");
+        FURRY_LOG_D(TAG, "Buffer is empty. Notifying client");
         serial_svc->bytes_ready_to_receive = serial_svc->buff_size;
         uint32_t buff_size_reversed = REVERSE_BYTES_U32(serial_svc->buff_size);
         aci_gatt_update_char_value(
@@ -221,7 +221,7 @@ void serial_svc_notify_buffer_is_empty() {
             sizeof(uint32_t),
             (uint8_t*)&buff_size_reversed);
     }
-    furi_check(furi_mutex_release(serial_svc->buff_size_mtx) == FuriStatusOk);
+    furry_check(furry_mutex_release(serial_svc->buff_size_mtx) == FurryStatusOk);
 }
 
 void serial_svc_stop() {
@@ -230,27 +230,27 @@ void serial_svc_stop() {
         // Delete characteristics
         status = aci_gatt_del_char(serial_svc->svc_handle, serial_svc->tx_char_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete TX characteristic: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete TX characteristic: %d", status);
         }
         status = aci_gatt_del_char(serial_svc->svc_handle, serial_svc->rx_char_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete RX characteristic: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete RX characteristic: %d", status);
         }
         status = aci_gatt_del_char(serial_svc->svc_handle, serial_svc->flow_ctrl_char_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete Flow Control characteristic: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete Flow Control characteristic: %d", status);
         }
         status = aci_gatt_del_char(serial_svc->svc_handle, serial_svc->rpc_status_char_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete RPC Status characteristic: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete RPC Status characteristic: %d", status);
         }
         // Delete service
         status = aci_gatt_del_service(serial_svc->svc_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete Serial service: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete Serial service: %d", status);
         }
         // Delete buffer size mutex
-        furi_mutex_free(serial_svc->buff_size_mtx);
+        furry_mutex_free(serial_svc->buff_size_mtx);
         free(serial_svc);
         serial_svc = NULL;
     }
@@ -281,7 +281,7 @@ bool serial_svc_update_tx(uint8_t* data, uint16_t data_len) {
             data + value_offset);
 
         if(result) {
-            FURI_LOG_E(TAG, "Failed updating TX characteristic: %d", result);
+            FURRY_LOG_E(TAG, "Failed updating TX characteristic: %d", result);
             return false;
         }
     }
@@ -290,6 +290,6 @@ bool serial_svc_update_tx(uint8_t* data, uint16_t data_len) {
 }
 
 void serial_svc_set_rpc_status(SerialServiceRpcStatus status) {
-    furi_assert(serial_svc);
+    furry_assert(serial_svc);
     serial_svc_update_rpc_char(status);
 }

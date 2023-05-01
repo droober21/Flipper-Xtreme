@@ -4,8 +4,8 @@
 extern "C" {
 #endif
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <bt/bt_service/bt_i.h>
 
 #include <gui/view_dispatcher.h>
@@ -59,12 +59,12 @@ struct BadKbState {
 typedef struct BadKbApp BadKbApp;
 
 typedef struct {
-    FuriHalUsbHidConfig hid_cfg;
-    FuriThread* thread;
+    FurryHalUsbHidConfig hid_cfg;
+    FurryThread* thread;
     BadKbState st;
 
-    FuriString* file_path;
-    FuriString* keyboard_layout;
+    FurryString* file_path;
+    FurryString* keyboard_layout;
     uint8_t file_buf[FILE_BUFFER_LEN + 1];
     uint8_t buf_start;
     uint8_t buf_len;
@@ -74,23 +74,23 @@ typedef struct {
     uint32_t stringdelay;
     uint16_t layout[128];
 
-    FuriString* line;
-    FuriString* line_prev;
+    FurryString* line;
+    FurryString* line_prev;
     uint32_t repeat_cnt;
     uint8_t key_hold_nb;
 
-    FuriString* string_print;
+    FurryString* string_print;
     size_t string_print_pos;
 
     Bt* bt;
     BadKbApp* app;
 } BadKbScript;
 
-BadKbScript* bad_kb_script_open(FuriString* file_path, Bt* bt, BadKbApp* app);
+BadKbScript* bad_kb_script_open(FurryString* file_path, Bt* bt, BadKbApp* app);
 
 void bad_kb_script_close(BadKbScript* bad_kb);
 
-void bad_kb_script_set_keyboard_layout(BadKbScript* bad_kb, FuriString* layout_path);
+void bad_kb_script_set_keyboard_layout(BadKbScript* bad_kb, FurryString* layout_path);
 
 void bad_kb_script_start(BadKbScript* bad_kb);
 
@@ -100,7 +100,7 @@ void bad_kb_script_toggle(BadKbScript* bad_kb);
 
 BadKbState* bad_kb_script_get_state(BadKbScript* bad_kb);
 
-#define BAD_KB_ADV_NAME_MAX_LEN FURI_HAL_BT_ADV_NAME_LENGTH
+#define BAD_KB_ADV_NAME_MAX_LEN FURRY_HAL_BT_ADV_NAME_LENGTH
 #define BAD_KB_MAC_ADDRESS_LEN GAP_MAC_ADDR_SIZE
 
 typedef enum {
@@ -111,7 +111,7 @@ typedef enum {
 typedef struct {
     char bt_name[BAD_KB_ADV_NAME_MAX_LEN + 1];
     uint8_t bt_mac[BAD_KB_MAC_ADDRESS_LEN];
-    FuriHalUsbInterface* usb_mode;
+    FurryHalUsbInterface* usb_mode;
     GapPairing bt_mode;
 } BadKbConfig;
 
@@ -127,8 +127,8 @@ struct BadKbApp {
     ByteInput* byte_input;
 
     BadKbAppError error;
-    FuriString* file_path;
-    FuriString* keyboard_layout;
+    FurryString* file_path;
+    FurryString* keyboard_layout;
     BadKb* bad_kb_view;
     BadKbScript* bad_kb_script;
 
@@ -137,8 +137,8 @@ struct BadKbApp {
     bool bt_remember;
     BadKbConfig config;
     BadKbConfig prev_config;
-    FuriThread* conn_init_thread;
-    FuriThread* switch_mode_thread;
+    FurryThread* conn_init_thread;
+    FurryThread* switch_mode_thread;
 };
 
 int32_t bad_kb_config_switch_mode(BadKbApp* app);

@@ -17,7 +17,7 @@ extern const SubGhzProtocolRegistry protoview_protocol_registry;
  * and setting color to black. */
 static void render_callback(Canvas* const canvas, void* ctx) {
     ProtoViewApp* app = ctx;
-    furi_mutex_acquire(app->view_updating_mutex, FuriWaitForever);
+    furry_mutex_acquire(app->view_updating_mutex, FurryWaitForever);
 
     /* Clear screen. */
     canvas_set_color(canvas, ColorWhite);
@@ -44,20 +44,20 @@ static void render_callback(Canvas* const canvas, void* ctx) {
         render_view_build_message(canvas, app);
         break;
     default:
-        furi_crash(TAG "Invalid view selected");
+        furry_crash(TAG "Invalid view selected");
         break;
     }
 
     /* Draw the alert box if set. */
     ui_draw_alert_if_needed(canvas, app);
-    furi_mutex_release(app->view_updating_mutex);
+    furry_mutex_release(app->view_updating_mutex);
 }
 
 /* Here all we do is putting the events into the queue that will be handled
  * in the while() loop of the app entry point function. */
 static void input_callback(InputEvent* input_event, void* ctx) {
     ProtoViewApp* app = ctx;
-    furi_message_queue_put(app->event_queue, input_event, FuriWaitForever);
+    furry_message_queue_put(app->event_queue, input_event, FurryWaitForever);
 }
 
 /* Called to switch view (when left/right is pressed). Handles
@@ -68,7 +68,7 @@ static void input_callback(InputEvent* input_event, void* ctx) {
  * special views ViewGoNext and ViewGoPrev in order to move to
  * the logical next/prev view. */
 static void app_switch_view(ProtoViewApp* app, ProtoViewCurrentView switchto) {
-    furi_mutex_acquire(app->view_updating_mutex, FuriWaitForever);
+    furry_mutex_acquire(app->view_updating_mutex, FurryWaitForever);
 
     /* Switch to the specified view. */
     ProtoViewCurrentView old = app->current_view;
@@ -113,7 +113,7 @@ static void app_switch_view(ProtoViewApp* app, ProtoViewCurrentView switchto) {
     /* If there is an alert on screen, dismiss it: if the user is
      * switching view she already read it. */
     ui_dismiss_alert(app);
-    furi_mutex_release(app->view_updating_mutex);
+    furry_mutex_release(app->view_updating_mutex);
 }
 
 /* Allocate the application state and initialize a number of stuff.
@@ -130,19 +130,19 @@ ProtoViewApp* protoview_app_alloc() {
     subghz_setting_load(app->setting, EXT_PATH("subghz/assets/setting_user"));
 
     // GUI
-    app->gui = furi_record_open(RECORD_GUI);
-    app->notification = furi_record_open(RECORD_NOTIFICATION);
+    app->gui = furry_record_open(RECORD_GUI);
+    app->notification = furry_record_open(RECORD_NOTIFICATION);
     app->view_port = view_port_alloc();
     view_port_draw_callback_set(app->view_port, render_callback, app);
     view_port_input_callback_set(app->view_port, input_callback, app);
     gui_add_view_port(app->gui, app->view_port, GuiLayerFullscreen);
-    app->event_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+    app->event_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
     app->view_dispatcher = NULL;
     app->text_input = NULL;
     app->show_text_input = false;
     app->alert_dismiss_time = 0;
     app->current_view = ViewRawPulses;
-    app->view_updating_mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    app->view_updating_mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     for(int j = 0; j < ViewLast; j++) app->current_subview[j] = 0;
     app->direct_sampling_enabled = false;
     app->view_privdata = malloc(PROTOVIEW_VIEW_PRIVDATA_LEN);
@@ -169,15 +169,15 @@ ProtoViewApp* protoview_app_alloc() {
     app->modulation = 0; /* Defaults to ProtoViewModulations[0]. */
 
     // Enable power for External CC1101 if it is connected
-    furi_hal_subghz_enable_ext_power();
+    furry_hal_subghz_enable_ext_power();
     // Auto switch to internal radio if external radio is not available
-    furi_delay_ms(15);
-    if(!furi_hal_subghz_check_radio()) {
-        furi_hal_subghz_select_radio_type(SubGhzRadioInternal);
-        furi_hal_subghz_init_radio_type(SubGhzRadioInternal);
+    furry_delay_ms(15);
+    if(!furry_hal_subghz_check_radio()) {
+        furry_hal_subghz_select_radio_type(SubGhzRadioInternal);
+        furry_hal_subghz_init_radio_type(SubGhzRadioInternal);
     }
 
-    furi_hal_power_suppress_charge_enter();
+    furry_hal_power_suppress_charge_enter();
     app->running = 1;
 
     return app;
@@ -187,24 +187,24 @@ ProtoViewApp* protoview_app_alloc() {
  * Flipper OS, once the application exits, will be able to reclaim space
  * even if we forget to free something here. */
 void protoview_app_free(ProtoViewApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // Put CC1101 on sleep, this also restores charging.
     radio_sleep(app);
 
     // Disable power for External CC1101 if it was enabled and module is connected
-    furi_hal_subghz_disable_ext_power();
+    furry_hal_subghz_disable_ext_power();
     // Reinit SPI handles for internal radio / nfc
-    furi_hal_subghz_init_radio_type(SubGhzRadioInternal);
+    furry_hal_subghz_init_radio_type(SubGhzRadioInternal);
 
     // View related.
     view_port_enabled_set(app->view_port, false);
     gui_remove_view_port(app->gui, app->view_port);
     view_port_free(app->view_port);
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_message_queue_free(app->event_queue);
-    furi_mutex_free(app->view_updating_mutex);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_message_queue_free(app->event_queue);
+    furry_mutex_free(app->view_updating_mutex);
     app->gui = NULL;
 
     // Frequency setting.
@@ -216,7 +216,7 @@ void protoview_app_free(ProtoViewApp* app) {
     // Raw samples buffers.
     raw_samples_free(RawSamples);
     raw_samples_free(DetectedSamples);
-    furi_hal_power_suppress_charge_exit();
+    furry_hal_power_suppress_charge_exit();
 
     free(app);
 }
@@ -265,8 +265,8 @@ int32_t protoview_app_entry(void* p) {
     DOLPHIN_DEED(DolphinDeedPluginStart);
 
     /* Create a timer. We do data analysis in the callback. */
-    FuriTimer* timer = furi_timer_alloc(timer_callback, FuriTimerTypePeriodic, app);
-    furi_timer_start(timer, furi_kernel_get_tick_frequency() / 8);
+    FurryTimer* timer = furry_timer_alloc(timer_callback, FurryTimerTypePeriodic, app);
+    furry_timer_start(timer, furry_kernel_get_tick_frequency() / 8);
 
     /* Start listening to signals immediately. */
     radio_begin(app);
@@ -279,10 +279,10 @@ int32_t protoview_app_entry(void* p) {
      * view_port_update() in order to refresh our screen content. */
     InputEvent input;
     while(app->running) {
-        FuriStatus qstat = furi_message_queue_get(app->event_queue, &input, 100);
-        if(qstat == FuriStatusOk) {
+        FurryStatus qstat = furry_message_queue_get(app->event_queue, &input, 100);
+        if(qstat == FurryStatusOk) {
             if(DEBUG_MSG)
-                FURI_LOG_E(TAG, "Main Loop - Input: type %d key %u", input.type, input.key);
+                FURRY_LOG_E(TAG, "Main Loop - Input: type %d key %u", input.type, input.key);
 
             /* Handle navigation here. Then handle view-specific inputs
              * in the view specific handling function. */
@@ -328,7 +328,7 @@ int32_t protoview_app_entry(void* p) {
                     process_input_build_message(app, input);
                     break;
                 default:
-                    furi_crash(TAG "Invalid view selected");
+                    furry_crash(TAG "Invalid view selected");
                     break;
                 }
             }
@@ -338,7 +338,7 @@ int32_t protoview_app_entry(void* p) {
             if(DEBUG_MSG) {
                 static int c = 0;
                 c++;
-                if(!(c % 20)) FURI_LOG_E(TAG, "Loop timeout");
+                if(!(c % 20)) FURRY_LOG_E(TAG, "Loop timeout");
             }
         }
         if(app->show_text_input) {
@@ -394,12 +394,12 @@ int32_t protoview_app_entry(void* p) {
 
     /* App no longer running. Shut down and free. */
     if(app->txrx->txrx_state == TxRxStateRx) {
-        FURI_LOG_E(TAG, "Putting CC1101 to sleep before exiting.");
+        FURRY_LOG_E(TAG, "Putting CC1101 to sleep before exiting.");
         radio_rx_end(app);
         radio_sleep(app);
     }
 
-    furi_timer_free(timer);
+    furry_timer_free(timer);
     protoview_app_free(app);
     return 0;
 }

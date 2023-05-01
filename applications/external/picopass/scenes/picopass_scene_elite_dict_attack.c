@@ -11,13 +11,13 @@ typedef enum {
 } DictAttackState;
 
 void picopass_dict_attack_worker_callback(PicopassWorkerEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Picopass* picopass = context;
     view_dispatcher_send_custom_event(picopass->view_dispatcher, event);
 }
 
 void picopass_dict_attack_result_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Picopass* picopass = context;
     view_dispatcher_send_custom_event(
         picopass->view_dispatcher, PicopassCustomEventDictAttackSkip);
@@ -33,17 +33,17 @@ static void
     // Identify scene state
     if(state == DictAttackStateIdle) {
         if(iclass_elite_dict_check_presence(IclassEliteDictTypeUser)) {
-            FURI_LOG_D(TAG, "Starting with user dictionary");
+            FURRY_LOG_D(TAG, "Starting with user dictionary");
             state = DictAttackStateUserDictInProgress;
         } else {
-            FURI_LOG_D(TAG, "Starting with standard dictionary");
+            FURRY_LOG_D(TAG, "Starting with standard dictionary");
             state = DictAttackStateStandardDictInProgress;
         }
     } else if(state == DictAttackStateUserDictInProgress) {
-        FURI_LOG_D(TAG, "Moving from user dictionary to standard dictionary");
+        FURRY_LOG_D(TAG, "Moving from user dictionary to standard dictionary");
         state = DictAttackStateStandardDictInProgress;
     } else if(state == DictAttackStateStandardDictInProgress) {
-        FURI_LOG_D(TAG, "Moving from standard dictionary to elite dictionary");
+        FURRY_LOG_D(TAG, "Moving from standard dictionary to elite dictionary");
         state = DictAttackStateFlipperDictInProgress;
     }
 
@@ -56,7 +56,7 @@ static void
 
         // If failed to load user dictionary - try the system dictionary
         if(!dict) {
-            FURI_LOG_E(TAG, "User dictionary not found");
+            FURRY_LOG_E(TAG, "User dictionary not found");
             state = DictAttackStateStandardDictInProgress;
         }
     }
@@ -67,7 +67,7 @@ static void
         dict = iclass_elite_dict_alloc(IclassStandardDictTypeFlipper);
 
         if(!dict) {
-            FURI_LOG_E(TAG, "Flipper standard dictionary not found");
+            FURRY_LOG_E(TAG, "Flipper standard dictionary not found");
             state = DictAttackStateFlipperDictInProgress;
         }
     }
@@ -77,7 +77,7 @@ static void
         dict_attack_data->type = IclassEliteDictTypeFlipper;
         dict = iclass_elite_dict_alloc(IclassEliteDictTypeFlipper);
         if(!dict) {
-            FURI_LOG_E(TAG, "Flipper Elite dictionary not found");
+            FURRY_LOG_E(TAG, "Flipper Elite dictionary not found");
             // Pass through to let the worker handle the failure
         }
     }

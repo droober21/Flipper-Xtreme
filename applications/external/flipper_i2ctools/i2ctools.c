@@ -1,9 +1,9 @@
 #include "i2ctools_i.h"
 
 void i2ctools_draw_callback(Canvas* canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     i2cTools* i2ctools = ctx;
-    furi_mutex_acquire(i2ctools->mutex, FuriWaitForever);
+    furry_mutex_acquire(i2ctools->mutex, FurryWaitForever);
 
     switch(i2ctools->main_view->current_view) {
     case MAIN_VIEW:
@@ -25,24 +25,24 @@ void i2ctools_draw_callback(Canvas* canvas, void* ctx) {
     default:
         break;
     }
-    furi_mutex_release(i2ctools->mutex);
+    furry_mutex_release(i2ctools->mutex);
 }
 
 void i2ctools_input_callback(InputEvent* input_event, void* ctx) {
-    furi_assert(ctx);
-    FuriMessageQueue* event_queue = ctx;
-    furi_message_queue_put(event_queue, input_event, FuriWaitForever);
+    furry_assert(ctx);
+    FurryMessageQueue* event_queue = ctx;
+    furry_message_queue_put(event_queue, input_event, FurryWaitForever);
 }
 
 int32_t i2ctools_app(void* p) {
     UNUSED(p);
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
 
     // Alloc i2ctools
     i2cTools* i2ctools = malloc(sizeof(i2cTools));
-    i2ctools->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    i2ctools->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!i2ctools->mutex) {
-        FURI_LOG_E(APP_NAME, "cannot create mutex\r\n");
+        FURRY_LOG_E(APP_NAME, "cannot create mutex\r\n");
         free(i2ctools);
         return -1;
     }
@@ -53,7 +53,7 @@ int32_t i2ctools_app(void* p) {
     view_port_input_callback_set(i2ctools->view_port, i2ctools_input_callback, event_queue);
 
     // Register view port in GUI
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, i2ctools->view_port, GuiLayerFullscreen);
 
     InputEvent event;
@@ -69,7 +69,7 @@ int32_t i2ctools_app(void* p) {
     // Share scanner with sender
     i2ctools->sender->scanner = i2ctools->scanner;
 
-    while(furi_message_queue_get(event_queue, &event, FuriWaitForever) == FuriStatusOk) {
+    while(furry_message_queue_get(event_queue, &event, FurryWaitForever) == FurryStatusOk) {
         // Back
         if(event.key == InputKeyBack && event.type == InputTypeRelease) {
             if(i2ctools->main_view->current_view == MAIN_VIEW) {
@@ -213,13 +213,13 @@ int32_t i2ctools_app(void* p) {
     }
     gui_remove_view_port(gui, i2ctools->view_port);
     view_port_free(i2ctools->view_port);
-    furi_message_queue_free(event_queue);
+    furry_message_queue_free(event_queue);
     i2c_sniffer_free(i2ctools->sniffer);
     i2c_scanner_free(i2ctools->scanner);
     i2c_sender_free(i2ctools->sender);
     i2c_main_view_free(i2ctools->main_view);
-    furi_mutex_free(i2ctools->mutex);
+    furry_mutex_free(i2ctools->mutex);
     free(i2ctools);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     return 0;
 }

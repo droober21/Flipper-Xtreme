@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #include <text_viewer_icons.h>
 #include <gui/gui.h>
@@ -31,9 +31,9 @@ typedef struct {
 
 typedef struct {
     TextViewerModel* model;
-    FuriMutex** mutex;
+    FurryMutex** mutex;
 
-    FuriMessageQueue* input_queue;
+    FurryMessageQueue* input_queue;
 
     ViewPort* view_port;
     Gui* gui;
@@ -42,7 +42,7 @@ typedef struct {
 
 static void render_callback(Canvas* canvas, void* ctx) {
     TextViewer* text_viewer = ctx;
-    furi_check(furi_mutex_acquire(text_viewer->mutex, FuriWaitForever) == FuriStatusOk);
+    furry_check(furry_mutex_acquire(text_viewer->mutex, FurryWaitForever) == FurryStatusOk);
 
     canvas_clear(canvas);
     canvas_set_color(canvas, ColorBlack);
@@ -95,13 +95,13 @@ static void render_callback(Canvas* canvas, void* ctx) {
         }
     }
 
-    furi_mutex_release(text_viewer->mutex);
+    furry_mutex_release(text_viewer->mutex);
 }
 
 static void input_callback(InputEvent* input_event, void* ctx) {
     TextViewer* text_viewer = ctx;
     if(input_event->type == InputTypeShort || input_event->type == InputTypeRepeat) {
-        furi_message_queue_put(text_viewer->input_queue, input_event, 0);
+        furry_message_queue_put(text_viewer->input_queue, input_event, 0);
     }
 }
 
@@ -111,32 +111,32 @@ static TextViewer* text_viewer_alloc() {
     instance->model = malloc(sizeof(TextViewerModel));
     memset(instance->model, 0x0, sizeof(TextViewerModel));
 
-    instance->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    instance->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
 
-    instance->input_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+    instance->input_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
 
     instance->view_port = view_port_alloc();
     view_port_draw_callback_set(instance->view_port, render_callback, instance);
     view_port_input_callback_set(instance->view_port, input_callback, instance);
 
-    instance->gui = furi_record_open(RECORD_GUI);
+    instance->gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(instance->gui, instance->view_port, GuiLayerFullscreen);
 
-    instance->storage = furi_record_open(RECORD_STORAGE);
+    instance->storage = furry_record_open(RECORD_STORAGE);
 
     return instance;
 }
 
 static void text_viewer_free(TextViewer* instance) {
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     gui_remove_view_port(instance->gui, instance->view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(instance->view_port);
 
-    furi_message_queue_free(instance->input_queue);
+    furry_message_queue_free(instance->input_queue);
 
-    furi_mutex_free(instance->mutex);
+    furry_mutex_free(instance->mutex);
 
     if(instance->model->stream) buffered_file_stream_close(instance->model->stream);
 
@@ -145,8 +145,8 @@ static void text_viewer_free(TextViewer* instance) {
 }
 
 static bool text_viewer_open_file(TextViewer* text_viewer, const char* file_path) {
-    furi_assert(text_viewer);
-    furi_assert(file_path);
+    furry_assert(text_viewer);
+    furry_assert(file_path);
 
     text_viewer->model->stream = buffered_file_stream_alloc(text_viewer->storage);
     bool isOk = true;
@@ -154,7 +154,7 @@ static bool text_viewer_open_file(TextViewer* text_viewer, const char* file_path
     do {
         if(!buffered_file_stream_open(
                text_viewer->model->stream, file_path, FSAM_READ, FSOM_OPEN_EXISTING)) {
-            FURI_LOG_E(TAG, "Unable to open stream: %s", file_path);
+            FURRY_LOG_E(TAG, "Unable to open stream: %s", file_path);
             isOk = false;
             break;
         };
@@ -166,9 +166,9 @@ static bool text_viewer_open_file(TextViewer* text_viewer, const char* file_path
 }
 
 static bool text_viewer_read_file(TextViewer* text_viewer) {
-    furi_assert(text_viewer);
-    furi_assert(text_viewer->model->stream);
-    furi_assert(text_viewer->model->file_offset % TEXT_VIEWER_BYTES_PER_LINE == 0);
+    furry_assert(text_viewer);
+    furry_assert(text_viewer->model->stream);
+    furry_assert(text_viewer->model->file_offset % TEXT_VIEWER_BYTES_PER_LINE == 0);
 
     memset(text_viewer->model->file_bytes, 0x0, TEXT_VIEWER_BUF_SIZE);
     bool isOk = true;
@@ -176,7 +176,7 @@ static bool text_viewer_read_file(TextViewer* text_viewer) {
     do {
         uint32_t offset = text_viewer->model->file_offset;
         if(!stream_seek(text_viewer->model->stream, offset, true)) {
-            FURI_LOG_E(TAG, "Unable to seek stream");
+            FURRY_LOG_E(TAG, "Unable to seek stream");
             isOk = false;
             break;
         }
@@ -193,51 +193,51 @@ static bool text_viewer_read_file(TextViewer* text_viewer) {
 int32_t text_viewer_app(void* p) {
     TextViewer* text_viewer = text_viewer_alloc();
 
-    FuriString* file_path;
-    file_path = furi_string_alloc();
+    FurryString* file_path;
+    file_path = furry_string_alloc();
 
     do {
         if(p && strlen(p)) {
-            furi_string_set(file_path, (const char*)p);
+            furry_string_set(file_path, (const char*)p);
         } else {
-            furi_string_set(file_path, TEXT_VIEWER_APP_PATH_FOLDER);
+            furry_string_set(file_path, TEXT_VIEWER_APP_PATH_FOLDER);
 
             DialogsFileBrowserOptions browser_options;
             dialog_file_browser_set_basic_options(
                 &browser_options, TEXT_VIEWER_APP_EXTENSION, &I_text_10px);
             browser_options.hide_ext = false;
 
-            DialogsApp* dialogs = furi_record_open(RECORD_DIALOGS);
+            DialogsApp* dialogs = furry_record_open(RECORD_DIALOGS);
             bool res = dialog_file_browser_show(dialogs, file_path, file_path, &browser_options);
 
-            furi_record_close(RECORD_DIALOGS);
+            furry_record_close(RECORD_DIALOGS);
             if(!res) {
-                FURI_LOG_I(TAG, "No file selected");
+                FURRY_LOG_I(TAG, "No file selected");
                 break;
             }
         }
 
-        FURI_LOG_I(TAG, "File selected: %s", furi_string_get_cstr(file_path));
+        FURRY_LOG_I(TAG, "File selected: %s", furry_string_get_cstr(file_path));
 
-        if(!text_viewer_open_file(text_viewer, furi_string_get_cstr(file_path))) break;
+        if(!text_viewer_open_file(text_viewer, furry_string_get_cstr(file_path))) break;
         text_viewer_read_file(text_viewer);
 
         InputEvent input;
-        while(furi_message_queue_get(text_viewer->input_queue, &input, FuriWaitForever) ==
-              FuriStatusOk) {
+        while(furry_message_queue_get(text_viewer->input_queue, &input, FurryWaitForever) ==
+              FurryStatusOk) {
             if(input.key == InputKeyBack) {
                 break;
             } else if(input.key == InputKeyUp) {
-                furi_check(
-                    furi_mutex_acquire(text_viewer->mutex, FuriWaitForever) == FuriStatusOk);
+                furry_check(
+                    furry_mutex_acquire(text_viewer->mutex, FurryWaitForever) == FurryStatusOk);
                 if(text_viewer->model->file_offset > 0) {
                     text_viewer->model->file_offset -= TEXT_VIEWER_BYTES_PER_LINE;
                     if(!text_viewer_read_file(text_viewer)) break;
                 }
-                furi_mutex_release(text_viewer->mutex);
+                furry_mutex_release(text_viewer->mutex);
             } else if(input.key == InputKeyDown) {
-                furi_check(
-                    furi_mutex_acquire(text_viewer->mutex, FuriWaitForever) == FuriStatusOk);
+                furry_check(
+                    furry_mutex_acquire(text_viewer->mutex, FurryWaitForever) == FurryStatusOk);
                 uint32_t last_byte_on_screen =
                     text_viewer->model->file_offset + text_viewer->model->file_read_bytes;
 
@@ -245,40 +245,40 @@ int32_t text_viewer_app(void* p) {
                     text_viewer->model->file_offset += TEXT_VIEWER_BYTES_PER_LINE;
                     if(!text_viewer_read_file(text_viewer)) break;
                 }
-                furi_mutex_release(text_viewer->mutex);
+                furry_mutex_release(text_viewer->mutex);
             } else if(input.key == InputKeyLeft) {
-                furi_check(
-                    furi_mutex_acquire(text_viewer->mutex, FuriWaitForever) == FuriStatusOk);
+                furry_check(
+                    furry_mutex_acquire(text_viewer->mutex, FurryWaitForever) == FurryStatusOk);
                 text_viewer->model->mode = !text_viewer->model->mode;
-                furi_mutex_release(text_viewer->mutex);
+                furry_mutex_release(text_viewer->mutex);
             } else if(input.key == InputKeyRight) {
-                FuriString* buffer;
-                buffer = furi_string_alloc();
-                furi_string_printf(
+                FurryString* buffer;
+                buffer = furry_string_alloc();
+                furry_string_printf(
                     buffer,
                     "File path: %s\nFile size: %lu (0x%lX)",
-                    furi_string_get_cstr(file_path),
+                    furry_string_get_cstr(file_path),
                     text_viewer->model->file_size,
                     text_viewer->model->file_size);
 
-                DialogsApp* dialogs = furi_record_open(RECORD_DIALOGS);
+                DialogsApp* dialogs = furry_record_open(RECORD_DIALOGS);
                 DialogMessage* message = dialog_message_alloc();
                 dialog_message_set_header(message, "Text Viewer v1.1", 16, 2, AlignLeft, AlignTop);
                 dialog_message_set_icon(message, &I_text_10px, 3, 2);
                 dialog_message_set_text(
-                    message, furi_string_get_cstr(buffer), 3, 16, AlignLeft, AlignTop);
+                    message, furry_string_get_cstr(buffer), 3, 16, AlignLeft, AlignTop);
                 dialog_message_set_buttons(message, NULL, NULL, "Back");
                 dialog_message_show(dialogs, message);
 
-                furi_string_free(buffer);
+                furry_string_free(buffer);
                 dialog_message_free(message);
-                furi_record_close(RECORD_DIALOGS);
+                furry_record_close(RECORD_DIALOGS);
             }
             view_port_update(text_viewer->view_port);
         }
     } while(false);
 
-    furi_string_free(file_path);
+    furry_string_free(file_path);
     text_viewer_free(text_viewer);
 
     return 0;

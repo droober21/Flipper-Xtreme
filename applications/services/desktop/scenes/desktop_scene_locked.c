@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <gui/scene_manager.h>
 #include <gui/view_stack.h>
 #include <stdint.h>
@@ -24,7 +24,7 @@ static void desktop_scene_locked_callback(DesktopEvent event, void* context) {
 }
 
 static void desktop_scene_locked_new_idle_animation_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Desktop* desktop = context;
     view_dispatcher_send_custom_event(
         desktop->view_dispatcher, DesktopAnimationEventNewIdleAnimation);
@@ -47,9 +47,9 @@ void desktop_scene_locked_on_enter(void* context) {
     if(state == SCENE_LOCKED_FIRST_ENTER) {
         bool pin_locked = desktop_pin_lock_is_locked();
         view_port_enabled_set(desktop->lock_icon_viewport, true);
-        Gui* gui = furi_record_open(RECORD_GUI);
+        Gui* gui = furry_record_open(RECORD_GUI);
         gui_set_lockdown(gui, true);
-        furi_record_close(RECORD_GUI);
+        furry_record_close(RECORD_GUI);
 
         if(pin_locked) {
             DESKTOP_SETTINGS_LOAD(&desktop->settings);

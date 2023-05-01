@@ -11,7 +11,7 @@
 struct HidMouseJiggler {
     View* view;
     Hid* hid;
-    FuriTimer* timer;
+    FurryTimer* timer;
 };
 
 typedef struct {
@@ -25,7 +25,7 @@ typedef struct {
 const int intervals[6] = {500, 2000, 5000, 10000, 30000, 60000};
 
 static void hid_mouse_jiggler_draw_callback(Canvas* canvas, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     HidMouseJigglerModel* model = context;
 
     // Header
@@ -46,9 +46,9 @@ static void hid_mouse_jiggler_draw_callback(Canvas* canvas, void* context) {
     if(model->interval_idx != 0) canvas_draw_icon(canvas, 74, 19, &I_ButtonLeft_4x7);
     if(model->interval_idx != LENGTH(intervals) - 1)
         canvas_draw_icon(canvas, 80, 19, &I_ButtonRight_4x7);
-    FuriString* interval_str = furi_string_alloc_printf("%d", intervals[model->interval_idx]);
-    elements_multiline_text(canvas, 91, 26, furi_string_get_cstr(interval_str));
-    furi_string_free(interval_str);
+    FurryString* interval_str = furry_string_alloc_printf("%d", intervals[model->interval_idx]);
+    elements_multiline_text(canvas, 91, 26, furry_string_get_cstr(interval_str));
+    furry_string_free(interval_str);
 
     canvas_set_font(canvas, FontPrimary);
     elements_multiline_text(canvas, AlignLeft, 40, "Press Start\nto jiggle");
@@ -74,7 +74,7 @@ static void hid_mouse_jiggler_draw_callback(Canvas* canvas, void* context) {
 }
 
 static void hid_mouse_jiggler_timer_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     HidMouseJiggler* hid_mouse_jiggler = context;
     with_view_model(
         hid_mouse_jiggler->view,
@@ -92,13 +92,13 @@ static void hid_mouse_jiggler_timer_callback(void* context) {
 }
 
 static void hid_mouse_jiggler_exit_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     HidMouseJiggler* hid_mouse_jiggler = context;
-    furi_timer_stop(hid_mouse_jiggler->timer);
+    furry_timer_stop(hid_mouse_jiggler->timer);
 }
 
 static bool hid_mouse_jiggler_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     HidMouseJiggler* hid_mouse_jiggler = context;
 
     bool consumed = false;
@@ -110,8 +110,8 @@ static bool hid_mouse_jiggler_input_callback(InputEvent* event, void* context) {
             if(event->type == InputTypePress && event->key == InputKeyOk) {
                 model->running = !model->running;
                 if(model->running) {
-                    furi_timer_stop(hid_mouse_jiggler->timer);
-                    furi_timer_start(hid_mouse_jiggler->timer, intervals[model->interval_idx]);
+                    furry_timer_stop(hid_mouse_jiggler->timer);
+                    furry_timer_start(hid_mouse_jiggler->timer, intervals[model->interval_idx]);
                 };
                 consumed = true;
             }
@@ -144,8 +144,8 @@ HidMouseJiggler* hid_mouse_jiggler_alloc(Hid* hid) {
 
     hid_mouse_jiggler->hid = hid;
 
-    hid_mouse_jiggler->timer = furi_timer_alloc(
-        hid_mouse_jiggler_timer_callback, FuriTimerTypePeriodic, hid_mouse_jiggler);
+    hid_mouse_jiggler->timer = furry_timer_alloc(
+        hid_mouse_jiggler_timer_callback, FurryTimerTypePeriodic, hid_mouse_jiggler);
 
     with_view_model(
         hid_mouse_jiggler->view,
@@ -160,10 +160,10 @@ HidMouseJiggler* hid_mouse_jiggler_alloc(Hid* hid) {
 }
 
 void hid_mouse_jiggler_free(HidMouseJiggler* hid_mouse_jiggler) {
-    furi_assert(hid_mouse_jiggler);
+    furry_assert(hid_mouse_jiggler);
 
-    furi_timer_stop(hid_mouse_jiggler->timer);
-    furi_timer_free(hid_mouse_jiggler->timer);
+    furry_timer_stop(hid_mouse_jiggler->timer);
+    furry_timer_free(hid_mouse_jiggler->timer);
 
     view_free(hid_mouse_jiggler->view);
 
@@ -171,12 +171,12 @@ void hid_mouse_jiggler_free(HidMouseJiggler* hid_mouse_jiggler) {
 }
 
 View* hid_mouse_jiggler_get_view(HidMouseJiggler* hid_mouse_jiggler) {
-    furi_assert(hid_mouse_jiggler);
+    furry_assert(hid_mouse_jiggler);
     return hid_mouse_jiggler->view;
 }
 
 void hid_mouse_jiggler_set_connected_status(HidMouseJiggler* hid_mouse_jiggler, bool connected) {
-    furi_assert(hid_mouse_jiggler);
+    furry_assert(hid_mouse_jiggler);
     with_view_model(
         hid_mouse_jiggler->view,
         HidMouseJigglerModel * model,

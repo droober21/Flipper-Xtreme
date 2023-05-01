@@ -1,7 +1,7 @@
 #ifndef __APP_H__
 #define __APP_H__
 
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <gui/view_dispatcher.h>
 

@@ -1,9 +1,9 @@
 #include "pulse_reader.h"
 
 #include <limits.h>
-#include <furi.h>
-#include <furi_hal.h>
-#include <furi_hal_gpio.h>
+#include <furry.h>
+#include <furry_hal.h>
+#include <furry_hal_gpio.h>
 
 #include <stm32wbxx_ll_dma.h>
 #include <stm32wbxx_ll_dmamux.h>
@@ -117,7 +117,7 @@ void pulse_reader_set_pull(PulseReader* signal, GpioPull pull) {
 }
 
 void pulse_reader_free(PulseReader* signal) {
-    furi_assert(signal);
+    furry_assert(signal);
 
     if(!signal) {
         return;
@@ -139,7 +139,7 @@ void pulse_reader_stop(PulseReader* signal) {
     LL_DMA_DisableChannel(DMA1, signal->dma_channel + 1);
     LL_DMAMUX_DisableRequestGen(NULL, LL_DMAMUX_REQ_GEN_0);
     LL_TIM_DisableCounter(TIM2);
-    furi_hal_gpio_init_simple(signal->gpio, GpioModeAnalog);
+    furry_hal_gpio_init_simple(signal->gpio, GpioModeAnalog);
 }
 
 void pulse_reader_start(PulseReader* signal) {
@@ -167,7 +167,7 @@ void pulse_reader_start(PulseReader* signal) {
     LL_DMAMUX_EnableRequestGen(NULL, LL_DMAMUX_REQ_GEN_0);
 
     /* we need the EXTI to be configured as interrupt generating line, but no ISR registered */
-    furi_hal_gpio_init_ex(
+    furry_hal_gpio_init_ex(
         signal->gpio, GpioModeInterruptRiseFall, signal->pull, GpioSpeedVeryHigh, GpioAltFnUnused);
 
     /* capture current timer */

@@ -85,7 +85,7 @@ void* subghz_protocol_encoder_dooya_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_encoder_dooya_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderDooya* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -97,12 +97,12 @@ void subghz_protocol_encoder_dooya_free(void* context) {
  * @return true On success
  */
 static bool subghz_protocol_encoder_dooya_get_upload(SubGhzProtocolEncoderDooya* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     size_t index = 0;
     size_t size_upload = (instance->generic.data_count_bit * 2) + 2;
     if(size_upload > instance->encoder.size_upload) {
-        FURI_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
+        FURRY_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
         return false;
     } else {
         instance->encoder.size_upload = size_upload;
@@ -148,7 +148,7 @@ static bool subghz_protocol_encoder_dooya_get_upload(SubGhzProtocolEncoderDooya*
 
 SubGhzProtocolStatus
     subghz_protocol_encoder_dooya_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderDooya* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -205,19 +205,19 @@ void* subghz_protocol_decoder_dooya_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_dooya_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderDooya* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_dooya_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderDooya* instance = context;
     instance->decoder.parser_step = DooyaDecoderStepReset;
 }
 
 void subghz_protocol_decoder_dooya_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderDooya* instance = context;
 
     switch(instance->decoder.parser_step) {
@@ -348,7 +348,7 @@ static void subghz_protocol_somfy_telis_check_remote_controller(SubGhzBlockGener
 }
 
 uint8_t subghz_protocol_decoder_dooya_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderDooya* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -358,14 +358,14 @@ SubGhzProtocolStatus subghz_protocol_decoder_dooya_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderDooya* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_dooya_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderDooya* instance = context;
     return subghz_block_generic_deserialize_check_count_bit(
         &instance->generic, flipper_format, subghz_protocol_dooya_const.min_count_bit_for_found);
@@ -412,13 +412,13 @@ static const char* subghz_protocol_dooya_get_name_button(uint8_t btn) {
     return btn_name;
 }
 
-void subghz_protocol_decoder_dooya_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_dooya_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderDooya* instance = context;
 
     subghz_protocol_somfy_telis_check_remote_controller(&instance->generic);
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %dbit\r\n"
         "Key:0x%010llX\r\n"
@@ -430,8 +430,8 @@ void subghz_protocol_decoder_dooya_get_string(void* context, FuriString* output)
         instance->generic.serial,
         subghz_protocol_dooya_get_name_button(instance->generic.btn));
     if(instance->generic.cnt == DOYA_SINGLE_CHANNEL) {
-        furi_string_cat_printf(output, "Ch:Single\r\n");
+        furry_string_cat_printf(output, "Ch:Single\r\n");
     } else {
-        furi_string_cat_printf(output, "Ch:%lu\r\n", instance->generic.cnt);
+        furry_string_cat_printf(output, "Ch:%lu\r\n", instance->generic.cnt);
     }
 }

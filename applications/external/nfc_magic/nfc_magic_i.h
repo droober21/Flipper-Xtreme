@@ -5,7 +5,7 @@
 
 #include "lib/magic/magic.h"
 
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <gui/view_dispatcher.h>
 #include <gui/scene_manager.h>
@@ -48,7 +48,7 @@ struct NfcMagic {
     // NfcMagicDevice* dev;
     NfcDevice* nfc_dev;
 
-    FuriString* text_box_store;
+    FurryString* text_box_store;
 
     // Common Views
     Submenu* submenu;

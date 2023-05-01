@@ -1,7 +1,7 @@
 
 #pragma once
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #define NUMBER_OF_BARCODE_TYPES 6
 
@@ -37,8 +37,8 @@ typedef struct {
 typedef struct {
     BarcodeTypeObj* type_obj;
     int check_digit; //A place to store the check digit
-    FuriString* raw_data; //the data directly from the file
-    FuriString* correct_data; //the corrected/processed data
+    FurryString* raw_data; //the data directly from the file
+    FurryString* correct_data; //the corrected/processed data
     bool valid; //true if the raw data is correctly formatted, such as correct num of digits, valid characters, etc.
     ErrorCode reason; //the reason why this barcode is invalid
 } BarcodeData;
@@ -48,6 +48,6 @@ extern BarcodeTypeObj* barcode_type_objs[NUMBER_OF_BARCODE_TYPES];
 
 void init_types();
 void free_types();
-BarcodeTypeObj* get_type(FuriString* type_string);
+BarcodeTypeObj* get_type(FurryString* type_string);
 const char* get_error_code_name(ErrorCode error_code);
 const char* get_error_code_message(ErrorCode error_code);

@@ -1,8 +1,8 @@
 #include "digital_signal.h"
 
-#include <furi.h>
-#include <furi_hal.h>
-#include <furi_hal_resources.h>
+#include <furry.h>
+#include <furry_hal.h>
+#include <furry_hal_resources.h>
 #include <math.h>
 
 #include <stm32wbxx_ll_dma.h>
@@ -88,7 +88,7 @@ DigitalSignal* digital_signal_alloc(uint32_t max_edges_cnt) {
 }
 
 void digital_signal_free(DigitalSignal* signal) {
-    furi_assert(signal);
+    furry_assert(signal);
 
     if(!signal) {
         return;
@@ -101,8 +101,8 @@ void digital_signal_free(DigitalSignal* signal) {
 }
 
 bool digital_signal_append(DigitalSignal* signal_a, DigitalSignal* signal_b) {
-    furi_assert(signal_a);
-    furi_assert(signal_b);
+    furry_assert(signal_a);
+    furry_assert(signal_b);
 
     if(signal_a->edges_max_cnt < signal_a->edge_cnt + signal_b->edge_cnt) {
         return false;
@@ -134,27 +134,27 @@ bool digital_signal_append(DigitalSignal* signal_a, DigitalSignal* signal_b) {
 }
 
 bool digital_signal_get_start_level(DigitalSignal* signal) {
-    furi_assert(signal);
+    furry_assert(signal);
 
     return signal->start_level;
 }
 
 uint32_t digital_signal_get_edges_cnt(DigitalSignal* signal) {
-    furi_assert(signal);
+    furry_assert(signal);
 
     return signal->edge_cnt;
 }
 
 void digital_signal_add(DigitalSignal* signal, uint32_t ticks) {
-    furi_assert(signal);
-    furi_assert(signal->edge_cnt < signal->edges_max_cnt);
+    furry_assert(signal);
+    furry_assert(signal->edge_cnt < signal->edges_max_cnt);
 
     signal->edge_timings[signal->edge_cnt++] = ticks;
 }
 
 void digital_signal_add_pulse(DigitalSignal* signal, uint32_t ticks, bool level) {
-    furi_assert(signal);
-    furi_assert(signal->edge_cnt < signal->edges_max_cnt);
+    furry_assert(signal);
+    furry_assert(signal->edge_cnt < signal->edges_max_cnt);
 
     /* virgin signal? add it as the only level */
     if(signal->edge_cnt == 0) {
@@ -172,14 +172,14 @@ void digital_signal_add_pulse(DigitalSignal* signal, uint32_t ticks, bool level)
 }
 
 uint32_t digital_signal_get_edge(DigitalSignal* signal, uint32_t edge_num) {
-    furi_assert(signal);
-    furi_assert(edge_num < signal->edge_cnt);
+    furry_assert(signal);
+    furry_assert(edge_num < signal->edge_cnt);
 
     return signal->edge_timings[edge_num];
 }
 
 void digital_signal_prepare_arr(DigitalSignal* signal) {
-    furi_assert(signal);
+    furry_assert(signal);
 
     DigitalSignalInternals* internals = signal->internals;
 
@@ -209,7 +209,7 @@ void digital_signal_prepare_arr(DigitalSignal* signal) {
         uint32_t edge_scaled = (internals->factor * signal->edge_timings[pos]) / (1024 * 1024);
         uint32_t pulse_duration = edge_scaled + internals->reload_reg_remainder;
         if(pulse_duration < 10 || pulse_duration > 10000000) {
-            FURI_LOG_D(
+            FURRY_LOG_D(
                 TAG,
                 "[prepare] pulse_duration out of range: %lu = %lu * %llu",
                 pulse_duration,
@@ -257,7 +257,7 @@ static void digital_signal_start_timer() {
 }
 
 static bool digital_signal_setup_dma(DigitalSignal* signal) {
-    furi_assert(signal);
+    furry_assert(signal);
     DigitalSignalInternals* internals = signal->internals;
 
     if(!signal->internals->reload_reg_entries) {
@@ -282,7 +282,7 @@ static bool digital_signal_setup_dma(DigitalSignal* signal) {
 }
 
 void digital_signal_send(DigitalSignal* signal, const GpioPin* gpio) {
-    furi_assert(signal);
+    furry_assert(signal);
 
     if(!signal->edge_cnt) {
         return;
@@ -290,7 +290,7 @@ void digital_signal_send(DigitalSignal* signal, const GpioPin* gpio) {
 
     /* Configure gpio as output */
     signal->internals->gpio = gpio;
-    furi_hal_gpio_init(
+    furry_hal_gpio_init(
         signal->internals->gpio, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
 
     /* single signal, add a temporary, terminating edge at the end */
@@ -324,7 +324,7 @@ static void digital_sequence_alloc_sequence(DigitalSequence* sequence, uint32_t 
 }
 
 DigitalSequence* digital_sequence_alloc(uint32_t size, const GpioPin* gpio) {
-    furi_assert(gpio);
+    furry_assert(gpio);
 
     DigitalSequence* sequence = malloc(sizeof(DigitalSequence));
 
@@ -364,7 +364,7 @@ DigitalSequence* digital_sequence_alloc(uint32_t size, const GpioPin* gpio) {
 }
 
 void digital_sequence_free(DigitalSequence* sequence) {
-    furi_assert(sequence);
+    furry_assert(sequence);
 
     if(!sequence) {
         return;
@@ -381,9 +381,9 @@ void digital_sequence_set_signal(
     DigitalSequence* sequence,
     uint8_t signal_index,
     DigitalSignal* signal) {
-    furi_assert(sequence);
-    furi_assert(signal);
-    furi_assert(signal_index < sequence->signals_size);
+    furry_assert(sequence);
+    furry_assert(signal);
+    furry_assert(signal_index < sequence->signals_size);
 
     sequence->signals[signal_index] = signal;
     signal->internals->gpio = sequence->gpio;
@@ -393,15 +393,15 @@ void digital_sequence_set_signal(
 }
 
 void digital_sequence_set_sendtime(DigitalSequence* sequence, uint32_t send_time) {
-    furi_assert(sequence);
+    furry_assert(sequence);
 
     sequence->send_time = send_time;
     sequence->send_time_active = true;
 }
 
 void digital_sequence_add(DigitalSequence* sequence, uint8_t signal_index) {
-    furi_assert(sequence);
-    furi_assert(signal_index < sequence->signals_size);
+    furry_assert(sequence);
+    furry_assert(signal_index < sequence->signals_size);
 
     if(sequence->sequence_used >= sequence->sequence_size) {
         sequence->sequence_size += 256;
@@ -412,7 +412,7 @@ void digital_sequence_add(DigitalSequence* sequence, uint8_t signal_index) {
 }
 
 static bool digital_sequence_setup_dma(DigitalSequence* sequence) {
-    furi_assert(sequence);
+    furry_assert(sequence);
 
     digital_signal_stop_dma();
 
@@ -431,7 +431,7 @@ static bool digital_sequence_setup_dma(DigitalSequence* sequence) {
 }
 
 static DigitalSignal* digital_sequence_bake(DigitalSequence* sequence) {
-    furi_assert(sequence);
+    furry_assert(sequence);
 
     uint32_t edges = 0;
 
@@ -483,7 +483,7 @@ static void digital_sequence_finish(DigitalSequence* sequence) {
                 prev_timer = DWT->CYCCNT;
             }
             if(DWT->CYCCNT - prev_timer > wait_ticks) {
-                FURI_LOG_D(
+                FURRY_LOG_D(
                     TAG,
                     "[SEQ] hung %lu ms in finish (ARR 0x%08lx, read %lu, write %lu)",
                     wait_ms,
@@ -517,7 +517,7 @@ static void digital_sequence_queue_pulse(DigitalSequence* sequence, uint32_t len
                 prev_timer = DWT->CYCCNT;
             }
             if(DWT->CYCCNT - prev_timer > wait_ticks) {
-                FURI_LOG_D(
+                FURRY_LOG_D(
                     TAG,
                     "[SEQ] hung %lu ms in queue (ARR 0x%08lx, read %lu, write %lu)",
                     wait_ms,
@@ -535,13 +535,13 @@ static void digital_sequence_queue_pulse(DigitalSequence* sequence, uint32_t len
 }
 
 bool digital_sequence_send(DigitalSequence* sequence) {
-    furi_assert(sequence);
+    furry_assert(sequence);
 
     struct ReloadBuffer* dma_buffer = sequence->dma_buffer;
 
-    furi_hal_gpio_init(sequence->gpio, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
+    furry_hal_gpio_init(sequence->gpio, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
 #ifdef DEBUG_OUTPUT
-    furi_hal_gpio_init(&DEBUG_OUTPUT, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
+    furry_hal_gpio_init(&DEBUG_OUTPUT, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
 #endif
 
     if(sequence->bake) {
@@ -555,7 +555,7 @@ bool digital_sequence_send(DigitalSequence* sequence) {
     int32_t remainder = 0;
     bool traded_first = false;
 
-    FURI_CRITICAL_ENTER();
+    FURRY_CRITICAL_ENTER();
 
     dma_buffer->dma_active = false;
     dma_buffer->buffer[0] = 0xFFFFFFFF;
@@ -635,13 +635,13 @@ bool digital_sequence_send(DigitalSequence* sequence) {
 
     /* wait until last dma transaction was finished */
     digital_sequence_finish(sequence);
-    FURI_CRITICAL_EXIT();
+    FURRY_CRITICAL_EXIT();
 
     return true;
 }
 
 void digital_sequence_clear(DigitalSequence* sequence) {
-    furi_assert(sequence);
+    furry_assert(sequence);
 
     sequence->sequence_used = 0;
 }

@@ -20,7 +20,7 @@
 #include "Sensors.h"
 #include "./views/UnitempViews.h"
 
-#include <furi_hal_power.h>
+#include <furry_hal_power.h>
 
 /* Переменные */
 //Данные приложения
@@ -48,15 +48,15 @@ bool unitemp_saveSettings(void) {
     app->file_stream = file_stream_alloc(app->storage);
 
     //Переменная пути к файлу
-    FuriString* filepath = furi_string_alloc();
+    FurryString* filepath = furry_string_alloc();
     //Составление пути к файлу
-    furi_string_printf(filepath, "%s/%s", APP_PATH_FOLDER, APP_FILENAME_SETTINGS);
+    furry_string_printf(filepath, "%s/%s", APP_PATH_FOLDER, APP_FILENAME_SETTINGS);
     //Создание папки плагина
     storage_common_mkdir(app->storage, APP_PATH_FOLDER);
     //Открытие потока
     if(!file_stream_open(
-           app->file_stream, furi_string_get_cstr(filepath), FSAM_READ_WRITE, FSOM_CREATE_ALWAYS)) {
-        FURI_LOG_E(
+           app->file_stream, furry_string_get_cstr(filepath), FSAM_READ_WRITE, FSOM_CREATE_ALWAYS)) {
+        FURRY_LOG_E(
             APP_NAME,
             "An error occurred while saving the settings file: %d",
             file_stream_get_error(app->file_stream));
@@ -76,7 +76,7 @@ bool unitemp_saveSettings(void) {
     file_stream_close(app->file_stream);
     stream_free(app->file_stream);
 
-    FURI_LOG_I(APP_NAME, "Settings have been successfully saved");
+    FURRY_LOG_I(APP_NAME, "Settings have been successfully saved");
     return true;
 }
 
@@ -87,16 +87,16 @@ bool unitemp_loadSettings(void) {
     app->file_stream = file_stream_alloc(app->storage);
 
     //Переменная пути к файлу
-    FuriString* filepath = furi_string_alloc();
+    FurryString* filepath = furry_string_alloc();
     //Составление пути к файлу
-    furi_string_printf(filepath, "%s/%s", APP_PATH_FOLDER, APP_FILENAME_SETTINGS);
+    furry_string_printf(filepath, "%s/%s", APP_PATH_FOLDER, APP_FILENAME_SETTINGS);
 
     //Открытие потока к файлу настроек
     if(!file_stream_open(
-           app->file_stream, furi_string_get_cstr(filepath), FSAM_READ_WRITE, FSOM_OPEN_EXISTING)) {
+           app->file_stream, furry_string_get_cstr(filepath), FSAM_READ_WRITE, FSOM_OPEN_EXISTING)) {
         //Сохранение настроек по умолчанию в случае отсутствия файла
         if(file_stream_get_error(app->file_stream) == FSE_NOT_EXIST) {
-            FURI_LOG_W(APP_NAME, "Missing settings file. Setting defaults and saving...");
+            FURRY_LOG_W(APP_NAME, "Missing settings file. Setting defaults and saving...");
             //Закрытие потока и освобождение памяти
             file_stream_close(app->file_stream);
             stream_free(app->file_stream);
@@ -104,7 +104,7 @@ bool unitemp_loadSettings(void) {
             unitemp_saveSettings();
             return false;
         } else {
-            FURI_LOG_E(
+            FURRY_LOG_E(
                 APP_NAME,
                 "An error occurred while loading the settings file: %d. Standard values have been applied",
                 file_stream_get_error(app->file_stream));
@@ -119,7 +119,7 @@ bool unitemp_loadSettings(void) {
     uint8_t file_size = stream_size(app->file_stream);
     //Если файл пустой, то:
     if(file_size == (uint8_t)0) {
-        FURI_LOG_W(APP_NAME, "Settings file is empty");
+        FURRY_LOG_W(APP_NAME, "Settings file is empty");
         //Закрытие потока и освобождение памяти
         file_stream_close(app->file_stream);
         stream_free(app->file_stream);
@@ -134,7 +134,7 @@ bool unitemp_loadSettings(void) {
     //Загрузка файла
     if(stream_read(app->file_stream, file_buf, file_size) != file_size) {
         //Выход при ошибке чтения
-        FURI_LOG_E(APP_NAME, "Error reading settings file");
+        FURRY_LOG_E(APP_NAME, "Error reading settings file");
         //Закрытие потока и освобождение памяти
         file_stream_close(app->file_stream);
         stream_free(app->file_stream);
@@ -143,7 +143,7 @@ bool unitemp_loadSettings(void) {
     }
     //Построчное чтение файла
     //Указатель на начало строки
-    FuriString* file = furi_string_alloc_set_str((char*)file_buf);
+    FurryString* file = furry_string_alloc_set_str((char*)file_buf);
     //Сколько байт до конца строки
     size_t line_end = 0;
 
@@ -167,17 +167,17 @@ bool unitemp_loadSettings(void) {
             sscanf(((char*)(file_buf + line_end)), "\nPRESSURE_UNIT %d", &p);
             app->settings.pressure_unit = p;
         } else {
-            FURI_LOG_W(APP_NAME, "Unknown settings parameter: %s", buff);
+            FURRY_LOG_W(APP_NAME, "Unknown settings parameter: %s", buff);
         }
 
         //Вычисление конца строки
-        line_end = furi_string_search_char(file, '\n', line_end + 1);
+        line_end = furry_string_search_char(file, '\n', line_end + 1);
     }
     free(file_buf);
     file_stream_close(app->file_stream);
     stream_free(app->file_stream);
 
-    FURI_LOG_I(APP_NAME, "Settings have been successfully loaded");
+    FURRY_LOG_I(APP_NAME, "Settings have been successfully loaded");
     return true;
 }
 
@@ -194,17 +194,17 @@ static bool unitemp_alloc(void) {
     app->processing = true;
 
     //Открытие хранилища (?)
-    app->storage = furi_record_open(RECORD_STORAGE);
+    app->storage = furry_record_open(RECORD_STORAGE);
 
     //Уведомления
-    app->notifications = furi_record_open(RECORD_NOTIFICATION);
+    app->notifications = furry_record_open(RECORD_NOTIFICATION);
 
     //Установка значений по умолчанию
     app->settings.infinityBacklight = true; //Подсветка горит всегда
     app->settings.temp_unit = UT_TEMP_CELSIUS; //Единица измерения температуры - градусы Цельсия
     app->settings.pressure_unit = UT_PRESSURE_MM_HG; //Единица измерения давления - мм рт. ст.
 
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
     //Диспетчер окон
     app->view_dispatcher = view_dispatcher_alloc();
 
@@ -251,16 +251,16 @@ static void unitemp_free(void) {
     free(app->buff);
 
     view_dispatcher_free(app->view_dispatcher);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     //Очистка датчиков
     //Высвыбождение данных датчиков
     unitemp_sensors_free();
     free(app->sensors);
 
     //Закрытие уведомлений
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
     //Закрытие хранилища
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     //Удаление в самую последнюю очередь
     free(app);
 }
@@ -287,7 +287,7 @@ int32_t unitemp_app() {
         //Постоянное свечение подсветки
         notification_message(app->notifications, &sequence_display_backlight_enforce_on);
     }
-    app->settings.lastOTGState = furi_hal_power_is_otg_enabled();
+    app->settings.lastOTGState = furry_hal_power_is_otg_enabled();
     //Загрузка датчиков из SD-карты
     unitemp_sensors_load();
     //Инициализация датчиков
@@ -297,7 +297,7 @@ int32_t unitemp_app() {
 
     while(app->processing) {
         if(app->sensors_ready) unitemp_sensors_updateValues();
-        furi_delay_ms(100);
+        furry_delay_ms(100);
     }
 
     //Деинициализация датчиков

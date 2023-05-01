@@ -232,7 +232,7 @@ void scan_for_signal(ProtoViewApp* app, RawSamplesBuffer* source, uint32_t min_d
                 app->signal_decoded = decoded;
                 raw_samples_copy(DetectedSamples, copy);
                 raw_samples_center(DetectedSamples, i);
-                FURI_LOG_E(
+                FURRY_LOG_E(
                     TAG,
                     "===> Displayed sample updated (%d samples %lu us)",
                     (int)thislen,
@@ -524,7 +524,7 @@ uint32_t convert_signal_to_bits(
         if(numbits > 1024) numbits = 1024;
 
         if(0) /* Super verbose, so not under the DEBUG_MSG define. */
-            FURI_LOG_E(TAG, "%lu converted into %lu (%d) bits", dur, numbits, (int)level);
+            FURRY_LOG_E(TAG, "%lu converted into %lu (%d) bits", dur, numbits, (int)level);
 
         /* If the signal is too short, let's claim it an interference
          * and ignore it completely. */
@@ -646,7 +646,7 @@ bool decode_signal(RawSamplesBuffer* s, uint64_t len, ProtoViewMsgInfo* info) {
             str[j] = bitmap_get(bitmap, bitmap_size, j) ? '1' : '0';
         }
         str[j] = 0;
-        FURI_LOG_E(TAG, "%lu bits sampled: %s", bits, str);
+        FURRY_LOG_E(TAG, "%lu bits sampled: %s", bits, str);
         free(str);
     }
 
@@ -655,10 +655,10 @@ bool decode_signal(RawSamplesBuffer* s, uint64_t len, ProtoViewMsgInfo* info) {
 
     bool decoded = false;
     while(Decoders[j]) {
-        uint32_t start_time = furi_get_tick();
+        uint32_t start_time = furry_get_tick();
         decoded = Decoders[j]->decode(bitmap, bitmap_size, bits, info);
-        uint32_t delta = furi_get_tick() - start_time;
-        FURI_LOG_E(TAG, "Decoder %s took %lu ms", Decoders[j]->name, (unsigned long)delta);
+        uint32_t delta = furry_get_tick() - start_time;
+        FURRY_LOG_E(TAG, "Decoder %s took %lu ms", Decoders[j]->name, (unsigned long)delta);
         if(decoded) {
             info->decoder = Decoders[j];
             break;
@@ -667,9 +667,9 @@ bool decode_signal(RawSamplesBuffer* s, uint64_t len, ProtoViewMsgInfo* info) {
     }
 
     if(!decoded) {
-        FURI_LOG_E(TAG, "No decoding possible");
+        FURRY_LOG_E(TAG, "No decoding possible");
     } else {
-        FURI_LOG_E(TAG, "+++ Decoded %s", info->decoder->name);
+        FURRY_LOG_E(TAG, "+++ Decoded %s", info->decoder->name);
         /* The message was correctly decoded: fill the info structure
          * with the decoded signal. The decoder may not implement offset/len
          * filling of the structure. In such case we have no info and

@@ -1,5 +1,5 @@
 #pragma once
-#include <furi.h>
+#include <furry.h>
 #include <input/input.h>
 #include <gui/elements.h>
 #include <flipper_format/flipper_format.h>
@@ -53,5 +53,5 @@ typedef struct {
     int8_t selected_card;
     CardAnimation animation;
     uint8_t* buffer;
-    FuriMutex* mutex;
+    FurryMutex* mutex;
 } GameState;

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <furi.h>
-#include <furi_hal_bt.h>
-#include <furi_hal_bt_hid.h>
-#include <furi_hal_usb.h>
-#include <furi_hal_usb_hid.h>
+#include <furry.h>
+#include <furry_hal_bt.h>
+#include <furry_hal_bt_hid.h>
+#include <furry_hal_usb.h>
+#include <furry_hal_usb_hid.h>
 
 #include <bt/bt_service/bt.h>
 #include <gui/gui.h>

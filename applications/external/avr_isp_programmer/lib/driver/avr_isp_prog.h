@@ -1,7 +1,7 @@
 #pragma once
 
 #include "avr_isp_spi_sw.h"
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 typedef struct AvrIspProg AvrIspProg;
 typedef void (*AvrIspProgCallback)(void* context);

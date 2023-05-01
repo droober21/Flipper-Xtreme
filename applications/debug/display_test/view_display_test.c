@@ -9,7 +9,7 @@ typedef struct {
 
 struct ViewDisplayTest {
     View* view;
-    FuriTimer* timer;
+    FurryTimer* timer;
 };
 
 static void view_display_test_draw_callback_intro(Canvas* canvas, void* _model) {
@@ -140,12 +140,12 @@ static bool view_display_test_input_callback(InputEvent* event, void* context) {
 
 static void view_display_test_enter(void* context) {
     ViewDisplayTest* instance = context;
-    furi_timer_start(instance->timer, furi_kernel_get_tick_frequency() / 32);
+    furry_timer_start(instance->timer, furry_kernel_get_tick_frequency() / 32);
 }
 
 static void view_display_test_exit(void* context) {
     ViewDisplayTest* instance = context;
-    furi_timer_stop(instance->timer);
+    furry_timer_stop(instance->timer);
 }
 
 static void view_display_test_timer_callback(void* context) {
@@ -166,20 +166,20 @@ ViewDisplayTest* view_display_test_alloc() {
     view_set_exit_callback(instance->view, view_display_test_exit);
 
     instance->timer =
-        furi_timer_alloc(view_display_test_timer_callback, FuriTimerTypePeriodic, instance);
+        furry_timer_alloc(view_display_test_timer_callback, FurryTimerTypePeriodic, instance);
 
     return instance;
 }
 
 void view_display_test_free(ViewDisplayTest* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
-    furi_timer_free(instance->timer);
+    furry_timer_free(instance->timer);
     view_free(instance->view);
     free(instance);
 }
 
 View* view_display_test_get_view(ViewDisplayTest* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     return instance->view;
 }

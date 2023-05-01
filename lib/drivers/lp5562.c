@@ -1,18 +1,18 @@
 #include "lp5562.h"
 #include <core/common_defines.h>
 #include "lp5562_reg.h"
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 #include <stdio.h>
 
-void lp5562_reset(FuriHalI2cBusHandle* handle) {
+void lp5562_reset(FurryHalI2cBusHandle* handle) {
     Reg0D_Reset reg = {.value = 0xFF};
-    furi_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x0D, *(uint8_t*)&reg, LP5562_I2C_TIMEOUT);
+    furry_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x0D, *(uint8_t*)&reg, LP5562_I2C_TIMEOUT);
 }
 
-void lp5562_configure(FuriHalI2cBusHandle* handle) {
+void lp5562_configure(FurryHalI2cBusHandle* handle) {
     Reg08_Config config = {.INT_CLK_EN = true, .PS_EN = true, .PWM_HF = true};
-    furi_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x08, *(uint8_t*)&config, LP5562_I2C_TIMEOUT);
+    furry_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x08, *(uint8_t*)&config, LP5562_I2C_TIMEOUT);
 
     Reg70_LedMap map = {
         .red = EngSelectI2C,
@@ -20,17 +20,17 @@ void lp5562_configure(FuriHalI2cBusHandle* handle) {
         .blue = EngSelectI2C,
         .white = EngSelectI2C,
     };
-    furi_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x70, *(uint8_t*)&map, LP5562_I2C_TIMEOUT);
+    furry_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x70, *(uint8_t*)&map, LP5562_I2C_TIMEOUT);
 }
 
-void lp5562_enable(FuriHalI2cBusHandle* handle) {
+void lp5562_enable(FurryHalI2cBusHandle* handle) {
     Reg00_Enable reg = {.CHIP_EN = true, .LOG_EN = true};
-    furi_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x00, *(uint8_t*)&reg, LP5562_I2C_TIMEOUT);
+    furry_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x00, *(uint8_t*)&reg, LP5562_I2C_TIMEOUT);
     //>488μs delay is required after writing to 0x00 register, otherwise program engine will not work
-    furi_delay_us(500);
+    furry_delay_us(500);
 }
 
-void lp5562_set_channel_current(FuriHalI2cBusHandle* handle, LP5562Channel channel, uint8_t value) {
+void lp5562_set_channel_current(FurryHalI2cBusHandle* handle, LP5562Channel channel, uint8_t value) {
     uint8_t reg_no;
     if(channel == LP5562ChannelRed) {
         reg_no = LP5562_CHANNEL_RED_CURRENT_REGISTER;
@@ -43,10 +43,10 @@ void lp5562_set_channel_current(FuriHalI2cBusHandle* handle, LP5562Channel chann
     } else {
         return;
     }
-    furi_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, reg_no, value, LP5562_I2C_TIMEOUT);
+    furry_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, reg_no, value, LP5562_I2C_TIMEOUT);
 }
 
-void lp5562_set_channel_value(FuriHalI2cBusHandle* handle, LP5562Channel channel, uint8_t value) {
+void lp5562_set_channel_value(FurryHalI2cBusHandle* handle, LP5562Channel channel, uint8_t value) {
     uint8_t reg_no;
     if(channel == LP5562ChannelRed) {
         reg_no = LP5562_CHANNEL_RED_VALUE_REGISTER;
@@ -59,10 +59,10 @@ void lp5562_set_channel_value(FuriHalI2cBusHandle* handle, LP5562Channel channel
     } else {
         return;
     }
-    furi_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, reg_no, value, LP5562_I2C_TIMEOUT);
+    furry_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, reg_no, value, LP5562_I2C_TIMEOUT);
 }
 
-uint8_t lp5562_get_channel_value(FuriHalI2cBusHandle* handle, LP5562Channel channel) {
+uint8_t lp5562_get_channel_value(FurryHalI2cBusHandle* handle, LP5562Channel channel) {
     uint8_t reg_no;
     uint8_t value;
     if(channel == LP5562ChannelRed) {
@@ -76,11 +76,11 @@ uint8_t lp5562_get_channel_value(FuriHalI2cBusHandle* handle, LP5562Channel chan
     } else {
         return 0;
     }
-    furi_hal_i2c_read_reg_8(handle, LP5562_ADDRESS, reg_no, &value, LP5562_I2C_TIMEOUT);
+    furry_hal_i2c_read_reg_8(handle, LP5562_ADDRESS, reg_no, &value, LP5562_I2C_TIMEOUT);
     return value;
 }
 
-void lp5562_set_channel_src(FuriHalI2cBusHandle* handle, LP5562Channel channel, LP5562Engine src) {
+void lp5562_set_channel_src(FurryHalI2cBusHandle* handle, LP5562Channel channel, LP5562Engine src) {
     uint8_t reg_val = 0;
     uint8_t bit_offset = 0;
 
@@ -101,15 +101,15 @@ void lp5562_set_channel_src(FuriHalI2cBusHandle* handle, LP5562Channel channel, 
             return;
         }
 
-        furi_hal_i2c_read_reg_8(handle, LP5562_ADDRESS, 0x70, &reg_val, LP5562_I2C_TIMEOUT);
+        furry_hal_i2c_read_reg_8(handle, LP5562_ADDRESS, 0x70, &reg_val, LP5562_I2C_TIMEOUT);
         reg_val &= ~(0x3 << bit_offset);
         reg_val |= ((src & 0x03) << bit_offset);
-        furi_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x70, reg_val, LP5562_I2C_TIMEOUT);
+        furry_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x70, reg_val, LP5562_I2C_TIMEOUT);
     } while(channel != 0);
 }
 
 void lp5562_execute_program(
-    FuriHalI2cBusHandle* handle,
+    FurryHalI2cBusHandle* handle,
     LP5562Engine eng,
     LP5562Channel ch,
     uint16_t* program) {
@@ -119,22 +119,22 @@ void lp5562_execute_program(
     uint8_t enable_reg = 0;
 
     // Read old value of enable register
-    furi_hal_i2c_read_reg_8(handle, LP5562_ADDRESS, 0x00, &enable_reg, LP5562_I2C_TIMEOUT);
+    furry_hal_i2c_read_reg_8(handle, LP5562_ADDRESS, 0x00, &enable_reg, LP5562_I2C_TIMEOUT);
 
     // Engine configuration
     bit_offset = (3 - eng) * 2;
-    furi_hal_i2c_read_reg_8(handle, LP5562_ADDRESS, 0x01, &reg_val, LP5562_I2C_TIMEOUT);
+    furry_hal_i2c_read_reg_8(handle, LP5562_ADDRESS, 0x01, &reg_val, LP5562_I2C_TIMEOUT);
     reg_val &= ~(0x3 << bit_offset);
     reg_val |= (0x01 << bit_offset); // load
-    furi_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x01, reg_val, LP5562_I2C_TIMEOUT);
-    furi_delay_us(100);
+    furry_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x01, reg_val, LP5562_I2C_TIMEOUT);
+    furry_delay_us(100);
 
     // Program load
     for(uint8_t i = 0; i < 16; i++) {
         // Program words are big-endian, so reverse byte order before loading
         program[i] = __REV16(program[i]);
     }
-    furi_hal_i2c_write_mem(
+    furry_hal_i2c_write_mem(
         handle,
         LP5562_ADDRESS,
         0x10 + (0x20 * (eng - 1)),
@@ -144,34 +144,34 @@ void lp5562_execute_program(
 
     // Program start
     bit_offset = (3 - eng) * 2;
-    furi_hal_i2c_read_reg_8(handle, LP5562_ADDRESS, 0x01, &reg_val, LP5562_I2C_TIMEOUT);
+    furry_hal_i2c_read_reg_8(handle, LP5562_ADDRESS, 0x01, &reg_val, LP5562_I2C_TIMEOUT);
     reg_val &= ~(0x3 << bit_offset);
     reg_val |= (0x02 << bit_offset); // run
-    furi_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x01, reg_val, LP5562_I2C_TIMEOUT);
+    furry_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x01, reg_val, LP5562_I2C_TIMEOUT);
 
     // Switch output to Execution Engine
     lp5562_set_channel_src(handle, ch, eng);
 
     enable_reg &= ~(0x3 << bit_offset);
     enable_reg |= (0x02 << bit_offset); // run
-    furi_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x00, enable_reg, LP5562_I2C_TIMEOUT);
+    furry_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x00, enable_reg, LP5562_I2C_TIMEOUT);
 }
 
-void lp5562_stop_program(FuriHalI2cBusHandle* handle, LP5562Engine eng) {
+void lp5562_stop_program(FurryHalI2cBusHandle* handle, LP5562Engine eng) {
     if((eng < LP5562Engine1) || (eng > LP5562Engine3)) return;
     uint8_t reg_val = 0;
     uint8_t bit_offset = 0;
 
     // Engine configuration
     bit_offset = (3 - eng) * 2;
-    furi_hal_i2c_read_reg_8(handle, LP5562_ADDRESS, 0x01, &reg_val, LP5562_I2C_TIMEOUT);
+    furry_hal_i2c_read_reg_8(handle, LP5562_ADDRESS, 0x01, &reg_val, LP5562_I2C_TIMEOUT);
     reg_val &= ~(0x3 << bit_offset);
     // Not setting lowest 2 bits here
-    furi_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x01, reg_val, LP5562_I2C_TIMEOUT);
+    furry_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x01, reg_val, LP5562_I2C_TIMEOUT);
 }
 
 void lp5562_execute_ramp(
-    FuriHalI2cBusHandle* handle,
+    FurryHalI2cBusHandle* handle,
     LP5562Engine eng,
     LP5562Channel ch,
     uint8_t val_start,
@@ -215,7 +215,7 @@ void lp5562_execute_ramp(
 }
 
 void lp5562_execute_blink(
-    FuriHalI2cBusHandle* handle,
+    FurryHalI2cBusHandle* handle,
     LP5562Engine eng,
     LP5562Channel ch,
     uint16_t on_time,

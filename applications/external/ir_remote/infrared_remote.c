@@ -14,8 +14,8 @@ ARRAY_DEF(InfraredButtonArray, InfraredRemoteButton*, M_PTR_OPLIST);
 
 struct InfraredRemote {
     InfraredButtonArray_t buttons;
-    FuriString* name;
-    FuriString* path;
+    FurryString* name;
+    FurryString* path;
 };
 
 static void infrared_remote_clear_buttons(InfraredRemote* remote) {
@@ -30,39 +30,39 @@ static void infrared_remote_clear_buttons(InfraredRemote* remote) {
 InfraredRemote* infrared_remote_alloc() {
     InfraredRemote* remote = malloc(sizeof(InfraredRemote));
     InfraredButtonArray_init(remote->buttons);
-    remote->name = furi_string_alloc();
-    remote->path = furi_string_alloc();
+    remote->name = furry_string_alloc();
+    remote->path = furry_string_alloc();
     return remote;
 }
 
 void infrared_remote_free(InfraredRemote* remote) {
     infrared_remote_clear_buttons(remote);
     InfraredButtonArray_clear(remote->buttons);
-    furi_string_free(remote->path);
-    furi_string_free(remote->name);
+    furry_string_free(remote->path);
+    furry_string_free(remote->name);
     free(remote);
 }
 
 void infrared_remote_reset(InfraredRemote* remote) {
     infrared_remote_clear_buttons(remote);
-    furi_string_reset(remote->name);
-    furi_string_reset(remote->path);
+    furry_string_reset(remote->name);
+    furry_string_reset(remote->path);
 }
 
 void infrared_remote_set_name(InfraredRemote* remote, const char* name) {
-    furi_string_set(remote->name, name);
+    furry_string_set(remote->name, name);
 }
 
 const char* infrared_remote_get_name(InfraredRemote* remote) {
-    return furi_string_get_cstr(remote->name);
+    return furry_string_get_cstr(remote->name);
 }
 
 void infrared_remote_set_path(InfraredRemote* remote, const char* path) {
-    furi_string_set(remote->path, path);
+    furry_string_set(remote->path, path);
 }
 
 const char* infrared_remote_get_path(InfraredRemote* remote) {
-    return furi_string_get_cstr(remote->path);
+    return furry_string_get_cstr(remote->path);
 }
 
 size_t infrared_remote_get_button_count(InfraredRemote* remote) {
@@ -70,7 +70,7 @@ size_t infrared_remote_get_button_count(InfraredRemote* remote) {
 }
 
 InfraredRemoteButton* infrared_remote_get_button(InfraredRemote* remote, size_t index) {
-    furi_assert(index < InfraredButtonArray_size(remote->buttons));
+    furry_assert(index < InfraredButtonArray_size(remote->buttons));
     return *InfraredButtonArray_get(remote->buttons, index);
 }
 
@@ -94,14 +94,14 @@ bool infrared_remote_add_button(InfraredRemote* remote, const char* name, Infrar
 }
 
 bool infrared_remote_rename_button(InfraredRemote* remote, const char* new_name, size_t index) {
-    furi_assert(index < InfraredButtonArray_size(remote->buttons));
+    furry_assert(index < InfraredButtonArray_size(remote->buttons));
     InfraredRemoteButton* button = *InfraredButtonArray_get(remote->buttons, index);
     infrared_remote_button_set_name(button, new_name);
     return infrared_remote_store(remote);
 }
 
 bool infrared_remote_delete_button(InfraredRemote* remote, size_t index) {
-    furi_assert(index < InfraredButtonArray_size(remote->buttons));
+    furry_assert(index < InfraredButtonArray_size(remote->buttons));
     InfraredRemoteButton* button;
     InfraredButtonArray_pop_at(&button, remote->buttons, index);
     infrared_remote_button_free(button);
@@ -109,11 +109,11 @@ bool infrared_remote_delete_button(InfraredRemote* remote, size_t index) {
 }
 
 bool infrared_remote_store(InfraredRemote* remote) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* ff = flipper_format_file_alloc(storage);
-    const char* path = furi_string_get_cstr(remote->path);
+    const char* path = furry_string_get_cstr(remote->path);
 
-    FURI_LOG_I(TAG, "store file: \'%s\'", path);
+    FURRY_LOG_I(TAG, "store file: \'%s\'", path);
 
     bool success = flipper_format_file_open_always(ff, path) &&
                    flipper_format_write_header_cstr(ff, "IR signals file", 1);
@@ -133,37 +133,37 @@ bool infrared_remote_store(InfraredRemote* remote) {
     }
 
     flipper_format_free(ff);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     return success;
 }
 
-bool infrared_remote_load(InfraredRemote* remote, FuriString* path) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+bool infrared_remote_load(InfraredRemote* remote, FurryString* path) {
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* ff = flipper_format_buffered_file_alloc(storage);
 
-    FuriString* buf;
-    buf = furi_string_alloc();
+    FurryString* buf;
+    buf = furry_string_alloc();
 
-    FURI_LOG_I(TAG, "load file: \'%s\'", furi_string_get_cstr(path));
-    bool success = flipper_format_buffered_file_open_existing(ff, furi_string_get_cstr(path));
+    FURRY_LOG_I(TAG, "load file: \'%s\'", furry_string_get_cstr(path));
+    bool success = flipper_format_buffered_file_open_existing(ff, furry_string_get_cstr(path));
 
     if(success) {
         uint32_t version;
         success = flipper_format_read_header(ff, buf, &version) &&
-                  !furi_string_cmp(buf, "IR signals file") && (version == 1);
+                  !furry_string_cmp(buf, "IR signals file") && (version == 1);
     }
 
     if(success) {
         path_extract_filename(path, buf, true);
         infrared_remote_clear_buttons(remote);
-        infrared_remote_set_name(remote, furi_string_get_cstr(buf));
-        infrared_remote_set_path(remote, furi_string_get_cstr(path));
+        infrared_remote_set_name(remote, furry_string_get_cstr(buf));
+        infrared_remote_set_path(remote, furry_string_get_cstr(path));
 
         for(bool can_read = true; can_read;) {
             InfraredRemoteButton* button = infrared_remote_button_alloc();
             can_read = infrared_signal_read(infrared_remote_button_get_signal(button), ff, buf);
             if(can_read) {
-                infrared_remote_button_set_name(button, furi_string_get_cstr(buf));
+                infrared_remote_button_set_name(button, furry_string_get_cstr(buf));
                 InfraredButtonArray_push_back(remote->buttons, button);
             } else {
                 infrared_remote_button_free(button);
@@ -171,18 +171,18 @@ bool infrared_remote_load(InfraredRemote* remote, FuriString* path) {
         }
     }
 
-    furi_string_free(buf);
+    furry_string_free(buf);
     flipper_format_free(ff);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     return success;
 }
 
 bool infrared_remote_remove(InfraredRemote* remote) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
-    FS_Error status = storage_common_remove(storage, furi_string_get_cstr(remote->path));
+    FS_Error status = storage_common_remove(storage, furry_string_get_cstr(remote->path));
     infrared_remote_reset(remote);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     return (status == FSE_OK || status == FSE_NOT_EXIST);
 }

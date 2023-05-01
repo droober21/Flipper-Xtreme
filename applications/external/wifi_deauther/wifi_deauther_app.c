@@ -1,24 +1,24 @@
 #include "wifi_deauther_app_i.h"
 
-#include <furi_hal_power.h>
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry_hal_power.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <dolphin/dolphin.h>
 
 static bool wifi_deauther_app_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     WifideautherApp* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool wifi_deauther_app_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WifideautherApp* app = context;
     return scene_manager_handle_back_event(app->scene_manager);
 }
 
 static void wifi_deauther_app_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WifideautherApp* app = context;
     scene_manager_handle_tick_event(app->scene_manager);
 }
@@ -27,7 +27,7 @@ WifideautherApp* wifi_deauther_app_alloc() {
     WifideautherApp* app = malloc(sizeof(WifideautherApp));
     DOLPHIN_DEED(DolphinDeedPluginStart);
 
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
 
     app->view_dispatcher = view_dispatcher_alloc();
     app->scene_manager = scene_manager_alloc(&wifi_deauther_scene_handlers, app);
@@ -56,8 +56,8 @@ WifideautherApp* wifi_deauther_app_alloc() {
     app->text_box = text_box_alloc();
     view_dispatcher_add_view(
         app->view_dispatcher, WifideautherAppViewConsoleOutput, text_box_get_view(app->text_box));
-    app->text_box_store = furi_string_alloc();
-    furi_string_reserve(app->text_box_store, WIFI_deauther_TEXT_BOX_STORE_SIZE);
+    app->text_box_store = furry_string_alloc();
+    furry_string_reserve(app->text_box_store, WIFI_deauther_TEXT_BOX_STORE_SIZE);
 
     app->text_input = text_input_alloc();
     view_dispatcher_add_view(
@@ -69,14 +69,14 @@ WifideautherApp* wifi_deauther_app_alloc() {
 }
 
 void wifi_deauther_app_free(WifideautherApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // Views
     view_dispatcher_remove_view(app->view_dispatcher, WifideautherAppViewVarItemList);
     view_dispatcher_remove_view(app->view_dispatcher, WifideautherAppViewConsoleOutput);
     view_dispatcher_remove_view(app->view_dispatcher, WifideautherAppViewTextInput);
     text_box_free(app->text_box);
-    furi_string_free(app->text_box_store);
+    furry_string_free(app->text_box_store);
     text_input_free(app->text_input);
 
     // View dispatcher
@@ -86,14 +86,14 @@ void wifi_deauther_app_free(WifideautherApp* app) {
     wifi_deauther_uart_free(app->uart);
 
     // Close records
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
     free(app);
 }
 
 int32_t wifi_deauther_app(void* p) {
-    furi_hal_power_enable_otg();
-    furi_delay_ms(600);
+    furry_hal_power_enable_otg();
+    furry_delay_ms(600);
     UNUSED(p);
     WifideautherApp* wifi_deauther_app = wifi_deauther_app_alloc();
 
@@ -102,7 +102,7 @@ int32_t wifi_deauther_app(void* p) {
     view_dispatcher_run(wifi_deauther_app->view_dispatcher);
 
     wifi_deauther_app_free(wifi_deauther_app);
-    furi_hal_power_disable_otg();
+    furry_hal_power_disable_otg();
 
     return 0;
 }

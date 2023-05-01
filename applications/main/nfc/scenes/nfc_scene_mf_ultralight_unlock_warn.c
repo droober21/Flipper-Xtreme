@@ -18,14 +18,14 @@ void nfc_scene_mf_ultralight_unlock_warn_on_enter(void* context) {
     if(auth_method == MfUltralightAuthMethodManual || auth_method == MfUltralightAuthMethodAuto) {
         // Build dialog text
         MfUltralightAuth* auth = &nfc->dev->dev_data.mf_ul_auth;
-        FuriString* password_str =
-            furi_string_alloc_set_str("Try to unlock the card with\npassword: ");
+        FurryString* password_str =
+            furry_string_alloc_set_str("Try to unlock the card with\npassword: ");
         for(size_t i = 0; i < sizeof(auth->pwd.raw); ++i) {
-            furi_string_cat_printf(password_str, "%02X ", nfc->byte_input_store[i]);
+            furry_string_cat_printf(password_str, "%02X ", nfc->byte_input_store[i]);
         }
-        furi_string_cat_str(password_str, "?\nCaution, a wrong password\ncan block the card!");
-        nfc_text_store_set(nfc, furi_string_get_cstr(password_str));
-        furi_string_free(password_str);
+        furry_string_cat_str(password_str, "?\nCaution, a wrong password\ncan block the card!");
+        nfc_text_store_set(nfc, furry_string_get_cstr(password_str));
+        furry_string_free(password_str);
 
         dialog_ex_set_header(
             dialog_ex,

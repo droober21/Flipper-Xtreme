@@ -12,7 +12,7 @@ void uart_terminal_scene_text_input_on_enter(void* context) {
     if(false == app->is_custom_tx_string) {
         // Fill text input with selected string so that user can add to it
         size_t length = strlen(app->selected_tx_string);
-        furi_assert(length < UART_TERMINAL_TEXT_INPUT_STORE_SIZE);
+        furry_assert(length < UART_TERMINAL_TEXT_INPUT_STORE_SIZE);
         bzero(app->text_input_store, UART_TERMINAL_TEXT_INPUT_STORE_SIZE);
         strncpy(app->text_input_store, app->selected_tx_string, length);
 

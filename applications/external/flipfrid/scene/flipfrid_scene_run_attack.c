@@ -119,7 +119,7 @@ void flipfrid_scene_run_attack_on_tick(FlipFridState* context) {
                 lfrfid_worker_stop(context->worker);
                 lfrfid_worker_stop_thread(context->worker);
                 context->workr_rund = false;
-                furi_delay_ms(200);
+                furry_delay_ms(200);
             }
             switch(context->attack) {
             case FlipFridAttackDefaultValues:
@@ -346,7 +346,7 @@ void flipfrid_scene_run_attack_on_tick(FlipFridState* context) {
                 if(context->proto == EM4100) {
                     bool end_of_list = false;
                     while(true) {
-                        furi_string_reset(context->data_str);
+                        furry_string_reset(context->data_str);
                         if(!stream_read_line(context->uids_stream, context->data_str)) {
                             context->attack_step = 0;
                             counter = 0;
@@ -357,13 +357,13 @@ void flipfrid_scene_run_attack_on_tick(FlipFridState* context) {
                             end_of_list = true;
                             break;
                         };
-                        if(furi_string_get_char(context->data_str, 0) == '#') continue;
-                        if(furi_string_size(context->data_str) != 11) break;
+                        if(furry_string_get_char(context->data_str, 0) == '#') continue;
+                        if(furry_string_size(context->data_str) != 11) break;
                         break;
                     }
                     if(end_of_list) break;
-                    FURI_LOG_D(TAG, furi_string_get_cstr(context->data_str));
-                    if(furi_string_size(context->data_str) != 11) {
+                    FURRY_LOG_D(TAG, furry_string_get_cstr(context->data_str));
+                    if(furry_string_size(context->data_str) != 11) {
                         context->attack_step = 0;
                         counter = 0;
                         context->is_attacking = false;
@@ -375,8 +375,8 @@ void flipfrid_scene_run_attack_on_tick(FlipFridState* context) {
                     // string is valid, parse it in context->payload
                     for(uint8_t i = 0; i < 5; i++) {
                         char temp_str[3];
-                        temp_str[0] = furi_string_get_cstr(context->data_str)[i * 2];
-                        temp_str[1] = furi_string_get_cstr(context->data_str)[i * 2 + 1];
+                        temp_str[0] = furry_string_get_cstr(context->data_str)[i * 2];
+                        temp_str[1] = furry_string_get_cstr(context->data_str)[i * 2 + 1];
                         temp_str[2] = '\0';
                         context->payload[i] = (uint8_t)strtol(temp_str, NULL, 16);
                     }
@@ -384,7 +384,7 @@ void flipfrid_scene_run_attack_on_tick(FlipFridState* context) {
                 } else if(context->proto == PAC) {
                     bool end_of_list = false;
                     while(true) {
-                        furi_string_reset(context->data_str);
+                        furry_string_reset(context->data_str);
                         if(!stream_read_line(context->uids_stream, context->data_str)) {
                             context->attack_step = 0;
                             counter = 0;
@@ -395,13 +395,13 @@ void flipfrid_scene_run_attack_on_tick(FlipFridState* context) {
                             end_of_list = true;
                             break;
                         };
-                        if(furi_string_get_char(context->data_str, 0) == '#') continue;
-                        if(furi_string_size(context->data_str) != 9) break;
+                        if(furry_string_get_char(context->data_str, 0) == '#') continue;
+                        if(furry_string_size(context->data_str) != 9) break;
                         break;
                     }
                     if(end_of_list) break;
-                    FURI_LOG_D(TAG, furi_string_get_cstr(context->data_str));
-                    if(furi_string_size(context->data_str) != 9) {
+                    FURRY_LOG_D(TAG, furry_string_get_cstr(context->data_str));
+                    if(furry_string_size(context->data_str) != 9) {
                         context->attack_step = 0;
                         counter = 0;
                         context->is_attacking = false;
@@ -413,8 +413,8 @@ void flipfrid_scene_run_attack_on_tick(FlipFridState* context) {
                     // string is valid, parse it in context->payload
                     for(uint8_t i = 0; i < 4; i++) {
                         char temp_str[3];
-                        temp_str[0] = furi_string_get_cstr(context->data_str)[i * 2];
-                        temp_str[1] = furi_string_get_cstr(context->data_str)[i * 2 + 1];
+                        temp_str[0] = furry_string_get_cstr(context->data_str)[i * 2];
+                        temp_str[1] = furry_string_get_cstr(context->data_str)[i * 2 + 1];
                         temp_str[2] = '\0';
                         context->payload[i] = (uint8_t)strtol(temp_str, NULL, 16);
                     }
@@ -422,7 +422,7 @@ void flipfrid_scene_run_attack_on_tick(FlipFridState* context) {
                 } else if(context->proto == H10301) {
                     bool end_of_list = false;
                     while(true) {
-                        furi_string_reset(context->data_str);
+                        furry_string_reset(context->data_str);
                         if(!stream_read_line(context->uids_stream, context->data_str)) {
                             context->attack_step = 0;
                             counter = 0;
@@ -433,13 +433,13 @@ void flipfrid_scene_run_attack_on_tick(FlipFridState* context) {
                             end_of_list = true;
                             break;
                         };
-                        if(furi_string_get_char(context->data_str, 0) == '#') continue;
-                        if(furi_string_size(context->data_str) != 7) break;
+                        if(furry_string_get_char(context->data_str, 0) == '#') continue;
+                        if(furry_string_size(context->data_str) != 7) break;
                         break;
                     }
                     if(end_of_list) break;
-                    FURI_LOG_D(TAG, furi_string_get_cstr(context->data_str));
-                    if(furi_string_size(context->data_str) != 7) {
+                    FURRY_LOG_D(TAG, furry_string_get_cstr(context->data_str));
+                    if(furry_string_size(context->data_str) != 7) {
                         context->attack_step = 0;
                         counter = 0;
                         context->is_attacking = false;
@@ -451,8 +451,8 @@ void flipfrid_scene_run_attack_on_tick(FlipFridState* context) {
                     // string is valid, parse it in context->payload
                     for(uint8_t i = 0; i < 3; i++) {
                         char temp_str[3];
-                        temp_str[0] = furi_string_get_cstr(context->data_str)[i * 2];
-                        temp_str[1] = furi_string_get_cstr(context->data_str)[i * 2 + 1];
+                        temp_str[0] = furry_string_get_cstr(context->data_str)[i * 2];
+                        temp_str[1] = furry_string_get_cstr(context->data_str)[i * 2 + 1];
                         temp_str[2] = '\0';
                         context->payload[i] = (uint8_t)strtol(temp_str, NULL, 16);
                     }
@@ -460,7 +460,7 @@ void flipfrid_scene_run_attack_on_tick(FlipFridState* context) {
                 } else {
                     bool end_of_list = false;
                     while(true) {
-                        furi_string_reset(context->data_str);
+                        furry_string_reset(context->data_str);
                         if(!stream_read_line(context->uids_stream, context->data_str)) {
                             context->attack_step = 0;
                             counter = 0;
@@ -471,13 +471,13 @@ void flipfrid_scene_run_attack_on_tick(FlipFridState* context) {
                             end_of_list = true;
                             break;
                         };
-                        if(furi_string_get_char(context->data_str, 0) == '#') continue;
-                        if(furi_string_size(context->data_str) != 13) break;
+                        if(furry_string_get_char(context->data_str, 0) == '#') continue;
+                        if(furry_string_size(context->data_str) != 13) break;
                         break;
                     }
-                    FURI_LOG_D(TAG, furi_string_get_cstr(context->data_str));
+                    FURRY_LOG_D(TAG, furry_string_get_cstr(context->data_str));
                     if(end_of_list) break;
-                    if(furi_string_size(context->data_str) != 13) {
+                    if(furry_string_size(context->data_str) != 13) {
                         context->attack_step = 0;
                         counter = 0;
                         context->is_attacking = false;
@@ -489,8 +489,8 @@ void flipfrid_scene_run_attack_on_tick(FlipFridState* context) {
                     // string is valid, parse it in context->payload
                     for(uint8_t i = 0; i < 6; i++) {
                         char temp_str[3];
-                        temp_str[0] = furi_string_get_cstr(context->data_str)[i * 2];
-                        temp_str[1] = furi_string_get_cstr(context->data_str)[i * 2 + 1];
+                        temp_str[0] = furry_string_get_cstr(context->data_str)[i * 2];
+                        temp_str[1] = furry_string_get_cstr(context->data_str)[i * 2 + 1];
                         temp_str[2] = '\0';
                         context->payload[i] = (uint8_t)strtol(temp_str, NULL, 16);
                     }
@@ -550,12 +550,12 @@ void flipfrid_scene_run_attack_on_event(FlipFridEvent event, FlipFridState* cont
                     context->attack_stop_called = false;
                     context->attack_step = 0;
                     if(context->attack == FlipFridAttackLoadFileCustomUids) {
-                        furi_string_reset(context->data_str);
+                        furry_string_reset(context->data_str);
                         stream_rewind(context->uids_stream);
                         buffered_file_stream_close(context->uids_stream);
                     }
 
-                    furi_string_reset(context->notification_msg);
+                    furry_string_reset(context->notification_msg);
                     context->current_scene = SceneEntryPoint;
                 }
 
@@ -600,7 +600,7 @@ void flipfrid_scene_run_attack_on_draw(Canvas* canvas, FlipFridState* context) {
     // Title
     canvas_set_font(canvas, FontPrimary);
     canvas_draw_str_aligned(
-        canvas, 64, 2, AlignCenter, AlignTop, furi_string_get_cstr(context->attack_name));
+        canvas, 64, 2, AlignCenter, AlignTop, furry_string_get_cstr(context->attack_name));
 
     char uid[18];
     char speed[16];
@@ -649,7 +649,7 @@ void flipfrid_scene_run_attack_on_draw(Canvas* canvas, FlipFridState* context) {
     canvas_set_font(canvas, FontSecondary);
 
     canvas_draw_str_aligned(
-        canvas, 64, 26, AlignCenter, AlignTop, furi_string_get_cstr(context->proto_name));
+        canvas, 64, 26, AlignCenter, AlignTop, furry_string_get_cstr(context->proto_name));
 
     snprintf(speed, sizeof(speed), "Time delay: %d", context->time_between_cards);
 

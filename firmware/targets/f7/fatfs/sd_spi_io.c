@@ -1,14 +1,14 @@
 #include "sd_spi_io.h"
 #include "sector_cache.h"
-#include <furi.h>
-#include <furi_hal.h>
-#include <furi/core/core_defines.h>
+#include <furry.h>
+#include <furry_hal.h>
+#include <furry/core/core_defines.h>
 
 // #define SD_SPI_DEBUG 1
 #define TAG "SdSpi"
 
 #ifdef SD_SPI_DEBUG
-#define sd_spi_debug(...) FURI_LOG_I(TAG, __VA_ARGS__)
+#define sd_spi_debug(...) FURRY_LOG_I(TAG, __VA_ARGS__)
 #else
 #define sd_spi_debug(...)
 #endif
@@ -121,58 +121,58 @@ typedef enum {
 } SdSpiR2;
 
 static inline void sd_spi_select_card() {
-    furi_hal_gpio_write(furi_hal_sd_spi_handle->cs, false);
-    furi_delay_us(10); // Entry guard time for some SD cards
+    furry_hal_gpio_write(furry_hal_sd_spi_handle->cs, false);
+    furry_delay_us(10); // Entry guard time for some SD cards
 }
 
 static inline void sd_spi_deselect_card() {
-    furi_delay_us(10); // Exit guard time for some SD cards
-    furi_hal_gpio_write(furi_hal_sd_spi_handle->cs, true);
+    furry_delay_us(10); // Exit guard time for some SD cards
+    furry_hal_gpio_write(furry_hal_sd_spi_handle->cs, true);
 }
 
 static void sd_spi_bus_to_ground() {
-    furi_hal_gpio_init_ex(
-        furi_hal_sd_spi_handle->miso,
+    furry_hal_gpio_init_ex(
+        furry_hal_sd_spi_handle->miso,
         GpioModeOutputPushPull,
         GpioPullNo,
         GpioSpeedVeryHigh,
         GpioAltFnUnused);
-    furi_hal_gpio_init_ex(
-        furi_hal_sd_spi_handle->mosi,
+    furry_hal_gpio_init_ex(
+        furry_hal_sd_spi_handle->mosi,
         GpioModeOutputPushPull,
         GpioPullNo,
         GpioSpeedVeryHigh,
         GpioAltFnUnused);
-    furi_hal_gpio_init_ex(
-        furi_hal_sd_spi_handle->sck,
+    furry_hal_gpio_init_ex(
+        furry_hal_sd_spi_handle->sck,
         GpioModeOutputPushPull,
         GpioPullNo,
         GpioSpeedVeryHigh,
         GpioAltFnUnused);
 
     sd_spi_select_card();
-    furi_hal_gpio_write(furi_hal_sd_spi_handle->miso, false);
-    furi_hal_gpio_write(furi_hal_sd_spi_handle->mosi, false);
-    furi_hal_gpio_write(furi_hal_sd_spi_handle->sck, false);
+    furry_hal_gpio_write(furry_hal_sd_spi_handle->miso, false);
+    furry_hal_gpio_write(furry_hal_sd_spi_handle->mosi, false);
+    furry_hal_gpio_write(furry_hal_sd_spi_handle->sck, false);
 }
 
 static void sd_spi_bus_rise_up() {
     sd_spi_deselect_card();
 
-    furi_hal_gpio_init_ex(
-        furi_hal_sd_spi_handle->miso,
+    furry_hal_gpio_init_ex(
+        furry_hal_sd_spi_handle->miso,
         GpioModeAltFunctionPushPull,
         GpioPullUp,
         GpioSpeedVeryHigh,
         GpioAltFn5SPI2);
-    furi_hal_gpio_init_ex(
-        furi_hal_sd_spi_handle->mosi,
+    furry_hal_gpio_init_ex(
+        furry_hal_sd_spi_handle->mosi,
         GpioModeAltFunctionPushPull,
         GpioPullUp,
         GpioSpeedVeryHigh,
         GpioAltFn5SPI2);
-    furi_hal_gpio_init_ex(
-        furi_hal_sd_spi_handle->sck,
+    furry_hal_gpio_init_ex(
+        furry_hal_sd_spi_handle->sck,
         GpioModeAltFunctionPushPull,
         GpioPullUp,
         GpioSpeedVeryHigh,
@@ -181,38 +181,38 @@ static void sd_spi_bus_rise_up() {
 
 static inline uint8_t sd_spi_read_byte(void) {
     uint8_t responce;
-    furi_check(furi_hal_spi_bus_trx(furi_hal_sd_spi_handle, NULL, &responce, 1, SD_TIMEOUT_MS));
+    furry_check(furry_hal_spi_bus_trx(furry_hal_sd_spi_handle, NULL, &responce, 1, SD_TIMEOUT_MS));
     return responce;
 }
 
 static inline void sd_spi_write_byte(uint8_t data) {
-    furi_check(furi_hal_spi_bus_trx(furi_hal_sd_spi_handle, &data, NULL, 1, SD_TIMEOUT_MS));
+    furry_check(furry_hal_spi_bus_trx(furry_hal_sd_spi_handle, &data, NULL, 1, SD_TIMEOUT_MS));
 }
 
 static inline uint8_t sd_spi_write_and_read_byte(uint8_t data) {
     uint8_t responce;
-    furi_check(furi_hal_spi_bus_trx(furi_hal_sd_spi_handle, &data, &responce, 1, SD_TIMEOUT_MS));
+    furry_check(furry_hal_spi_bus_trx(furry_hal_sd_spi_handle, &data, &responce, 1, SD_TIMEOUT_MS));
     return responce;
 }
 
 static inline void sd_spi_write_bytes(uint8_t* data, uint32_t size) {
-    furi_check(furi_hal_spi_bus_trx(furi_hal_sd_spi_handle, data, NULL, size, SD_TIMEOUT_MS));
+    furry_check(furry_hal_spi_bus_trx(furry_hal_sd_spi_handle, data, NULL, size, SD_TIMEOUT_MS));
 }
 
 static inline void sd_spi_read_bytes(uint8_t* data, uint32_t size) {
-    furi_check(furi_hal_spi_bus_trx(furi_hal_sd_spi_handle, NULL, data, size, SD_TIMEOUT_MS));
+    furry_check(furry_hal_spi_bus_trx(furry_hal_sd_spi_handle, NULL, data, size, SD_TIMEOUT_MS));
 }
 
 static inline void sd_spi_write_bytes_dma(uint8_t* data, uint32_t size) {
     uint32_t timeout_mul = (size / 512) + 1;
-    furi_check(furi_hal_spi_bus_trx_dma(
-        furi_hal_sd_spi_handle, data, NULL, size, SD_TIMEOUT_MS * timeout_mul));
+    furry_check(furry_hal_spi_bus_trx_dma(
+        furry_hal_sd_spi_handle, data, NULL, size, SD_TIMEOUT_MS * timeout_mul));
 }
 
 static inline void sd_spi_read_bytes_dma(uint8_t* data, uint32_t size) {
     uint32_t timeout_mul = (size / 512) + 1;
-    furi_check(furi_hal_spi_bus_trx_dma(
-        furi_hal_sd_spi_handle, NULL, data, size, SD_TIMEOUT_MS * timeout_mul));
+    furry_check(furry_hal_spi_bus_trx_dma(
+        furry_hal_sd_spi_handle, NULL, data, size, SD_TIMEOUT_MS * timeout_mul));
 }
 
 static uint8_t sd_spi_wait_for_data_and_read(void) {
@@ -230,12 +230,12 @@ static uint8_t sd_spi_wait_for_data_and_read(void) {
 }
 
 static SdSpiStatus sd_spi_wait_for_data(uint8_t data, uint32_t timeout_ms) {
-    FuriHalCortexTimer timer = furi_hal_cortex_timer_get(timeout_ms * 1000);
+    FurryHalCortexTimer timer = furry_hal_cortex_timer_get(timeout_ms * 1000);
     uint8_t byte;
 
     do {
         byte = sd_spi_read_byte();
-        if(furi_hal_cortex_timer_is_expired(timer)) {
+        if(furry_hal_cortex_timer_is_expired(timer)) {
             return SdSpiStatusTimeout;
         }
     } while((byte != data));
@@ -289,7 +289,7 @@ static SdSpiCmdAnswer
         // In general this shenenigans seems suspicious, please double check SD specs if you are using SdSpiCmdAnswerTypeR1B
         // reassert card
         sd_spi_deselect_card();
-        furi_delay_us(1000);
+        furry_delay_us(1000);
         sd_spi_deselect_card();
 
         // and wait for it to be ready
@@ -721,24 +721,24 @@ uint8_t sd_max_mount_retry_count() {
 
 SdSpiStatus sd_init(bool power_reset) {
     // Slow speed init
-    furi_hal_spi_acquire(&furi_hal_spi_bus_handle_sd_slow);
-    furi_hal_sd_spi_handle = &furi_hal_spi_bus_handle_sd_slow;
+    furry_hal_spi_acquire(&furry_hal_spi_bus_handle_sd_slow);
+    furry_hal_sd_spi_handle = &furry_hal_spi_bus_handle_sd_slow;
 
     // We reset card in spi_lock context, so it is safe to disturb spi bus
     if(power_reset) {
         sd_spi_debug("Power reset");
 
         // disable power and set low on all bus pins
-        furi_hal_power_disable_external_3_3v();
+        furry_hal_power_disable_external_3_3v();
         sd_spi_bus_to_ground();
         hal_sd_detect_set_low();
-        furi_delay_ms(250);
+        furry_delay_ms(250);
 
         // reinit bus and enable power
         sd_spi_bus_rise_up();
         hal_sd_detect_init();
-        furi_hal_power_enable_external_3_3v();
-        furi_delay_ms(100);
+        furry_hal_power_enable_external_3_3v();
+        furry_delay_ms(100);
     }
 
     SdSpiStatus status = SdSpiStatusError;
@@ -758,8 +758,8 @@ SdSpiStatus sd_init(bool power_reset) {
         }
     }
 
-    furi_hal_sd_spi_handle = NULL;
-    furi_hal_spi_release(&furi_hal_spi_bus_handle_sd_slow);
+    furry_hal_sd_spi_handle = NULL;
+    furry_hal_spi_release(&furry_hal_spi_bus_handle_sd_slow);
 
     // Init sector cache
     sector_cache_init();
@@ -830,14 +830,14 @@ SdSpiStatus
 SdSpiStatus sd_get_cid(SD_CID* cid) {
     SdSpiStatus status;
 
-    furi_hal_spi_acquire(&furi_hal_spi_bus_handle_sd_fast);
-    furi_hal_sd_spi_handle = &furi_hal_spi_bus_handle_sd_fast;
+    furry_hal_spi_acquire(&furry_hal_spi_bus_handle_sd_fast);
+    furry_hal_sd_spi_handle = &furry_hal_spi_bus_handle_sd_fast;
 
     memset(cid, 0, sizeof(SD_CID));
     status = sd_spi_get_cid(cid);
 
-    furi_hal_sd_spi_handle = NULL;
-    furi_hal_spi_release(&furi_hal_spi_bus_handle_sd_fast);
+    furry_hal_sd_spi_handle = NULL;
+    furry_hal_spi_release(&furry_hal_spi_bus_handle_sd_fast);
 
     return status;
 }

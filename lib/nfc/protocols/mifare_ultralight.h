@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi_hal_nfc.h>
+#include <furry_hal_nfc.h>
 
 // Largest tag is NTAG I2C Plus 2K, both data sectors plus SRAM
 #define MF_UL_MAX_DUMP_SIZE ((238 + 256 + 16) * 4)
@@ -200,40 +200,40 @@ typedef struct {
 
 void mf_ul_reset(MfUltralightData* data);
 
-bool mf_ul_check_card_type(FuriHalNfcADevData* data);
+bool mf_ul_check_card_type(FurryHalNfcADevData* data);
 
 bool mf_ultralight_read_version(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     MfUltralightReader* reader,
     MfUltralightData* data);
 
 bool mf_ultralight_read_pages_direct(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     uint8_t start_index,
     uint8_t* data);
 
 bool mf_ultralight_read_pages(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     MfUltralightReader* reader,
     MfUltralightData* data);
 
 bool mf_ultralight_fast_read_pages(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     MfUltralightReader* reader,
     MfUltralightData* data);
 
-bool mf_ultralight_read_signature(FuriHalNfcTxRxContext* tx_rx, MfUltralightData* data);
+bool mf_ultralight_read_signature(FurryHalNfcTxRxContext* tx_rx, MfUltralightData* data);
 
-bool mf_ultralight_read_counters(FuriHalNfcTxRxContext* tx_rx, MfUltralightData* data);
+bool mf_ultralight_read_counters(FurryHalNfcTxRxContext* tx_rx, MfUltralightData* data);
 
-bool mf_ultralight_read_tearing_flags(FuriHalNfcTxRxContext* tx_rx, MfUltralightData* data);
+bool mf_ultralight_read_tearing_flags(FurryHalNfcTxRxContext* tx_rx, MfUltralightData* data);
 
-bool mf_ultralight_authenticate(FuriHalNfcTxRxContext* tx_rx, uint32_t key, uint16_t* pack);
+bool mf_ultralight_authenticate(FurryHalNfcTxRxContext* tx_rx, uint32_t key, uint16_t* pack);
 
 MfUltralightConfigPages* mf_ultralight_get_config_pages(MfUltralightData* data);
 
 bool mf_ul_read_card(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     MfUltralightReader* reader,
     MfUltralightData* data);
 
@@ -249,8 +249,8 @@ bool mf_ul_prepare_emulation_response(
     uint32_t* data_type,
     void* context);
 
-uint32_t mf_ul_pwdgen_amiibo(FuriHalNfcDevData* data);
+uint32_t mf_ul_pwdgen_amiibo(FurryHalNfcDevData* data);
 
-uint32_t mf_ul_pwdgen_xiaomi(FuriHalNfcDevData* data);
+uint32_t mf_ul_pwdgen_xiaomi(FurryHalNfcDevData* data);
 
 bool mf_ul_is_full_capture(MfUltralightData* data);

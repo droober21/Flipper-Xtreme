@@ -77,4 +77,4 @@ SubGhzProtocolStatus
  * @param context Pointer to a WSProtocolDecoderGT_WT03 instance
  * @param output Resulting text
  */
-void ws_protocol_decoder_gt_wt_03_get_string(void* context, FuriString* output);
+void ws_protocol_decoder_gt_wt_03_get_string(void* context, FurryString* output);

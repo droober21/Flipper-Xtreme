@@ -1,7 +1,7 @@
 #include "yatzee_icons.h"
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #include <gui/gui.h>
 #include <gui/elements.h>
@@ -629,10 +629,10 @@ static void app_draw_callback(Canvas* canvas, void* ctx) {
 
 // define the callback for helping ViewPort get InputEvent and place it in the event_queue defined in the main method
 static void app_input_callback(InputEvent* input_event, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
 
-    FuriMessageQueue* event_queue = ctx;
-    furi_message_queue_put(event_queue, input_event, FuriWaitForever);
+    FurryMessageQueue* event_queue = ctx;
+    furry_message_queue_put(event_queue, input_event, FurryWaitForever);
 }
 
 // roll them diiiiceeee
@@ -705,9 +705,9 @@ int32_t yatzee_main(void* p) {
     UNUSED(p);
 
     // Initialize event queue to handle incoming events like button presses
-    // Use FuriMessageQueue as type as defined in furi api
+    // Use FurryMessageQueue as type as defined in furry api
     // InputEvents are supported by app_input_callback
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
 
     // Initialize viewport
     ViewPort* view_port = view_port_alloc();
@@ -717,7 +717,7 @@ int32_t yatzee_main(void* p) {
     view_port_input_callback_set(view_port, app_input_callback, event_queue);
 
     // Open GUI & register viewport
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     // hold input event
@@ -730,7 +730,7 @@ int32_t yatzee_main(void* p) {
         if(totalrolls == 3) {
             cursor.index = -1;
         }
-        if(furi_message_queue_get(event_queue, &event, 100) == FuriStatusOk) {
+        if(furry_message_queue_get(event_queue, &event, 100) == FurryStatusOk) {
             if((event.type == InputTypePress) || event.type == InputTypeRepeat) {
                 switch(event.key) {
                 case InputKeyLeft:
@@ -820,8 +820,8 @@ int32_t yatzee_main(void* p) {
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_record_close(RECORD_GUI);
+    furry_message_queue_free(event_queue);
+    furry_record_close(RECORD_GUI);
 
     return 0;
 }

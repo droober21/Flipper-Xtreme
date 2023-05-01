@@ -9,7 +9,7 @@
  * This will speed up sending large chunks of data between threads, compared to using a stream directly.
  */
 #pragma once
-#include <furi.h>
+#include <furry.h>
 
 #ifdef __cplusplus
 extern "C" {

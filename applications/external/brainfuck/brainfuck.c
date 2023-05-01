@@ -8,13 +8,13 @@
 */
 
 bool brainfuck_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     BFApp* brainfuck = context;
     return scene_manager_handle_custom_event(brainfuck->scene_manager, event);
 }
 
 bool brainfuck_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     BFApp* brainfuck = context;
     return scene_manager_handle_back_event(brainfuck->scene_manager);
 }
@@ -33,12 +33,12 @@ BFApp* brainfuck_alloc() {
         brainfuck->view_dispatcher, brainfuck_back_event_callback);
 
     // Open GUI record
-    brainfuck->gui = furi_record_open(RECORD_GUI);
+    brainfuck->gui = furry_record_open(RECORD_GUI);
     view_dispatcher_attach_to_gui(
         brainfuck->view_dispatcher, brainfuck->gui, ViewDispatcherTypeFullscreen);
 
     // Open Notification record
-    brainfuck->notifications = furi_record_open(RECORD_NOTIFICATION);
+    brainfuck->notifications = furry_record_open(RECORD_NOTIFICATION);
 
     // Submenu
     brainfuck->submenu = submenu_alloc();
@@ -61,7 +61,7 @@ BFApp* brainfuck_alloc() {
     brainfuck->text_box = text_box_alloc();
     view_dispatcher_add_view(
         brainfuck->view_dispatcher, brainfuckViewTextBox, text_box_get_view(brainfuck->text_box));
-    brainfuck->text_box_store = furi_string_alloc();
+    brainfuck->text_box_store = furry_string_alloc();
 
     // Dev environment
     brainfuck->BF_dev_env = bf_dev_env_alloc(brainfuck);
@@ -69,13 +69,13 @@ BFApp* brainfuck_alloc() {
         brainfuck->view_dispatcher, brainfuckViewDev, bf_dev_env_get_view(brainfuck->BF_dev_env));
 
     // File path
-    brainfuck->BF_file_path = furi_string_alloc();
+    brainfuck->BF_file_path = furry_string_alloc();
 
     return brainfuck;
 }
 
 void brainfuck_free(BFApp* brainfuck) {
-    furi_assert(brainfuck);
+    furry_assert(brainfuck);
 
     // Submenu
     view_dispatcher_remove_view(brainfuck->view_dispatcher, brainfuckViewMenu);
@@ -92,7 +92,7 @@ void brainfuck_free(BFApp* brainfuck) {
     // TextBox
     view_dispatcher_remove_view(brainfuck->view_dispatcher, brainfuckViewTextBox);
     text_box_free(brainfuck->text_box);
-    furi_string_free(brainfuck->text_box_store);
+    furry_string_free(brainfuck->text_box_store);
 
     //dev env
     view_dispatcher_remove_view(brainfuck->view_dispatcher, brainfuckViewDev);
@@ -105,11 +105,11 @@ void brainfuck_free(BFApp* brainfuck) {
     scene_manager_free(brainfuck->scene_manager);
 
     // GUI
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     brainfuck->gui = NULL;
 
     // Notifications
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
     brainfuck->notifications = NULL;
 
     free(brainfuck);
@@ -136,7 +136,7 @@ int32_t brainfuck_app(void* p) {
         return 0;
     }
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     storage_simply_mkdir(storage, "/ext/brainfuck");
 
     scene_manager_next_scene(brainfuck->scene_manager, brainfuckSceneStart);

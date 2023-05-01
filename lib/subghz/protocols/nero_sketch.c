@@ -84,7 +84,7 @@ void* subghz_protocol_encoder_nero_sketch_alloc(SubGhzEnvironment* environment) 
 }
 
 void subghz_protocol_encoder_nero_sketch_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderNeroSketch* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -97,12 +97,12 @@ void subghz_protocol_encoder_nero_sketch_free(void* context) {
  */
 static bool
     subghz_protocol_encoder_nero_sketch_get_upload(SubGhzProtocolEncoderNeroSketch* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     size_t index = 0;
     size_t size_upload = 47 * 2 + 2 + (instance->generic.data_count_bit * 2) + 2;
     if(size_upload > instance->encoder.size_upload) {
-        FURI_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
+        FURRY_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
         return false;
     } else {
         instance->encoder.size_upload = size_upload;
@@ -150,7 +150,7 @@ static bool
 
 SubGhzProtocolStatus
     subghz_protocol_encoder_nero_sketch_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderNeroSketch* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -207,19 +207,19 @@ void* subghz_protocol_decoder_nero_sketch_alloc(SubGhzEnvironment* environment) 
 }
 
 void subghz_protocol_decoder_nero_sketch_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderNeroSketch* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_nero_sketch_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderNeroSketch* instance = context;
     instance->decoder.parser_step = NeroSketchDecoderStepReset;
 }
 
 void subghz_protocol_decoder_nero_sketch_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderNeroSketch* instance = context;
 
     switch(instance->decoder.parser_step) {
@@ -322,7 +322,7 @@ void subghz_protocol_decoder_nero_sketch_feed(void* context, bool level, uint32_
 }
 
 uint8_t subghz_protocol_decoder_nero_sketch_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderNeroSketch* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -332,14 +332,14 @@ SubGhzProtocolStatus subghz_protocol_decoder_nero_sketch_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderNeroSketch* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_nero_sketch_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderNeroSketch* instance = context;
     return subghz_block_generic_deserialize_check_count_bit(
         &instance->generic,
@@ -347,8 +347,8 @@ SubGhzProtocolStatus
         subghz_protocol_nero_sketch_const.min_count_bit_for_found);
 }
 
-void subghz_protocol_decoder_nero_sketch_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_nero_sketch_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderNeroSketch* instance = context;
 
     uint32_t code_found_hi = instance->generic.data >> 32;
@@ -360,7 +360,7 @@ void subghz_protocol_decoder_nero_sketch_get_string(void* context, FuriString* o
     uint32_t code_found_reverse_hi = code_found_reverse >> 32;
     uint32_t code_found_reverse_lo = code_found_reverse & 0x00000000ffffffff;
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %dbit\r\n"
         "Key:0x%lX%08lX\r\n"

@@ -5,7 +5,7 @@
 #include <storage/storage.h>
 #include <dialogs/dialogs.h>
 
-#include <furi_hal_nfc.h>
+#include <furry_hal_nfc.h>
 #include <lib/nfc/helpers/mf_classic_dict.h>
 #include <lib/nfc/protocols/emv.h>
 #include <lib/nfc/protocols/mifare_ultralight.h>
@@ -69,7 +69,7 @@ typedef enum {
 } NfcReadMode;
 
 typedef struct {
-    FuriHalNfcDevData nfc_data;
+    FurryHalNfcDevData nfc_data;
     NfcProtocol protocol;
     NfcReadMode read_mode;
     union {
@@ -85,7 +85,7 @@ typedef struct {
         NfcVData nfcv_data;
         FelicaData felica_data;
     };
-    FuriString* parsed_data;
+    FurryString* parsed_data;
 } NfcDeviceData;
 
 typedef struct {
@@ -93,8 +93,8 @@ typedef struct {
     DialogsApp* dialogs;
     NfcDeviceData dev_data;
     char dev_name[NFC_DEV_NAME_MAX_LEN + 1];
-    FuriString* load_path;
-    FuriString* folder;
+    FurryString* load_path;
+    FurryString* folder;
     NfcDeviceSaveFormat format;
     bool shadow_file_exist;
 

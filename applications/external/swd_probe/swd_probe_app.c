@@ -90,13 +90,13 @@ static const char* gpio_name(uint8_t mask) {
 
 static void swd_configure_pins(AppFSM* const ctx, bool output) {
     if(ctx->mode_page > ModePageFound && ctx->io_num_swc < 8 && ctx->io_num_swd < 8) {
-        furi_hal_gpio_init(
+        furry_hal_gpio_init(
             gpios[ctx->io_num_swc], GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
         if(!output) {
-            furi_hal_gpio_init(
+            furry_hal_gpio_init(
                 gpios[ctx->io_num_swd], GpioModeInput, GpioPullUp, GpioSpeedVeryHigh);
         } else {
-            furi_hal_gpio_init(
+            furry_hal_gpio_init(
                 gpios[ctx->io_num_swd], GpioModeOutputOpenDrain, GpioPullUp, GpioSpeedVeryHigh);
         }
         return;
@@ -107,19 +107,19 @@ static void swd_configure_pins(AppFSM* const ctx, bool output) {
 
         /* if neither candidate for SWC nor SWD then skip */
         if(!(ctx->io_swc & bitmask) && !(ctx->io_swd & bitmask)) {
-            furi_hal_gpio_init(gpios[io], GpioModeInput, GpioPullUp, GpioSpeedVeryHigh);
+            furry_hal_gpio_init(gpios[io], GpioModeInput, GpioPullUp, GpioSpeedVeryHigh);
             continue;
         }
 
         if(ctx->current_mask & bitmask) {
             /* set for clock */
-            furi_hal_gpio_init(gpios[io], GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
+            furry_hal_gpio_init(gpios[io], GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
         } else {
             /* set for data */
             if(!output) {
-                furi_hal_gpio_init(gpios[io], GpioModeInput, GpioPullUp, GpioSpeedVeryHigh);
+                furry_hal_gpio_init(gpios[io], GpioModeInput, GpioPullUp, GpioSpeedVeryHigh);
             } else {
-                furi_hal_gpio_init(
+                furry_hal_gpio_init(
                     gpios[io], GpioModeOutputOpenDrain, GpioPullUp, GpioSpeedVeryHigh);
             }
         }
@@ -128,7 +128,7 @@ static void swd_configure_pins(AppFSM* const ctx, bool output) {
 
 static void swd_set_clock(AppFSM* const ctx, const uint8_t level) {
     if(ctx->mode_page > ModePageFound && ctx->io_num_swc < 8) {
-        furi_hal_gpio_write(gpios[ctx->io_num_swc], level);
+        furry_hal_gpio_write(gpios[ctx->io_num_swc], level);
         return;
     }
 
@@ -141,14 +141,14 @@ static void swd_set_clock(AppFSM* const ctx, const uint8_t level) {
         }
 
         if(ctx->current_mask & bitmask) {
-            furi_hal_gpio_write(gpios[io], level);
+            furry_hal_gpio_write(gpios[io], level);
         }
     }
 }
 
 static void swd_set_data(AppFSM* const ctx, const uint8_t level) {
     if(ctx->mode_page > ModePageFound && ctx->io_num_swd < 8) {
-        furi_hal_gpio_write(gpios[ctx->io_num_swd], level);
+        furry_hal_gpio_write(gpios[ctx->io_num_swd], level);
         return;
     }
 
@@ -161,14 +161,14 @@ static void swd_set_data(AppFSM* const ctx, const uint8_t level) {
         }
 
         if(!(ctx->current_mask & bitmask)) {
-            furi_hal_gpio_write(gpios[io], level);
+            furry_hal_gpio_write(gpios[io], level);
         }
     }
 }
 
 static uint8_t swd_get_data(AppFSM* const ctx) {
     if(ctx->mode_page > ModePageFound && ctx->io_num_swd < 8) {
-        return furi_hal_gpio_read(gpios[ctx->io_num_swd]);
+        return furry_hal_gpio_read(gpios[ctx->io_num_swd]);
     }
 
     uint8_t bits = 0;
@@ -179,14 +179,14 @@ static uint8_t swd_get_data(AppFSM* const ctx) {
         if(!(ctx->io_swd & bitmask)) {
             continue;
         }
-        bits |= furi_hal_gpio_read(gpios[io]) ? bitmask : 0;
+        bits |= furry_hal_gpio_read(gpios[io]) ? bitmask : 0;
     }
     return bits;
 }
 
 static void swd_clock_delay(AppFSM* const ctx) {
     if(ctx->swd_clock_delay) {
-        furi_delay_us(ctx->swd_clock_delay);
+        furry_delay_us(ctx->swd_clock_delay);
     }
 }
 
@@ -645,8 +645,8 @@ static void swd_apscan_reset(AppFSM* const ctx) {
 }
 
 static bool swd_apscan_test(AppFSM* const ctx, uint32_t ap) {
-    furi_assert(ctx);
-    furi_assert(ap < sizeof(ctx->apidr_info));
+    furry_assert(ctx);
+    furry_assert(ap < sizeof(ctx->apidr_info));
     bool ret = true;
 
     ctx->apidr_info[ap].tested = true;
@@ -676,7 +676,7 @@ static bool swd_apscan_test(AppFSM* const ctx, uint32_t ap) {
 
 /**************************  script helpers  **************************/
 
-static void swd_script_log(ScriptContext* ctx, FuriLogLevel level, const char* format, ...) {
+static void swd_script_log(ScriptContext* ctx, FurryLogLevel level, const char* format, ...) {
     bool commandline = false;
     ScriptContext* cur = ctx;
     char buffer[256];
@@ -694,10 +694,10 @@ static void swd_script_log(ScriptContext* ctx, FuriLogLevel level, const char* f
         const char* prefix = "";
 
         switch(level) {
-        case FuriLogLevelWarn:
+        case FurryLogLevelWarn:
             prefix = "Warning: ";
             break;
-        case FuriLogLevelError:
+        case FurryLogLevelError:
             prefix = "ERROR: ";
             break;
         default:
@@ -881,7 +881,7 @@ static bool swd_script_get_number(ScriptContext* ctx, uint32_t* number) {
 }
 
 static void swd_script_gui_refresh(ScriptContext* ctx) {
-    if(furi_message_queue_get_count(ctx->app->event_queue) > 0) {
+    if(furry_message_queue_get_count(ctx->app->event_queue) > 0) {
         swd_message_process(ctx->app);
     }
     if(!ctx->status_ignore) {
@@ -906,7 +906,7 @@ static bool swd_scriptfunc_label(ScriptContext* ctx) {
 
     swd_script_skip_whitespace(ctx);
     if(!swd_script_get_string(ctx, label, sizeof(label))) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse label");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse label");
         return false;
     }
 
@@ -926,7 +926,7 @@ static bool swd_scriptfunc_goto(ScriptContext* ctx) {
     swd_script_skip_whitespace(ctx);
 
     if(!swd_script_get_string(ctx, ctx->goto_label, sizeof(ctx->goto_label))) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse target label");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse target label");
         return false;
     }
 
@@ -952,7 +952,7 @@ static bool swd_scriptfunc_call(ScriptContext* ctx) {
 
     /* append filename */
     if(!swd_script_get_string(ctx, &path[1], sizeof(filename) - strlen(path))) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse filename");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse filename");
         return false;
     }
 
@@ -960,7 +960,7 @@ static bool swd_scriptfunc_call(ScriptContext* ctx) {
 
     /* append extension */
     if(strlen(filename) + 5 >= sizeof(filename)) {
-        swd_script_log(ctx, FuriLogLevelError, "name too long");
+        swd_script_log(ctx, FurryLogLevelError, "name too long");
         return false;
     }
 
@@ -969,7 +969,7 @@ static bool swd_scriptfunc_call(ScriptContext* ctx) {
     bool ret = swd_execute_script(ctx->app, filename);
 
     if(!ret) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to exec '%s'", filename);
+        swd_script_log(ctx, FurryLogLevelError, "failed to exec '%s'", filename);
         return false;
     }
 
@@ -997,7 +997,7 @@ static bool swd_scriptfunc_errors(ScriptContext* ctx) {
     swd_script_skip_whitespace(ctx);
 
     if(!swd_script_get_string(ctx, type, sizeof(type))) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse");
         return false;
     }
 
@@ -1034,17 +1034,17 @@ static bool swd_scriptfunc_message(ScriptContext* ctx) {
     bool show_dialog = false;
 
     if(!swd_script_skip_whitespace(ctx)) {
-        swd_script_log(ctx, FuriLogLevelError, "missing whitespace");
+        swd_script_log(ctx, FurryLogLevelError, "missing whitespace");
         return false;
     }
 
     if(!swd_script_get_number(ctx, &wait_time)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse wait_time");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse wait_time");
         return false;
     }
 
     if(!swd_script_get_string(ctx, message, sizeof(message))) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse message");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse message");
         return false;
     }
 
@@ -1057,7 +1057,7 @@ static bool swd_scriptfunc_message(ScriptContext* ctx) {
     if(wait_time <= 60 * 1000) {
         strncpy(ctx->app->state_string, message, sizeof(ctx->app->state_string));
         swd_script_gui_refresh(ctx);
-        furi_delay_ms(wait_time);
+        furry_delay_ms(wait_time);
         if(show_dialog) {
             DialogMessage* message = dialog_message_alloc();
             dialog_message_set_header(message, "SWD Probe", 16, 2, AlignLeft, AlignTop);
@@ -1078,19 +1078,19 @@ static bool swd_scriptfunc_swd_idle_bits(ScriptContext* ctx) {
     uint32_t swd_idle_bits = 0;
 
     if(!swd_script_skip_whitespace(ctx)) {
-        swd_script_log(ctx, FuriLogLevelError, "missing whitespace");
+        swd_script_log(ctx, FurryLogLevelError, "missing whitespace");
         return false;
     }
 
     if(!swd_script_get_number(ctx, &swd_idle_bits)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse");
         return false;
     }
 
     if(swd_idle_bits <= 32) {
         ctx->app->swd_idle_bits = swd_idle_bits;
     } else {
-        swd_script_log(ctx, FuriLogLevelError, "value must be between 1 and 32");
+        swd_script_log(ctx, FurryLogLevelError, "value must be between 1 and 32");
     }
 
     swd_script_seek_newline(ctx);
@@ -1102,19 +1102,19 @@ static bool swd_scriptfunc_swd_clock_delay(ScriptContext* ctx) {
     uint32_t swd_clock_delay = 0;
 
     if(!swd_script_skip_whitespace(ctx)) {
-        swd_script_log(ctx, FuriLogLevelError, "missing whitespace");
+        swd_script_log(ctx, FurryLogLevelError, "missing whitespace");
         return false;
     }
 
     if(!swd_script_get_number(ctx, &swd_clock_delay)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse");
         return false;
     }
 
     if(swd_clock_delay <= 1000000) {
         ctx->app->swd_clock_delay = swd_clock_delay;
     } else {
-        swd_script_log(ctx, FuriLogLevelError, "value must be between 1 and 1000000");
+        swd_script_log(ctx, FurryLogLevelError, "value must be between 1 and 1000000");
     }
 
     swd_script_seek_newline(ctx);
@@ -1126,12 +1126,12 @@ static bool swd_scriptfunc_maxtries(ScriptContext* ctx) {
     uint32_t max_tries = 0;
 
     if(!swd_script_skip_whitespace(ctx)) {
-        swd_script_log(ctx, FuriLogLevelError, "missing whitespace");
+        swd_script_log(ctx, FurryLogLevelError, "missing whitespace");
         return false;
     }
 
     if(!swd_script_get_number(ctx, &max_tries)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse");
         return false;
     }
 
@@ -1150,19 +1150,19 @@ static bool swd_scriptfunc_blocksize(ScriptContext* ctx) {
     uint32_t block_size = 0;
 
     if(!swd_script_skip_whitespace(ctx)) {
-        swd_script_log(ctx, FuriLogLevelError, "missing whitespace");
+        swd_script_log(ctx, FurryLogLevelError, "missing whitespace");
         return false;
     }
 
     if(!swd_script_get_number(ctx, &block_size)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse");
         return false;
     }
 
     if(block_size >= 4 && block_size <= 0x1000) {
         ctx->block_size = block_size;
     } else {
-        swd_script_log(ctx, FuriLogLevelError, "value must be between 4 and 4096");
+        swd_script_log(ctx, FurryLogLevelError, "value must be between 4 and 4096");
     }
 
     swd_script_seek_newline(ctx);
@@ -1174,17 +1174,17 @@ static bool swd_scriptfunc_apselect(ScriptContext* ctx) {
     uint32_t ap = 0;
 
     if(!swd_script_skip_whitespace(ctx)) {
-        swd_script_log(ctx, FuriLogLevelError, "missing whitespace");
+        swd_script_log(ctx, FurryLogLevelError, "missing whitespace");
         return false;
     }
 
     if(!swd_script_get_number(ctx, &ap)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse AP");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse AP");
         return false;
     }
 
     if(!swd_apscan_test(ctx->app, ap)) {
-        swd_script_log(ctx, FuriLogLevelError, "no selected AP");
+        swd_script_log(ctx, FurryLogLevelError, "no selected AP");
         return false;
     }
 
@@ -1226,23 +1226,23 @@ static bool swd_scriptfunc_mem_dump(ScriptContext* ctx) {
 
     /* get file */
     if(!swd_script_skip_whitespace(ctx)) {
-        swd_script_log(ctx, FuriLogLevelError, "missing whitespace");
+        swd_script_log(ctx, FurryLogLevelError, "missing whitespace");
         return false;
     }
 
     if(!swd_script_get_string(ctx, filename, sizeof(filename))) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse filename");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse filename");
         return false;
     }
     /* get address */
     if(!swd_script_get_number(ctx, &address)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse address");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse address");
         return false;
     }
 
     /* get length */
     if(!swd_script_get_number(ctx, &length)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse length");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse length");
         return false;
     }
 
@@ -1272,7 +1272,7 @@ static bool swd_scriptfunc_mem_dump(ScriptContext* ctx) {
 
     uint8_t* buffer = malloc(ctx->block_size);
 
-    furi_mutex_acquire(ctx->app->swd_mutex, FuriWaitForever);
+    furry_mutex_acquire(ctx->app->swd_mutex, FurryWaitForever);
 
     for(uint32_t pos = 0; pos < length; pos += ctx->block_size) {
         if((pos & 0xFF) == 0) {
@@ -1311,7 +1311,7 @@ static bool swd_scriptfunc_mem_dump(ScriptContext* ctx) {
                     "Failed at 0x%08lX",
                     address + pos);
                 swd_script_gui_refresh(ctx);
-                furi_delay_ms(100);
+                furry_delay_ms(100);
             } else {
                 break;
             }
@@ -1341,7 +1341,7 @@ static bool swd_scriptfunc_mem_dump(ScriptContext* ctx) {
         storage_file_write(dump, buffer, ctx->block_size);
     }
 
-    furi_mutex_release(ctx->app->swd_mutex);
+    furry_mutex_release(ctx->app->swd_mutex);
 
     storage_file_close(dump);
     swd_script_seek_newline(ctx);
@@ -1357,19 +1357,19 @@ static bool swd_scriptfunc_mem_write(ScriptContext* ctx) {
 
     /* get file */
     if(!swd_script_skip_whitespace(ctx)) {
-        swd_script_log(ctx, FuriLogLevelError, "missing whitespace");
+        swd_script_log(ctx, FurryLogLevelError, "missing whitespace");
         return false;
     }
 
     /* get address */
     if(!swd_script_get_number(ctx, &address)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse address");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse address");
         return false;
     }
 
     /* get data */
     if(!swd_script_get_number(ctx, &data)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse data");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse data");
         return false;
     }
 
@@ -1382,11 +1382,11 @@ static bool swd_scriptfunc_mem_write(ScriptContext* ctx) {
             break;
         }
 
-        furi_mutex_acquire(ctx->app->swd_mutex, FuriWaitForever);
+        furry_mutex_acquire(ctx->app->swd_mutex, FurryWaitForever);
         access_ok = swd_write_memory(ctx->app, ctx->selected_ap, address, data) == 1;
         access_ok |= ctx->errors_ignore;
         swd_read_memory(ctx->app, ctx->selected_ap, address, &data);
-        furi_mutex_release(ctx->app->swd_mutex);
+        furry_mutex_release(ctx->app->swd_mutex);
 
         DBG("read %08lX from %08lX", data, address);
 
@@ -1418,13 +1418,13 @@ static bool swd_scriptfunc_mem_read(ScriptContext* ctx) {
 
     /* get file */
     if(!swd_script_skip_whitespace(ctx)) {
-        swd_script_log(ctx, FuriLogLevelError, "missing whitespace");
+        swd_script_log(ctx, FurryLogLevelError, "missing whitespace");
         return false;
     }
 
     /* get address */
     if(!swd_script_get_number(ctx, &address)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse address");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse address");
         return false;
     }
 
@@ -1438,12 +1438,12 @@ static bool swd_scriptfunc_mem_read(ScriptContext* ctx) {
             break;
         }
 
-        furi_mutex_acquire(ctx->app->swd_mutex, FuriWaitForever);
+        furry_mutex_acquire(ctx->app->swd_mutex, FurryWaitForever);
         access_ok = swd_read_memory(ctx->app, ctx->selected_ap, address, &data) == 1;
-        furi_mutex_release(ctx->app->swd_mutex);
+        furry_mutex_release(ctx->app->swd_mutex);
 
         if(!access_ok) {
-            swd_script_log(ctx, FuriLogLevelError, "Failed to read from %08lX", address);
+            swd_script_log(ctx, FurryLogLevelError, "Failed to read from %08lX", address);
             snprintf(
                 ctx->app->state_string,
                 sizeof(ctx->app->state_string),
@@ -1451,7 +1451,7 @@ static bool swd_scriptfunc_mem_read(ScriptContext* ctx) {
                 address);
             swd_script_gui_refresh(ctx);
         } else {
-            swd_script_log(ctx, FuriLogLevelDefault, "%08lX", data);
+            swd_script_log(ctx, FurryLogLevelDefault, "%08lX", data);
             break;
         }
     }
@@ -1473,25 +1473,25 @@ static bool swd_scriptfunc_mem_ldmst(ScriptContext* ctx) {
     bool success = true;
 
     if(!swd_script_skip_whitespace(ctx)) {
-        swd_script_log(ctx, FuriLogLevelError, "missing whitespace");
+        swd_script_log(ctx, FurryLogLevelError, "missing whitespace");
         return false;
     }
 
     /* get address */
     if(!swd_script_get_number(ctx, &address)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse address");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse address");
         return false;
     }
 
     /* get data */
     if(!swd_script_get_number(ctx, &data)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse data");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse data");
         return false;
     }
 
     /* get mask */
     if(!swd_script_get_number(ctx, &mask)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse mask");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse mask");
         return false;
     }
 
@@ -1504,13 +1504,13 @@ static bool swd_scriptfunc_mem_ldmst(ScriptContext* ctx) {
             DBGS("aborting");
             break;
         }
-        furi_mutex_acquire(ctx->app->swd_mutex, FuriWaitForever);
+        furry_mutex_acquire(ctx->app->swd_mutex, FurryWaitForever);
 
         access_ok = swd_read_memory(ctx->app, ctx->selected_ap, address, &modified) == 1;
         modified = (modified & mask) | data;
         access_ok &= swd_write_memory(ctx->app, ctx->selected_ap, address, modified) == 1;
 
-        furi_mutex_release(ctx->app->swd_mutex);
+        furry_mutex_release(ctx->app->swd_mutex);
         access_ok |= ctx->errors_ignore;
 
         if(!access_ok) {
@@ -1542,19 +1542,19 @@ static bool swd_scriptfunc_dp_write(ScriptContext* ctx) {
     bool success = true;
 
     if(!swd_script_skip_whitespace(ctx)) {
-        swd_script_log(ctx, FuriLogLevelError, "missing whitespace");
+        swd_script_log(ctx, FurryLogLevelError, "missing whitespace");
         return false;
     }
 
     /* get data */
     if(!swd_script_get_number(ctx, &data)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse data");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse data");
         return false;
     }
 
     /* get dp_off */
     if(!swd_script_get_number(ctx, &dp_off)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse DP offset");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse DP offset");
         return false;
     }
 
@@ -1564,17 +1564,17 @@ static bool swd_scriptfunc_dp_write(ScriptContext* ctx) {
     }
 
     swd_script_log(
-        ctx, FuriLogLevelDefault, "write %08lX to reg %08lX / bank %08lX", data, dp_off, dp_bank);
+        ctx, FurryLogLevelDefault, "write %08lX to reg %08lX / bank %08lX", data, dp_off, dp_bank);
 
-    furi_mutex_acquire(ctx->app->swd_mutex, FuriWaitForever);
+    furry_mutex_acquire(ctx->app->swd_mutex, FurryWaitForever);
 
     uint8_t ret = swd_write_dpbank(ctx->app, dp_off, dp_bank, &data);
     if(ret != 1) {
-        swd_script_log(ctx, FuriLogLevelError, "swd_write_dpbank failed");
+        swd_script_log(ctx, FurryLogLevelError, "swd_write_dpbank failed");
         success = false;
     }
 
-    furi_mutex_release(ctx->app->swd_mutex);
+    furry_mutex_release(ctx->app->swd_mutex);
 
     swd_script_seek_newline(ctx);
 
@@ -1588,13 +1588,13 @@ static bool swd_scriptfunc_dp_read(ScriptContext* ctx) {
     bool success = true;
 
     if(!swd_script_skip_whitespace(ctx)) {
-        swd_script_log(ctx, FuriLogLevelError, "missing whitespace");
+        swd_script_log(ctx, FurryLogLevelError, "missing whitespace");
         return false;
     }
 
     /* get dp_off */
     if(!swd_script_get_number(ctx, &dp_off)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse DP offset");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse DP offset");
         return false;
     }
 
@@ -1603,18 +1603,18 @@ static bool swd_scriptfunc_dp_read(ScriptContext* ctx) {
         dp_bank = 0xFF;
     }
 
-    swd_script_log(ctx, FuriLogLevelDefault, "read reg %02lX / bank %02lX", dp_off, dp_bank);
+    swd_script_log(ctx, FurryLogLevelDefault, "read reg %02lX / bank %02lX", dp_off, dp_bank);
 
-    furi_mutex_acquire(ctx->app->swd_mutex, FuriWaitForever);
+    furry_mutex_acquire(ctx->app->swd_mutex, FurryWaitForever);
 
     uint8_t ret = swd_read_dpbank(ctx->app, dp_off, dp_bank, &data);
     if(ret != 1) {
-        swd_script_log(ctx, FuriLogLevelError, "swd_read_dpbank failed");
+        swd_script_log(ctx, FurryLogLevelError, "swd_read_dpbank failed");
         success = false;
     } else {
-        swd_script_log(ctx, FuriLogLevelDefault, "result: 0x%08lX", data);
+        swd_script_log(ctx, FurryLogLevelDefault, "result: 0x%08lX", data);
     }
-    furi_mutex_release(ctx->app->swd_mutex);
+    furry_mutex_release(ctx->app->swd_mutex);
 
     swd_script_seek_newline(ctx);
 
@@ -1627,33 +1627,33 @@ static bool swd_scriptfunc_ap_write(ScriptContext* ctx) {
     bool success = true;
 
     if(!swd_script_skip_whitespace(ctx)) {
-        swd_script_log(ctx, FuriLogLevelError, "missing whitespace");
+        swd_script_log(ctx, FurryLogLevelError, "missing whitespace");
         return false;
     }
 
     /* get data */
     if(!swd_script_get_number(ctx, &data)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse data");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse data");
         return false;
     }
 
     /* get ap_reg */
     if(!swd_script_get_number(ctx, &ap_reg)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse AP register");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse AP register");
         return false;
     }
 
     swd_script_log(
-        ctx, FuriLogLevelDefault, "AP%d %08lX -> %02lX", ctx->selected_ap, data, ap_reg);
+        ctx, FurryLogLevelDefault, "AP%d %08lX -> %02lX", ctx->selected_ap, data, ap_reg);
 
-    furi_mutex_acquire(ctx->app->swd_mutex, FuriWaitForever);
+    furry_mutex_acquire(ctx->app->swd_mutex, FurryWaitForever);
 
     uint8_t ret = swd_write_ap(ctx->app, ctx->selected_ap, ap_reg, data);
     if(ret != 1) {
-        swd_script_log(ctx, FuriLogLevelError, "swd_write_ap failed");
+        swd_script_log(ctx, FurryLogLevelError, "swd_write_ap failed");
         success = false;
     }
-    furi_mutex_release(ctx->app->swd_mutex);
+    furry_mutex_release(ctx->app->swd_mutex);
 
     swd_script_seek_newline(ctx);
 
@@ -1666,27 +1666,27 @@ static bool swd_scriptfunc_ap_read(ScriptContext* ctx) {
     bool success = true;
 
     if(!swd_script_skip_whitespace(ctx)) {
-        swd_script_log(ctx, FuriLogLevelError, "missing whitespace");
+        swd_script_log(ctx, FurryLogLevelError, "missing whitespace");
         return false;
     }
 
     /* get ap_reg */
     if(!swd_script_get_number(ctx, &ap_reg)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse AP register");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse AP register");
         return false;
     }
 
-    furi_mutex_acquire(ctx->app->swd_mutex, FuriWaitForever);
+    furry_mutex_acquire(ctx->app->swd_mutex, FurryWaitForever);
 
     uint8_t ret = swd_read_ap(ctx->app, ctx->selected_ap, ap_reg, &data);
     if(ret != 1) {
-        swd_script_log(ctx, FuriLogLevelError, "swd_read_ap failed");
+        swd_script_log(ctx, FurryLogLevelError, "swd_read_ap failed");
         success = false;
     } else {
         swd_script_log(
-            ctx, FuriLogLevelDefault, "AP%d %02lX: %08lX", ctx->selected_ap, ap_reg, data);
+            ctx, FurryLogLevelDefault, "AP%d %02lX: %08lX", ctx->selected_ap, ap_reg, data);
     }
-    furi_mutex_release(ctx->app->swd_mutex);
+    furry_mutex_release(ctx->app->swd_mutex);
 
     swd_script_seek_newline(ctx);
 
@@ -1696,25 +1696,25 @@ static bool swd_scriptfunc_ap_read(ScriptContext* ctx) {
 static bool swd_scriptfunc_core_halt(ScriptContext* ctx) {
     bool succ = false;
 
-    furi_mutex_acquire(ctx->app->swd_mutex, FuriWaitForever);
+    furry_mutex_acquire(ctx->app->swd_mutex, FurryWaitForever);
     uint32_t reg_dhcsr = SCS_DHCSR_KEY | SCS_DHCSR_C_HALT | SCS_DHCSR_C_DEBUGEN;
 
     succ = swd_write_memory(ctx->app, ctx->selected_ap, SCS_DHCSR, reg_dhcsr) == 1;
 
     if(!succ) {
-        swd_script_log(ctx, FuriLogLevelError, "swd_write_memory failed");
+        swd_script_log(ctx, FurryLogLevelError, "swd_write_memory failed");
     } else {
         swd_read_memory(ctx->app, ctx->selected_ap, SCS_DHCSR, &reg_dhcsr);
 
         if(!(reg_dhcsr & SCS_DHCSR_S_HALT)) {
-            swd_script_log(ctx, FuriLogLevelError, "Core did not halt");
+            swd_script_log(ctx, FurryLogLevelError, "Core did not halt");
             succ = false;
         } else {
-            swd_script_log(ctx, FuriLogLevelDefault, "Core halted");
+            swd_script_log(ctx, FurryLogLevelDefault, "Core halted");
         }
     }
 
-    furi_mutex_release(ctx->app->swd_mutex);
+    furry_mutex_release(ctx->app->swd_mutex);
     swd_script_seek_newline(ctx);
 
     return succ;
@@ -1724,21 +1724,21 @@ static bool swd_scriptfunc_core_continue(ScriptContext* ctx) {
     bool succ = false;
     uint32_t data = 0;
 
-    furi_mutex_acquire(ctx->app->swd_mutex, FuriWaitForever);
+    furry_mutex_acquire(ctx->app->swd_mutex, FurryWaitForever);
     succ = swd_read_memory(ctx->app, ctx->selected_ap, SCS_DHCSR, &data) == 1;
 
     if(!(data & SCS_DHCSR_S_HALT)) {
-        swd_script_log(ctx, FuriLogLevelError, "Core is not in debug state");
+        swd_script_log(ctx, FurryLogLevelError, "Core is not in debug state");
         succ = false;
     } else {
         succ = swd_write_memory(ctx->app, ctx->selected_ap, SCS_DHCSR, SCS_DHCSR_KEY) == 1;
-        furi_mutex_release(ctx->app->swd_mutex);
+        furry_mutex_release(ctx->app->swd_mutex);
     }
 
     if(!succ) {
-        swd_script_log(ctx, FuriLogLevelError, "swd_write_memory failed");
+        swd_script_log(ctx, FurryLogLevelError, "swd_write_memory failed");
     } else {
-        swd_script_log(ctx, FuriLogLevelDefault, "Core continued");
+        swd_script_log(ctx, FurryLogLevelDefault, "Core continued");
     }
 
     swd_script_seek_newline(ctx);
@@ -1750,11 +1750,11 @@ static bool swd_scriptfunc_core_step(ScriptContext* ctx) {
     bool succ = false;
     uint32_t data = 0;
 
-    furi_mutex_acquire(ctx->app->swd_mutex, FuriWaitForever);
+    furry_mutex_acquire(ctx->app->swd_mutex, FurryWaitForever);
     succ = swd_read_memory(ctx->app, ctx->selected_ap, SCS_DHCSR, &data) == 1;
 
     if(!(data & SCS_DHCSR_S_HALT)) {
-        swd_script_log(ctx, FuriLogLevelError, "Core is not in debug state");
+        swd_script_log(ctx, FurryLogLevelError, "Core is not in debug state");
         succ = false;
     } else {
         succ = swd_write_memory(
@@ -1764,12 +1764,12 @@ static bool swd_scriptfunc_core_step(ScriptContext* ctx) {
                    SCS_DHCSR_KEY | SCS_DHCSR_C_STEP | SCS_DHCSR_C_MASKINTS |
                        SCS_DHCSR_C_DEBUGEN) == 1;
     }
-    furi_mutex_release(ctx->app->swd_mutex);
+    furry_mutex_release(ctx->app->swd_mutex);
 
     if(!succ) {
-        swd_script_log(ctx, FuriLogLevelError, "swd_write_memory failed");
+        swd_script_log(ctx, FurryLogLevelError, "swd_write_memory failed");
     } else {
-        swd_script_log(ctx, FuriLogLevelDefault, "Core stepped");
+        swd_script_log(ctx, FurryLogLevelDefault, "Core stepped");
     }
 
     swd_script_seek_newline(ctx);
@@ -1796,7 +1796,7 @@ static struct cpu_regs_type {
 static bool swd_scriptfunc_core_regs(ScriptContext* ctx) {
     bool succ = false;
 
-    furi_mutex_acquire(ctx->app->swd_mutex, FuriWaitForever);
+    furry_mutex_acquire(ctx->app->swd_mutex, FurryWaitForever);
 
     uint32_t reg_dhcsr = 0;
     uint32_t reg_cpacr = 0;
@@ -1807,7 +1807,7 @@ static bool swd_scriptfunc_core_regs(ScriptContext* ctx) {
     bool has_fpu = ((reg_cpacr >> 20) & 0x0F) != 0;
 
     if(!(reg_dhcsr & SCS_DHCSR_S_HALT)) {
-        swd_script_log(ctx, FuriLogLevelError, "Core is not in debug state");
+        swd_script_log(ctx, FurryLogLevelError, "Core is not in debug state");
         succ = false;
     } else {
         for(size_t pos = 0; pos < COUNT(cpu_regs); pos++) {
@@ -1822,14 +1822,14 @@ static bool swd_scriptfunc_core_regs(ScriptContext* ctx) {
             succ &= swd_read_memory(ctx->app, ctx->selected_ap, SCS_DCRDR, &core_data) == 1;
 
             if(!succ) {
-                swd_script_log(ctx, FuriLogLevelDefault, "%08s ----------", cpu_regs[pos].desc);
+                swd_script_log(ctx, FurryLogLevelDefault, "%08s ----------", cpu_regs[pos].desc);
             } else {
                 swd_script_log(
-                    ctx, FuriLogLevelDefault, "%06s 0x%08X", cpu_regs[pos].desc, core_data);
+                    ctx, FurryLogLevelDefault, "%06s 0x%08X", cpu_regs[pos].desc, core_data);
             }
         }
     }
-    furi_mutex_release(ctx->app->swd_mutex);
+    furry_mutex_release(ctx->app->swd_mutex);
 
     swd_script_seek_newline(ctx);
 
@@ -1842,16 +1842,16 @@ static bool swd_scriptfunc_core_reg_get(ScriptContext* ctx) {
     bool succ = false;
 
     if(!swd_script_skip_whitespace(ctx)) {
-        swd_script_log(ctx, FuriLogLevelError, "missing whitespace");
+        swd_script_log(ctx, FurryLogLevelError, "missing whitespace");
         return false;
     }
 
     if(!swd_script_get_number(ctx, &core_reg)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse register");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse register");
         return false;
     }
 
-    furi_mutex_acquire(ctx->app->swd_mutex, FuriWaitForever);
+    furry_mutex_acquire(ctx->app->swd_mutex, FurryWaitForever);
     uint32_t reg_dhcsr = 0;
     uint32_t reg_cpacr = 0;
     swd_read_memory(ctx->app, ctx->selected_ap, SCS_DHCSR, &reg_dhcsr);
@@ -1861,25 +1861,25 @@ static bool swd_scriptfunc_core_reg_get(ScriptContext* ctx) {
     bool has_fpu = ((reg_cpacr >> 20) & 0x0F) != 0;
 
     if(!(reg_dhcsr & SCS_DHCSR_S_HALT)) {
-        swd_script_log(ctx, FuriLogLevelError, "Core is not in debug state");
+        swd_script_log(ctx, FurryLogLevelError, "Core is not in debug state");
         succ = false;
     } else {
         if(!has_fpu && (core_reg >= 0x20)) {
-            swd_script_log(ctx, FuriLogLevelError, "Core has no FP extensions");
+            swd_script_log(ctx, FurryLogLevelError, "Core has no FP extensions");
             succ = false;
         } else {
             succ = swd_write_memory(
                        ctx->app, ctx->selected_ap, SCS_DCRSR, SCS_DCRSR_RD | core_reg) == 1;
             succ &= swd_read_memory(ctx->app, ctx->selected_ap, SCS_DCRDR, &core_data) == 1;
             if(!succ) {
-                swd_script_log(ctx, FuriLogLevelError, "swd_write_memory failed");
+                swd_script_log(ctx, FurryLogLevelError, "swd_write_memory failed");
             }
         }
     }
-    furi_mutex_release(ctx->app->swd_mutex);
+    furry_mutex_release(ctx->app->swd_mutex);
 
     if(succ) {
-        swd_script_log(ctx, FuriLogLevelDefault, "0x%08X", core_data);
+        swd_script_log(ctx, FurryLogLevelDefault, "0x%08X", core_data);
     }
 
     swd_script_seek_newline(ctx);
@@ -1893,24 +1893,24 @@ static bool swd_scriptfunc_core_reg_set(ScriptContext* ctx) {
     bool succ = false;
 
     if(!swd_script_skip_whitespace(ctx)) {
-        swd_script_log(ctx, FuriLogLevelError, "missing whitespace");
+        swd_script_log(ctx, FurryLogLevelError, "missing whitespace");
         return false;
     }
 
     if(!swd_script_get_number(ctx, &core_reg)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse register");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse register");
         return false;
     }
     if(!swd_script_skip_whitespace(ctx)) {
-        swd_script_log(ctx, FuriLogLevelError, "missing whitespace");
+        swd_script_log(ctx, FurryLogLevelError, "missing whitespace");
         return false;
     }
     if(!swd_script_get_number(ctx, &core_data)) {
-        swd_script_log(ctx, FuriLogLevelError, "failed to parse data");
+        swd_script_log(ctx, FurryLogLevelError, "failed to parse data");
         return false;
     }
 
-    furi_mutex_acquire(ctx->app->swd_mutex, FuriWaitForever);
+    furry_mutex_acquire(ctx->app->swd_mutex, FurryWaitForever);
     uint32_t reg_dhcsr = 0;
     uint32_t reg_cpacr = 0;
 
@@ -1921,22 +1921,22 @@ static bool swd_scriptfunc_core_reg_set(ScriptContext* ctx) {
     bool has_fpu = ((reg_cpacr >> 20) & 0x0F) != 0;
 
     if(!(reg_dhcsr & SCS_DHCSR_S_HALT)) {
-        swd_script_log(ctx, FuriLogLevelError, "Core is not in debug state");
+        swd_script_log(ctx, FurryLogLevelError, "Core is not in debug state");
         succ = false;
     } else {
         if(!has_fpu && (core_reg >= 0x20)) {
-            swd_script_log(ctx, FuriLogLevelError, "Core has no FP extensions");
+            swd_script_log(ctx, FurryLogLevelError, "Core has no FP extensions");
             succ = false;
         } else {
             succ = swd_write_memory(ctx->app, ctx->selected_ap, SCS_DCRDR, core_data) == 1;
             succ &= swd_write_memory(
                         ctx->app, ctx->selected_ap, SCS_DCRSR, SCS_DCRSR_WR | core_reg) == 1;
             if(!succ) {
-                swd_script_log(ctx, FuriLogLevelError, "swd_write_memory failed");
+                swd_script_log(ctx, FurryLogLevelError, "swd_write_memory failed");
             }
         }
     }
-    furi_mutex_release(ctx->app->swd_mutex);
+    furry_mutex_release(ctx->app->swd_mutex);
 
     swd_script_seek_newline(ctx);
 
@@ -1947,14 +1947,14 @@ static bool swd_scriptfunc_core_cpuid(ScriptContext* ctx) {
     bool succ = false;
     uint32_t reg_cpuid = 0;
 
-    furi_mutex_acquire(ctx->app->swd_mutex, FuriWaitForever);
+    furry_mutex_acquire(ctx->app->swd_mutex, FurryWaitForever);
     succ = swd_read_memory(ctx->app, ctx->selected_ap, SCS_CPUID, &reg_cpuid) == 1;
-    furi_mutex_release(ctx->app->swd_mutex);
+    furry_mutex_release(ctx->app->swd_mutex);
 
     if(!succ) {
-        swd_script_log(ctx, FuriLogLevelError, "swd_read_memory failed");
+        swd_script_log(ctx, FurryLogLevelError, "swd_read_memory failed");
     } else {
-        swd_script_log(ctx, FuriLogLevelDefault, "0x%08X", reg_cpuid);
+        swd_script_log(ctx, FurryLogLevelDefault, "0x%08X", reg_cpuid);
     }
 
     swd_script_seek_newline(ctx);
@@ -2077,7 +2077,7 @@ static bool swd_execute_script_line(ScriptContext* const ctx) {
 
             if(!success && !ctx->errors_ignore) {
                 swd_script_log(
-                    ctx, FuriLogLevelError, "Command failed: %s", script_funcs[entry].prefix);
+                    ctx, FurryLogLevelError, "Command failed: %s", script_funcs[entry].prefix);
                 snprintf(
                     ctx->app->state_string,
                     sizeof(ctx->app->state_string),
@@ -2089,7 +2089,7 @@ static bool swd_execute_script_line(ScriptContext* const ctx) {
 
         return true;
     }
-    swd_script_log(ctx, FuriLogLevelError, "unknown command '%s'", buffer);
+    swd_script_log(ctx, FurryLogLevelError, "unknown command '%s'", buffer);
 
     return false;
 }
@@ -2119,7 +2119,7 @@ static bool swd_execute_script(AppFSM* const ctx, const char* filename) {
 
     /* then get our script opened */
     if(!storage_file_open(ctx->script->script_file, filename, FSAM_READ, FSOM_OPEN_EXISTING)) {
-        FURI_LOG_E(TAG, "open, %s", storage_file_get_error_desc(ctx->script->script_file));
+        FURRY_LOG_E(TAG, "open, %s", storage_file_get_error_desc(ctx->script->script_file));
         DBG("Failed to open '%s'", filename);
         storage_file_free(ctx->script->script_file);
         parent = ctx->script->parent;
@@ -2284,11 +2284,11 @@ static void draw_model(Canvas* const canvas) {
 }
 
 static void render_callback(Canvas* const canvas, void* ctx_in) {
-    furi_assert(canvas);
-    furi_assert(ctx_in);
+    furry_assert(canvas);
+    furry_assert(ctx_in);
 
     AppFSM* ctx = ctx_in;
-    furi_mutex_acquire(ctx->gui_mutex, FuriWaitForever);
+    furry_mutex_acquire(ctx->gui_mutex, FurryWaitForever);
 
     char buffer[64];
     int y = 10;
@@ -2652,25 +2652,25 @@ static void render_callback(Canvas* const canvas, void* ctx_in) {
     }
     }
 
-    furi_mutex_release(ctx->gui_mutex);
+    furry_mutex_release(ctx->gui_mutex);
 }
 
 static void input_callback(InputEvent* input_event, void* ctx_in) {
-    furi_assert(input_event);
-    furi_assert(ctx_in);
+    furry_assert(input_event);
+    furry_assert(ctx_in);
     AppFSM* ctx = ctx_in;
 
-    int entries = furi_message_queue_get_count(ctx->event_queue);
+    int entries = furry_message_queue_get_count(ctx->event_queue);
 
     /* better skip than sorry */
     if(entries < QUEUE_SIZE) {
         AppEvent event = {.type = EventKeyPress, .input = *input_event};
-        furi_message_queue_put(ctx->event_queue, &event, 0);
+        furry_message_queue_put(ctx->event_queue, &event, 0);
     }
 }
 
 static void app_init(AppFSM* const app) {
-    furi_assert(app);
+    furry_assert(app);
 
     app->loop_count = 0;
     app->current_mask_id = 0;
@@ -2687,13 +2687,13 @@ static void app_init(AppFSM* const app) {
 }
 
 static void app_deinit(AppFSM* const app) {
-    furi_assert(app);
+    furry_assert(app);
 
     strcpy(app->state_string, "exiting");
 }
 
 static void swd_main_loop(AppFSM* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
 
     ctx->loop_count++;
 
@@ -2726,9 +2726,9 @@ static void swd_main_loop(AppFSM* ctx) {
         }
 
         /* do the scan */
-        furi_mutex_acquire(ctx->swd_mutex, FuriWaitForever);
+        furry_mutex_acquire(ctx->swd_mutex, FurryWaitForever);
         swd_scan(ctx);
-        furi_mutex_release(ctx->swd_mutex);
+        furry_mutex_release(ctx->swd_mutex);
 
         /* now when detected a device, set the timeout */
         if(ctx->detected) {
@@ -2746,7 +2746,7 @@ static void swd_main_loop(AppFSM* ctx) {
                 DBGS(" - Detected pins");
                 DBGS(" - Resetting error");
 
-                furi_mutex_acquire(ctx->swd_mutex, FuriWaitForever);
+                furry_mutex_acquire(ctx->swd_mutex, FurryWaitForever);
                 /* reset error */
                 /* first make sure we have the correct bank by invalidating the current select cache */
                 ctx->dp_regs.select_ok = false;
@@ -2811,7 +2811,7 @@ static void swd_main_loop(AppFSM* ctx) {
                     swd_execute_script(ctx, ctx->script_detected);
                     ctx->mode_page = ModePageFound;
                 }
-                furi_mutex_release(ctx->swd_mutex);
+                furry_mutex_release(ctx->swd_mutex);
             }
         } else {
             if(!has_multiple_bits(ctx->io_swc)) {
@@ -2825,10 +2825,10 @@ static void swd_main_loop(AppFSM* ctx) {
 
     case ModePageDPRegs:
     case ModePageAPID: {
-        furi_mutex_acquire(ctx->swd_mutex, FuriWaitForever);
+        furry_mutex_acquire(ctx->swd_mutex, FurryWaitForever);
         /* set debug enable request */
         if(!swd_ensure_powerup(ctx)) {
-            furi_mutex_release(ctx->swd_mutex);
+            furry_mutex_release(ctx->swd_mutex);
             break;
         }
 
@@ -2847,12 +2847,12 @@ static void swd_main_loop(AppFSM* ctx) {
                 break;
             }
         }
-        furi_mutex_release(ctx->swd_mutex);
+        furry_mutex_release(ctx->swd_mutex);
         break;
     }
 
     case ModePageHexDump: {
-        furi_mutex_acquire(ctx->swd_mutex, FuriWaitForever);
+        furry_mutex_acquire(ctx->swd_mutex, FurryWaitForever);
 
         for(size_t byte_pos = 0; byte_pos < sizeof(ctx->hex_buffer); byte_pos += 4) {
             uint32_t* data = (uint32_t*)&ctx->hex_buffer[byte_pos];
@@ -2864,13 +2864,13 @@ static void swd_main_loop(AppFSM* ctx) {
                 swd_abort_simple(ctx);
             }
         }
-        furi_mutex_release(ctx->swd_mutex);
+        furry_mutex_release(ctx->swd_mutex);
         break;
     }
 
     case ModePageDPID:
     case ModePageCoresight:
-        furi_delay_ms(50);
+        furry_delay_ms(50);
         break;
     }
 }
@@ -2880,9 +2880,9 @@ static bool swd_message_process(AppFSM* ctx) {
     AppEvent event;
 
     /* wait to make sure the OS can do its stuff */
-    FuriStatus event_status = furi_message_queue_get(ctx->event_queue, &event, 1000 / TIMER_HZ);
+    FurryStatus event_status = furry_message_queue_get(ctx->event_queue, &event, 1000 / TIMER_HZ);
 
-    if(event_status != FuriStatusOk) {
+    if(event_status != FurryStatusOk) {
         return processing;
     }
 
@@ -2926,8 +2926,8 @@ static bool swd_message_process(AppFSM* ctx) {
                     break;
 
                 case ModePageScan: {
-                    FuriString* result_path = furi_string_alloc_printf(ANY_PATH("swd_scripts"));
-                    FuriString* preselected = furi_string_alloc_printf(
+                    FurryString* result_path = furry_string_alloc_printf(ANY_PATH("swd_scripts"));
+                    FurryString* preselected = furry_string_alloc_printf(
                         (strlen(ctx->script_detected) > 0) ? ctx->script_detected :
                                                              ANY_PATH("swd_scripts"));
                     DialogsFileBrowserOptions options;
@@ -2935,12 +2935,12 @@ static bool swd_message_process(AppFSM* ctx) {
                     dialog_file_browser_set_basic_options(&options, "swd", &I_swd);
 
                     if(dialog_file_browser_show(ctx->dialogs, result_path, preselected, &options)) {
-                        const char* path = furi_string_get_cstr(result_path);
+                        const char* path = furry_string_get_cstr(result_path);
                         strcpy(ctx->script_detected, path);
                     }
 
-                    furi_string_free(result_path);
-                    furi_string_free(preselected);
+                    furry_string_free(result_path);
+                    furry_string_free(preselected);
                     break;
                 }
 
@@ -2999,8 +2999,8 @@ static bool swd_message_process(AppFSM* ctx) {
                     }
                 } else if((ctx->mode_page == ModePageScan) || (ctx->mode_page == ModePageFound)) {
                     uint32_t mode_page = ctx->mode_page;
-                    FuriString* result_path = furi_string_alloc_printf(ANY_PATH("swd_scripts"));
-                    FuriString* preselected = furi_string_alloc_printf(
+                    FurryString* result_path = furry_string_alloc_printf(ANY_PATH("swd_scripts"));
+                    FurryString* preselected = furry_string_alloc_printf(
                         (strlen(ctx->script_detected) > 0) ? ctx->script_detected :
                                                              ANY_PATH("swd_scripts"));
                     DialogsFileBrowserOptions options;
@@ -3008,14 +3008,14 @@ static bool swd_message_process(AppFSM* ctx) {
                     dialog_file_browser_set_basic_options(&options, "swd", &I_swd);
 
                     if(dialog_file_browser_show(ctx->dialogs, result_path, preselected, &options)) {
-                        const char* path = furi_string_get_cstr(result_path);
+                        const char* path = furry_string_get_cstr(result_path);
                         ctx->mode_page = ModePageScript;
                         swd_execute_script(ctx, path);
                         ctx->mode_page = mode_page;
                     }
 
-                    furi_string_free(result_path);
-                    furi_string_free(preselected);
+                    furry_string_free(result_path);
+                    furry_string_free(preselected);
                     break;
                 } else {
                     if(ctx->mode_page > 0) {
@@ -3096,16 +3096,16 @@ int32_t swd_probe_app_main(void* p) {
     DBGS("App init");
     app_init(app);
 
-    DBGS("furi_record_open");
-    app->notification = furi_record_open(RECORD_NOTIFICATION);
-    app->gui = furi_record_open(RECORD_GUI);
-    app->dialogs = furi_record_open(RECORD_DIALOGS);
-    app->storage = furi_record_open(RECORD_STORAGE);
+    DBGS("furry_record_open");
+    app->notification = furry_record_open(RECORD_NOTIFICATION);
+    app->gui = furry_record_open(RECORD_GUI);
+    app->dialogs = furry_record_open(RECORD_DIALOGS);
+    app->storage = furry_record_open(RECORD_STORAGE);
 
-    DBGS("furi_mutex_alloc");
-    app->swd_mutex = furi_mutex_alloc(FuriMutexTypeNormal);
-    app->gui_mutex = furi_mutex_alloc(FuriMutexTypeNormal);
-    app->event_queue = furi_message_queue_alloc(QUEUE_SIZE, sizeof(AppEvent));
+    DBGS("furry_mutex_alloc");
+    app->swd_mutex = furry_mutex_alloc(FurryMutexTypeNormal);
+    app->gui_mutex = furry_mutex_alloc(FurryMutexTypeNormal);
+    app->event_queue = furry_message_queue_alloc(QUEUE_SIZE, sizeof(AppEvent));
 
     DBGS("usb_uart_enable");
     UsbUartConfig uart_config;
@@ -3161,15 +3161,15 @@ int32_t swd_probe_app_main(void* p) {
 
     usb_uart_disable(app->uart);
 
-    furi_message_queue_free(app->event_queue);
-    furi_mutex_free(app->gui_mutex);
-    furi_mutex_free(app->swd_mutex);
+    furry_message_queue_free(app->event_queue);
+    furry_mutex_free(app->gui_mutex);
+    furry_mutex_free(app->swd_mutex);
     free(app);
 
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_record_close(RECORD_DIALOGS);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_DIALOGS);
+    furry_record_close(RECORD_STORAGE);
 
     return 0;
 }

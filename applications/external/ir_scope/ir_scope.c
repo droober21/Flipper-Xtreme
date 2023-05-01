@@ -1,9 +1,9 @@
 // Author: github.com/kallanreed
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <infrared.h>
 #include <infrared_worker.h>
-#include <furi_hal_infrared.h>
+#include <furry_hal_infrared.h>
 #include <gui/gui.h>
 
 #define TAG "IR Scope"
@@ -16,7 +16,7 @@ typedef struct {
     size_t timings_cnt;
     uint32_t* timings;
     uint32_t timings_sum;
-    FuriMutex* mutex;
+    FurryMutex* mutex;
 } IRScopeState;
 
 static void state_set_autoscale(IRScopeState* state) {
@@ -35,7 +35,7 @@ static void canvas_draw_str_outline(Canvas* canvas, int x, int y, const char* st
 static void render_callback(Canvas* canvas, void* ctx) {
     const IRScopeState* state = (IRScopeState*)ctx;
 
-    furi_mutex_acquire(state->mutex, FuriWaitForever);
+    furry_mutex_acquire(state->mutex, FurryWaitForever);
 
     canvas_clear(canvas);
     canvas_draw_frame(canvas, 0, 0, 128, 64);
@@ -71,19 +71,19 @@ static void render_callback(Canvas* canvas, void* ctx) {
         canvas_draw_str_outline(canvas, 100, 64, buf);
     }
 
-    furi_mutex_release(state->mutex);
+    furry_mutex_release(state->mutex);
 }
 
 static void input_callback(InputEvent* input_event, void* ctx) {
-    FuriMessageQueue* event_queue = ctx;
-    furi_message_queue_put(event_queue, input_event, FuriWaitForever);
+    FurryMessageQueue* event_queue = ctx;
+    furry_message_queue_put(event_queue, input_event, FurryWaitForever);
 }
 
 static void ir_received_callback(void* ctx, InfraredWorkerSignal* signal) {
-    furi_check(signal);
+    furry_check(signal);
     IRScopeState* state = (IRScopeState*)ctx;
 
-    furi_mutex_acquire(state->mutex, FuriWaitForever);
+    furry_mutex_acquire(state->mutex, FurryWaitForever);
 
     const uint32_t* timings;
     infrared_worker_get_raw_signal(signal, &timings, &state->timings_cnt);
@@ -103,25 +103,25 @@ static void ir_received_callback(void* ctx, InfraredWorkerSignal* signal) {
 
     state_set_autoscale(state);
 
-    furi_mutex_release(state->mutex);
+    furry_mutex_release(state->mutex);
 }
 
 int32_t ir_scope_app(void* p) {
     UNUSED(p);
 
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
-    furi_check(event_queue);
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
+    furry_check(event_queue);
 
-    if(furi_hal_infrared_is_busy()) {
-        FURI_LOG_E(TAG, "Infrared is busy.");
+    if(furry_hal_infrared_is_busy()) {
+        FURRY_LOG_E(TAG, "Infrared is busy.");
         return -1;
     }
 
     IRScopeState state = {
         .autoscale = false, .us_per_sample = 200, .timings = NULL, .timings_cnt = 0, .mutex = NULL};
-    state.mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    state.mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!state.mutex) {
-        FURI_LOG_E(TAG, "Cannot create mutex.");
+        FURRY_LOG_E(TAG, "Cannot create mutex.");
         return -1;
     }
 
@@ -129,7 +129,7 @@ int32_t ir_scope_app(void* p) {
     view_port_draw_callback_set(view_port, render_callback, &state);
     view_port_input_callback_set(view_port, input_callback, event_queue);
 
-    Gui* gui = furi_record_open("gui");
+    Gui* gui = furry_record_open("gui");
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     InfraredWorker* worker = infrared_worker_alloc();
@@ -141,9 +141,9 @@ int32_t ir_scope_app(void* p) {
     InputEvent event;
     bool processing = true;
     while(processing &&
-          furi_message_queue_get(event_queue, &event, FuriWaitForever) == FuriStatusOk) {
+          furry_message_queue_get(event_queue, &event, FurryWaitForever) == FurryStatusOk) {
         if(event.type == InputTypeRelease) {
-            furi_mutex_acquire(state.mutex, FuriWaitForever);
+            furry_mutex_acquire(state.mutex, FurryWaitForever);
 
             if(event.key == InputKeyBack) {
                 processing = false;
@@ -162,7 +162,7 @@ int32_t ir_scope_app(void* p) {
             }
 
             view_port_update(view_port);
-            furi_mutex_release(state.mutex);
+            furry_mutex_release(state.mutex);
         }
     }
 
@@ -174,10 +174,10 @@ int32_t ir_scope_app(void* p) {
 
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close("gui");
+    furry_record_close("gui");
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_mutex_free(state.mutex);
+    furry_message_queue_free(event_queue);
+    furry_mutex_free(state.mutex);
 
     return 0;
 }

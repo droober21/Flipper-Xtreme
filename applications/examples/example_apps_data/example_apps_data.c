@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <storage/storage.h>
 
 // Define log tag
@@ -10,7 +10,7 @@ int32_t example_apps_data_main(void* p) {
     UNUSED(p);
 
     // Open storage
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     // Allocate file
     File* file = storage_file_alloc(storage);
@@ -23,10 +23,10 @@ int32_t example_apps_data_main(void* p) {
 
     // Open file, write data and close it
     if(!storage_file_open(file, APP_DATA_PATH("test.txt"), FSAM_WRITE, FSOM_CREATE_ALWAYS)) {
-        FURI_LOG_E(TAG, "Failed to open file");
+        FURRY_LOG_E(TAG, "Failed to open file");
     }
     if(!storage_file_write(file, "Hello World!", strlen("Hello World!"))) {
-        FURI_LOG_E(TAG, "Failed to write to file");
+        FURRY_LOG_E(TAG, "Failed to write to file");
     }
     storage_file_close(file);
 
@@ -34,7 +34,7 @@ int32_t example_apps_data_main(void* p) {
     storage_file_free(file);
 
     // Close storage
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return 0;
 }

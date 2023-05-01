@@ -2,7 +2,7 @@
 #include <cli/cli_i.h>
 #include <infrared.h>
 #include <infrared_worker.h>
-#include <furi_hal_infrared.h>
+#include <furry_hal_infrared.h>
 #include <flipper_format.h>
 #include <toolbox/args.h>
 #include <m-dict.h>
@@ -14,16 +14,16 @@
 #define INFRARED_ASSETS_FOLDER "infrared/assets"
 #define INFRARED_BRUTE_FORCE_DUMMY_INDEX 0
 
-DICT_DEF2(dict_signals, FuriString*, FURI_STRING_OPLIST, int, M_DEFAULT_OPLIST)
+DICT_DEF2(dict_signals, FurryString*, FURRY_STRING_OPLIST, int, M_DEFAULT_OPLIST)
 
-static void infrared_cli_start_ir_rx(Cli* cli, FuriString* args);
-static void infrared_cli_start_ir_tx(Cli* cli, FuriString* args);
-static void infrared_cli_process_decode(Cli* cli, FuriString* args);
-static void infrared_cli_process_universal(Cli* cli, FuriString* args);
+static void infrared_cli_start_ir_rx(Cli* cli, FurryString* args);
+static void infrared_cli_start_ir_tx(Cli* cli, FurryString* args);
+static void infrared_cli_process_decode(Cli* cli, FurryString* args);
+static void infrared_cli_process_universal(Cli* cli, FurryString* args);
 
 static const struct {
     const char* cmd;
-    void (*process_function)(Cli* cli, FuriString* args);
+    void (*process_function)(Cli* cli, FurryString* args);
 } infrared_cli_commands[] = {
     {.cmd = "rx", .process_function = infrared_cli_start_ir_rx},
     {.cmd = "tx", .process_function = infrared_cli_start_ir_tx},
@@ -32,7 +32,7 @@ static const struct {
 };
 
 static void signal_received_callback(void* context, InfraredWorkerSignal* received_signal) {
-    furi_assert(received_signal);
+    furry_assert(received_signal);
     char buf[100];
     size_t buf_cnt;
     Cli* cli = (Cli*)context;
@@ -89,13 +89,13 @@ static void infrared_cli_print_usage(void) {
     printf("\tAvailable universal remotes: tv audio ac projector\r\n");
 }
 
-static void infrared_cli_start_ir_rx(Cli* cli, FuriString* args) {
+static void infrared_cli_start_ir_rx(Cli* cli, FurryString* args) {
     UNUSED(cli);
 
     bool enable_decoding = true;
 
-    if(!furi_string_empty(args)) {
-        if(!furi_string_cmp_str(args, "raw")) {
+    if(!furry_string_empty(args)) {
+        if(!furry_string_cmp_str(args, "raw")) {
             enable_decoding = false;
         } else {
             printf("Wrong arguments.\r\n");
@@ -111,7 +111,7 @@ static void infrared_cli_start_ir_rx(Cli* cli, FuriString* args) {
 
     printf("Receiving %s INFRARED...\r\nPress Ctrl+C to abort\r\n", enable_decoding ? "" : "RAW");
     while(!cli_cmd_interrupt_received(cli)) {
-        furi_delay_ms(50);
+        furry_delay_ms(50);
     }
 
     infrared_worker_rx_stop(worker);
@@ -176,9 +176,9 @@ static bool infrared_cli_parse_raw(const char* str, InfraredSignal* signal) {
     return infrared_signal_is_valid(signal);
 }
 
-static void infrared_cli_start_ir_tx(Cli* cli, FuriString* args) {
+static void infrared_cli_start_ir_tx(Cli* cli, FurryString* args) {
     UNUSED(cli);
-    const char* str = furi_string_get_cstr(args);
+    const char* str = furry_string_get_cstr(args);
     InfraredSignal* signal = infrared_signal_alloc();
 
     bool success = infrared_cli_parse_message(str, signal) || infrared_cli_parse_raw(str, signal);
@@ -256,8 +256,8 @@ static bool infrared_cli_decode_file(FlipperFormat* input_file, FlipperFormat* o
     InfraredSignal* signal = infrared_signal_alloc();
     InfraredDecoderHandler* decoder = infrared_alloc_decoder();
 
-    FuriString* tmp;
-    tmp = furi_string_alloc();
+    FurryString* tmp;
+    tmp = furry_string_alloc();
 
     while(infrared_signal_read(signal, input_file, tmp)) {
         ret = false;
@@ -267,7 +267,7 @@ static bool infrared_cli_decode_file(FlipperFormat* input_file, FlipperFormat* o
         }
         if(!infrared_signal_is_raw(signal)) {
             if(output_file &&
-               !infrared_cli_save_signal(signal, output_file, furi_string_get_cstr(tmp))) {
+               !infrared_cli_save_signal(signal, output_file, furry_string_get_cstr(tmp))) {
                 break;
             } else {
                 printf("Skipping decoded signal\r\n");
@@ -277,33 +277,33 @@ static bool infrared_cli_decode_file(FlipperFormat* input_file, FlipperFormat* o
         InfraredRawSignal* raw_signal = infrared_signal_get_raw_signal(signal);
         printf(
             "Raw signal: %s, %zu samples\r\n",
-            furi_string_get_cstr(tmp),
+            furry_string_get_cstr(tmp),
             raw_signal->timings_size);
         if(!infrared_cli_decode_raw_signal(
-               raw_signal, decoder, output_file, furi_string_get_cstr(tmp)))
+               raw_signal, decoder, output_file, furry_string_get_cstr(tmp)))
             break;
         ret = true;
     }
 
     infrared_free_decoder(decoder);
     infrared_signal_free(signal);
-    furi_string_free(tmp);
+    furry_string_free(tmp);
 
     return ret;
 }
 
-static void infrared_cli_process_decode(Cli* cli, FuriString* args) {
+static void infrared_cli_process_decode(Cli* cli, FurryString* args) {
     UNUSED(cli);
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* input_file = flipper_format_buffered_file_alloc(storage);
     FlipperFormat* output_file = NULL;
 
     uint32_t version;
-    FuriString *tmp, *header, *input_path, *output_path;
-    tmp = furi_string_alloc();
-    header = furi_string_alloc();
-    input_path = furi_string_alloc();
-    output_path = furi_string_alloc();
+    FurryString *tmp, *header, *input_path, *output_path;
+    tmp = furry_string_alloc();
+    header = furry_string_alloc();
+    input_path = furry_string_alloc();
+    output_path = furry_string_alloc();
 
     do {
         if(!args_read_probably_quoted_string_and_trim(args, input_path)) {
@@ -313,31 +313,31 @@ static void infrared_cli_process_decode(Cli* cli, FuriString* args) {
         }
         args_read_probably_quoted_string_and_trim(args, output_path);
         if(!flipper_format_buffered_file_open_existing(
-               input_file, furi_string_get_cstr(input_path))) {
+               input_file, furry_string_get_cstr(input_path))) {
             printf(
-                "Failed to open file for reading: \"%s\"\r\n", furi_string_get_cstr(input_path));
+                "Failed to open file for reading: \"%s\"\r\n", furry_string_get_cstr(input_path));
             break;
         }
         if(!flipper_format_read_header(input_file, header, &version) ||
-           (!furi_string_start_with_str(header, "IR")) || version != 1) {
+           (!furry_string_start_with_str(header, "IR")) || version != 1) {
             printf(
-                "Invalid or corrupted input file: \"%s\"\r\n", furi_string_get_cstr(input_path));
+                "Invalid or corrupted input file: \"%s\"\r\n", furry_string_get_cstr(input_path));
             break;
         }
-        if(!furi_string_empty(output_path)) {
-            printf("Writing output to file: \"%s\"\r\n", furi_string_get_cstr(output_path));
+        if(!furry_string_empty(output_path)) {
+            printf("Writing output to file: \"%s\"\r\n", furry_string_get_cstr(output_path));
             output_file = flipper_format_file_alloc(storage);
         }
         if(output_file &&
-           !flipper_format_file_open_always(output_file, furi_string_get_cstr(output_path))) {
+           !flipper_format_file_open_always(output_file, furry_string_get_cstr(output_path))) {
             printf(
-                "Failed to open file for writing: \"%s\"\r\n", furi_string_get_cstr(output_path));
+                "Failed to open file for writing: \"%s\"\r\n", furry_string_get_cstr(output_path));
             break;
         }
         if(output_file && !flipper_format_write_header(output_file, header, version)) {
             printf(
                 "Failed to write to the output file: \"%s\"\r\n",
-                furi_string_get_cstr(output_path));
+                furry_string_get_cstr(output_path));
             break;
         }
         if(!infrared_cli_decode_file(input_file, output_file)) {
@@ -346,29 +346,29 @@ static void infrared_cli_process_decode(Cli* cli, FuriString* args) {
         printf("File successfully decoded.\r\n");
     } while(false);
 
-    furi_string_free(tmp);
-    furi_string_free(header);
-    furi_string_free(input_path);
-    furi_string_free(output_path);
+    furry_string_free(tmp);
+    furry_string_free(header);
+    furry_string_free(input_path);
+    furry_string_free(output_path);
 
     flipper_format_free(input_file);
     if(output_file) flipper_format_free(output_file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
-static void infrared_cli_list_remote_signals(FuriString* remote_name) {
-    if(furi_string_empty(remote_name)) {
+static void infrared_cli_list_remote_signals(FurryString* remote_name) {
+    if(furry_string_empty(remote_name)) {
         printf("Missing remote name.\r\n");
         return;
     }
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* ff = flipper_format_buffered_file_alloc(storage);
-    FuriString* remote_path = furi_string_alloc_printf(
-        "%s/%s.ir", EXT_PATH(INFRARED_ASSETS_FOLDER), furi_string_get_cstr(remote_name));
+    FurryString* remote_path = furry_string_alloc_printf(
+        "%s/%s.ir", EXT_PATH(INFRARED_ASSETS_FOLDER), furry_string_get_cstr(remote_name));
 
     do {
-        if(!flipper_format_buffered_file_open_existing(ff, furi_string_get_cstr(remote_path))) {
+        if(!flipper_format_buffered_file_open_existing(ff, furry_string_get_cstr(remote_path))) {
             printf("Invalid remote name.\r\n");
             break;
         }
@@ -376,13 +376,13 @@ static void infrared_cli_list_remote_signals(FuriString* remote_name) {
         dict_signals_t signals_dict;
         dict_signals_init(signals_dict);
 
-        FuriString* key = furi_string_alloc();
-        FuriString* signal_name = furi_string_alloc();
+        FurryString* key = furry_string_alloc();
+        FurryString* signal_name = furry_string_alloc();
 
         printf("Valid signals:\r\n");
         int max = 1;
         while(flipper_format_read_string(ff, "name", signal_name)) {
-            furi_string_set_str(key, furi_string_get_cstr(signal_name));
+            furry_string_set_str(key, furry_string_get_cstr(signal_name));
             int* v = dict_signals_get(signals_dict, key);
             if(v != NULL) { //-V547
                 (*v)++;
@@ -395,32 +395,32 @@ static void infrared_cli_list_remote_signals(FuriString* remote_name) {
         dict_signals_it_t it;
         for(dict_signals_it(it, signals_dict); !dict_signals_end_p(it); dict_signals_next(it)) {
             const struct dict_signals_pair_s* pair = dict_signals_cref(it);
-            printf("\t%s\r\n", furi_string_get_cstr(pair->key));
+            printf("\t%s\r\n", furry_string_get_cstr(pair->key));
         }
 
-        furi_string_free(key);
-        furi_string_free(signal_name);
+        furry_string_free(key);
+        furry_string_free(signal_name);
         dict_signals_clear(signals_dict);
 
     } while(false);
 
     flipper_format_free(ff);
-    furi_string_free(remote_path);
-    furi_record_close(RECORD_STORAGE);
+    furry_string_free(remote_path);
+    furry_record_close(RECORD_STORAGE);
 }
 
 static void
-    infrared_cli_brute_force_signals(Cli* cli, FuriString* remote_name, FuriString* signal_name) {
+    infrared_cli_brute_force_signals(Cli* cli, FurryString* remote_name, FurryString* signal_name) {
     InfraredBruteForce* brute_force = infrared_brute_force_alloc();
-    FuriString* remote_path = furi_string_alloc_printf(
-        "%s/%s.ir", EXT_PATH(INFRARED_ASSETS_FOLDER), furi_string_get_cstr(remote_name));
+    FurryString* remote_path = furry_string_alloc_printf(
+        "%s/%s.ir", EXT_PATH(INFRARED_ASSETS_FOLDER), furry_string_get_cstr(remote_name));
 
-    infrared_brute_force_set_db_filename(brute_force, furi_string_get_cstr(remote_path));
+    infrared_brute_force_set_db_filename(brute_force, furry_string_get_cstr(remote_path));
     infrared_brute_force_add_record(
-        brute_force, INFRARED_BRUTE_FORCE_DUMMY_INDEX, furi_string_get_cstr(signal_name));
+        brute_force, INFRARED_BRUTE_FORCE_DUMMY_INDEX, furry_string_get_cstr(signal_name));
 
     do {
-        if(furi_string_empty(signal_name)) {
+        if(furry_string_empty(signal_name)) {
             printf("Missing signal name.\r\n");
             break;
         }
@@ -454,48 +454,48 @@ static void
         infrared_brute_force_stop(brute_force);
     } while(false);
 
-    furi_string_free(remote_path);
+    furry_string_free(remote_path);
     infrared_brute_force_reset(brute_force);
     infrared_brute_force_free(brute_force);
 }
 
-static void infrared_cli_process_universal(Cli* cli, FuriString* args) {
-    FuriString* arg1 = furi_string_alloc();
-    FuriString* arg2 = furi_string_alloc();
+static void infrared_cli_process_universal(Cli* cli, FurryString* args) {
+    FurryString* arg1 = furry_string_alloc();
+    FurryString* arg2 = furry_string_alloc();
 
     do {
         if(!args_read_string_and_trim(args, arg1)) break;
         if(!args_read_string_and_trim(args, arg2)) break;
     } while(false);
 
-    if(furi_string_empty(arg1)) {
+    if(furry_string_empty(arg1)) {
         printf("Wrong arguments.\r\n");
         infrared_cli_print_usage();
-    } else if(furi_string_equal_str(arg1, "list")) {
+    } else if(furry_string_equal_str(arg1, "list")) {
         infrared_cli_list_remote_signals(arg2);
     } else {
         infrared_cli_brute_force_signals(cli, arg1, arg2);
     }
 
-    furi_string_free(arg1);
-    furi_string_free(arg2);
+    furry_string_free(arg1);
+    furry_string_free(arg2);
 }
 
-static void infrared_cli_start_ir(Cli* cli, FuriString* args, void* context) {
+static void infrared_cli_start_ir(Cli* cli, FurryString* args, void* context) {
     UNUSED(context);
-    if(furi_hal_infrared_is_busy()) {
+    if(furry_hal_infrared_is_busy()) {
         printf("INFRARED is busy. Exiting.");
         return;
     }
 
-    FuriString* command;
-    command = furi_string_alloc();
+    FurryString* command;
+    command = furry_string_alloc();
     args_read_string_and_trim(args, command);
 
     size_t i = 0;
     for(; i < COUNT_OF(infrared_cli_commands); ++i) {
         size_t cmd_len = strlen(infrared_cli_commands[i].cmd);
-        if(!strncmp(furi_string_get_cstr(command), infrared_cli_commands[i].cmd, cmd_len)) {
+        if(!strncmp(furry_string_get_cstr(command), infrared_cli_commands[i].cmd, cmd_len)) {
             break;
         }
     }
@@ -506,13 +506,13 @@ static void infrared_cli_start_ir(Cli* cli, FuriString* args, void* context) {
         infrared_cli_print_usage();
     }
 
-    furi_string_free(command);
+    furry_string_free(command);
 }
 void infrared_on_system_start() {
 #ifdef SRV_CLI
-    Cli* cli = (Cli*)furi_record_open(RECORD_CLI);
+    Cli* cli = (Cli*)furry_record_open(RECORD_CLI);
     cli_add_command(cli, "ir", CliCommandFlagDefault, infrared_cli_start_ir, NULL);
-    furi_record_close(RECORD_CLI);
+    furry_record_close(RECORD_CLI);
 #else
     UNUSED(infrared_cli_start_ir);
 #endif

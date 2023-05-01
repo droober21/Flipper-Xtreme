@@ -35,7 +35,7 @@ typedef struct {
     TotpUsbTypeCodeWorkerContext* usb_type_code_worker_context;
     NotificationMessage const** notification_sequence_new_token;
     NotificationMessage const** notification_sequence_automation;
-    FuriMutex* last_code_update_sync;
+    FurryMutex* last_code_update_sync;
     TotpGenerateCodeWorkerContext* generate_code_worker_context;
     UiPrecalculatedDimensions ui_precalculated_dimensions;
 } SceneState;
@@ -54,7 +54,7 @@ static const NotificationSequence*
         }
 
         scene_state->notification_sequence_new_token = malloc(sizeof(void*) * length);
-        furi_check(scene_state->notification_sequence_new_token != NULL);
+        furry_check(scene_state->notification_sequence_new_token != NULL);
         scene_state->notification_sequence_new_token[i++] = &message_display_backlight_on;
         scene_state->notification_sequence_new_token[i++] = &message_green_255;
         if(plugin_state->notification_method & NotificationMethodVibro) {
@@ -95,7 +95,7 @@ static const NotificationSequence*
         }
 
         scene_state->notification_sequence_automation = malloc(sizeof(void*) * length);
-        furi_check(scene_state->notification_sequence_automation != NULL);
+        furry_check(scene_state->notification_sequence_automation != NULL);
 
         scene_state->notification_sequence_automation[i++] = &message_blue_255;
         if(plugin_state->notification_method & NotificationMethodVibro) {
@@ -202,12 +202,12 @@ static void on_code_lifetime_updated_generated(float code_lifetime_percent, void
 
 void totp_scene_generate_token_activate(PluginState* plugin_state) {
     SceneState* scene_state = malloc(sizeof(SceneState));
-    furi_check(scene_state != NULL);
+    furry_check(scene_state != NULL);
 
     plugin_state->current_scene_state = scene_state;
-    FURI_LOG_D(LOGGING_TAG, "Timezone set to: %f", (double)plugin_state->timezone_offset);
+    FURRY_LOG_D(LOGGING_TAG, "Timezone set to: %f", (double)plugin_state->timezone_offset);
 
-    scene_state->last_code_update_sync = furi_mutex_alloc(FuriMutexTypeNormal);
+    scene_state->last_code_update_sync = furry_mutex_alloc(FurryMutexTypeNormal);
     if(plugin_state->automation_method & AutomationMethodBadUsb) {
         scene_state->usb_type_code_worker_context = totp_usb_type_code_worker_start(
             scene_state->last_code,
@@ -274,7 +274,7 @@ void totp_scene_generate_token_render(Canvas* const canvas, PluginState* plugin_
 
     canvas_set_font(canvas, FontPrimary);
     const char* token_name_cstr =
-        furi_string_get_cstr(totp_token_info_iterator_get_current_token(iterator_context)->name);
+        furry_string_get_cstr(totp_token_info_iterator_get_current_token(iterator_context)->name);
     uint16_t token_name_width = canvas_string_width(canvas, token_name_cstr);
     if(SCREEN_WIDTH - token_name_width > 18) {
         canvas_draw_str_aligned(
@@ -457,7 +457,7 @@ void totp_scene_generate_token_deactivate(PluginState* plugin_state) {
         free(scene_state->notification_sequence_automation);
     }
 
-    furi_mutex_free(scene_state->last_code_update_sync);
+    furry_mutex_free(scene_state->last_code_update_sync);
 
     free(scene_state);
     plugin_state->current_scene_state = NULL;

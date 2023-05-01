@@ -25,16 +25,16 @@ bool brainfuck_scene_file_create_on_event(void* context, SceneManagerEvent event
     bool consumed = false;
     if(event.type == SceneManagerEventTypeCustom) {
         if(event.event == brainfuckCustomEventTextInputDone) {
-            furi_string_cat_printf(app->BF_file_path, "/ext/brainfuck/%s.b", tmpName);
+            furry_string_cat_printf(app->BF_file_path, "/ext/brainfuck/%s.b", tmpName);
 
             //remove old file
-            Storage* storage = furi_record_open(RECORD_STORAGE);
-            storage_simply_remove(storage, furi_string_get_cstr(app->BF_file_path));
+            Storage* storage = furry_record_open(RECORD_STORAGE);
+            storage_simply_remove(storage, furry_string_get_cstr(app->BF_file_path));
 
             //save new file
             Stream* stream = buffered_file_stream_alloc(storage);
             buffered_file_stream_open(
-                stream, furi_string_get_cstr(app->BF_file_path), FSAM_WRITE, FSOM_CREATE_ALWAYS);
+                stream, furry_string_get_cstr(app->BF_file_path), FSAM_WRITE, FSOM_CREATE_ALWAYS);
             stream_write(stream, (const uint8_t*)empty, 1);
             buffered_file_stream_close(stream);
 

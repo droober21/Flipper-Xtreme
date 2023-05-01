@@ -1,5 +1,5 @@
 #include "bt_debug_app.h"
-#include <furi_hal_bt.h>
+#include <furry_hal_bt.h>
 
 #define TAG "BtDebugApp"
 
@@ -9,7 +9,7 @@ enum BtDebugSubmenuIndex {
 };
 
 void bt_debug_submenu_callback(void* context, uint32_t index) {
-    furi_assert(context);
+    furry_assert(context);
     BtDebugApp* app = context;
     if(index == BtDebugSubmenuIndexCarrierTest) {
         view_dispatcher_switch_to_view(app->view_dispatcher, BtDebugAppViewCarrierTest);
@@ -32,7 +32,7 @@ BtDebugApp* bt_debug_app_alloc() {
     BtDebugApp* app = malloc(sizeof(BtDebugApp));
 
     // Gui
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
 
     // View dispatcher
     app->view_dispatcher = view_dispatcher_alloc();
@@ -73,7 +73,7 @@ BtDebugApp* bt_debug_app_alloc() {
 }
 
 void bt_debug_app_free(BtDebugApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // Free views
     view_dispatcher_remove_view(app->view_dispatcher, BtDebugAppViewSubmenu);
@@ -85,7 +85,7 @@ void bt_debug_app_free(BtDebugApp* app) {
     view_dispatcher_free(app->view_dispatcher);
 
     // Close gui record
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     app->gui = NULL;
 
     // Free rest
@@ -94,24 +94,24 @@ void bt_debug_app_free(BtDebugApp* app) {
 
 int32_t bt_debug_app(void* p) {
     UNUSED(p);
-    if(!furi_hal_bt_is_testing_supported()) {
-        FURI_LOG_E(TAG, "Incorrect radio stack: radio testing features are absent.");
-        DialogsApp* dialogs = furi_record_open(RECORD_DIALOGS);
+    if(!furry_hal_bt_is_testing_supported()) {
+        FURRY_LOG_E(TAG, "Incorrect radio stack: radio testing features are absent.");
+        DialogsApp* dialogs = furry_record_open(RECORD_DIALOGS);
         dialog_message_show_storage_error(dialogs, "Incorrect\nRadioStack");
         return 255;
     }
 
     BtDebugApp* app = bt_debug_app_alloc();
     // Was bt active?
-    const bool was_active = furi_hal_bt_is_active();
+    const bool was_active = furry_hal_bt_is_active();
     // Stop advertising
-    furi_hal_bt_stop_advertising();
+    furry_hal_bt_stop_advertising();
 
     view_dispatcher_run(app->view_dispatcher);
 
     // Restart advertising
     if(was_active) {
-        furi_hal_bt_start_advertising();
+        furry_hal_bt_start_advertising();
     }
     bt_debug_app_free(app);
     return 0;

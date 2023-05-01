@@ -1,8 +1,8 @@
 #include "../signal_gen_app_i.h"
 
-static const FuriHalPwmOutputId pwm_ch_id[] = {
-    FuriHalPwmOutputIdTim1PA7,
-    FuriHalPwmOutputIdLptim2PA4,
+static const FurryHalPwmOutputId pwm_ch_id[] = {
+    FurryHalPwmOutputIdTim1PA7,
+    FurryHalPwmOutputIdLptim2PA4,
 };
 
 #define DEFAULT_FREQ 1000
@@ -33,7 +33,7 @@ void signal_gen_scene_pwm_on_enter(void* context) {
     signal_gen_pwm_set_callback(app->pwm_view, signal_gen_pwm_callback, app);
 
     signal_gen_pwm_set_params(app->pwm_view, 0, DEFAULT_FREQ, DEFAULT_DUTY);
-    furi_hal_pwm_start(pwm_ch_id[0], DEFAULT_FREQ, DEFAULT_DUTY);
+    furry_hal_pwm_start(pwm_ch_id[0], DEFAULT_FREQ, DEFAULT_DUTY);
 }
 
 bool signal_gen_scene_pwm_on_event(void* context, SceneManagerEvent event) {
@@ -43,11 +43,11 @@ bool signal_gen_scene_pwm_on_event(void* context, SceneManagerEvent event) {
     if(event.type == SceneManagerEventTypeCustom) {
         if(event.event == SignalGenPwmEventUpdate) {
             consumed = true;
-            furi_hal_pwm_set_params(app->pwm_ch, app->pwm_freq, app->pwm_duty);
+            furry_hal_pwm_set_params(app->pwm_ch, app->pwm_freq, app->pwm_duty);
         } else if(event.event == SignalGenPwmEventChannelChange) {
             consumed = true;
-            furi_hal_pwm_stop(app->pwm_ch_prev);
-            furi_hal_pwm_start(app->pwm_ch, app->pwm_freq, app->pwm_duty);
+            furry_hal_pwm_stop(app->pwm_ch_prev);
+            furry_hal_pwm_start(app->pwm_ch, app->pwm_freq, app->pwm_duty);
         }
     }
     return consumed;
@@ -56,5 +56,5 @@ bool signal_gen_scene_pwm_on_event(void* context, SceneManagerEvent event) {
 void signal_gen_scene_pwm_on_exit(void* context) {
     SignalGenApp* app = context;
     variable_item_list_reset(app->var_item_list);
-    furi_hal_pwm_stop(app->pwm_ch);
+    furry_hal_pwm_stop(app->pwm_ch);
 }

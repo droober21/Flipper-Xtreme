@@ -1,6 +1,6 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
-#include <furi.h>
+#include <furry.h>
 #include <notification/notification_messages.h>
 
 void notification_beep_once();

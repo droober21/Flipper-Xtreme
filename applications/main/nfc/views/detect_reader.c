@@ -14,7 +14,7 @@ typedef struct {
     uint16_t nonces;
     uint16_t nonces_max;
     DetectReaderState state;
-    FuriString* uid_str;
+    FurryString* uid_str;
 } DetectReaderViewModel;
 
 static void detect_reader_draw_callback(Canvas* canvas, void* model) {
@@ -26,9 +26,9 @@ static void detect_reader_draw_callback(Canvas* canvas, void* model) {
     if(m->state == DetectReaderStateStart) {
         snprintf(text, sizeof(text), "Touch the reader");
         canvas_draw_icon(canvas, 21, 13, &I_Move_flipper_26x39);
-        if(furi_string_size(m->uid_str)) {
+        if(furry_string_size(m->uid_str)) {
             elements_multiline_text_aligned(
-                canvas, 64, 64, AlignCenter, AlignBottom, furi_string_get_cstr(m->uid_str));
+                canvas, 64, 64, AlignCenter, AlignBottom, furry_string_get_cstr(m->uid_str));
         }
     } else if(m->state == DetectReaderStateReaderDetected) {
         snprintf(text, sizeof(text), "Move the Flipper away");
@@ -66,7 +66,7 @@ static void detect_reader_draw_callback(Canvas* canvas, void* model) {
 
 static bool detect_reader_input_callback(InputEvent* event, void* context) {
     DetectReader* detect_reader = context;
-    furi_assert(detect_reader->callback);
+    furry_assert(detect_reader->callback);
     bool consumed = false;
 
     uint8_t nonces = 0;
@@ -96,19 +96,19 @@ DetectReader* detect_reader_alloc() {
     with_view_model(
         detect_reader->view,
         DetectReaderViewModel * model,
-        { model->uid_str = furi_string_alloc(); },
+        { model->uid_str = furry_string_alloc(); },
         false);
 
     return detect_reader;
 }
 
 void detect_reader_free(DetectReader* detect_reader) {
-    furi_assert(detect_reader);
+    furry_assert(detect_reader);
 
     with_view_model(
         detect_reader->view,
         DetectReaderViewModel * model,
-        { furi_string_free(model->uid_str); },
+        { furry_string_free(model->uid_str); },
         false);
 
     view_free(detect_reader->view);
@@ -116,7 +116,7 @@ void detect_reader_free(DetectReader* detect_reader) {
 }
 
 void detect_reader_reset(DetectReader* detect_reader) {
-    furi_assert(detect_reader);
+    furry_assert(detect_reader);
 
     with_view_model(
         detect_reader->view,
@@ -125,13 +125,13 @@ void detect_reader_reset(DetectReader* detect_reader) {
             model->nonces = 0;
             model->nonces_max = 0;
             model->state = DetectReaderStateStart;
-            furi_string_reset(model->uid_str);
+            furry_string_reset(model->uid_str);
         },
         false);
 }
 
 View* detect_reader_get_view(DetectReader* detect_reader) {
-    furi_assert(detect_reader);
+    furry_assert(detect_reader);
 
     return detect_reader->view;
 }
@@ -140,15 +140,15 @@ void detect_reader_set_callback(
     DetectReader* detect_reader,
     DetectReaderDoneCallback callback,
     void* context) {
-    furi_assert(detect_reader);
-    furi_assert(callback);
+    furry_assert(detect_reader);
+    furry_assert(callback);
 
     detect_reader->callback = callback;
     detect_reader->context = context;
 }
 
 void detect_reader_set_nonces_max(DetectReader* detect_reader, uint16_t nonces_max) {
-    furi_assert(detect_reader);
+    furry_assert(detect_reader);
 
     with_view_model(
         detect_reader->view,
@@ -158,7 +158,7 @@ void detect_reader_set_nonces_max(DetectReader* detect_reader, uint16_t nonces_m
 }
 
 void detect_reader_set_nonces_collected(DetectReader* detect_reader, uint16_t nonces_collected) {
-    furi_assert(detect_reader);
+    furry_assert(detect_reader);
 
     with_view_model(
         detect_reader->view,
@@ -168,22 +168,22 @@ void detect_reader_set_nonces_collected(DetectReader* detect_reader, uint16_t no
 }
 
 void detect_reader_set_state(DetectReader* detect_reader, DetectReaderState state) {
-    furi_assert(detect_reader);
+    furry_assert(detect_reader);
     with_view_model(
         detect_reader->view, DetectReaderViewModel * model, { model->state = state; }, true);
 }
 
 void detect_reader_set_uid(DetectReader* detect_reader, uint8_t* uid, uint8_t uid_len) {
-    furi_assert(detect_reader);
-    furi_assert(uid);
-    furi_assert(uid_len < DETECT_READER_UID_MAX_LEN);
+    furry_assert(detect_reader);
+    furry_assert(uid);
+    furry_assert(uid_len < DETECT_READER_UID_MAX_LEN);
     with_view_model(
         detect_reader->view,
         DetectReaderViewModel * model,
         {
-            furi_string_set_str(model->uid_str, "UID:");
+            furry_string_set_str(model->uid_str, "UID:");
             for(size_t i = 0; i < uid_len; i++) {
-                furi_string_cat_printf(model->uid_str, " %02X", uid[i]);
+                furry_string_cat_printf(model->uid_str, " %02X", uid[i]);
             }
         },
         true);

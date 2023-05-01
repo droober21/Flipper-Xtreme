@@ -1,8 +1,8 @@
-#include <furi.h>
+#include <furry.h>
 #include "u2f_data.h"
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include <storage/storage.h>
-#include <furi_hal_random.h>
+#include <furry_hal_random.h>
 #include <flipper_format/flipper_format.h>
 
 #define TAG "U2F"
@@ -35,7 +35,7 @@ typedef struct {
 
 bool u2f_data_check(bool cert_only) {
     bool state = false;
-    Storage* fs_api = furi_record_open(RECORD_STORAGE);
+    Storage* fs_api = furry_record_open(RECORD_STORAGE);
     File* file = storage_file_alloc(fs_api);
 
     do {
@@ -56,14 +56,14 @@ bool u2f_data_check(bool cert_only) {
     storage_file_close(file);
     storage_file_free(file);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return state;
 }
 
 bool u2f_data_cert_check() {
     bool state = false;
-    Storage* fs_api = furi_record_open(RECORD_STORAGE);
+    Storage* fs_api = furry_record_open(RECORD_STORAGE);
     File* file = storage_file_alloc(fs_api);
     uint8_t file_buf[8];
 
@@ -75,13 +75,13 @@ bool u2f_data_cert_check() {
             if(len_cur != 4) break;
 
             if(file_buf[0] != 0x30) {
-                FURI_LOG_E(TAG, "Wrong certificate header");
+                FURRY_LOG_E(TAG, "Wrong certificate header");
                 break;
             }
 
             size_t temp_len = ((file_buf[2] << 8) | (file_buf[3])) + 4;
             if(temp_len != file_size) {
-                FURI_LOG_E(TAG, "Wrong certificate length");
+                FURRY_LOG_E(TAG, "Wrong certificate length");
                 break;
             }
             state = true;
@@ -91,15 +91,15 @@ bool u2f_data_cert_check() {
     storage_file_close(file);
     storage_file_free(file);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return state;
 }
 
 uint32_t u2f_data_cert_load(uint8_t* cert) {
-    furi_assert(cert);
+    furry_assert(cert);
 
-    Storage* fs_api = furi_record_open(RECORD_STORAGE);
+    Storage* fs_api = furry_record_open(RECORD_STORAGE);
     File* file = storage_file_alloc(fs_api);
     uint32_t file_size = 0;
     uint32_t len_cur = 0;
@@ -112,36 +112,36 @@ uint32_t u2f_data_cert_load(uint8_t* cert) {
 
     storage_file_close(file);
     storage_file_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return len_cur;
 }
 
 static bool u2f_data_cert_key_encrypt(uint8_t* cert_key) {
-    furi_assert(cert_key);
+    furry_assert(cert_key);
 
     bool state = false;
     uint8_t iv[16];
     uint8_t key[48];
     uint32_t cert_type = U2F_CERT_USER;
 
-    FURI_LOG_I(TAG, "Encrypting user cert key");
+    FURRY_LOG_I(TAG, "Encrypting user cert key");
 
     // Generate random IV
-    furi_hal_random_fill_buf(iv, 16);
+    furry_hal_random_fill_buf(iv, 16);
 
-    if(!furi_hal_crypto_store_load_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE, iv)) {
-        FURI_LOG_E(TAG, "Unable to load encryption key");
+    if(!furry_hal_crypto_store_load_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE, iv)) {
+        FURRY_LOG_E(TAG, "Unable to load encryption key");
         return false;
     }
 
-    if(!furi_hal_crypto_encrypt(cert_key, key, 32)) {
-        FURI_LOG_E(TAG, "Encryption failed");
+    if(!furry_hal_crypto_encrypt(cert_key, key, 32)) {
+        FURRY_LOG_E(TAG, "Encryption failed");
         return false;
     }
-    furi_hal_crypto_store_unload_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE);
+    furry_hal_crypto_store_unload_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE);
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* flipper_format = flipper_format_file_alloc(storage);
 
     if(flipper_format_file_open_always(flipper_format, U2F_CERT_KEY_FILE)) {
@@ -157,13 +157,13 @@ static bool u2f_data_cert_key_encrypt(uint8_t* cert_key) {
     }
 
     flipper_format_free(flipper_format);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return state;
 }
 
 bool u2f_data_cert_key_load(uint8_t* cert_key) {
-    furi_assert(cert_key);
+    furry_assert(cert_key);
 
     bool state = false;
     uint8_t iv[16];
@@ -173,29 +173,29 @@ bool u2f_data_cert_key_load(uint8_t* cert_key) {
     uint32_t version = 0;
 
     // Check if unique key exists in secure eclave(typo?) and generate it if missing
-    if(!furi_hal_crypto_verify_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE)) return false;
+    if(!furry_hal_crypto_verify_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE)) return false;
 
-    FuriString* filetype;
-    filetype = furi_string_alloc();
+    FurryString* filetype;
+    filetype = furry_string_alloc();
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* flipper_format = flipper_format_file_alloc(storage);
 
     if(flipper_format_file_open_existing(flipper_format, U2F_CERT_KEY_FILE)) {
         do {
             if(!flipper_format_read_header(flipper_format, filetype, &version)) {
-                FURI_LOG_E(TAG, "Missing or incorrect header");
+                FURRY_LOG_E(TAG, "Missing or incorrect header");
                 break;
             }
 
-            if(strcmp(furi_string_get_cstr(filetype), U2F_CERT_KEY_FILE_TYPE) != 0 ||
+            if(strcmp(furry_string_get_cstr(filetype), U2F_CERT_KEY_FILE_TYPE) != 0 ||
                version != U2F_CERT_KEY_VERSION) {
-                FURI_LOG_E(TAG, "Type or version mismatch");
+                FURRY_LOG_E(TAG, "Type or version mismatch");
                 break;
             }
 
             if(!flipper_format_read_uint32(flipper_format, "Type", &cert_type, 1)) {
-                FURI_LOG_E(TAG, "Missing cert type");
+                FURRY_LOG_E(TAG, "Missing cert type");
                 break;
             }
 
@@ -206,35 +206,35 @@ bool u2f_data_cert_key_load(uint8_t* cert_key) {
             } else if(cert_type == U2F_CERT_USER_UNENCRYPTED) {
                 key_slot = 0;
             } else {
-                FURI_LOG_E(TAG, "Unknown cert type");
+                FURRY_LOG_E(TAG, "Unknown cert type");
                 break;
             }
             if(key_slot != 0) {
                 if(!flipper_format_read_hex(flipper_format, "IV", iv, 16)) {
-                    FURI_LOG_E(TAG, "Missing IV");
+                    FURRY_LOG_E(TAG, "Missing IV");
                     break;
                 }
 
                 if(!flipper_format_read_hex(flipper_format, "Data", key, 48)) {
-                    FURI_LOG_E(TAG, "Missing data");
+                    FURRY_LOG_E(TAG, "Missing data");
                     break;
                 }
 
-                if(!furi_hal_crypto_store_load_key(key_slot, iv)) {
-                    FURI_LOG_E(TAG, "Unable to load encryption key");
+                if(!furry_hal_crypto_store_load_key(key_slot, iv)) {
+                    FURRY_LOG_E(TAG, "Unable to load encryption key");
                     break;
                 }
                 memset(cert_key, 0, 32);
 
-                if(!furi_hal_crypto_decrypt(key, cert_key, 32)) {
+                if(!furry_hal_crypto_decrypt(key, cert_key, 32)) {
                     memset(cert_key, 0, 32);
-                    FURI_LOG_E(TAG, "Decryption failed");
+                    FURRY_LOG_E(TAG, "Decryption failed");
                     break;
                 }
-                furi_hal_crypto_store_unload_key(key_slot);
+                furry_hal_crypto_store_unload_key(key_slot);
             } else {
                 if(!flipper_format_read_hex(flipper_format, "Data", cert_key, 32)) {
-                    FURI_LOG_E(TAG, "Missing data");
+                    FURRY_LOG_E(TAG, "Missing data");
                     break;
                 }
             }
@@ -243,8 +243,8 @@ bool u2f_data_cert_key_load(uint8_t* cert_key) {
     }
 
     flipper_format_free(flipper_format);
-    furi_record_close(RECORD_STORAGE);
-    furi_string_free(filetype);
+    furry_record_close(RECORD_STORAGE);
+    furry_string_free(filetype);
 
     if(cert_type == U2F_CERT_USER_UNENCRYPTED) {
         return u2f_data_cert_key_encrypt(cert_key);
@@ -254,60 +254,60 @@ bool u2f_data_cert_key_load(uint8_t* cert_key) {
 }
 
 bool u2f_data_key_load(uint8_t* device_key) {
-    furi_assert(device_key);
+    furry_assert(device_key);
 
     bool state = false;
     uint8_t iv[16];
     uint8_t key[48];
     uint32_t version = 0;
 
-    FuriString* filetype;
-    filetype = furi_string_alloc();
+    FurryString* filetype;
+    filetype = furry_string_alloc();
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* flipper_format = flipper_format_file_alloc(storage);
 
     if(flipper_format_file_open_existing(flipper_format, U2F_KEY_FILE)) {
         do {
             if(!flipper_format_read_header(flipper_format, filetype, &version)) {
-                FURI_LOG_E(TAG, "Missing or incorrect header");
+                FURRY_LOG_E(TAG, "Missing or incorrect header");
                 break;
             }
-            if(strcmp(furi_string_get_cstr(filetype), U2F_DEVICE_KEY_FILE_TYPE) != 0 ||
+            if(strcmp(furry_string_get_cstr(filetype), U2F_DEVICE_KEY_FILE_TYPE) != 0 ||
                version != U2F_DEVICE_KEY_VERSION) {
-                FURI_LOG_E(TAG, "Type or version mismatch");
+                FURRY_LOG_E(TAG, "Type or version mismatch");
                 break;
             }
             if(!flipper_format_read_hex(flipper_format, "IV", iv, 16)) {
-                FURI_LOG_E(TAG, "Missing IV");
+                FURRY_LOG_E(TAG, "Missing IV");
                 break;
             }
             if(!flipper_format_read_hex(flipper_format, "Data", key, 48)) {
-                FURI_LOG_E(TAG, "Missing data");
+                FURRY_LOG_E(TAG, "Missing data");
                 break;
             }
-            if(!furi_hal_crypto_store_load_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE, iv)) {
-                FURI_LOG_E(TAG, "Unable to load encryption key");
+            if(!furry_hal_crypto_store_load_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE, iv)) {
+                FURRY_LOG_E(TAG, "Unable to load encryption key");
                 break;
             }
             memset(device_key, 0, 32);
-            if(!furi_hal_crypto_decrypt(key, device_key, 32)) {
+            if(!furry_hal_crypto_decrypt(key, device_key, 32)) {
                 memset(device_key, 0, 32);
-                FURI_LOG_E(TAG, "Decryption failed");
+                FURRY_LOG_E(TAG, "Decryption failed");
                 break;
             }
-            furi_hal_crypto_store_unload_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE);
+            furry_hal_crypto_store_unload_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE);
             state = true;
         } while(0);
     }
     flipper_format_free(flipper_format);
-    furi_record_close(RECORD_STORAGE);
-    furi_string_free(filetype);
+    furry_record_close(RECORD_STORAGE);
+    furry_string_free(filetype);
     return state;
 }
 
 bool u2f_data_key_generate(uint8_t* device_key) {
-    furi_assert(device_key);
+    furry_assert(device_key);
 
     bool state = false;
     uint8_t iv[16];
@@ -315,21 +315,21 @@ bool u2f_data_key_generate(uint8_t* device_key) {
     uint8_t key_encrypted[48];
 
     // Generate random IV and key
-    furi_hal_random_fill_buf(iv, 16);
-    furi_hal_random_fill_buf(key, 32);
+    furry_hal_random_fill_buf(iv, 16);
+    furry_hal_random_fill_buf(key, 32);
 
-    if(!furi_hal_crypto_store_load_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE, iv)) {
-        FURI_LOG_E(TAG, "Unable to load encryption key");
+    if(!furry_hal_crypto_store_load_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE, iv)) {
+        FURRY_LOG_E(TAG, "Unable to load encryption key");
         return false;
     }
 
-    if(!furi_hal_crypto_encrypt(key, key_encrypted, 32)) {
-        FURI_LOG_E(TAG, "Encryption failed");
+    if(!furry_hal_crypto_encrypt(key, key_encrypted, 32)) {
+        FURRY_LOG_E(TAG, "Encryption failed");
         return false;
     }
-    furi_hal_crypto_store_unload_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE);
+    furry_hal_crypto_store_unload_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE);
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* flipper_format = flipper_format_file_alloc(storage);
 
     if(flipper_format_file_open_always(flipper_format, U2F_KEY_FILE)) {
@@ -345,13 +345,13 @@ bool u2f_data_key_generate(uint8_t* device_key) {
     }
 
     flipper_format_free(flipper_format);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return state;
 }
 
 bool u2f_data_cnt_read(uint32_t* cnt_val) {
-    furi_assert(cnt_val);
+    furry_assert(cnt_val);
 
     bool state = false;
     bool old_counter = false;
@@ -360,49 +360,49 @@ bool u2f_data_cnt_read(uint32_t* cnt_val) {
     uint8_t cnt_encr[48];
     uint32_t version = 0;
 
-    FuriString* filetype;
-    filetype = furi_string_alloc();
+    FurryString* filetype;
+    filetype = furry_string_alloc();
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* flipper_format = flipper_format_file_alloc(storage);
 
     if(flipper_format_file_open_existing(flipper_format, U2F_CNT_FILE)) {
         do {
             if(!flipper_format_read_header(flipper_format, filetype, &version)) {
-                FURI_LOG_E(TAG, "Missing or incorrect header");
+                FURRY_LOG_E(TAG, "Missing or incorrect header");
                 break;
             }
-            if(strcmp(furi_string_get_cstr(filetype), U2F_COUNTER_FILE_TYPE) != 0) {
-                FURI_LOG_E(TAG, "Type mismatch");
+            if(strcmp(furry_string_get_cstr(filetype), U2F_COUNTER_FILE_TYPE) != 0) {
+                FURRY_LOG_E(TAG, "Type mismatch");
                 break;
             }
             if(version == U2F_COUNTER_VERSION_OLD) {
                 // Counter is from previous U2F app version with endianness bug
-                FURI_LOG_W(TAG, "Counter from old version");
+                FURRY_LOG_W(TAG, "Counter from old version");
                 old_counter = true;
             } else if(version != U2F_COUNTER_VERSION) {
-                FURI_LOG_E(TAG, "Version mismatch");
+                FURRY_LOG_E(TAG, "Version mismatch");
                 break;
             }
             if(!flipper_format_read_hex(flipper_format, "IV", iv, 16)) {
-                FURI_LOG_E(TAG, "Missing IV");
+                FURRY_LOG_E(TAG, "Missing IV");
                 break;
             }
             if(!flipper_format_read_hex(flipper_format, "Data", cnt_encr, 48)) {
-                FURI_LOG_E(TAG, "Missing data");
+                FURRY_LOG_E(TAG, "Missing data");
                 break;
             }
-            if(!furi_hal_crypto_store_load_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE, iv)) {
-                FURI_LOG_E(TAG, "Unable to load encryption key");
+            if(!furry_hal_crypto_store_load_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE, iv)) {
+                FURRY_LOG_E(TAG, "Unable to load encryption key");
                 break;
             }
             memset(&cnt, 0, sizeof(U2fCounterData));
-            if(!furi_hal_crypto_decrypt(cnt_encr, (uint8_t*)&cnt, sizeof(U2fCounterData))) {
+            if(!furry_hal_crypto_decrypt(cnt_encr, (uint8_t*)&cnt, sizeof(U2fCounterData))) {
                 memset(&cnt, 0, sizeof(U2fCounterData));
-                FURI_LOG_E(TAG, "Decryption failed");
+                FURRY_LOG_E(TAG, "Decryption failed");
                 break;
             }
-            furi_hal_crypto_store_unload_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE);
+            furry_hal_crypto_store_unload_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE);
             if(cnt.control == U2F_COUNTER_CONTROL_VAL) {
                 *cnt_val = cnt.counter;
                 state = true;
@@ -410,8 +410,8 @@ bool u2f_data_cnt_read(uint32_t* cnt_val) {
         } while(0);
     }
     flipper_format_free(flipper_format);
-    furi_record_close(RECORD_STORAGE);
-    furi_string_free(filetype);
+    furry_record_close(RECORD_STORAGE);
+    furry_string_free(filetype);
 
     if(old_counter && state) {
         // Change counter endianness and rewrite counter file
@@ -429,23 +429,23 @@ bool u2f_data_cnt_write(uint32_t cnt_val) {
     uint8_t cnt_encr[48];
 
     // Generate random IV and key
-    furi_hal_random_fill_buf(iv, 16);
-    furi_hal_random_fill_buf(cnt.random_salt, 24);
+    furry_hal_random_fill_buf(iv, 16);
+    furry_hal_random_fill_buf(cnt.random_salt, 24);
     cnt.control = U2F_COUNTER_CONTROL_VAL;
     cnt.counter = cnt_val;
 
-    if(!furi_hal_crypto_store_load_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE, iv)) {
-        FURI_LOG_E(TAG, "Unable to load encryption key");
+    if(!furry_hal_crypto_store_load_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE, iv)) {
+        FURRY_LOG_E(TAG, "Unable to load encryption key");
         return false;
     }
 
-    if(!furi_hal_crypto_encrypt((uint8_t*)&cnt, cnt_encr, 32)) {
-        FURI_LOG_E(TAG, "Encryption failed");
+    if(!furry_hal_crypto_encrypt((uint8_t*)&cnt, cnt_encr, 32)) {
+        FURRY_LOG_E(TAG, "Encryption failed");
         return false;
     }
-    furi_hal_crypto_store_unload_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE);
+    furry_hal_crypto_store_unload_key(U2F_DATA_FILE_ENCRYPTION_KEY_SLOT_UNIQUE);
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* flipper_format = flipper_format_file_alloc(storage);
 
     if(flipper_format_file_open_always(flipper_format, U2F_CNT_FILE)) {
@@ -460,7 +460,7 @@ bool u2f_data_cnt_write(uint32_t cnt_val) {
     }
 
     flipper_format_free(flipper_format);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return state;
 }

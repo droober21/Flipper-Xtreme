@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi.h>
+#include <furry.h>
 #include <gui/icon.h>
 
 typedef enum {
@@ -9,7 +9,7 @@ typedef enum {
 } FlipperApplicationFlag;
 
 typedef struct {
-    const FuriThreadCallback app;
+    const FurryThreadCallback app;
     const char* name;
     const char* appid;
     const size_t stack_size;

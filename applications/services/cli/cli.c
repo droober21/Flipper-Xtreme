@@ -1,7 +1,7 @@
 #include "cli_i.h"
 #include "cli_commands.h"
 #include "cli_vcp.h"
-#include <furi_hal_version.h>
+#include <furry_hal_version.h>
 #include <loader/loader.h>
 
 #define TAG "CliSrv"
@@ -11,59 +11,59 @@ Cli* cli_alloc() {
 
     CliCommandTree_init(cli->commands);
 
-    cli->last_line = furi_string_alloc();
-    cli->line = furi_string_alloc();
+    cli->last_line = furry_string_alloc();
+    cli->line = furry_string_alloc();
 
     cli->session = NULL;
 
-    cli->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
-    furi_check(cli->mutex);
+    cli->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
+    furry_check(cli->mutex);
 
-    cli->idle_sem = furi_semaphore_alloc(1, 0);
+    cli->idle_sem = furry_semaphore_alloc(1, 0);
 
     return cli;
 }
 
 void cli_putc(Cli* cli, char c) {
-    furi_assert(cli);
+    furry_assert(cli);
     if(cli->session != NULL) {
         cli->session->tx((uint8_t*)&c, 1);
     }
 }
 
 char cli_getc(Cli* cli) {
-    furi_assert(cli);
+    furry_assert(cli);
     char c = 0;
     if(cli->session != NULL) {
-        if(cli->session->rx((uint8_t*)&c, 1, FuriWaitForever) == 0) {
+        if(cli->session->rx((uint8_t*)&c, 1, FurryWaitForever) == 0) {
             cli_reset(cli);
-            furi_delay_tick(10);
+            furry_delay_tick(10);
         }
     } else {
         cli_reset(cli);
-        furi_delay_tick(10);
+        furry_delay_tick(10);
     }
     return c;
 }
 
 void cli_write(Cli* cli, const uint8_t* buffer, size_t size) {
-    furi_assert(cli);
+    furry_assert(cli);
     if(cli->session != NULL) {
         cli->session->tx(buffer, size);
     }
 }
 
 size_t cli_read(Cli* cli, uint8_t* buffer, size_t size) {
-    furi_assert(cli);
+    furry_assert(cli);
     if(cli->session != NULL) {
-        return cli->session->rx(buffer, size, FuriWaitForever);
+        return cli->session->rx(buffer, size, FurryWaitForever);
     } else {
         return 0;
     }
 }
 
 size_t cli_read_timeout(Cli* cli, uint8_t* buffer, size_t size, uint32_t timeout) {
-    furi_assert(cli);
+    furry_assert(cli);
     if(cli->session != NULL) {
         return cli->session->rx(buffer, size, timeout);
     } else {
@@ -72,7 +72,7 @@ size_t cli_read_timeout(Cli* cli, uint8_t* buffer, size_t size, uint32_t timeout
 }
 
 bool cli_is_connected(Cli* cli) {
-    furi_assert(cli);
+    furry_assert(cli);
     if(cli->session != NULL) {
         return (cli->session->is_connected());
     }
@@ -80,7 +80,7 @@ bool cli_is_connected(Cli* cli) {
 }
 
 bool cli_cmd_interrupt_received(Cli* cli) {
-    furi_assert(cli);
+    furry_assert(cli);
     char c = '\0';
     if(cli_is_connected(cli)) {
         if(cli->session->rx((uint8_t*)&c, 1, 0) == 1) {
@@ -93,9 +93,9 @@ bool cli_cmd_interrupt_received(Cli* cli) {
 }
 
 void cli_print_usage(const char* cmd, const char* usage, const char* arg) {
-    furi_assert(cmd);
-    furi_assert(arg);
-    furi_assert(usage);
+    furry_assert(cmd);
+    furry_assert(arg);
+    furry_assert(usage);
 
     printf("%s: illegal option -- %s\r\nusage: %s %s", cmd, arg, cmd, usage);
 }
@@ -121,7 +121,7 @@ void cli_motd() {
            "Read Manual https://docs.flipperzero.one\r\n"
            "\r\n");
 
-    const Version* firmware_version = furi_hal_version_get_firmware_version();
+    const Version* firmware_version = furry_hal_version_get_firmware_version();
     if(firmware_version) {
         printf(
             "Firmware version: %s %s (%s%s built on %s)\r\n",
@@ -140,26 +140,26 @@ void cli_nl(Cli* cli) {
 
 void cli_prompt(Cli* cli) {
     UNUSED(cli);
-    printf("\r\n>: %s", furi_string_get_cstr(cli->line));
+    printf("\r\n>: %s", furry_string_get_cstr(cli->line));
     fflush(stdout);
 }
 
 void cli_reset(Cli* cli) {
     // cli->last_line is cleared and cli->line's buffer moved to cli->last_line
-    furi_string_move(cli->last_line, cli->line);
+    furry_string_move(cli->last_line, cli->line);
     // Reiniting cli->line
-    cli->line = furi_string_alloc();
+    cli->line = furry_string_alloc();
     cli->cursor_position = 0;
 }
 
 static void cli_handle_backspace(Cli* cli) {
     if(cli->cursor_position > 0) {
-        furi_assert(furi_string_size(cli->line) > 0);
+        furry_assert(furry_string_size(cli->line) > 0);
         // Other side
         printf("\e[D\e[1P");
         fflush(stdout);
         // Our side
-        furi_string_replace_at(cli->line, cli->cursor_position - 1, 1, "");
+        furry_string_replace_at(cli->line, cli->cursor_position - 1, 1, "");
 
         cli->cursor_position--;
     } else {
@@ -168,18 +168,18 @@ static void cli_handle_backspace(Cli* cli) {
 }
 
 static void cli_normalize_line(Cli* cli) {
-    furi_string_trim(cli->line);
-    cli->cursor_position = furi_string_size(cli->line);
+    furry_string_trim(cli->line);
+    cli->cursor_position = furry_string_size(cli->line);
 }
 
-static void cli_execute_command(Cli* cli, CliCommand* command, FuriString* args) {
+static void cli_execute_command(Cli* cli, CliCommand* command, FurryString* args) {
     if(!(command->flags & CliCommandFlagInsomniaSafe)) {
-        furi_hal_power_insomnia_enter();
+        furry_hal_power_insomnia_enter();
     }
 
     // Ensure that we running alone
     if(!(command->flags & CliCommandFlagParallelSafe)) {
-        Loader* loader = furi_record_open(RECORD_LOADER);
+        Loader* loader = furry_record_open(RECORD_LOADER);
         bool safety_lock = loader_lock(loader);
         if(safety_lock) {
             // Execute command
@@ -188,57 +188,57 @@ static void cli_execute_command(Cli* cli, CliCommand* command, FuriString* args)
         } else {
             printf("Other application is running, close it first");
         }
-        furi_record_close(RECORD_LOADER);
+        furry_record_close(RECORD_LOADER);
     } else {
         // Execute command
         command->callback(cli, args, command->context);
     }
 
     if(!(command->flags & CliCommandFlagInsomniaSafe)) {
-        furi_hal_power_insomnia_exit();
+        furry_hal_power_insomnia_exit();
     }
 }
 
 static void cli_handle_enter(Cli* cli) {
     cli_normalize_line(cli);
 
-    if(furi_string_size(cli->line) == 0) {
+    if(furry_string_size(cli->line) == 0) {
         cli_prompt(cli);
         return;
     }
 
     // Command and args container
-    FuriString* command;
-    command = furi_string_alloc();
-    FuriString* args;
-    args = furi_string_alloc();
+    FurryString* command;
+    command = furry_string_alloc();
+    FurryString* args;
+    args = furry_string_alloc();
 
     // Split command and args
-    size_t ws = furi_string_search_char(cli->line, ' ');
-    if(ws == FURI_STRING_FAILURE) {
-        furi_string_set(command, cli->line);
+    size_t ws = furry_string_search_char(cli->line, ' ');
+    if(ws == FURRY_STRING_FAILURE) {
+        furry_string_set(command, cli->line);
     } else {
-        furi_string_set_n(command, cli->line, 0, ws);
-        furi_string_set_n(args, cli->line, ws, furi_string_size(cli->line));
-        furi_string_trim(args);
+        furry_string_set_n(command, cli->line, 0, ws);
+        furry_string_set_n(args, cli->line, ws, furry_string_size(cli->line));
+        furry_string_trim(args);
     }
 
     // Search for command
-    furi_check(furi_mutex_acquire(cli->mutex, FuriWaitForever) == FuriStatusOk);
+    furry_check(furry_mutex_acquire(cli->mutex, FurryWaitForever) == FurryStatusOk);
     CliCommand* cli_command_ptr = CliCommandTree_get(cli->commands, command);
 
     if(cli_command_ptr) { //-V547
         CliCommand cli_command;
         memcpy(&cli_command, cli_command_ptr, sizeof(CliCommand));
-        furi_check(furi_mutex_release(cli->mutex) == FuriStatusOk);
+        furry_check(furry_mutex_release(cli->mutex) == FurryStatusOk);
         cli_nl(cli);
         cli_execute_command(cli, &cli_command, args);
     } else {
-        furi_check(furi_mutex_release(cli->mutex) == FuriStatusOk);
+        furry_check(furry_mutex_release(cli->mutex) == FurryStatusOk);
         cli_nl(cli);
         printf(
             "`%s` command not found, use `help` or `?` to list all available commands",
-            furi_string_get_cstr(command));
+            furry_string_get_cstr(command));
         cli_putc(cli, CliSymbolAsciiBell);
     }
 
@@ -246,59 +246,59 @@ static void cli_handle_enter(Cli* cli) {
     cli_prompt(cli);
 
     // Cleanup command and args
-    furi_string_free(command);
-    furi_string_free(args);
+    furry_string_free(command);
+    furry_string_free(args);
 }
 
 static void cli_handle_autocomplete(Cli* cli) {
     cli_normalize_line(cli);
 
-    if(furi_string_size(cli->line) == 0) {
+    if(furry_string_size(cli->line) == 0) {
         return;
     }
 
     cli_nl(cli);
 
     // Prepare common base for autocomplete
-    FuriString* common;
-    common = furi_string_alloc();
+    FurryString* common;
+    common = furry_string_alloc();
     // Iterate throw commands
     for
         M_EACH(cli_command, cli->commands, CliCommandTree_t) {
             // Process only if starts with line buffer
-            if(furi_string_start_with(*cli_command->key_ptr, cli->line)) {
+            if(furry_string_start_with(*cli_command->key_ptr, cli->line)) {
                 // Show autocomplete option
-                printf("%s\r\n", furi_string_get_cstr(*cli_command->key_ptr));
+                printf("%s\r\n", furry_string_get_cstr(*cli_command->key_ptr));
                 // Process common base for autocomplete
-                if(furi_string_size(common) > 0) {
+                if(furry_string_size(common) > 0) {
                     // Choose shortest string
-                    const size_t key_size = furi_string_size(*cli_command->key_ptr);
-                    const size_t common_size = furi_string_size(common);
+                    const size_t key_size = furry_string_size(*cli_command->key_ptr);
+                    const size_t common_size = furry_string_size(common);
                     const size_t min_size = key_size > common_size ? common_size : key_size;
                     size_t i = 0;
                     while(i < min_size) {
                         // Stop when do not match
-                        if(furi_string_get_char(*cli_command->key_ptr, i) !=
-                           furi_string_get_char(common, i)) {
+                        if(furry_string_get_char(*cli_command->key_ptr, i) !=
+                           furry_string_get_char(common, i)) {
                             break;
                         }
                         i++;
                     }
                     // Cut right part if any
-                    furi_string_left(common, i);
+                    furry_string_left(common, i);
                 } else {
                     // Start with something
-                    furi_string_set(common, *cli_command->key_ptr);
+                    furry_string_set(common, *cli_command->key_ptr);
                 }
             }
         }
     // Replace line buffer if autocomplete better
-    if(furi_string_size(common) > furi_string_size(cli->line)) {
-        furi_string_set(cli->line, common);
-        cli->cursor_position = furi_string_size(cli->line);
+    if(furry_string_size(common) > furry_string_size(cli->line)) {
+        furry_string_set(cli->line, common);
+        cli->cursor_position = furry_string_size(cli->line);
     }
     // Cleanup
-    furi_string_free(common);
+    furry_string_free(common);
     // Show prompt
     cli_prompt(cli);
 }
@@ -306,16 +306,16 @@ static void cli_handle_autocomplete(Cli* cli) {
 static void cli_handle_escape(Cli* cli, char c) {
     if(c == 'A') {
         // Use previous command if line buffer is empty
-        if(furi_string_size(cli->line) == 0 && furi_string_cmp(cli->line, cli->last_line) != 0) {
+        if(furry_string_size(cli->line) == 0 && furry_string_cmp(cli->line, cli->last_line) != 0) {
             // Set line buffer and cursor position
-            furi_string_set(cli->line, cli->last_line);
-            cli->cursor_position = furi_string_size(cli->line);
+            furry_string_set(cli->line, cli->last_line);
+            cli->cursor_position = furry_string_size(cli->line);
             // Show new line to user
-            printf("%s", furi_string_get_cstr(cli->line));
+            printf("%s", furry_string_get_cstr(cli->line));
         }
     } else if(c == 'B') {
     } else if(c == 'C') {
-        if(cli->cursor_position < furi_string_size(cli->line)) {
+        if(cli->cursor_position < furry_string_size(cli->line)) {
             cli->cursor_position++;
             printf("\e[C");
         }
@@ -335,7 +335,7 @@ void cli_process_input(Cli* cli) {
     if(in_chr == CliSymbolAsciiTab) {
         cli_handle_autocomplete(cli);
     } else if(in_chr == CliSymbolAsciiSOH) {
-        furi_delay_ms(33); // We are too fast, Minicom is not ready yet
+        furry_delay_ms(33); // We are too fast, Minicom is not ready yet
         cli_motd();
         cli_prompt(cli);
     } else if(in_chr == CliSymbolAsciiETX) {
@@ -356,13 +356,13 @@ void cli_process_input(Cli* cli) {
     } else if(in_chr == CliSymbolAsciiCR) {
         cli_handle_enter(cli);
     } else if(in_chr >= 0x20 && in_chr < 0x7F) { //-V560
-        if(cli->cursor_position == furi_string_size(cli->line)) {
-            furi_string_push_back(cli->line, in_chr);
+        if(cli->cursor_position == furry_string_size(cli->line)) {
+            furry_string_push_back(cli->line, in_chr);
             cli_putc(cli, in_chr);
         } else {
             // Insert character to line buffer
             const char in_str[2] = {in_chr, 0};
-            furi_string_replace_at(cli->line, cli->cursor_position, 0, in_str);
+            furry_string_replace_at(cli->line, cli->cursor_position, 0, in_str);
 
             // Print character in replace mode
             printf("\e[4h%c\e[4l", in_chr);
@@ -380,69 +380,69 @@ void cli_add_command(
     CliCommandFlag flags,
     CliCallback callback,
     void* context) {
-    FuriString* name_str;
-    name_str = furi_string_alloc_set(name);
-    furi_string_trim(name_str);
+    FurryString* name_str;
+    name_str = furry_string_alloc_set(name);
+    furry_string_trim(name_str);
 
     size_t name_replace;
     do {
-        name_replace = furi_string_replace(name_str, " ", "_");
-    } while(name_replace != FURI_STRING_FAILURE);
+        name_replace = furry_string_replace(name_str, " ", "_");
+    } while(name_replace != FURRY_STRING_FAILURE);
 
     CliCommand c;
     c.callback = callback;
     c.context = context;
     c.flags = flags;
 
-    furi_check(furi_mutex_acquire(cli->mutex, FuriWaitForever) == FuriStatusOk);
+    furry_check(furry_mutex_acquire(cli->mutex, FurryWaitForever) == FurryStatusOk);
     CliCommandTree_set_at(cli->commands, name_str, c);
-    furi_check(furi_mutex_release(cli->mutex) == FuriStatusOk);
+    furry_check(furry_mutex_release(cli->mutex) == FurryStatusOk);
 
-    furi_string_free(name_str);
+    furry_string_free(name_str);
 }
 
 void cli_delete_command(Cli* cli, const char* name) {
-    FuriString* name_str;
-    name_str = furi_string_alloc_set(name);
-    furi_string_trim(name_str);
+    FurryString* name_str;
+    name_str = furry_string_alloc_set(name);
+    furry_string_trim(name_str);
 
     size_t name_replace;
     do {
-        name_replace = furi_string_replace(name_str, " ", "_");
-    } while(name_replace != FURI_STRING_FAILURE);
+        name_replace = furry_string_replace(name_str, " ", "_");
+    } while(name_replace != FURRY_STRING_FAILURE);
 
-    furi_check(furi_mutex_acquire(cli->mutex, FuriWaitForever) == FuriStatusOk);
+    furry_check(furry_mutex_acquire(cli->mutex, FurryWaitForever) == FurryStatusOk);
     CliCommandTree_erase(cli->commands, name_str);
-    furi_check(furi_mutex_release(cli->mutex) == FuriStatusOk);
+    furry_check(furry_mutex_release(cli->mutex) == FurryStatusOk);
 
-    furi_string_free(name_str);
+    furry_string_free(name_str);
 }
 
 void cli_session_open(Cli* cli, void* session) {
-    furi_assert(cli);
+    furry_assert(cli);
 
-    furi_check(furi_mutex_acquire(cli->mutex, FuriWaitForever) == FuriStatusOk);
+    furry_check(furry_mutex_acquire(cli->mutex, FurryWaitForever) == FurryStatusOk);
     cli->session = session;
     if(cli->session != NULL) {
         cli->session->init();
-        furi_thread_set_stdout_callback(cli->session->tx_stdout);
+        furry_thread_set_stdout_callback(cli->session->tx_stdout);
     } else {
-        furi_thread_set_stdout_callback(NULL);
+        furry_thread_set_stdout_callback(NULL);
     }
-    furi_semaphore_release(cli->idle_sem);
-    furi_check(furi_mutex_release(cli->mutex) == FuriStatusOk);
+    furry_semaphore_release(cli->idle_sem);
+    furry_check(furry_mutex_release(cli->mutex) == FurryStatusOk);
 }
 
 void cli_session_close(Cli* cli) {
-    furi_assert(cli);
+    furry_assert(cli);
 
-    furi_check(furi_mutex_acquire(cli->mutex, FuriWaitForever) == FuriStatusOk);
+    furry_check(furry_mutex_acquire(cli->mutex, FurryWaitForever) == FurryStatusOk);
     if(cli->session != NULL) {
         cli->session->deinit();
     }
     cli->session = NULL;
-    furi_thread_set_stdout_callback(NULL);
-    furi_check(furi_mutex_release(cli->mutex) == FuriStatusOk);
+    furry_thread_set_stdout_callback(NULL);
+    furry_check(furry_mutex_release(cli->mutex) == FurryStatusOk);
 }
 
 int32_t cli_srv(void* p) {
@@ -452,25 +452,25 @@ int32_t cli_srv(void* p) {
     // Init basic cli commands
     cli_commands_init(cli);
 
-    furi_record_create(RECORD_CLI, cli);
+    furry_record_create(RECORD_CLI, cli);
 
     if(cli->session != NULL) {
-        furi_thread_set_stdout_callback(cli->session->tx_stdout);
+        furry_thread_set_stdout_callback(cli->session->tx_stdout);
     } else {
-        furi_thread_set_stdout_callback(NULL);
+        furry_thread_set_stdout_callback(NULL);
     }
 
-    if(furi_hal_is_normal_boot()) {
+    if(furry_hal_is_normal_boot()) {
         cli_session_open(cli, &cli_vcp);
     } else {
-        FURI_LOG_W(TAG, "Skipping start in special boot mode");
+        FURRY_LOG_W(TAG, "Skipping start in special boot mode");
     }
 
     while(1) {
         if(cli->session != NULL) {
             cli_process_input(cli);
         } else {
-            furi_check(furi_semaphore_acquire(cli->idle_sem, FuriWaitForever) == FuriStatusOk);
+            furry_check(furry_semaphore_acquire(cli->idle_sem, FurryWaitForever) == FurryStatusOk);
         }
     }
 

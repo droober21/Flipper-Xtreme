@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-#include <furi.h>
+#include <furry.h>
 #include "u2f.h"
 
 typedef struct U2fHid U2fHid;

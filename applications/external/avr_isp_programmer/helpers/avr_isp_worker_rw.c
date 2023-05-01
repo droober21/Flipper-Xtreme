@@ -1,5 +1,5 @@
 #include "avr_isp_worker_rw.h"
-#include <furi_hal_pwm.h>
+#include <furry_hal_pwm.h>
 #include "avr_isp_types.h"
 #include "avr_isp.h"
 #include "../lib/driver/avr_isp_prog_cmd.h"
@@ -8,7 +8,7 @@
 #include "flipper_i32hex_file.h"
 #include <flipper_format/flipper_format.h>
 
-#include <furi.h>
+#include <furry.h>
 
 #define TAG "AvrIspWorkerRW"
 
@@ -17,7 +17,7 @@
 
 struct AvrIspWorkerRW {
     AvrIsp* avr_isp;
-    FuriThread* thread;
+    FurryThread* thread;
     volatile bool worker_running;
 
     uint32_t chip_arr_ind;
@@ -60,13 +60,13 @@ static int32_t avr_isp_worker_rw_thread(void* context) {
     AvrIspWorkerRW* instance = context;
 
     /* start PWM on &gpio_ext_pa4 */
-    furi_hal_pwm_start(FuriHalPwmOutputIdLptim2PA4, 4000000, 50);
+    furry_hal_pwm_start(FurryHalPwmOutputIdLptim2PA4, 4000000, 50);
 
-    FURI_LOG_D(TAG, "Start");
+    FURRY_LOG_D(TAG, "Start");
 
     while(1) {
         uint32_t events =
-            furi_thread_flags_wait(AVR_ISP_WORKER_ALL_EVENTS, FuriFlagWaitAny, FuriWaitForever);
+            furry_thread_flags_wait(AVR_ISP_WORKER_ALL_EVENTS, FurryFlagWaitAny, FurryWaitForever);
 
         if(events & AvrIspWorkerRWEvtStop) {
             break;
@@ -120,27 +120,27 @@ static int32_t avr_isp_worker_rw_thread(void* context) {
             }
         }
     }
-    FURI_LOG_D(TAG, "Stop");
+    FURRY_LOG_D(TAG, "Stop");
 
-    furi_hal_pwm_stop(FuriHalPwmOutputIdLptim2PA4);
+    furry_hal_pwm_stop(FurryHalPwmOutputIdLptim2PA4);
 
     return 0;
 }
 
 bool avr_isp_worker_rw_detect_chip(AvrIspWorkerRW* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
-    FURI_LOG_D(TAG, "Detecting AVR chip");
+    FURRY_LOG_D(TAG, "Detecting AVR chip");
 
     instance->chip_detect = false;
     instance->chip_arr_ind = avr_isp_chip_arr_size + 1;
 
     /* start PWM on &gpio_ext_pa4 */
-    furi_hal_pwm_start(FuriHalPwmOutputIdLptim2PA4, 4000000, 50);
+    furry_hal_pwm_start(FurryHalPwmOutputIdLptim2PA4, 4000000, 50);
 
     do {
         if(!avr_isp_auto_set_spi_speed_start_pmode(instance->avr_isp)) {
-            FURI_LOG_E(TAG, "Well, I managed to enter the mod program");
+            FURRY_LOG_E(TAG, "Well, I managed to enter the mod program");
             break;
         }
         instance->signature = avr_isp_read_signature(instance->avr_isp);
@@ -152,8 +152,8 @@ bool avr_isp_worker_rw_detect_chip(AvrIspWorkerRW* instance) {
                 if(avr_isp_chip_arr[ind].avrarch != F_AVR8) continue;
                 if(avr_isp_chip_arr[ind].sigs[1] == instance->signature.part_family) {
                     if(avr_isp_chip_arr[ind].sigs[2] == instance->signature.part_number) {
-                        FURI_LOG_D(TAG, "Detect AVR chip = \"%s\"", avr_isp_chip_arr[ind].name);
-                        FURI_LOG_D(
+                        FURRY_LOG_D(TAG, "Detect AVR chip = \"%s\"", avr_isp_chip_arr[ind].name);
+                        FURRY_LOG_D(
                             TAG,
                             "Signature = 0x%02X 0x%02X 0x%02X",
                             instance->signature.vendor,
@@ -163,19 +163,19 @@ bool avr_isp_worker_rw_detect_chip(AvrIspWorkerRW* instance) {
                         switch(avr_isp_chip_arr[ind].nfuses) {
                         case 1:
                             instance->lfuse = avr_isp_read_fuse_low(instance->avr_isp);
-                            FURI_LOG_D(TAG, "Lfuse = %02X", instance->lfuse);
+                            FURRY_LOG_D(TAG, "Lfuse = %02X", instance->lfuse);
                             break;
                         case 2:
                             instance->lfuse = avr_isp_read_fuse_low(instance->avr_isp);
                             instance->hfuse = avr_isp_read_fuse_high(instance->avr_isp);
-                            FURI_LOG_D(
+                            FURRY_LOG_D(
                                 TAG, "Lfuse = %02X Hfuse = %02X", instance->lfuse, instance->hfuse);
                             break;
                         case 3:
                             instance->lfuse = avr_isp_read_fuse_low(instance->avr_isp);
                             instance->hfuse = avr_isp_read_fuse_high(instance->avr_isp);
                             instance->efuse = avr_isp_read_fuse_extended(instance->avr_isp);
-                            FURI_LOG_D(
+                            FURRY_LOG_D(
                                 TAG,
                                 "Lfuse = %02X Hfuse = %02X Efuse = %02X",
                                 instance->lfuse,
@@ -187,7 +187,7 @@ bool avr_isp_worker_rw_detect_chip(AvrIspWorkerRW* instance) {
                         }
                         if(avr_isp_chip_arr[ind].nlocks == 1) {
                             instance->lock = avr_isp_read_lock_byte(instance->avr_isp);
-                            FURI_LOG_D(TAG, "Lock = %02X", instance->lock);
+                            FURRY_LOG_D(TAG, "Lock = %02X", instance->lock);
                         }
                         instance->chip_detect = true;
                         instance->chip_arr_ind = ind;
@@ -200,7 +200,7 @@ bool avr_isp_worker_rw_detect_chip(AvrIspWorkerRW* instance) {
 
     } while(0);
 
-    furi_hal_pwm_stop(FuriHalPwmOutputIdLptim2PA4);
+    furry_hal_pwm_stop(FurryHalPwmOutputIdLptim2PA4);
 
     if(instance->callback) {
         if(instance->chip_arr_ind > avr_isp_chip_arr_size) {
@@ -220,14 +220,14 @@ bool avr_isp_worker_rw_detect_chip(AvrIspWorkerRW* instance) {
 }
 
 AvrIspWorkerRW* avr_isp_worker_rw_alloc(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     UNUSED(context);
 
     AvrIspWorkerRW* instance = malloc(sizeof(AvrIspWorkerRW));
     instance->avr_isp = avr_isp_alloc();
 
     instance->thread =
-        furi_thread_alloc_ex("AvrIspWorkerRW", 4096, avr_isp_worker_rw_thread, instance);
+        furry_thread_alloc_ex("AvrIspWorkerRW", 4096, avr_isp_worker_rw_thread, instance);
 
     instance->chip_detect = false;
     instance->lfuse = 0;
@@ -241,37 +241,37 @@ AvrIspWorkerRW* avr_isp_worker_rw_alloc(void* context) {
 }
 
 void avr_isp_worker_rw_free(AvrIspWorkerRW* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     avr_isp_free(instance->avr_isp);
 
-    furi_check(!instance->worker_running);
-    furi_thread_free(instance->thread);
+    furry_check(!instance->worker_running);
+    furry_thread_free(instance->thread);
 
     free(instance);
 }
 
 void avr_isp_worker_rw_start(AvrIspWorkerRW* instance) {
-    furi_assert(instance);
-    furi_assert(!instance->worker_running);
+    furry_assert(instance);
+    furry_assert(!instance->worker_running);
 
     instance->worker_running = true;
 
-    furi_thread_start(instance->thread);
+    furry_thread_start(instance->thread);
 }
 
 void avr_isp_worker_rw_stop(AvrIspWorkerRW* instance) {
-    furi_assert(instance);
-    furi_assert(instance->worker_running);
+    furry_assert(instance);
+    furry_assert(instance->worker_running);
 
     instance->worker_running = false;
-    furi_thread_flags_set(furi_thread_get_id(instance->thread), AvrIspWorkerRWEvtStop);
+    furry_thread_flags_set(furry_thread_get_id(instance->thread), AvrIspWorkerRWEvtStop);
 
-    furi_thread_join(instance->thread);
+    furry_thread_join(instance->thread);
 }
 
 bool avr_isp_worker_rw_is_running(AvrIspWorkerRW* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     return instance->worker_running;
 }
@@ -280,7 +280,7 @@ void avr_isp_worker_rw_set_callback(
     AvrIspWorkerRW* instance,
     AvrIspWorkerRWCallback callback,
     void* context) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     instance->callback = callback;
     instance->context = context;
@@ -290,29 +290,29 @@ void avr_isp_worker_rw_set_callback_status(
     AvrIspWorkerRW* instance,
     AvrIspWorkerRWStatusCallback callback_status,
     void* context_status) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     instance->callback_status = callback_status;
     instance->context_status = context_status;
 }
 
 float avr_isp_worker_rw_get_progress_flash(AvrIspWorkerRW* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     return instance->progress_flash;
 }
 
 float avr_isp_worker_rw_get_progress_eeprom(AvrIspWorkerRW* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     return instance->progress_eeprom;
 }
 
 static void avr_isp_worker_rw_get_dump_flash(AvrIspWorkerRW* instance, const char* file_path) {
-    furi_assert(instance);
-    furi_check(instance->avr_isp);
+    furry_assert(instance);
+    furry_check(instance->avr_isp);
 
-    FURI_LOG_D(TAG, "Dump FLASH %s", file_path);
+    FURRY_LOG_D(TAG, "Dump FLASH %s", file_path);
 
     FlipperI32HexFile* flipper_hex_flash = flipper_i32hex_file_open_write(
         file_path, avr_isp_chip_arr[instance->chip_arr_ind].flashoffset);
@@ -339,21 +339,21 @@ static void avr_isp_worker_rw_get_dump_flash(AvrIspWorkerRW* instance, const cha
             sizeof(data));
         flipper_i32hex_file_bin_to_i32hex_set_data(
             flipper_hex_flash, data, avr_isp_chip_arr[instance->chip_arr_ind].pagesize);
-        //FURI_LOG_D(TAG, "%s", flipper_i32hex_file_get_string(flipper_hex_flash));
+        //FURRY_LOG_D(TAG, "%s", flipper_i32hex_file_get_string(flipper_hex_flash));
         instance->progress_flash =
             (float)(i) / ((float)avr_isp_chip_arr[instance->chip_arr_ind].flashsize / 2.0f);
     }
     flipper_i32hex_file_bin_to_i32hex_set_end_line(flipper_hex_flash);
-    //FURI_LOG_D(TAG, "%s", flipper_i32hex_file_get_string(flipper_hex_flash));
+    //FURRY_LOG_D(TAG, "%s", flipper_i32hex_file_get_string(flipper_hex_flash));
     flipper_i32hex_file_close(flipper_hex_flash);
     instance->progress_flash = 1.0f;
 }
 
 static void avr_isp_worker_rw_get_dump_eeprom(AvrIspWorkerRW* instance, const char* file_path) {
-    furi_assert(instance);
-    furi_check(instance->avr_isp);
+    furry_assert(instance);
+    furry_check(instance->avr_isp);
 
-    FURI_LOG_D(TAG, "Dump EEPROM %s", file_path);
+    FURRY_LOG_D(TAG, "Dump EEPROM %s", file_path);
 
     FlipperI32HexFile* flipper_hex_eeprom = flipper_i32hex_file_open_write(
         file_path, avr_isp_chip_arr[instance->chip_arr_ind].eepromoffset);
@@ -370,12 +370,12 @@ static void avr_isp_worker_rw_get_dump_eeprom(AvrIspWorkerRW* instance, const ch
         avr_isp_read_page(
             instance->avr_isp, STK_SET_EEPROM_TYPE, (uint16_t)i, size_data, data, sizeof(data));
         flipper_i32hex_file_bin_to_i32hex_set_data(flipper_hex_eeprom, data, size_data);
-        FURI_LOG_D(TAG, "%s", flipper_i32hex_file_get_string(flipper_hex_eeprom));
+        FURRY_LOG_D(TAG, "%s", flipper_i32hex_file_get_string(flipper_hex_eeprom));
         instance->progress_eeprom =
             (float)(i) / ((float)avr_isp_chip_arr[instance->chip_arr_ind].eepromsize);
     }
     flipper_i32hex_file_bin_to_i32hex_set_end_line(flipper_hex_eeprom);
-    FURI_LOG_D(TAG, "%s", flipper_i32hex_file_get_string(flipper_hex_eeprom));
+    FURRY_LOG_D(TAG, "%s", flipper_i32hex_file_get_string(flipper_hex_eeprom));
     flipper_i32hex_file_close(flipper_hex_eeprom);
     instance->progress_eeprom = 1.0f;
 }
@@ -384,38 +384,38 @@ bool avr_isp_worker_rw_read_dump(
     AvrIspWorkerRW* instance,
     const char* file_path,
     const char* file_name) {
-    furi_assert(instance);
-    furi_assert(file_path);
-    furi_assert(file_name);
+    furry_assert(instance);
+    furry_assert(file_path);
+    furry_assert(file_name);
 
-    FURI_LOG_D(TAG, "Read dump chip");
+    FURRY_LOG_D(TAG, "Read dump chip");
 
     instance->progress_flash = 0.0f;
     instance->progress_eeprom = 0.0f;
     bool ret = false;
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* flipper_format = flipper_format_file_alloc(storage);
-    FuriString* file_path_name = furi_string_alloc();
+    FurryString* file_path_name = furry_string_alloc();
 
     if(!avr_isp_worker_rw_detect_chip(instance)) {
-        FURI_LOG_E(TAG, "No detect AVR chip");
+        FURRY_LOG_E(TAG, "No detect AVR chip");
     } else {
         do {
-            furi_string_printf(
+            furry_string_printf(
                 file_path_name, "%s/%s%s", file_path, file_name, AVR_ISP_APP_EXTENSION);
             if(!flipper_format_file_open_always(
-                   flipper_format, furi_string_get_cstr(file_path_name))) {
-                FURI_LOG_E(TAG, "flipper_format_file_open_always");
+                   flipper_format, furry_string_get_cstr(file_path_name))) {
+                FURRY_LOG_E(TAG, "flipper_format_file_open_always");
                 break;
             }
             if(!flipper_format_write_header_cstr(
                    flipper_format, AVR_ISP_APP_FILE_TYPE, AVR_ISP_APP_FILE_VERSION)) {
-                FURI_LOG_E(TAG, "flipper_format_write_header_cstr");
+                FURRY_LOG_E(TAG, "flipper_format_write_header_cstr");
                 break;
             }
             if(!flipper_format_write_string_cstr(
                    flipper_format, "Chip name", avr_isp_chip_arr[instance->chip_arr_ind].name)) {
-                FURI_LOG_E(TAG, "Chip name");
+                FURRY_LOG_E(TAG, "Chip name");
                 break;
             }
             if(!flipper_format_write_hex(
@@ -423,46 +423,46 @@ bool avr_isp_worker_rw_read_dump(
                    "Signature",
                    (uint8_t*)&instance->signature,
                    sizeof(AvrIspSignature))) {
-                FURI_LOG_E(TAG, "Unable to add Signature");
+                FURRY_LOG_E(TAG, "Unable to add Signature");
                 break;
             }
             if(avr_isp_chip_arr[instance->chip_arr_ind].nfuses > 0) {
                 if(!flipper_format_write_hex(flipper_format, "Lfuse", &instance->lfuse, 1)) {
-                    FURI_LOG_E(TAG, "Unable to add Lfuse");
+                    FURRY_LOG_E(TAG, "Unable to add Lfuse");
                     break;
                 }
             }
             if(avr_isp_chip_arr[instance->chip_arr_ind].nfuses > 1) {
                 if(!flipper_format_write_hex(flipper_format, "Hfuse", &instance->hfuse, 1)) {
-                    FURI_LOG_E(TAG, "Unable to add Hfuse");
+                    FURRY_LOG_E(TAG, "Unable to add Hfuse");
                     break;
                 }
             }
             if(avr_isp_chip_arr[instance->chip_arr_ind].nfuses > 2) {
                 if(!flipper_format_write_hex(flipper_format, "Efuse", &instance->efuse, 1)) {
-                    FURI_LOG_E(TAG, "Unable to add Efuse");
+                    FURRY_LOG_E(TAG, "Unable to add Efuse");
                     break;
                 }
             }
             if(avr_isp_chip_arr[instance->chip_arr_ind].nlocks == 1) {
                 if(!flipper_format_write_hex(flipper_format, "Lock", &instance->lock, 1)) {
-                    FURI_LOG_E(TAG, "Unable to add Lock");
+                    FURRY_LOG_E(TAG, "Unable to add Lock");
                     break;
                 }
             }
-            furi_string_printf(file_path_name, "%s_%s", file_name, NAME_PATERN_FLASH_FILE);
+            furry_string_printf(file_path_name, "%s_%s", file_name, NAME_PATERN_FLASH_FILE);
             if(!flipper_format_write_string_cstr(
-                   flipper_format, "Dump_flash", furi_string_get_cstr(file_path_name))) {
-                FURI_LOG_E(TAG, "Unable to add Dump_flash");
+                   flipper_format, "Dump_flash", furry_string_get_cstr(file_path_name))) {
+                FURRY_LOG_E(TAG, "Unable to add Dump_flash");
                 break;
             }
 
             if(avr_isp_chip_arr[instance->chip_arr_ind].eepromsize > 0) {
-                furi_string_printf(file_path_name, "%s_%s", file_name, NAME_PATERN_EEPROM_FILE);
+                furry_string_printf(file_path_name, "%s_%s", file_name, NAME_PATERN_EEPROM_FILE);
                 if(avr_isp_chip_arr[instance->chip_arr_ind].eepromsize > 0) {
                     if(!flipper_format_write_string_cstr(
-                           flipper_format, "Dump_eeprom", furi_string_get_cstr(file_path_name))) {
-                        FURI_LOG_E(TAG, "Unable to add Dump_eeprom");
+                           flipper_format, "Dump_eeprom", furry_string_get_cstr(file_path_name))) {
+                        FURRY_LOG_E(TAG, "Unable to add Dump_eeprom");
                         break;
                     }
                 }
@@ -472,26 +472,26 @@ bool avr_isp_worker_rw_read_dump(
     }
 
     flipper_format_free(flipper_format);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     if(ret) {
         if(avr_isp_auto_set_spi_speed_start_pmode(instance->avr_isp)) {
             //Dump flash
-            furi_string_printf(
+            furry_string_printf(
                 file_path_name, "%s/%s_%s", file_path, file_name, NAME_PATERN_FLASH_FILE);
-            avr_isp_worker_rw_get_dump_flash(instance, furi_string_get_cstr(file_path_name));
+            avr_isp_worker_rw_get_dump_flash(instance, furry_string_get_cstr(file_path_name));
             //Dump eeprom
             if(avr_isp_chip_arr[instance->chip_arr_ind].eepromsize > 0) {
-                furi_string_printf(
+                furry_string_printf(
                     file_path_name, "%s/%s_%s", file_path, file_name, NAME_PATERN_EEPROM_FILE);
-                avr_isp_worker_rw_get_dump_eeprom(instance, furi_string_get_cstr(file_path_name));
+                avr_isp_worker_rw_get_dump_eeprom(instance, furry_string_get_cstr(file_path_name));
             }
 
             avr_isp_end_pmode(instance->avr_isp);
         }
     }
 
-    furi_string_free(file_path_name);
+    furry_string_free(file_path_name);
 
     return true;
 }
@@ -500,18 +500,18 @@ void avr_isp_worker_rw_read_dump_start(
     AvrIspWorkerRW* instance,
     const char* file_path,
     const char* file_name) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     instance->file_path = file_path;
     instance->file_name = file_name;
-    furi_thread_flags_set(furi_thread_get_id(instance->thread), AvrIspWorkerRWEvtReading);
+    furry_thread_flags_set(furry_thread_get_id(instance->thread), AvrIspWorkerRWEvtReading);
 }
 
 static bool avr_isp_worker_rw_verification_flash(AvrIspWorkerRW* instance, const char* file_path) {
-    furi_assert(instance);
-    furi_assert(file_path);
+    furry_assert(instance);
+    furry_assert(file_path);
 
-    FURI_LOG_D(TAG, "Verification flash %s", file_path);
+    FURRY_LOG_D(TAG, "Verification flash %s", file_path);
 
     instance->progress_flash = 0.0;
     bool ret = true;
@@ -552,16 +552,16 @@ static bool avr_isp_worker_rw_verification_flash(AvrIspWorkerRW* instance, const
             if(memcmp(data_read_hex, data_read_flash, flipper_hex_ret.data_size) != 0) {
                 ret = false;
 
-                FURI_LOG_E(TAG, "Verification flash error");
-                FURI_LOG_E(TAG, "Addr: 0x%04lX", addr);
+                FURRY_LOG_E(TAG, "Verification flash error");
+                FURRY_LOG_E(TAG, "Addr: 0x%04lX", addr);
                 for(uint32_t i = 0; i < flipper_hex_ret.data_size; i++) {
-                    FURI_LOG_RAW_E("%02X ", data_read_hex[i]);
+                    FURRY_LOG_RAW_E("%02X ", data_read_hex[i]);
                 }
-                FURI_LOG_RAW_E("\r\n");
+                FURRY_LOG_RAW_E("\r\n");
                 for(uint32_t i = 0; i < flipper_hex_ret.data_size; i++) {
-                    FURI_LOG_RAW_E("%02X ", data_read_flash[i]);
+                    FURRY_LOG_RAW_E("%02X ", data_read_flash[i]);
                 }
-                FURI_LOG_RAW_E("\r\n");
+                FURRY_LOG_RAW_E("\r\n");
             }
 
             addr += flipper_hex_ret.data_size / 2;
@@ -574,7 +574,7 @@ static bool avr_isp_worker_rw_verification_flash(AvrIspWorkerRW* instance, const
             break;
 
         default:
-            furi_crash(TAG " Incorrect status.");
+            furry_crash(TAG " Incorrect status.");
             break;
         }
 
@@ -590,10 +590,10 @@ static bool avr_isp_worker_rw_verification_flash(AvrIspWorkerRW* instance, const
 
 static bool
     avr_isp_worker_rw_verification_eeprom(AvrIspWorkerRW* instance, const char* file_path) {
-    furi_assert(instance);
-    furi_assert(file_path);
+    furry_assert(instance);
+    furry_assert(file_path);
 
-    FURI_LOG_D(TAG, "Verification eeprom %s", file_path);
+    FURRY_LOG_D(TAG, "Verification eeprom %s", file_path);
 
     instance->progress_eeprom = 0.0;
     bool ret = true;
@@ -623,16 +623,16 @@ static bool
 
             if(memcmp(data_read_hex, data_read_eeprom, flipper_hex_ret.data_size) != 0) {
                 ret = false;
-                FURI_LOG_E(TAG, "Verification eeprom error");
-                FURI_LOG_E(TAG, "Addr: 0x%04lX", addr);
+                FURRY_LOG_E(TAG, "Verification eeprom error");
+                FURRY_LOG_E(TAG, "Addr: 0x%04lX", addr);
                 for(uint32_t i = 0; i < flipper_hex_ret.data_size; i++) {
-                    FURI_LOG_RAW_E("%02X ", data_read_hex[i]);
+                    FURRY_LOG_RAW_E("%02X ", data_read_hex[i]);
                 }
-                FURI_LOG_RAW_E("\r\n");
+                FURRY_LOG_RAW_E("\r\n");
                 for(uint32_t i = 0; i < flipper_hex_ret.data_size; i++) {
-                    FURI_LOG_RAW_E("%02X ", data_read_eeprom[i]);
+                    FURRY_LOG_RAW_E("%02X ", data_read_eeprom[i]);
                 }
-                FURI_LOG_RAW_E("\r\n");
+                FURRY_LOG_RAW_E("\r\n");
             }
 
             addr += flipper_hex_ret.data_size;
@@ -645,7 +645,7 @@ static bool
             break;
 
         default:
-            furi_crash(TAG " Incorrect status.");
+            furry_crash(TAG " Incorrect status.");
             break;
         }
 
@@ -663,38 +663,38 @@ bool avr_isp_worker_rw_verification(
     AvrIspWorkerRW* instance,
     const char* file_path,
     const char* file_name) {
-    furi_assert(instance);
-    furi_assert(file_path);
-    furi_assert(file_name);
+    furry_assert(instance);
+    furry_assert(file_path);
+    furry_assert(file_name);
 
-    FURI_LOG_D(TAG, "Verification chip");
+    FURRY_LOG_D(TAG, "Verification chip");
 
     instance->progress_flash = 0.0f;
     instance->progress_eeprom = 0.0f;
-    FuriString* file_path_name = furi_string_alloc();
+    FurryString* file_path_name = furry_string_alloc();
 
     bool ret = false;
 
     if(avr_isp_auto_set_spi_speed_start_pmode(instance->avr_isp)) {
         do {
-            furi_string_printf(
+            furry_string_printf(
                 file_path_name, "%s/%s_%s", file_path, file_name, NAME_PATERN_FLASH_FILE);
             if(!avr_isp_worker_rw_verification_flash(
-                   instance, furi_string_get_cstr(file_path_name)))
+                   instance, furry_string_get_cstr(file_path_name)))
                 break;
 
             if(avr_isp_chip_arr[instance->chip_arr_ind].eepromsize > 0) {
-                furi_string_printf(
+                furry_string_printf(
                     file_path_name, "%s/%s_%s", file_path, file_name, NAME_PATERN_EEPROM_FILE);
 
                 if(!avr_isp_worker_rw_verification_eeprom(
-                       instance, furi_string_get_cstr(file_path_name)))
+                       instance, furry_string_get_cstr(file_path_name)))
                     break;
             }
             ret = true;
         } while(false);
         avr_isp_end_pmode(instance->avr_isp);
-        furi_string_free(file_path_name);
+        furry_string_free(file_path_name);
     }
     return ret;
 }
@@ -703,20 +703,20 @@ void avr_isp_worker_rw_verification_start(
     AvrIspWorkerRW* instance,
     const char* file_path,
     const char* file_name) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     instance->file_path = file_path;
     instance->file_name = file_name;
-    furi_thread_flags_set(furi_thread_get_id(instance->thread), AvrIspWorkerRWEvtVerification);
+    furry_thread_flags_set(furry_thread_get_id(instance->thread), AvrIspWorkerRWEvtVerification);
 }
 
 static void avr_isp_worker_rw_write_flash(AvrIspWorkerRW* instance, const char* file_path) {
-    furi_assert(instance);
-    furi_check(instance->avr_isp);
+    furry_assert(instance);
+    furry_check(instance->avr_isp);
 
     instance->progress_flash = 0.0;
 
-    FURI_LOG_D(TAG, "Write Flash %s", file_path);
+    FURRY_LOG_D(TAG, "Write Flash %s", file_path);
 
     uint8_t data[288] = {0};
 
@@ -761,7 +761,7 @@ static void avr_isp_worker_rw_write_flash(AvrIspWorkerRW* instance, const char* 
             break;
 
         default:
-            furi_crash(TAG " Incorrect status.");
+            furry_crash(TAG " Incorrect status.");
             break;
         }
 
@@ -774,13 +774,13 @@ static void avr_isp_worker_rw_write_flash(AvrIspWorkerRW* instance, const char* 
 }
 
 static void avr_isp_worker_rw_write_eeprom(AvrIspWorkerRW* instance, const char* file_path) {
-    furi_assert(instance);
-    furi_check(instance->avr_isp);
+    furry_assert(instance);
+    furry_check(instance->avr_isp);
 
     instance->progress_eeprom = 0.0;
     uint8_t data[288] = {0};
 
-    FURI_LOG_D(TAG, "Write EEPROM %s", file_path);
+    FURRY_LOG_D(TAG, "Write EEPROM %s", file_path);
 
     FlipperI32HexFile* flipper_hex_eeprom_read = flipper_i32hex_file_open_read(file_path);
 
@@ -812,7 +812,7 @@ static void avr_isp_worker_rw_write_eeprom(AvrIspWorkerRW* instance, const char*
             break;
 
         default:
-            furi_crash(TAG " Incorrect status.");
+            furry_crash(TAG " Incorrect status.");
             break;
         }
 
@@ -828,46 +828,46 @@ bool avr_isp_worker_rw_write_dump(
     AvrIspWorkerRW* instance,
     const char* file_path,
     const char* file_name) {
-    furi_assert(instance);
-    furi_assert(file_path);
-    furi_assert(file_name);
+    furry_assert(instance);
+    furry_assert(file_path);
+    furry_assert(file_name);
 
-    FURI_LOG_D(TAG, "Write dump chip");
+    FURRY_LOG_D(TAG, "Write dump chip");
 
     instance->progress_flash = 0.0f;
     instance->progress_eeprom = 0.0f;
     bool ret = false;
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* flipper_format = flipper_format_file_alloc(storage);
-    FuriString* file_path_name = furi_string_alloc();
+    FurryString* file_path_name = furry_string_alloc();
 
-    FuriString* temp_str_1 = furi_string_alloc();
-    FuriString* temp_str_2 = furi_string_alloc();
+    FurryString* temp_str_1 = furry_string_alloc();
+    FurryString* temp_str_2 = furry_string_alloc();
     uint32_t temp_data32;
 
     if(!avr_isp_worker_rw_detect_chip(instance)) {
-        FURI_LOG_E(TAG, "No detect AVR chip");
+        FURRY_LOG_E(TAG, "No detect AVR chip");
     } else {
         //upload file with description
         do {
-            furi_string_printf(
+            furry_string_printf(
                 file_path_name, "%s/%s%s", file_path, file_name, AVR_ISP_APP_EXTENSION);
             if(!flipper_format_file_open_existing(
-                   flipper_format, furi_string_get_cstr(file_path_name))) {
-                FURI_LOG_E(TAG, "Error open file %s", furi_string_get_cstr(file_path_name));
+                   flipper_format, furry_string_get_cstr(file_path_name))) {
+                FURRY_LOG_E(TAG, "Error open file %s", furry_string_get_cstr(file_path_name));
                 break;
             }
 
             if(!flipper_format_read_header(flipper_format, temp_str_1, &temp_data32)) {
-                FURI_LOG_E(TAG, "Missing or incorrect header");
+                FURRY_LOG_E(TAG, "Missing or incorrect header");
                 break;
             }
 
-            if((!strcmp(furi_string_get_cstr(temp_str_1), AVR_ISP_APP_FILE_TYPE)) &&
+            if((!strcmp(furry_string_get_cstr(temp_str_1), AVR_ISP_APP_FILE_TYPE)) &&
                temp_data32 == AVR_ISP_APP_FILE_VERSION) {
             } else {
-                FURI_LOG_E(TAG, "Type or version mismatch");
+                FURRY_LOG_E(TAG, "Type or version mismatch");
                 break;
             }
 
@@ -875,14 +875,14 @@ bool avr_isp_worker_rw_write_dump(
 
             if(!flipper_format_read_hex(
                    flipper_format, "Signature", (uint8_t*)&sig_read, sizeof(AvrIspSignature))) {
-                FURI_LOG_E(TAG, "Missing Signature");
+                FURRY_LOG_E(TAG, "Missing Signature");
                 break;
             }
 
             if(memcmp(
                    (uint8_t*)&instance->signature, (uint8_t*)&sig_read, sizeof(AvrIspSignature)) !=
                0) {
-                FURI_LOG_E(
+                FURRY_LOG_E(
                     TAG,
                     "Wrong chip. Connected (%02X %02X %02X), read from file (%02X %02X %02X)",
                     instance->signature.vendor,
@@ -895,7 +895,7 @@ bool avr_isp_worker_rw_write_dump(
             }
 
             if(!flipper_format_read_string(flipper_format, "Dump_flash", temp_str_1)) {
-                FURI_LOG_E(TAG, "Missing Dump_flash");
+                FURRY_LOG_E(TAG, "Missing Dump_flash");
                 break;
             }
 
@@ -905,37 +905,37 @@ bool avr_isp_worker_rw_write_dump(
         } while(false);
     }
     flipper_format_free(flipper_format);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     if(ret) {
         do {
             //checking .hex files for errors
 
-            furi_string_printf(
-                file_path_name, "%s/%s", file_path, furi_string_get_cstr(temp_str_1));
+            furry_string_printf(
+                file_path_name, "%s/%s", file_path, furry_string_get_cstr(temp_str_1));
 
-            FURI_LOG_D(TAG, "Check flash file");
+            FURRY_LOG_D(TAG, "Check flash file");
             FlipperI32HexFile* flipper_hex_flash_read =
-                flipper_i32hex_file_open_read(furi_string_get_cstr(file_path_name));
+                flipper_i32hex_file_open_read(furry_string_get_cstr(file_path_name));
             if(flipper_i32hex_file_check(flipper_hex_flash_read)) {
-                FURI_LOG_D(TAG, "Check flash file: OK");
+                FURRY_LOG_D(TAG, "Check flash file: OK");
             } else {
-                FURI_LOG_E(TAG, "Check flash file: Error");
+                FURRY_LOG_E(TAG, "Check flash file: Error");
                 ret = false;
             }
             flipper_i32hex_file_close(flipper_hex_flash_read);
 
-            if(furi_string_size(temp_str_2) > 4) {
-                furi_string_printf(
-                    file_path_name, "%s/%s", file_path, furi_string_get_cstr(temp_str_2));
+            if(furry_string_size(temp_str_2) > 4) {
+                furry_string_printf(
+                    file_path_name, "%s/%s", file_path, furry_string_get_cstr(temp_str_2));
 
-                FURI_LOG_D(TAG, "Check eeprom file");
+                FURRY_LOG_D(TAG, "Check eeprom file");
                 FlipperI32HexFile* flipper_hex_eeprom_read =
-                    flipper_i32hex_file_open_read(furi_string_get_cstr(file_path_name));
+                    flipper_i32hex_file_open_read(furry_string_get_cstr(file_path_name));
                 if(flipper_i32hex_file_check(flipper_hex_eeprom_read)) {
-                    FURI_LOG_D(TAG, "Check eeprom file: OK");
+                    FURRY_LOG_D(TAG, "Check eeprom file: OK");
                 } else {
-                    FURI_LOG_E(TAG, "Check eeprom file: Error");
+                    FURRY_LOG_E(TAG, "Check eeprom file: Error");
                     ret = false;
                 }
                 flipper_i32hex_file_close(flipper_hex_eeprom_read);
@@ -945,36 +945,36 @@ bool avr_isp_worker_rw_write_dump(
             ret = false;
 
             //erase chip
-            FURI_LOG_D(TAG, "Erase chip");
+            FURRY_LOG_D(TAG, "Erase chip");
             if(!avr_isp_erase_chip(instance->avr_isp)) {
-                FURI_LOG_E(TAG, "Erase chip: Error");
+                FURRY_LOG_E(TAG, "Erase chip: Error");
                 break;
             }
 
             if(!avr_isp_auto_set_spi_speed_start_pmode(instance->avr_isp)) {
-                FURI_LOG_E(TAG, "Well, I managed to enter the mod program");
+                FURRY_LOG_E(TAG, "Well, I managed to enter the mod program");
                 break;
             }
 
             //write flash
-            furi_string_printf(
-                file_path_name, "%s/%s", file_path, furi_string_get_cstr(temp_str_1));
-            avr_isp_worker_rw_write_flash(instance, furi_string_get_cstr(file_path_name));
+            furry_string_printf(
+                file_path_name, "%s/%s", file_path, furry_string_get_cstr(temp_str_1));
+            avr_isp_worker_rw_write_flash(instance, furry_string_get_cstr(file_path_name));
 
             //write eeprom
-            if(furi_string_size(temp_str_2) > 4) {
-                furi_string_printf(
-                    file_path_name, "%s/%s", file_path, furi_string_get_cstr(temp_str_2));
-                avr_isp_worker_rw_write_eeprom(instance, furi_string_get_cstr(file_path_name));
+            if(furry_string_size(temp_str_2) > 4) {
+                furry_string_printf(
+                    file_path_name, "%s/%s", file_path, furry_string_get_cstr(temp_str_2));
+                avr_isp_worker_rw_write_eeprom(instance, furry_string_get_cstr(file_path_name));
             }
             ret = true;
             avr_isp_end_pmode(instance->avr_isp);
         } while(false);
     }
 
-    furi_string_free(file_path_name);
-    furi_string_free(temp_str_1);
-    furi_string_free(temp_str_2);
+    furry_string_free(file_path_name);
+    furry_string_free(temp_str_1);
+    furry_string_free(temp_str_2);
 
     return ret;
 }
@@ -983,22 +983,22 @@ void avr_isp_worker_rw_write_dump_start(
     AvrIspWorkerRW* instance,
     const char* file_path,
     const char* file_name) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     instance->file_path = file_path;
     instance->file_name = file_name;
-    furi_thread_flags_set(furi_thread_get_id(instance->thread), AvrIspWorkerRWEvtWriting);
+    furry_thread_flags_set(furry_thread_get_id(instance->thread), AvrIspWorkerRWEvtWriting);
 }
 
 bool avr_isp_worker_rw_write_fuse(
     AvrIspWorkerRW* instance,
     const char* file_path,
     const char* file_name) {
-    furi_assert(instance);
-    furi_assert(file_path);
-    furi_assert(file_name);
+    furry_assert(instance);
+    furry_assert(file_path);
+    furry_assert(file_name);
 
-    FURI_LOG_D(TAG, "Write fuse chip");
+    FURRY_LOG_D(TAG, "Write fuse chip");
 
     bool ret = false;
     uint8_t lfuse;
@@ -1006,32 +1006,32 @@ bool avr_isp_worker_rw_write_fuse(
     uint8_t efuse;
     uint8_t lock;
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* flipper_format = flipper_format_file_alloc(storage);
-    FuriString* temp_str = furi_string_alloc();
+    FurryString* temp_str = furry_string_alloc();
 
     uint32_t temp_data32;
 
     if(!avr_isp_worker_rw_detect_chip(instance)) {
-        FURI_LOG_E(TAG, "No detect AVR chip");
+        FURRY_LOG_E(TAG, "No detect AVR chip");
     } else {
         //upload file with description
         do {
-            furi_string_printf(temp_str, "%s/%s%s", file_path, file_name, AVR_ISP_APP_EXTENSION);
-            if(!flipper_format_file_open_existing(flipper_format, furi_string_get_cstr(temp_str))) {
-                FURI_LOG_E(TAG, "Error open file %s", furi_string_get_cstr(temp_str));
+            furry_string_printf(temp_str, "%s/%s%s", file_path, file_name, AVR_ISP_APP_EXTENSION);
+            if(!flipper_format_file_open_existing(flipper_format, furry_string_get_cstr(temp_str))) {
+                FURRY_LOG_E(TAG, "Error open file %s", furry_string_get_cstr(temp_str));
                 break;
             }
 
             if(!flipper_format_read_header(flipper_format, temp_str, &temp_data32)) {
-                FURI_LOG_E(TAG, "Missing or incorrect header");
+                FURRY_LOG_E(TAG, "Missing or incorrect header");
                 break;
             }
 
-            if((!strcmp(furi_string_get_cstr(temp_str), AVR_ISP_APP_FILE_TYPE)) &&
+            if((!strcmp(furry_string_get_cstr(temp_str), AVR_ISP_APP_FILE_TYPE)) &&
                temp_data32 == AVR_ISP_APP_FILE_VERSION) {
             } else {
-                FURI_LOG_E(TAG, "Type or version mismatch");
+                FURRY_LOG_E(TAG, "Type or version mismatch");
                 break;
             }
 
@@ -1039,14 +1039,14 @@ bool avr_isp_worker_rw_write_fuse(
 
             if(!flipper_format_read_hex(
                    flipper_format, "Signature", (uint8_t*)&sig_read, sizeof(AvrIspSignature))) {
-                FURI_LOG_E(TAG, "Missing Signature");
+                FURRY_LOG_E(TAG, "Missing Signature");
                 break;
             }
 
             if(memcmp(
                    (uint8_t*)&instance->signature, (uint8_t*)&sig_read, sizeof(AvrIspSignature)) !=
                0) {
-                FURI_LOG_E(
+                FURRY_LOG_E(
                     TAG,
                     "Wrong chip. Connected (%02X %02X %02X), read from file (%02X %02X %02X)",
                     instance->signature.vendor,
@@ -1060,31 +1060,31 @@ bool avr_isp_worker_rw_write_fuse(
 
             if(avr_isp_chip_arr[instance->chip_arr_ind].nfuses > 0) {
                 if(!flipper_format_read_hex(flipper_format, "Lfuse", &lfuse, 1)) {
-                    FURI_LOG_E(TAG, "Missing Lfuse");
+                    FURRY_LOG_E(TAG, "Missing Lfuse");
                     break;
                 }
             }
             if(avr_isp_chip_arr[instance->chip_arr_ind].nfuses > 1) {
                 if(!flipper_format_read_hex(flipper_format, "Hfuse", &hfuse, 1)) {
-                    FURI_LOG_E(TAG, "Missing Hfuse");
+                    FURRY_LOG_E(TAG, "Missing Hfuse");
                     break;
                 }
             }
             if(avr_isp_chip_arr[instance->chip_arr_ind].nfuses > 2) {
                 if(!flipper_format_read_hex(flipper_format, "Efuse", &efuse, 1)) {
-                    FURI_LOG_E(TAG, "Missing Efuse");
+                    FURRY_LOG_E(TAG, "Missing Efuse");
                     break;
                 }
             }
             if(avr_isp_chip_arr[instance->chip_arr_ind].nlocks == 1) {
                 if(!flipper_format_read_hex(flipper_format, "Lock", &lock, 1)) {
-                    FURI_LOG_E(TAG, "Missing Lock");
+                    FURRY_LOG_E(TAG, "Missing Lock");
                     break;
                 }
             }
 
             if(!avr_isp_auto_set_spi_speed_start_pmode(instance->avr_isp)) {
-                FURI_LOG_E(TAG, "Well, I managed to enter the mod program");
+                FURRY_LOG_E(TAG, "Well, I managed to enter the mod program");
                 break;
             }
 
@@ -1093,7 +1093,7 @@ bool avr_isp_worker_rw_write_fuse(
             if(avr_isp_chip_arr[instance->chip_arr_ind].nfuses > 0) {
                 if(instance->lfuse != lfuse) {
                     if(!avr_isp_write_fuse_low(instance->avr_isp, lfuse)) {
-                        FURI_LOG_E(TAG, "Write Lfuse: error");
+                        FURRY_LOG_E(TAG, "Write Lfuse: error");
                         ret = false;
                     }
                 }
@@ -1101,7 +1101,7 @@ bool avr_isp_worker_rw_write_fuse(
             if(avr_isp_chip_arr[instance->chip_arr_ind].nfuses > 1) {
                 if(instance->hfuse != hfuse) {
                     if(!avr_isp_write_fuse_high(instance->avr_isp, hfuse)) {
-                        FURI_LOG_E(TAG, "Write Hfuse: error");
+                        FURRY_LOG_E(TAG, "Write Hfuse: error");
                         ret = false;
                     }
                 }
@@ -1109,17 +1109,17 @@ bool avr_isp_worker_rw_write_fuse(
             if(avr_isp_chip_arr[instance->chip_arr_ind].nfuses > 2) {
                 if(instance->efuse != efuse) {
                     if(!avr_isp_write_fuse_extended(instance->avr_isp, efuse)) {
-                        FURI_LOG_E(TAG, "Write Efuse: error");
+                        FURRY_LOG_E(TAG, "Write Efuse: error");
                         ret = false;
                     }
                 }
             }
 
             if(avr_isp_chip_arr[instance->chip_arr_ind].nlocks == 1) {
-                FURI_LOG_D(TAG, "Write lock byte");
+                FURRY_LOG_D(TAG, "Write lock byte");
                 if(instance->lock != lock) {
                     if(!avr_isp_write_lock_byte(instance->avr_isp, lock)) {
-                        FURI_LOG_E(TAG, "Write Lock byte: error");
+                        FURRY_LOG_E(TAG, "Write Lock byte: error");
                         ret = false;
                     }
                 }
@@ -1129,8 +1129,8 @@ bool avr_isp_worker_rw_write_fuse(
     }
 
     flipper_format_free(flipper_format);
-    furi_record_close(RECORD_STORAGE);
-    furi_string_free(temp_str);
+    furry_record_close(RECORD_STORAGE);
+    furry_string_free(temp_str);
     return ret;
 }
 
@@ -1138,9 +1138,9 @@ void avr_isp_worker_rw_write_fuse_start(
     AvrIspWorkerRW* instance,
     const char* file_path,
     const char* file_name) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     instance->file_path = file_path;
     instance->file_name = file_name;
-    furi_thread_flags_set(furi_thread_get_id(instance->thread), AvrIspWorkerRWEvtWritingFuse);
+    furry_thread_flags_set(furry_thread_get_id(instance->thread), AvrIspWorkerRWEvtWritingFuse);
 }

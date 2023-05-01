@@ -14,7 +14,7 @@ InfraredMessage* infrared_decoder_rc6_check_ready(void* ctx) {
 }
 
 bool infrared_decoder_rc6_interpret(InfraredCommonDecoder* decoder) {
-    furi_assert(decoder);
+    furry_assert(decoder);
 
     bool result = false;
     uint32_t* data = (void*)&decoder->data[0];
@@ -65,7 +65,7 @@ InfraredStatus infrared_decoder_rc6_decode_manchester(
     bool triple_timing = MATCH_TIMING(timing, 3 * bit, tolerance);
 
     if(decoder->databit_cnt == 4) {
-        furi_assert(decoder->switch_detect == true);
+        furry_assert(decoder->switch_detect == true);
 
         if(single_timing ^ triple_timing) {
             ++decoder->databit_cnt;

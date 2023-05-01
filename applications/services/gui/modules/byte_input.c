@@ -1,7 +1,7 @@
 #include "byte_input.h"
 
 #include <gui/elements.h>
-#include <furi.h>
+#include <furry.h>
 #include <assets_icons.h>
 
 struct ByteInput {
@@ -78,7 +78,7 @@ static uint8_t byte_input_get_row_size(uint8_t row_index) {
         row_size = COUNT_OF(keyboard_keys_row_2);
         break;
     default:
-        furi_crash(NULL);
+        furry_crash(NULL);
     }
 
     return row_size;
@@ -101,7 +101,7 @@ static const ByteInputKey* byte_input_get_row(uint8_t row_index) {
         row = keyboard_keys_row_2;
         break;
     default:
-        furi_crash(NULL);
+        furry_crash(NULL);
     }
 
     return row;
@@ -388,7 +388,7 @@ static void byte_input_dec_selected_byte(ByteInputModel* model) {
     if(model->selected_byte > 0) {
         model->selected_byte -= 1;
 
-        furi_assert(model->selected_byte >= model->first_visible_byte);
+        furry_assert(model->selected_byte >= model->first_visible_byte);
         if(model->selected_byte - model->first_visible_byte < 1) {
             if(model->first_visible_byte > 0) {
                 model->first_visible_byte--;
@@ -618,7 +618,7 @@ static void byte_input_view_draw_callback(Canvas* canvas, void* _model) {
  */
 static bool byte_input_view_input_callback(InputEvent* event, void* context) {
     ByteInput* byte_input = context;
-    furi_assert(byte_input);
+    furry_assert(byte_input);
     bool consumed = false;
 
     if(event->type == InputTypeShort || event->type == InputTypeRepeat) {
@@ -718,7 +718,7 @@ ByteInput* byte_input_alloc() {
  * @param byte_input Byte input instance
  */
 void byte_input_free(ByteInput* byte_input) {
-    furi_assert(byte_input);
+    furry_assert(byte_input);
     view_free(byte_input->view);
     free(byte_input);
 }
@@ -730,7 +730,7 @@ void byte_input_free(ByteInput* byte_input) {
  * @return View instance that can be used for embedding
  */
 View* byte_input_get_view(ByteInput* byte_input) {
-    furi_assert(byte_input);
+    furry_assert(byte_input);
     return byte_input->view;
 }
 

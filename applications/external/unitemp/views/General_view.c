@@ -248,7 +248,7 @@ static void _draw_carousel_values(Canvas* canvas) {
     if(sensor_status == UT_SENSORSTATUS_ERROR || sensor_status == UT_SENSORSTATUS_TIMEOUT) {
         const Icon* frames[] = {
             &I_flipper_happy_60x38, &I_flipper_happy_2_60x38, &I_flipper_sad_60x38};
-        canvas_draw_icon(canvas, 34, 23, frames[furi_get_tick() % 2250 / 750]);
+        canvas_draw_icon(canvas, 34, 23, frames[furry_get_tick() % 2250 / 750]);
 
         canvas_set_font(canvas, FontSecondary);
         //TODO: Оптимизировать эту срань

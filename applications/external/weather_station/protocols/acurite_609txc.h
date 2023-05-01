@@ -77,4 +77,4 @@ SubGhzProtocolStatus
  * @param context Pointer to a WSProtocolDecoderAcurite_609TXC instance
  * @param output Resulting text
  */
-void ws_protocol_decoder_acurite_609txc_get_string(void* context, FuriString* output);
+void ws_protocol_decoder_acurite_609txc_get_string(void* context, FurryString* output);

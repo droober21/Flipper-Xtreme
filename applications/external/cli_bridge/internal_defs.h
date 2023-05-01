@@ -1,41 +1,41 @@
 #pragma once
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <m-dict.h>
 #include <m-bptree.h>
 #include <m-array.h>
 #include <cli/cli.h>
 
 typedef struct {
-    FuriThreadStdoutWriteCallback write_callback;
-    FuriString* buffer;
-} FuriThreadStdout_internal;
+    FurryThreadStdoutWriteCallback write_callback;
+    FurryString* buffer;
+} FurryThreadStdout_internal;
 
 typedef struct {
     bool is_service;
-    FuriThreadState state;
+    FurryThreadState state;
     int32_t ret;
 
-    FuriThreadCallback callback;
+    FurryThreadCallback callback;
     void* context;
 
-    FuriThreadStateCallback state_callback;
+    FurryThreadStateCallback state_callback;
     void* state_context;
 
     char* name;
     configSTACK_DEPTH_TYPE stack_size;
-    FuriThreadPriority priority;
+    FurryThreadPriority priority;
 
     TaskHandle_t task_handle;
     bool heap_trace_enabled;
     size_t heap_size;
 
-    FuriThreadStdout_internal output;
-} FuriThread_internal;
+    FurryThreadStdout_internal output;
+} FurryThread_internal;
 
 DICT_DEF2(ViewDict, uint32_t, M_DEFAULT_OPLIST, View*, M_PTR_OPLIST)
 typedef struct {
-    FuriMessageQueue* queue;
+    FurryMessageQueue* queue;
     Gui* gui;
     ViewPort* view_port;
     ViewDict_t views;
@@ -68,10 +68,10 @@ typedef struct {
 } ViewPort_internal;
 
 typedef struct {
-    FuriThreadId loader_thread;
+    FurryThreadId loader_thread;
 
     const void* application;
-    FuriThread* application_thread;
+    FurryThread* application_thread;
     char* application_arguments;
 
     void* cli;
@@ -98,8 +98,8 @@ typedef struct {
 BPTREE_DEF2(
     CliCommandTree_internal,
     CLI_COMMANDS_TREE_RANK,
-    FuriString*,
-    FURI_STRING_OPLIST,
+    FurryString*,
+    FURRY_STRING_OPLIST,
     CliCommand_internal,
     M_POD_OPLIST)
 

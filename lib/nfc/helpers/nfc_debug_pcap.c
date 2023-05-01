@@ -2,8 +2,8 @@
 
 #include <storage/storage.h>
 #include <stream/buffered_file_stream.h>
-#include <furi_hal_nfc.h>
-#include <furi_hal_rtc.h>
+#include <furry_hal_nfc.h>
+#include <furry_hal_rtc.h>
 
 #define TAG "NfcDebugPcap"
 
@@ -42,11 +42,11 @@ static Stream* nfc_debug_pcap_open(Storage* storage) {
                 .magic = PCAP_MAGIC,
                 .major = PCAP_MAJOR,
                 .minor = PCAP_MINOR,
-                .snaplen = FURI_HAL_NFC_DATA_BUFF_SIZE,
+                .snaplen = FURRY_HAL_NFC_DATA_BUFF_SIZE,
                 .link_type = DLT_ISO_14443,
             };
             if(stream_write(stream, (uint8_t*)&pcap_hdr, sizeof(pcap_hdr)) != sizeof(pcap_hdr)) {
-                FURI_LOG_E(TAG, "Failed to write pcap header");
+                FURRY_LOG_E(TAG, "Failed to write pcap header");
                 buffered_file_stream_close(stream);
                 stream_free(stream);
                 stream = NULL;
@@ -59,20 +59,20 @@ static Stream* nfc_debug_pcap_open(Storage* storage) {
 NfcDebugPcap* nfc_debug_pcap_alloc() {
     NfcDebugPcap* instance = malloc(sizeof(NfcDebugPcap));
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     instance->file_stream = nfc_debug_pcap_open(storage);
     if(!instance->file_stream) {
         free(instance);
         instance = NULL;
     }
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return instance;
 }
 
 void nfc_debug_pcap_free(NfcDebugPcap* instance) {
-    furi_assert(instance);
-    furi_assert(instance->file_stream);
+    furry_assert(instance);
+    furry_assert(instance->file_stream);
 
     buffered_file_stream_close(instance->file_stream);
     stream_free(instance->file_stream);
@@ -86,10 +86,10 @@ void nfc_debug_pcap_process_data(
     uint16_t len,
     bool reader_to_tag,
     bool crc_dropped) {
-    furi_assert(instance);
-    furi_assert(data);
-    FuriHalRtcDateTime datetime;
-    furi_hal_rtc_get_datetime(&datetime);
+    furry_assert(instance);
+    furry_assert(data);
+    FurryHalRtcDateTime datetime;
+    furry_hal_rtc_get_datetime(&datetime);
 
     uint8_t event = 0;
     if(reader_to_tag) {
@@ -117,7 +117,7 @@ void nfc_debug_pcap_process_data(
         uint8_t event;
         uint16_t len;
     } __attribute__((__packed__)) pkt_hdr = {
-        .ts_sec = furi_hal_rtc_datetime_to_timestamp(&datetime),
+        .ts_sec = furry_hal_rtc_datetime_to_timestamp(&datetime),
         .ts_usec = 0,
         .incl_len = len + 4,
         .orig_len = len + 4,

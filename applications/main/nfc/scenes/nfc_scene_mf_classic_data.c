@@ -28,42 +28,42 @@ void nfc_scene_mf_classic_data_on_enter(void* context) {
             // Key A
             for(size_t i = 0; i < sizeof(sec_tr->key_a); i += 2) {
                 if((bytes_written % 8 == 0) && (bytes_written != 0)) {
-                    furi_string_push_back(nfc->text_box_store, '\n');
+                    furry_string_push_back(nfc->text_box_store, '\n');
                 }
                 if(mf_classic_is_key_found(data, sector_num, MfClassicKeyA)) {
-                    furi_string_cat_printf(
+                    furry_string_cat_printf(
                         nfc->text_box_store, "%02X%02X ", sec_tr->key_a[i], sec_tr->key_a[i + 1]);
                 } else {
-                    furi_string_cat_printf(nfc->text_box_store, "???? ");
+                    furry_string_cat_printf(nfc->text_box_store, "???? ");
                 }
                 bytes_written += 2;
             }
             // Access bytes
             for(size_t i = 0; i < MF_CLASSIC_ACCESS_BYTES_SIZE; i += 2) {
                 if((bytes_written % 8 == 0) && (bytes_written != 0)) {
-                    furi_string_push_back(nfc->text_box_store, '\n');
+                    furry_string_push_back(nfc->text_box_store, '\n');
                 }
                 if(mf_classic_is_block_read(data, block_num)) {
-                    furi_string_cat_printf(
+                    furry_string_cat_printf(
                         nfc->text_box_store,
                         "%02X%02X ",
                         sec_tr->access_bits[i],
                         sec_tr->access_bits[i + 1]);
                 } else {
-                    furi_string_cat_printf(nfc->text_box_store, "???? ");
+                    furry_string_cat_printf(nfc->text_box_store, "???? ");
                 }
                 bytes_written += 2;
             }
             // Key B
             for(size_t i = 0; i < sizeof(sec_tr->key_b); i += 2) {
                 if((bytes_written % 8 == 0) && (bytes_written != 0)) {
-                    furi_string_push_back(nfc->text_box_store, '\n');
+                    furry_string_push_back(nfc->text_box_store, '\n');
                 }
                 if(mf_classic_is_key_found(data, sector_num, MfClassicKeyB)) {
-                    furi_string_cat_printf(
+                    furry_string_cat_printf(
                         nfc->text_box_store, "%02X%02X ", sec_tr->key_b[i], sec_tr->key_b[i + 1]);
                 } else {
-                    furi_string_cat_printf(nfc->text_box_store, "???? ");
+                    furry_string_cat_printf(nfc->text_box_store, "???? ");
                 }
                 bytes_written += 2;
             }
@@ -71,22 +71,22 @@ void nfc_scene_mf_classic_data_on_enter(void* context) {
             // Write data block
             for(size_t i = 0; i < MF_CLASSIC_BLOCK_SIZE; i += 2) {
                 if((bytes_written % 8 == 0) && (bytes_written != 0)) {
-                    furi_string_push_back(nfc->text_box_store, '\n');
+                    furry_string_push_back(nfc->text_box_store, '\n');
                 }
                 if(mf_classic_is_block_read(data, block_num)) {
-                    furi_string_cat_printf(
+                    furry_string_cat_printf(
                         nfc->text_box_store,
                         "%02X%02X ",
                         data->block[block_num].value[i],
                         data->block[block_num].value[i + 1]);
                 } else {
-                    furi_string_cat_printf(nfc->text_box_store, "???? ");
+                    furry_string_cat_printf(nfc->text_box_store, "???? ");
                 }
                 bytes_written += 2;
             }
         }
     }
-    text_box_set_text(text_box, furi_string_get_cstr(nfc->text_box_store));
+    text_box_set_text(text_box, furry_string_get_cstr(nfc->text_box_store));
 
     view_dispatcher_switch_to_view(nfc->view_dispatcher, NfcViewTextBox);
 }
@@ -102,5 +102,5 @@ void nfc_scene_mf_classic_data_on_exit(void* context) {
 
     // Clean view
     text_box_reset(nfc->text_box);
-    furi_string_reset(nfc->text_box_store);
+    furry_string_reset(nfc->text_box_store);
 }

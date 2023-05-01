@@ -33,34 +33,34 @@ static const NotificationSequence subghs_sequence_rx_locked = {
 
 static void pocsag_pager_scene_receiver_update_statusbar(void* context) {
     POCSAGPagerApp* app = context;
-    FuriString* history_stat_str;
-    history_stat_str = furi_string_alloc();
+    FurryString* history_stat_str;
+    history_stat_str = furry_string_alloc();
     if(!pcsg_history_get_text_space_left(app->txrx->history, history_stat_str)) {
-        FuriString* frequency_str;
-        FuriString* modulation_str;
+        FurryString* frequency_str;
+        FurryString* modulation_str;
 
-        frequency_str = furi_string_alloc();
-        modulation_str = furi_string_alloc();
+        frequency_str = furry_string_alloc();
+        modulation_str = furry_string_alloc();
 
         pcsg_get_frequency_modulation(app, frequency_str, modulation_str);
 
         pcsg_view_receiver_add_data_statusbar(
             app->pcsg_receiver,
-            furi_string_get_cstr(frequency_str),
-            furi_string_get_cstr(modulation_str),
-            furi_string_get_cstr(history_stat_str));
+            furry_string_get_cstr(frequency_str),
+            furry_string_get_cstr(modulation_str),
+            furry_string_get_cstr(history_stat_str));
 
-        furi_string_free(frequency_str);
-        furi_string_free(modulation_str);
+        furry_string_free(frequency_str);
+        furry_string_free(modulation_str);
     } else {
         pcsg_view_receiver_add_data_statusbar(
-            app->pcsg_receiver, furi_string_get_cstr(history_stat_str), "", "");
+            app->pcsg_receiver, furry_string_get_cstr(history_stat_str), "", "");
     }
-    furi_string_free(history_stat_str);
+    furry_string_free(history_stat_str);
 }
 
 void pocsag_pager_scene_receiver_callback(PCSGCustomEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     POCSAGPagerApp* app = context;
     view_dispatcher_send_custom_event(app->view_dispatcher, event);
 }
@@ -69,20 +69,20 @@ static void pocsag_pager_scene_receiver_add_to_history_callback(
     SubGhzReceiver* receiver,
     SubGhzProtocolDecoderBase* decoder_base,
     void* context) {
-    furi_assert(context);
+    furry_assert(context);
     POCSAGPagerApp* app = context;
-    FuriString* str_buff;
-    str_buff = furi_string_alloc();
+    FurryString* str_buff;
+    str_buff = furry_string_alloc();
 
     if(pcsg_history_add_to_history(app->txrx->history, decoder_base, app->txrx->preset) ==
        PCSGHistoryStateAddKeyNewDada) {
-        furi_string_reset(str_buff);
+        furry_string_reset(str_buff);
 
         pcsg_history_get_text_item_menu(
             app->txrx->history, str_buff, pcsg_history_get_item(app->txrx->history) - 1);
         pcsg_view_receiver_add_item_to_menu(
             app->pcsg_receiver,
-            furi_string_get_cstr(str_buff),
+            furry_string_get_cstr(str_buff),
             pcsg_history_get_type_protocol(
                 app->txrx->history, pcsg_history_get_item(app->txrx->history) - 1));
 
@@ -95,15 +95,15 @@ static void pocsag_pager_scene_receiver_add_to_history_callback(
         }
     }
     subghz_receiver_reset(receiver);
-    furi_string_free(str_buff);
+    furry_string_free(str_buff);
     app->txrx->rx_key_state = PCSGRxKeyStateAddKey;
 }
 
 void pocsag_pager_scene_receiver_on_enter(void* context) {
     POCSAGPagerApp* app = context;
 
-    FuriString* str_buff;
-    str_buff = furi_string_alloc();
+    FurryString* str_buff;
+    str_buff = furry_string_alloc();
 
     if(app->txrx->rx_key_state == PCSGRxKeyStateIDLE) {
         pcsg_preset_init(app, "FM95", 439987500, NULL, 0);
@@ -116,15 +116,15 @@ void pocsag_pager_scene_receiver_on_enter(void* context) {
     //Load history to receiver
     pcsg_view_receiver_exit(app->pcsg_receiver);
     for(uint8_t i = 0; i < pcsg_history_get_item(app->txrx->history); i++) {
-        furi_string_reset(str_buff);
+        furry_string_reset(str_buff);
         pcsg_history_get_text_item_menu(app->txrx->history, str_buff, i);
         pcsg_view_receiver_add_item_to_menu(
             app->pcsg_receiver,
-            furi_string_get_cstr(str_buff),
+            furry_string_get_cstr(str_buff),
             pcsg_history_get_type_protocol(app->txrx->history, i));
         app->txrx->rx_key_state = PCSGRxKeyStateAddKey;
     }
-    furi_string_free(str_buff);
+    furry_string_free(str_buff);
     pocsag_pager_scene_receiver_update_statusbar(app);
 
     pcsg_view_receiver_set_callback(app->pcsg_receiver, pocsag_pager_scene_receiver_callback, app);
@@ -139,7 +139,7 @@ void pocsag_pager_scene_receiver_on_enter(void* context) {
         pcsg_begin(
             app,
             subghz_setting_get_preset_data_by_name(
-                app->setting, furi_string_get_cstr(app->txrx->preset->name)));
+                app->setting, furry_string_get_cstr(app->txrx->preset->name)));
 
         pcsg_rx(app, app->txrx->preset->frequency);
     }
@@ -196,7 +196,7 @@ bool pocsag_pager_scene_receiver_on_event(void* context, SceneManagerEvent event
             pocsag_pager_scene_receiver_update_statusbar(app);
         }
         // Get current RSSI
-        float rssi = furi_hal_subghz_get_rssi();
+        float rssi = furry_hal_subghz_get_rssi();
         pcsg_receiver_rssi(app->pcsg_receiver, rssi);
 
         if(app->txrx->txrx_state == PCSGTxRxStateRx) {

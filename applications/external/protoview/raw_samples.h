@@ -9,7 +9,7 @@
                                 of the index quite often to normalize inside
                                 the range, and division is slow. */
 typedef struct RawSamplesBuffer {
-    FuriMutex* mutex;
+    FurryMutex* mutex;
     struct {
         uint16_t level : 1;
         uint16_t dur : 15;

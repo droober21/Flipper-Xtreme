@@ -63,7 +63,7 @@ static void gpio_i2c_scanner_draw_callback(Canvas* canvas, void* _model) {
 }
 
 static bool gpio_i2c_scanner_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     GpioI2CScanner* gpio_i2c_scanner = context;
     bool consumed = false;
 
@@ -94,13 +94,13 @@ GpioI2CScanner* gpio_i2c_scanner_alloc() {
 }
 
 void gpio_i2c_scanner_free(GpioI2CScanner* gpio_i2c_scanner) {
-    furi_assert(gpio_i2c_scanner);
+    furry_assert(gpio_i2c_scanner);
     view_free(gpio_i2c_scanner->view);
     free(gpio_i2c_scanner);
 }
 
 View* gpio_i2c_scanner_get_view(GpioI2CScanner* gpio_i2c_scanner) {
-    furi_assert(gpio_i2c_scanner);
+    furry_assert(gpio_i2c_scanner);
     return gpio_i2c_scanner->view;
 }
 
@@ -108,8 +108,8 @@ void gpio_i2c_scanner_set_ok_callback(
     GpioI2CScanner* gpio_i2c_scanner,
     GpioI2CScannerOkCallback callback,
     void* context) {
-    furi_assert(gpio_i2c_scanner);
-    furi_assert(callback);
+    furry_assert(gpio_i2c_scanner);
+    furry_assert(callback);
     with_view_model(
         gpio_i2c_scanner->view,
         GpioI2CScannerModel * model,
@@ -122,8 +122,8 @@ void gpio_i2c_scanner_set_ok_callback(
 }
 
 void gpio_i2c_scanner_update_state(GpioI2CScanner* instance, I2CScannerState* st) {
-    furi_assert(instance);
-    furi_assert(st);
+    furry_assert(instance);
+    furry_assert(st);
 
     with_view_model(
         instance->view,

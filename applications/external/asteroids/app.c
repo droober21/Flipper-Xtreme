@@ -1,8 +1,8 @@
 /* Copyright (C) 2023 Salvatore Sanfilippo -- All Rights Reserved
  * See the LICENSE file for information about the license. */
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <storage/storage.h>
 #include <input/input.h>
 #include <gui/gui.h>
@@ -85,7 +85,7 @@ typedef struct AsteroidsApp {
     Gui* gui;
     ViewPort* view_port; /* We just use a raw viewport and we render
                                 everything into the low level canvas. */
-    FuriMessageQueue* event_queue; /* Keypress events go here. */
+    FurryMessageQueue* event_queue; /* Keypress events go here. */
 
     /* Game state. */
     int running; /* Once false exists the app. */
@@ -409,7 +409,7 @@ void draw_powerUps(Canvas* const canvas, PowerUp* const p) {
     //@todo render_callback
 
     // Just return if power up has already been picked up
-    // FURI_LOG_I(TAG, "[draw_powerUps] Display TTL: %lu", p->display_ttl);
+    // FURRY_LOG_I(TAG, "[draw_powerUps] Display TTL: %lu", p->display_ttl);
     if(p->display_ttl == 0) return;
     if(!should_draw_powerUp(p)) return;
 
@@ -448,7 +448,7 @@ void draw_powerUps(Canvas* const canvas, PowerUp* const p) {
         //@todo Uknown Power Up Type Detected
         // Draw box with letter U inside
         canvas_draw_str(canvas, p->x, p->y, "?");
-        FURI_LOG_E(TAG, "Unexpected Power Up Type Detected: %i", p->powerUpType);
+        FURRY_LOG_E(TAG, "Unexpected Power Up Type Detected: %i", p->powerUpType);
         break;
     }
 }
@@ -486,7 +486,7 @@ void render_callback(Canvas* const canvas, void* ctx) {
     draw_shield(canvas, app);
 
     if(key_pressed_time(app, InputKeyUp) > 0) {
-        notification_message(furi_record_open(RECORD_NOTIFICATION), &sequence_thrusters);
+        notification_message(furry_record_open(RECORD_NOTIFICATION), &sequence_thrusters);
         draw_poly(canvas, &ShipFirePoly, app->ship.x, app->ship.y, app->ship.rot);
     }
 
@@ -602,7 +602,7 @@ void ship_fire_bullet(AsteroidsApp* app) {
     // Double the Fire Power
     if(isPowerUpActive(app, PowerUpTypeFirePower) && (app->bullets_num >= (MAXBUL))) return;
 
-    notification_message(furi_record_open(RECORD_NOTIFICATION), &sequence_bullet_fired);
+    notification_message(furry_record_open(RECORD_NOTIFICATION), &sequence_bullet_fired);
     Bullet* b = &app->bullets[app->bullets_num];
     b->x = app->ship.x;
     b->y = app->ship.y;
@@ -725,23 +725,23 @@ bool should_trigger_rare_powerUp(PowerUpType selected_powerUpType) {
 
 //@todo Add PowerUp
 PowerUp* add_powerUp(AsteroidsApp* app) {
-    FURI_LOG_I(TAG, "add_powerUp: %i", app->powerUps_num);
+    FURRY_LOG_I(TAG, "add_powerUp: %i", app->powerUps_num);
     if(app->powerUps_num == MAXPOWERUPS) return NULL; // Max Power Ups reached
     if(app->lives == MAXLIVES) return NULL; // Max Lives reached
 
     // Randomly select power up for display
     PowerUpType selected_powerUpType = rand() % Number_of_PowerUps;
-    FURI_LOG_I(TAG, "[add_powerUp] Power Up Selected: %i", selected_powerUpType);
+    FURRY_LOG_I(TAG, "[add_powerUp] Power Up Selected: %i", selected_powerUpType);
 
     // Don't add already existing power ups
     if(isPowerUpAlreadyExists(app, selected_powerUpType)) {
-        FURI_LOG_D(TAG, "[add_powerUp] Power Up %i already active", selected_powerUpType);
+        FURRY_LOG_D(TAG, "[add_powerUp] Power Up %i already active", selected_powerUpType);
         return NULL;
     }
 
     // Make some power ups more rare
     if(!should_trigger_rare_powerUp(selected_powerUpType)) {
-        FURI_LOG_D(TAG, "[add_powerUp] Power Up %i not triggered", selected_powerUpType);
+        FURRY_LOG_D(TAG, "[add_powerUp] Power Up %i not triggered", selected_powerUpType);
         return NULL;
     }
 
@@ -776,7 +776,7 @@ PowerUp* add_powerUp(AsteroidsApp* app) {
     //@todo add powerup type, for now hardcoding to firepower
     p->powerUpType = selected_powerUpType;
     p->isPowerUpActive = false;
-    FURI_LOG_I(TAG, "[add_powerUp] Power Up Added: %i", p->powerUpType);
+    FURRY_LOG_I(TAG, "[add_powerUp] Power Up Added: %i", p->powerUpType);
     return p;
 }
 
@@ -800,10 +800,10 @@ bool isPowerUpAlreadyExists(AsteroidsApp* const app, PowerUpType const powerUpTy
 
 //@todo remove_powerUp
 void remove_powerUp(AsteroidsApp* app, int id) {
-    FURI_LOG_I(TAG, "remove_powerUp: %i", id);
+    FURRY_LOG_I(TAG, "remove_powerUp: %i", id);
     // Invalid ID, ignore
     if(id < 0) {
-        FURI_LOG_E(TAG, "remove_powerUp: Invalid ID: %i", id);
+        FURRY_LOG_E(TAG, "remove_powerUp: Invalid ID: %i", id);
         return;
     }
     // TODO: Break this out into object types that set the game state
@@ -831,7 +831,7 @@ void powerUp_was_hit(AsteroidsApp* app, int id) {
     if(p->display_ttl == 0) return; // Don't collect if already collected or expired
 
     // Vibrate to indicate power up was collected
-    notification_message(furi_record_open(RECORD_NOTIFICATION), &sequence_powerup_collected);
+    notification_message(furry_record_open(RECORD_NOTIFICATION), &sequence_powerup_collected);
 
     switch(p->powerUpType) {
     case PowerUpTypeLife:
@@ -844,7 +844,7 @@ void powerUp_was_hit(AsteroidsApp* app, int id) {
         break;
     case PowerUpTypeNuke:
         //TODO: Animate explosion
-        notification_message(furi_record_open(RECORD_NOTIFICATION), &sequence_nuke);
+        notification_message(furry_record_open(RECORD_NOTIFICATION), &sequence_nuke);
         // Simulate nuke explosion
         remove_all_astroids_and_bullets(app);
         break;
@@ -930,7 +930,7 @@ void update_asteroids_position(AsteroidsApp* app) {
 }
 
 bool should_add_powerUp(AsteroidsApp* app) {
-    srand(furi_get_tick());
+    srand(furry_get_tick());
     int random_number = rand() % 100 + 1;
 
     // The chance of spawning a power-up decreases as the game goes on
@@ -938,7 +938,7 @@ bool should_add_powerUp(AsteroidsApp* app) {
 
     // Make sure the threshold doesn't go below 10
     threshold = (threshold < 10) ? 10 : threshold;
-    // FURI_LOG_I(
+    // FURRY_LOG_I(
     //     TAG,
     //     "Random number: %d, threshold: %d Bool: %d",
     //     random_number,
@@ -967,7 +967,7 @@ void update_powerUp_status(AsteroidsApp* app) {
         } else if(app->powerUps[j].display_ttl > 0) {
             app->powerUps[j].display_ttl--;
         } else if(app->powerUps[j].ttl == 0 || app->powerUps[j].display_ttl == 0) {
-            FURI_LOG_I(
+            FURRY_LOG_I(
                 TAG,
                 "[update_powerUp_status] Power up expired!, ttl: %lu, display_ttl: %lu id: %d",
                 app->powerUps[j].ttl,
@@ -980,7 +980,7 @@ void update_powerUp_status(AsteroidsApp* app) {
             j--; /* Process this power up index again: the removal will
                     fill it with the top power up to take the array dense. */
         } else {
-            FURI_LOG_E(
+            FURRY_LOG_E(
                 TAG,
                 "[update_powerUp_status] Power up error! Invalid Index: %d ttl: %lu display_ttl: %lu PowerUp_Num: %d",
                 j,
@@ -1018,7 +1018,7 @@ void detect_collisions(AsteroidsApp* app) {
             if(isPowerUpActive(app, PowerUpTypeShield)) {
                 // Asteroid was hit with shield
                 notification_message(
-                    furi_record_open(RECORD_NOTIFICATION), &sequence_bullet_fired);
+                    furry_record_open(RECORD_NOTIFICATION), &sequence_bullet_fired);
                 asteroid_was_hit(app, j);
                 j--; /* Scan this j value again. */
             } else {
@@ -1053,7 +1053,7 @@ void game_tick(void* ctx) {
      * 1. Ship was hit, we frozen the game as long as ship_hit isn't zero
      * again, and show an animation of a rotating ship. */
     if(app->ship_hit) {
-        notification_message(furi_record_open(RECORD_NOTIFICATION), &sequence_crash);
+        notification_message(furry_record_open(RECORD_NOTIFICATION), &sequence_crash);
         app->ship.rot += 0.5;
         app->ship_hit--;
         view_port_update(app->view_port);
@@ -1087,7 +1087,7 @@ void game_tick(void* ctx) {
         app->ship.vx -= 0.5 * (float)sin(app->ship.rot);
         app->ship.vy += 0.5 * (float)cos(app->ship.rot);
     } else if(app->pressed[InputKeyDown]) {
-        notification_message(furi_record_open(RECORD_NOTIFICATION), &sequence_brake);
+        notification_message(furry_record_open(RECORD_NOTIFICATION), &sequence_brake);
         app->ship.vx *= 0.75;
         app->ship.vy *= 0.75;
     }
@@ -1096,7 +1096,7 @@ void game_tick(void* ctx) {
      * asteroids_update_keypress_state() since depends on exact
      * pressure timing. */
     if(app->fire) {
-        uint32_t now = furi_get_tick();
+        uint32_t now = furry_get_tick();
         if(now - app->last_bullet_tick >= app->bullet_min_period) {
             ship_fire_bullet(app);
             app->last_bullet_tick = now;
@@ -1107,7 +1107,7 @@ void game_tick(void* ctx) {
     // DEBUG: Show Power Up Status
     // for(int j = 0; j < app->powerUps_num; j++) {
     // PowerUp* p = &app->powerUps[j];
-    // FURI_LOG_I(
+    // FURRY_LOG_I(
     //     TAG,
     //     "Power Up Type: %d TTL: %lu Display_TTL: %lu PowerUpNum: %i",
     //     p->powerUpType,
@@ -1145,7 +1145,7 @@ void game_tick(void* ctx) {
 /* ======================== Flipper specific code =========================== */
 
 bool load_game(AsteroidsApp* app) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     File* file = storage_file_alloc(storage);
     uint16_t bytes_readed = 0;
@@ -1155,13 +1155,13 @@ bool load_game(AsteroidsApp* app) {
     storage_file_close(file);
     storage_file_free(file);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return bytes_readed == sizeof(AsteroidsApp);
 }
 
 void save_game(AsteroidsApp* app) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     if(storage_common_stat(storage, SAVING_DIRECTORY, NULL) == FSE_NOT_EXIST) {
         if(!storage_simply_mkdir(storage, SAVING_DIRECTORY)) {
@@ -1176,14 +1176,14 @@ void save_game(AsteroidsApp* app) {
     storage_file_close(file);
     storage_file_free(file);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 /* Here all we do is putting the events into the queue that will be handled
  * in the while() loop of the app entry point function. */
 void input_callback(InputEvent* input_event, void* ctx) {
     AsteroidsApp* app = ctx;
-    furi_message_queue_put(app->event_queue, input_event, FuriWaitForever);
+    furry_message_queue_put(app->event_queue, input_event, FurryWaitForever);
 }
 
 /* Allocate the application state and initialize a number of stuff.
@@ -1193,12 +1193,12 @@ AsteroidsApp* asteroids_app_alloc() {
 
     load_game(app);
 
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
     app->view_port = view_port_alloc();
     view_port_draw_callback_set(app->view_port, render_callback, app);
     view_port_input_callback_set(app->view_port, input_callback, app);
     gui_add_view_port(app->gui, app->view_port, GuiLayerFullscreen);
-    app->event_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+    app->event_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
 
     app->running = 1; /* Turns 0 when back is pressed. */
 
@@ -1211,14 +1211,14 @@ AsteroidsApp* asteroids_app_alloc() {
  * Flipper OS, once the application exits, will be able to reclaim space
  * even if we forget to free something here. */
 void asteroids_app_free(AsteroidsApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // View related.
     view_port_enabled_set(app->view_port, false);
     gui_remove_view_port(app->gui, app->view_port);
     view_port_free(app->view_port);
-    furi_record_close(RECORD_GUI);
-    furi_message_queue_free(app->event_queue);
+    furry_record_close(RECORD_GUI);
+    furry_message_queue_free(app->event_queue);
     app->gui = NULL;
 
     free(app);
@@ -1227,7 +1227,7 @@ void asteroids_app_free(AsteroidsApp* app) {
 /* Return the time in milliseconds the specified key is continuously
  * pressed. Or 0 if it is not pressed. */
 uint32_t key_pressed_time(AsteroidsApp* app, InputKey key) {
-    return app->pressed[key] == 0 ? 0 : furi_get_tick() - app->pressed[key];
+    return app->pressed[key] == 0 ? 0 : furry_get_tick() - app->pressed[key];
 }
 
 /* Handle keys interaction. */
@@ -1238,7 +1238,7 @@ void asteroids_update_keypress_state(AsteroidsApp* app, InputEvent input) {
     }
 
     if(input.type == InputTypePress) {
-        app->pressed[input.key] = furi_get_tick();
+        app->pressed[input.key] = furry_get_tick();
     } else if(input.type == InputTypeRelease) {
         app->pressed[input.key] = 0;
     }
@@ -1249,25 +1249,25 @@ int32_t asteroids_app_entry(void* p) {
     AsteroidsApp* app = asteroids_app_alloc();
 
     /* Create a timer. We do data analysis in the callback. */
-    FuriTimer* timer = furi_timer_alloc(game_tick, FuriTimerTypePeriodic, app);
-    furi_timer_start(timer, furi_kernel_get_tick_frequency() / 10);
+    FurryTimer* timer = furry_timer_alloc(game_tick, FurryTimerTypePeriodic, app);
+    furry_timer_start(timer, furry_kernel_get_tick_frequency() / 10);
 
     /* This is the main event loop: here we get the events that are pushed
      * in the queue by input_callback(), and process them one after the
      * other. */
     InputEvent input;
     while(app->running) {
-        FuriStatus qstat = furi_message_queue_get(app->event_queue, &input, 100);
-        if(qstat == FuriStatusOk) {
+        FurryStatus qstat = furry_message_queue_get(app->event_queue, &input, 100);
+        if(qstat == FurryStatusOk) {
             // if(DEBUG_MSG)
-            // FURI_LOG_E(TAG, "Main Loop - Input: type %d key %u", input.type, input.key);
+            // FURRY_LOG_E(TAG, "Main Loop - Input: type %d key %u", input.type, input.key);
             /* Handle Pause */
             if(input.type == InputTypeShort && input.key == InputKeyBack) {
                 app->paused = !app->paused;
                 if(app->paused) {
-                    furi_timer_stop(timer);
+                    furry_timer_stop(timer);
                 } else {
-                    furi_timer_start(timer, furi_kernel_get_tick_frequency() / 10);
+                    furry_timer_start(timer, furry_kernel_get_tick_frequency() / 10);
                 }
             }
 
@@ -1286,12 +1286,12 @@ int32_t asteroids_app_entry(void* p) {
             // if(DEBUG_MSG) {
             //     static int c = 0;
             //     c++;
-            //     if(!(c % 20)) FURI_LOG_E(TAG, "Loop timeout");
+            //     if(!(c % 20)) FURRY_LOG_E(TAG, "Loop timeout");
             // }
         }
     }
 
-    furi_timer_free(timer);
+    furry_timer_free(timer);
     asteroids_app_free(app);
     return 0;
 }

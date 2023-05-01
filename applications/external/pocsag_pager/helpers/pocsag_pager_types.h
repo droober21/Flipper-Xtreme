@@ -1,7 +1,7 @@
 #pragma once
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #define PCSG_VERSION_APP "0.1"
 #define PCSG_DEVELOPED "@xMasterX & @Shmuma"

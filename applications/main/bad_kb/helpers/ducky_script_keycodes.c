@@ -1,5 +1,5 @@
-#include <furi_hal.h>
-#include <furi_hal_usb_hid.h>
+#include <furry_hal.h>
+#include <furry_hal_usb_hid.h>
 #include "ducky_script_i.h"
 
 typedef struct {

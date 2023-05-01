@@ -1,4 +1,4 @@
-#include <furi_hal_random.h>
+#include <furry_hal_random.h>
 #include "nfc_generators.h"
 
 #define NXP_MANUFACTURER_ID (0x04)
@@ -19,7 +19,7 @@ static void nfc_generate_common_start(NfcDeviceData* data) {
 
 static void nfc_generate_mf_ul_uid(uint8_t* uid) {
     uid[0] = NXP_MANUFACTURER_ID;
-    furi_hal_random_fill_buf(&uid[1], 6);
+    furry_hal_random_fill_buf(&uid[1], 6);
     // I'm not sure how this is generated, but the upper nybble always seems to be 8
     uid[6] &= 0x0F;
     uid[6] |= 0x80;
@@ -27,7 +27,7 @@ static void nfc_generate_mf_ul_uid(uint8_t* uid) {
 
 static void nfc_generate_mf_classic_uid(uint8_t* uid, uint8_t length) {
     uid[0] = NXP_MANUFACTURER_ID;
-    furi_hal_random_fill_buf(&uid[1], length - 1);
+    furry_hal_random_fill_buf(&uid[1], length - 1);
 }
 
 static void nfc_generate_mf_classic_block_0(
@@ -37,8 +37,8 @@ static void nfc_generate_mf_classic_block_0(
     uint8_t atqa0,
     uint8_t atqa1) {
     // Block length is always 16 bytes, and the UID can be either 4 or 7 bytes
-    furi_assert(uid_len == 4 || uid_len == 7);
-    furi_assert(block);
+    furry_assert(uid_len == 4 || uid_len == 7);
+    furry_assert(block);
 
     if(uid_len == 4) {
         // Calculate BCC
@@ -79,8 +79,8 @@ static void nfc_generate_mf_classic_sector_trailer(MfClassicData* data, uint8_t 
 }
 
 static void nfc_generate_mf_ul_common(NfcDeviceData* data) {
-    data->nfc_data.type = FuriHalNfcTypeA;
-    data->nfc_data.interface = FuriHalNfcInterfaceRf;
+    data->nfc_data.type = FurryHalNfcTypeA;
+    data->nfc_data.interface = FurryHalNfcInterfaceRf;
     data->nfc_data.uid_len = 7;
     nfc_generate_mf_ul_uid(data->nfc_data.uid);
     data->nfc_data.a_data.atqa[0] = 0x44;
@@ -91,8 +91,8 @@ static void nfc_generate_mf_ul_common(NfcDeviceData* data) {
 
 static void
     nfc_generate_mf_classic_common(NfcDeviceData* data, uint8_t uid_len, MfClassicType type) {
-    data->nfc_data.type = FuriHalNfcTypeA;
-    data->nfc_data.interface = FuriHalNfcInterfaceRf;
+    data->nfc_data.type = FurryHalNfcTypeA;
+    data->nfc_data.interface = FurryHalNfcInterfaceRf;
     data->nfc_data.uid_len = uid_len;
     data->nfc_data.a_data.atqa[0] = 0x44;
     data->nfc_data.a_data.atqa[1] = 0x00;
@@ -279,7 +279,7 @@ static void
         session_register_page = 234;
         break;
     default:
-        furi_crash("Unknown MFUL");
+        furry_crash("Unknown MFUL");
         break;
     }
 

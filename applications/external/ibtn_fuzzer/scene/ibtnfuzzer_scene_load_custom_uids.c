@@ -7,7 +7,7 @@
 
 bool ibtnfuzzer_load_uids(iBtnFuzzerState* context, const char* file_path) {
     bool result = false;
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     context->uids_stream = buffered_file_stream_alloc(storage);
     result =
         buffered_file_stream_open(context->uids_stream, file_path, FSAM_READ, FSOM_OPEN_EXISTING);
@@ -21,9 +21,9 @@ bool ibtnfuzzer_load_uids(iBtnFuzzerState* context, const char* file_path) {
 
 bool ibtnfuzzer_load_custom_uids_from_file(iBtnFuzzerState* context) {
     // Input events and views are managed by file_select
-    FuriString* uid_path;
-    uid_path = furi_string_alloc();
-    furi_string_set(uid_path, IBTNFUZZER_APP_PATH_FOLDER);
+    FurryString* uid_path;
+    uid_path = furry_string_alloc();
+    furry_string_set(uid_path, IBTNFUZZER_APP_PATH_FOLDER);
 
     DialogsFileBrowserOptions browser_options;
     dialog_file_browser_set_basic_options(
@@ -34,10 +34,10 @@ bool ibtnfuzzer_load_custom_uids_from_file(iBtnFuzzerState* context) {
     bool res = dialog_file_browser_show(context->dialogs, uid_path, uid_path, &browser_options);
 
     if(res) {
-        res = ibtnfuzzer_load_uids(context, furi_string_get_cstr(uid_path));
+        res = ibtnfuzzer_load_uids(context, furry_string_get_cstr(uid_path));
     }
 
-    furi_string_free(uid_path);
+    furry_string_free(uid_path);
 
     return res;
 }

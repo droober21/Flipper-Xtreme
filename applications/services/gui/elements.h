@@ -9,7 +9,7 @@
 #pragma once
 
 #include <stdint.h>
-#include <furi.h>
+#include <furry.h>
 #include "canvas.h"
 
 #ifdef __cplusplus
@@ -207,7 +207,7 @@ void elements_bubble_str(
  * @param   string  string to trim
  * @param   width   max width
  */
-void elements_string_fit_width(Canvas* canvas, FuriString* string, uint8_t width);
+void elements_string_fit_width(Canvas* canvas, FurryString* string, uint8_t width);
 
 /** Draw scrollable text line
  *
@@ -234,7 +234,7 @@ void elements_scrollable_text_line(
     uint8_t x,
     uint8_t y,
     uint8_t width,
-    FuriString* string,
+    FurryString* string,
     size_t scroll,
     bool ellipsis,
     bool centered);

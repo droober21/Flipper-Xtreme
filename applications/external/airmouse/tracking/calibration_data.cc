@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #define TAG "tracker"
 
@@ -73,13 +73,13 @@ void CalibrationData::calcDelta()
     Vector low = mean - delta;
     Vector high = mean + delta;
 
-    FURI_LOG_I(TAG,
+    FURRY_LOG_I(TAG,
         "M[x] = { %f ... %f }  //  median = %f  //  avg = %f  //  delta = %f  //  sigma = %f",
         low[0], high[0], median[0], mean[0], delta[0], sigma[0]);
-    FURI_LOG_I(TAG,
+    FURRY_LOG_I(TAG,
         "M[y] = { %f ... %f }  //  median = %f  //  avg = %f  //  delta = %f  //  sigma = %f",
         low[1], high[1], median[1], mean[1], delta[1], sigma[1]);
-    FURI_LOG_I(TAG,
+    FURRY_LOG_I(TAG,
         "M[z] = { %f ... %f }  //  median = %f  //  avg = %f  //  delta = %f  //  sigma = %f",
         low[2], high[2], median[2], mean[2], delta[2], sigma[2]);
 }

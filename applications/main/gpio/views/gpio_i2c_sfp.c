@@ -69,7 +69,7 @@ static void gpio_i2c_sfp_draw_callback(Canvas* canvas, void* _model) {
 }
 
 static bool gpio_i2c_sfp_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     GpioI2CSfp* gpio_i2c_sfp = context;
     bool consumed = false;
 
@@ -100,13 +100,13 @@ GpioI2CSfp* gpio_i2c_sfp_alloc() {
 }
 
 void gpio_i2c_sfp_free(GpioI2CSfp* gpio_i2c_sfp) {
-    furi_assert(gpio_i2c_sfp);
+    furry_assert(gpio_i2c_sfp);
     view_free(gpio_i2c_sfp->view);
     free(gpio_i2c_sfp);
 }
 
 View* gpio_i2c_sfp_get_view(GpioI2CSfp* gpio_i2c_sfp) {
-    furi_assert(gpio_i2c_sfp);
+    furry_assert(gpio_i2c_sfp);
     return gpio_i2c_sfp->view;
 }
 
@@ -114,8 +114,8 @@ void gpio_i2c_sfp_set_ok_callback(
     GpioI2CSfp* gpio_i2c_sfp,
     GpioI2CSfpOkCallback callback,
     void* context) {
-    furi_assert(gpio_i2c_sfp);
-    furi_assert(callback);
+    furry_assert(gpio_i2c_sfp);
+    furry_assert(callback);
     with_view_model(
         gpio_i2c_sfp->view,
         GpioI2CSfpModel * model,
@@ -128,8 +128,8 @@ void gpio_i2c_sfp_set_ok_callback(
 }
 
 void gpio_i2c_sfp_update_state(GpioI2CSfp* instance, I2CSfpState* st) {
-    furi_assert(instance);
-    furi_assert(st);
+    furry_assert(instance);
+    furry_assert(st);
 
     with_view_model(
         instance->view,

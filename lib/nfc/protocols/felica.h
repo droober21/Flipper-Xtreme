@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi_hal_nfc.h>
+#include <furry_hal_nfc.h>
 #include <m-array.h>
 #include <m-dict.h>
 
@@ -257,13 +257,13 @@ bool felica_lite_can_read_without_mac(uint8_t* mc_r_restr, uint8_t block_number)
 void felica_define_normal_block(FelicaService* service, uint16_t number, uint8_t* data);
 
 bool felica_read_lite_system(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     FelicaReader* reader,
     FelicaData* data,
     FelicaSystem* system);
 
 bool felica_read_card(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     FelicaData* data,
     uint8_t* polled_idm,
     uint8_t* polled_pmm);

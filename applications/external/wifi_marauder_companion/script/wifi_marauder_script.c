@@ -490,7 +490,7 @@ WifiMarauderScript* wifi_marauder_script_parse_raw(const char* json_raw) {
 WifiMarauderScript* wifi_marauder_script_parse_json(Storage* storage, const char* file_path) {
     WifiMarauderScript* script = NULL;
     File* script_file = storage_file_alloc(storage);
-    FuriString* script_name = furi_string_alloc();
+    FurryString* script_name = furry_string_alloc();
     path_extract_filename_no_ext(file_path, script_name);
 
     if(storage_file_open(script_file, file_path, FSAM_READ, FSOM_OPEN_EXISTING)) {
@@ -502,11 +502,11 @@ WifiMarauderScript* wifi_marauder_script_parse_json(Storage* storage, const char
         script = wifi_marauder_script_parse_raw(json_buffer);
     }
     if(script == NULL) {
-        script = wifi_marauder_script_create(furi_string_get_cstr(script_name));
+        script = wifi_marauder_script_create(furry_string_get_cstr(script_name));
     }
-    script->name = strdup(furi_string_get_cstr(script_name));
+    script->name = strdup(furry_string_get_cstr(script_name));
 
-    furi_string_free(script_name);
+    furry_string_free(script_name);
     storage_file_close(script_file);
     storage_file_free(script_file);
     return script;

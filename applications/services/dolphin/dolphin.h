@@ -28,9 +28,9 @@ typedef enum {
 
 #define DOLPHIN_DEED(deed)                                        \
     do {                                                          \
-        Dolphin* dolphin = (Dolphin*)furi_record_open("dolphin"); \
+        Dolphin* dolphin = (Dolphin*)furry_record_open("dolphin"); \
         dolphin_deed(dolphin, deed);                              \
-        furi_record_close("dolphin");                             \
+        furry_record_close("dolphin");                             \
     } while(0)
 
 /** Deed complete notification. Call it on deed completion.
@@ -51,7 +51,7 @@ void dolphin_flush(Dolphin* dolphin);
 
 void dolphin_upgrade_level(Dolphin* dolphin);
 
-FuriPubSub* dolphin_get_pubsub(Dolphin* dolphin);
+FurryPubSub* dolphin_get_pubsub(Dolphin* dolphin);
 
 #ifdef __cplusplus
 }

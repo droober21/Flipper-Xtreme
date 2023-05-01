@@ -127,7 +127,7 @@ SubGhzProtocolStatus
  * @param context Pointer to a SubGhzProtocolDecoderAlutech_at_4n instance
  * @param output Resulting text
  */
-void subghz_protocol_decoder_alutech_at_4n_get_string(void* context, FuriString* output);
+void subghz_protocol_decoder_alutech_at_4n_get_string(void* context, FurryString* output);
 
 #ifdef __cplusplus
 }

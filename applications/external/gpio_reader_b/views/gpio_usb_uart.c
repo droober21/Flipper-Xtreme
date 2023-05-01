@@ -1,6 +1,6 @@
 #include "../usb_uart_bridge.h"
 #include "../gpio_app_i.h"
-#include "furi_hal.h"
+#include "furry_hal.h"
 #include <gui/elements.h>
 
 struct GpioUsbUart {
@@ -86,14 +86,14 @@ static void gpio_usb_uart_draw_callback(Canvas* canvas, void* _model) {
 }
 
 static bool gpio_usb_uart_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     GpioUsbUart* usb_uart = context;
     bool consumed = false;
 
     if(event->type == InputTypeShort) {
         if(event->key == InputKeyLeft) {
             consumed = true;
-            furi_assert(usb_uart->callback);
+            furry_assert(usb_uart->callback);
             usb_uart->callback(GpioUsbUartEventConfig, usb_uart->context);
         }
     }
@@ -114,19 +114,19 @@ GpioUsbUart* gpio_usb_uart_alloc() {
 }
 
 void gpio_usb_uart_free(GpioUsbUart* usb_uart) {
-    furi_assert(usb_uart);
+    furry_assert(usb_uart);
     view_free(usb_uart->view);
     free(usb_uart);
 }
 
 View* gpio_usb_uart_get_view(GpioUsbUart* usb_uart) {
-    furi_assert(usb_uart);
+    furry_assert(usb_uart);
     return usb_uart->view;
 }
 
 void gpio_usb_uart_set_callback(GpioUsbUart* usb_uart, GpioUsbUartCallback callback, void* context) {
-    furi_assert(usb_uart);
-    furi_assert(callback);
+    furry_assert(usb_uart);
+    furry_assert(callback);
 
     with_view_model(
         usb_uart->view,
@@ -140,9 +140,9 @@ void gpio_usb_uart_set_callback(GpioUsbUart* usb_uart, GpioUsbUartCallback callb
 }
 
 void gpio_usb_uart_update_state(GpioUsbUart* instance, UsbUartConfig* cfg, UsbUartState* st) {
-    furi_assert(instance);
-    furi_assert(cfg);
-    furi_assert(st);
+    furry_assert(instance);
+    furry_assert(cfg);
+    furry_assert(st);
 
     with_view_model(
         instance->view,

@@ -6,7 +6,7 @@
 
 #include "rfal_picopass.h"
 
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <gui/view_dispatcher.h>
 #include <gui/scene_manager.h>
@@ -54,7 +54,7 @@ struct Picopass {
     PicopassDevice* dev;
 
     char text_store[PICOPASS_TEXT_STORE_SIZE + 1];
-    FuriString* text_box_store;
+    FurryString* text_box_store;
 
     // Common Views
     Submenu* submenu;

@@ -18,8 +18,8 @@ static void view_stack_draw(Canvas* canvas, void* model);
 static bool view_stack_input(InputEvent* event, void* context);
 
 static void view_stack_update_callback(View* view_top_or_bottom, void* context) {
-    furi_assert(view_top_or_bottom);
-    furi_assert(context);
+    furry_assert(view_top_or_bottom);
+    furry_assert(context);
 
     View* view_stack_view = context;
     if(view_stack_view->update_callback) {
@@ -29,7 +29,7 @@ static void view_stack_update_callback(View* view_top_or_bottom, void* context) 
 }
 
 static void view_stack_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     ViewStack* view_stack = context;
     ViewStackModel* model = view_get_model(view_stack->view);
@@ -48,7 +48,7 @@ static void view_stack_enter(void* context) {
 }
 
 static void view_stack_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     ViewStack* view_stack = context;
     ViewStackModel* model = view_get_model(view_stack->view);
@@ -76,7 +76,7 @@ ViewStack* view_stack_alloc(void) {
 }
 
 void view_stack_free(ViewStack* view_stack) {
-    furi_assert(view_stack);
+    furry_assert(view_stack);
 
     ViewStackModel* model = view_get_model(view_stack->view);
     for(int i = 0; i < MAX_VIEWS; ++i) {
@@ -92,7 +92,7 @@ void view_stack_free(ViewStack* view_stack) {
 }
 
 static void view_stack_draw(Canvas* canvas, void* _model) {
-    furi_assert(_model);
+    furry_assert(_model);
 
     ViewStackModel* model = _model;
     for(int i = 0; i < MAX_VIEWS; ++i) {
@@ -103,8 +103,8 @@ static void view_stack_draw(Canvas* canvas, void* _model) {
 }
 
 static bool view_stack_input(InputEvent* event, void* context) {
-    furi_assert(event);
-    furi_assert(context);
+    furry_assert(event);
+    furry_assert(context);
 
     ViewStack* view_stack = context;
 
@@ -122,8 +122,8 @@ static bool view_stack_input(InputEvent* event, void* context) {
 }
 
 void view_stack_add_view(ViewStack* view_stack, View* view) {
-    furi_assert(view_stack);
-    furi_assert(view);
+    furry_assert(view_stack);
+    furry_assert(view);
 
     bool result = false;
     ViewStackModel* model = view_get_model(view_stack->view);
@@ -140,12 +140,12 @@ void view_stack_add_view(ViewStack* view_stack, View* view) {
         }
     }
     view_commit_model(view_stack->view, result);
-    furi_assert(result);
+    furry_assert(result);
 }
 
 void view_stack_remove_view(ViewStack* view_stack, View* view) {
-    furi_assert(view_stack);
-    furi_assert(view);
+    furry_assert(view_stack);
+    furry_assert(view);
 
     /* Removing view on-the-go is dangerous, but it is protected with
      * Locking model, so system is consistent at any time. */
@@ -164,10 +164,10 @@ void view_stack_remove_view(ViewStack* view_stack, View* view) {
         }
     }
     view_commit_model(view_stack->view, result);
-    furi_assert(result);
+    furry_assert(result);
 }
 
 View* view_stack_get_view(ViewStack* view_stack) {
-    furi_assert(view_stack);
+    furry_assert(view_stack);
     return view_stack->view;
 }

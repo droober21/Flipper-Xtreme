@@ -1,5 +1,5 @@
 
-#include <furi.h>
+#include <furry.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <FreeRTOS.h>
@@ -26,7 +26,7 @@ void desktop_view_pin_timeout_set_callback(
     DesktopViewPinTimeout* instance,
     DesktopViewPinTimeoutDoneCallback callback,
     void* context) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     instance->callback = callback;
     instance->context = context;
@@ -57,8 +57,8 @@ static bool desktop_view_pin_timeout_input(InputEvent* event, void* context) {
 }
 
 static void desktop_view_pin_timeout_draw(Canvas* canvas, void* _model) {
-    furi_assert(canvas);
-    furi_assert(_model);
+    furry_assert(canvas);
+    furry_assert(_model);
 
     DesktopViewPinTimeoutModel* model = _model;
 
@@ -94,7 +94,7 @@ DesktopViewPinTimeout* desktop_view_pin_timeout_alloc(void) {
 }
 
 void desktop_view_pin_timeout_start(DesktopViewPinTimeout* instance, uint32_t time_left) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     DesktopViewPinTimeoutModel* model = view_get_model(instance->view);
     // no race - always called when timer is stopped
@@ -105,7 +105,7 @@ void desktop_view_pin_timeout_start(DesktopViewPinTimeout* instance, uint32_t ti
 }
 
 View* desktop_view_pin_timeout_get_view(DesktopViewPinTimeout* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     return instance->view;
 }

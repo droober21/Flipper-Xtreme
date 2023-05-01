@@ -77,4 +77,4 @@ SubGhzProtocolStatus
  * @param context Pointer to a WSProtocolDecoderAmbient_Weather instance
  * @param output Resulting text
  */
-void ws_protocol_decoder_ambient_weather_get_string(void* context, FuriString* output);
+void ws_protocol_decoder_ambient_weather_get_string(void* context, FurryString* output);

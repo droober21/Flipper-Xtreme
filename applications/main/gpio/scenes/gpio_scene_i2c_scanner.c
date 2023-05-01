@@ -1,10 +1,10 @@
 #include "../gpio_app_i.h"
-#include <furi_hal_gpio.h>
+#include <furry_hal_gpio.h>
 
 static I2CScannerState* i2c_scanner_state;
 
 void gpio_scene_i2c_scanner_ok_callback(InputType type, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     GpioApp* app = context;
 
     if(type == InputTypeRelease) {

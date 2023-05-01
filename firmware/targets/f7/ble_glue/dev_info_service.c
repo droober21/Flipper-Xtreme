@@ -2,7 +2,7 @@
 #include "app_common.h"
 #include <ble/ble.h>
 
-#include <furi.h>
+#include <furry.h>
 #include <protobuf_version.h>
 #include <lib/toolbox/version.h>
 
@@ -15,7 +15,7 @@ typedef struct {
     uint16_t firmware_rev_char_handle;
     uint16_t software_rev_char_handle;
     uint16_t rpc_version_char_handle;
-    FuriString* version_string;
+    FurryString* version_string;
     char hardware_revision[4];
 } DevInfoSvc;
 
@@ -30,7 +30,7 @@ static const uint8_t dev_info_rpc_version_uuid[] =
 
 void dev_info_svc_start() {
     dev_info_svc = malloc(sizeof(DevInfoSvc));
-    dev_info_svc->version_string = furi_string_alloc_printf(
+    dev_info_svc->version_string = furry_string_alloc_printf(
         "%s %s %s %s",
         version_get_githash(NULL),
         version_get_version(NULL),
@@ -48,7 +48,7 @@ void dev_info_svc_start() {
     status = aci_gatt_add_service(
         UUID_TYPE_16, (Service_UUID_t*)&uuid, PRIMARY_SERVICE, 11, &dev_info_svc->service_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add Device Information Service: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add Device Information Service: %d", status);
     }
 
     // Add characteristics
@@ -65,7 +65,7 @@ void dev_info_svc_start() {
         CHAR_VALUE_LEN_CONSTANT,
         &dev_info_svc->man_name_char_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add manufacturer name char: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add manufacturer name char: %d", status);
     }
     uuid = SERIAL_NUMBER_UUID;
     status = aci_gatt_add_char(
@@ -80,7 +80,7 @@ void dev_info_svc_start() {
         CHAR_VALUE_LEN_CONSTANT,
         &dev_info_svc->serial_num_char_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add serial number char: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add serial number char: %d", status);
     }
     uuid = FIRMWARE_REVISION_UUID;
     status = aci_gatt_add_char(
@@ -95,14 +95,14 @@ void dev_info_svc_start() {
         CHAR_VALUE_LEN_CONSTANT,
         &dev_info_svc->firmware_rev_char_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add firmware revision char: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add firmware revision char: %d", status);
     }
     uuid = SOFTWARE_REVISION_UUID;
     status = aci_gatt_add_char(
         dev_info_svc->service_handle,
         UUID_TYPE_16,
         (Char_UUID_t*)&uuid,
-        furi_string_size(dev_info_svc->version_string),
+        furry_string_size(dev_info_svc->version_string),
         CHAR_PROP_READ,
         ATTR_PERMISSION_AUTHEN_READ,
         GATT_DONT_NOTIFY_EVENTS,
@@ -110,7 +110,7 @@ void dev_info_svc_start() {
         CHAR_VALUE_LEN_CONSTANT,
         &dev_info_svc->software_rev_char_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add software revision char: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add software revision char: %d", status);
     }
     status = aci_gatt_add_char(
         dev_info_svc->service_handle,
@@ -124,7 +124,7 @@ void dev_info_svc_start() {
         CHAR_VALUE_LEN_CONSTANT,
         &dev_info_svc->rpc_version_char_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add rpc version characteristic: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add rpc version characteristic: %d", status);
     }
 
     // Update characteristics
@@ -135,7 +135,7 @@ void dev_info_svc_start() {
         strlen(dev_info_man_name),
         (uint8_t*)dev_info_man_name);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to update manufacturer name char: %d", status);
+        FURRY_LOG_E(TAG, "Failed to update manufacturer name char: %d", status);
     }
     status = aci_gatt_update_char_value(
         dev_info_svc->service_handle,
@@ -144,7 +144,7 @@ void dev_info_svc_start() {
         strlen(dev_info_serial_num),
         (uint8_t*)dev_info_serial_num);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to update serial number char: %d", status);
+        FURRY_LOG_E(TAG, "Failed to update serial number char: %d", status);
     }
     status = aci_gatt_update_char_value(
         dev_info_svc->service_handle,
@@ -153,16 +153,16 @@ void dev_info_svc_start() {
         strlen(dev_info_svc->hardware_revision),
         (uint8_t*)dev_info_svc->hardware_revision);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to update firmware revision char: %d", status);
+        FURRY_LOG_E(TAG, "Failed to update firmware revision char: %d", status);
     }
     status = aci_gatt_update_char_value(
         dev_info_svc->service_handle,
         dev_info_svc->software_rev_char_handle,
         0,
-        furi_string_size(dev_info_svc->version_string),
-        (uint8_t*)furi_string_get_cstr(dev_info_svc->version_string));
+        furry_string_size(dev_info_svc->version_string),
+        (uint8_t*)furry_string_get_cstr(dev_info_svc->version_string));
     if(status) {
-        FURI_LOG_E(TAG, "Failed to update software revision char: %d", status);
+        FURRY_LOG_E(TAG, "Failed to update software revision char: %d", status);
     }
     status = aci_gatt_update_char_value(
         dev_info_svc->service_handle,
@@ -171,44 +171,44 @@ void dev_info_svc_start() {
         strlen(dev_info_rpc_version),
         (uint8_t*)dev_info_rpc_version);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to update rpc version char: %d", status);
+        FURRY_LOG_E(TAG, "Failed to update rpc version char: %d", status);
     }
 }
 
 void dev_info_svc_stop() {
     tBleStatus status;
     if(dev_info_svc) {
-        furi_string_free(dev_info_svc->version_string);
+        furry_string_free(dev_info_svc->version_string);
         // Delete service characteristics
         status =
             aci_gatt_del_char(dev_info_svc->service_handle, dev_info_svc->man_name_char_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete manufacturer name char: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete manufacturer name char: %d", status);
         }
         status =
             aci_gatt_del_char(dev_info_svc->service_handle, dev_info_svc->serial_num_char_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete serial number char: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete serial number char: %d", status);
         }
         status = aci_gatt_del_char(
             dev_info_svc->service_handle, dev_info_svc->firmware_rev_char_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete firmware revision char: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete firmware revision char: %d", status);
         }
         status = aci_gatt_del_char(
             dev_info_svc->service_handle, dev_info_svc->software_rev_char_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete software revision char: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete software revision char: %d", status);
         }
         status =
             aci_gatt_del_char(dev_info_svc->service_handle, dev_info_svc->rpc_version_char_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete rpc version char: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete rpc version char: %d", status);
         }
         // Delete service
         status = aci_gatt_del_service(dev_info_svc->service_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete device info service: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete device info service: %d", status);
         }
         free(dev_info_svc);
         dev_info_svc = NULL;

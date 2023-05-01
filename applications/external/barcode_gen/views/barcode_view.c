@@ -51,10 +51,10 @@ static int draw_bits(Canvas* canvas, const char* bits, int x, int y, int width, 
  * @param barcode_digits  the digits in the barcode, must be 8 characters long
 */
 static void draw_ean_8(Canvas* canvas, BarcodeData* barcode_data) {
-    FuriString* barcode_digits = barcode_data->correct_data;
+    FurryString* barcode_digits = barcode_data->correct_data;
     BarcodeTypeObj* type_obj = barcode_data->type_obj;
 
-    int barcode_length = furi_string_size(barcode_digits);
+    int barcode_length = furry_string_size(barcode_digits);
 
     int x = type_obj->start_pos;
     int y = BARCODE_Y_START;
@@ -68,19 +68,19 @@ static void draw_ean_8(Canvas* canvas, BarcodeData* barcode_data) {
     //draw the starting guard pattern
     x = draw_bits(canvas, end_bits, x, y, width, height + 5);
 
-    FuriString* code_part = furi_string_alloc();
+    FurryString* code_part = furry_string_alloc();
 
     //loop through each digit, find the encoding, and draw it
     for(int i = 0; i < barcode_length; i++) {
-        char current_digit = furi_string_get_char(barcode_digits, i);
+        char current_digit = furry_string_get_char(barcode_digits, i);
 
         //the actual number and the index of the bits
         int index = current_digit - '0';
         //use the L-codes for the first 4 digits and the R-Codes for the last 4 digits
         if(i <= 3) {
-            furi_string_set_str(code_part, UPC_EAN_L_CODES[index]);
+            furry_string_set_str(code_part, UPC_EAN_L_CODES[index]);
         } else {
-            furi_string_set_str(code_part, UPC_EAN_R_CODES[index]);
+            furry_string_set_str(code_part, UPC_EAN_R_CODES[index]);
         }
 
         //convert the current_digit char into a string so it can be printed
@@ -92,24 +92,24 @@ static void draw_ean_8(Canvas* canvas, BarcodeData* barcode_data) {
         canvas_draw_str(canvas, x + 1, y + height + 8, current_digit_string);
 
         //draw the bits of the barcode
-        x = draw_bits(canvas, furi_string_get_cstr(code_part), x, y, width, height);
+        x = draw_bits(canvas, furry_string_get_cstr(code_part), x, y, width, height);
 
         //if the index has reached 3, that means 4 digits have been drawn and now draw the center guard pattern
         if(i == 3) {
             x = draw_bits(canvas, center_bits, x, y, width, height + 5);
         }
     }
-    furi_string_free(code_part);
+    furry_string_free(code_part);
 
     //draw the ending guard pattern
     x = draw_bits(canvas, end_bits, x, y, width, height + 5);
 }
 
 static void draw_ean_13(Canvas* canvas, BarcodeData* barcode_data) {
-    FuriString* barcode_digits = barcode_data->correct_data;
+    FurryString* barcode_digits = barcode_data->correct_data;
     BarcodeTypeObj* type_obj = barcode_data->type_obj;
 
-    int barcode_length = furi_string_size(barcode_digits);
+    int barcode_length = furry_string_size(barcode_digits);
 
     int x = type_obj->start_pos;
     int y = BARCODE_Y_START;
@@ -123,16 +123,16 @@ static void draw_ean_13(Canvas* canvas, BarcodeData* barcode_data) {
     //draw the starting guard pattern
     x = draw_bits(canvas, end_bits, x, y, width, height + 5);
 
-    FuriString* left_structure = furi_string_alloc();
-    FuriString* code_part = furi_string_alloc();
+    FurryString* left_structure = furry_string_alloc();
+    FurryString* code_part = furry_string_alloc();
 
     //loop through each digit, find the encoding, and draw it
     for(int i = 0; i < barcode_length; i++) {
-        char current_digit = furi_string_get_char(barcode_digits, i);
+        char current_digit = furry_string_get_char(barcode_digits, i);
         int index = current_digit - '0';
 
         if(i == 0) {
-            furi_string_set_str(left_structure, EAN_13_STRUCTURE_CODES[index]);
+            furry_string_set_str(left_structure, EAN_13_STRUCTURE_CODES[index]);
 
             //convert the current_digit char into a string so it can be printed
             char current_digit_string[2];
@@ -147,14 +147,14 @@ static void draw_ean_13(Canvas* canvas, BarcodeData* barcode_data) {
             //use the L-codes for the first 6 digits and the R-Codes for the last 6 digits
             if(i <= 6) {
                 //get the encoding type at the current barcode bit position
-                char encoding_type = furi_string_get_char(left_structure, i - 1);
+                char encoding_type = furry_string_get_char(left_structure, i - 1);
                 if(encoding_type == 'L') {
-                    furi_string_set_str(code_part, UPC_EAN_L_CODES[index]);
+                    furry_string_set_str(code_part, UPC_EAN_L_CODES[index]);
                 } else {
-                    furi_string_set_str(code_part, EAN_G_CODES[index]);
+                    furry_string_set_str(code_part, EAN_G_CODES[index]);
                 }
             } else {
-                furi_string_set_str(code_part, UPC_EAN_R_CODES[index]);
+                furry_string_set_str(code_part, UPC_EAN_R_CODES[index]);
             }
 
             //convert the current_digit char into a string so it can be printed
@@ -166,7 +166,7 @@ static void draw_ean_13(Canvas* canvas, BarcodeData* barcode_data) {
             canvas_draw_str(canvas, x + 1, y + height + 8, current_digit_string);
 
             //draw the bits of the barcode
-            x = draw_bits(canvas, furi_string_get_cstr(code_part), x, y, width, height);
+            x = draw_bits(canvas, furry_string_get_cstr(code_part), x, y, width, height);
 
             //if the index has reached 6, that means 6 digits have been drawn and we now draw the center guard pattern
             if(i == 6) {
@@ -175,8 +175,8 @@ static void draw_ean_13(Canvas* canvas, BarcodeData* barcode_data) {
         }
     }
 
-    furi_string_free(left_structure);
-    furi_string_free(code_part);
+    furry_string_free(left_structure);
+    furry_string_free(code_part);
 
     //draw the ending guard pattern
     x = draw_bits(canvas, end_bits, x, y, width, height + 5);
@@ -186,10 +186,10 @@ static void draw_ean_13(Canvas* canvas, BarcodeData* barcode_data) {
  * Draw a UPC-A barcode
 */
 static void draw_upc_a(Canvas* canvas, BarcodeData* barcode_data) {
-    FuriString* barcode_digits = barcode_data->correct_data;
+    FurryString* barcode_digits = barcode_data->correct_data;
     BarcodeTypeObj* type_obj = barcode_data->type_obj;
 
-    int barcode_length = furi_string_size(barcode_digits);
+    int barcode_length = furry_string_size(barcode_digits);
 
     int x = type_obj->start_pos;
     int y = BARCODE_Y_START;
@@ -203,18 +203,18 @@ static void draw_upc_a(Canvas* canvas, BarcodeData* barcode_data) {
     //draw the starting guard pattern
     x = draw_bits(canvas, end_bits, x, y, width, height + 5);
 
-    FuriString* code_part = furi_string_alloc();
+    FurryString* code_part = furry_string_alloc();
 
     //loop through each digit, find the encoding, and draw it
     for(int i = 0; i < barcode_length; i++) {
-        char current_digit = furi_string_get_char(barcode_digits, i);
+        char current_digit = furry_string_get_char(barcode_digits, i);
         int index = current_digit - '0'; //convert the number into an int (also the index)
 
         //use the L-codes for the first 6 digits and the R-Codes for the last 6 digits
         if(i <= 5) {
-            furi_string_set_str(code_part, UPC_EAN_L_CODES[index]);
+            furry_string_set_str(code_part, UPC_EAN_L_CODES[index]);
         } else {
-            furi_string_set_str(code_part, UPC_EAN_R_CODES[index]);
+            furry_string_set_str(code_part, UPC_EAN_R_CODES[index]);
         }
 
         //convert the current_digit char into a string so it can be printed
@@ -226,7 +226,7 @@ static void draw_upc_a(Canvas* canvas, BarcodeData* barcode_data) {
         canvas_draw_str(canvas, x + 1, y + height + 8, current_digit_string);
 
         //draw the bits of the barcode
-        x = draw_bits(canvas, furi_string_get_cstr(code_part), x, y, width, height);
+        x = draw_bits(canvas, furry_string_get_cstr(code_part), x, y, width, height);
 
         //if the index has reached 6, that means 6 digits have been drawn and we now draw the center guard pattern
         if(i == 5) {
@@ -234,23 +234,23 @@ static void draw_upc_a(Canvas* canvas, BarcodeData* barcode_data) {
         }
     }
 
-    furi_string_free(code_part);
+    furry_string_free(code_part);
 
     //draw the ending guard pattern
     x = draw_bits(canvas, end_bits, x, y, width, height + 5);
 }
 
 static void draw_code_39(Canvas* canvas, BarcodeData* barcode_data) {
-    FuriString* raw_data = barcode_data->raw_data;
-    FuriString* barcode_digits = barcode_data->correct_data;
+    FurryString* raw_data = barcode_data->raw_data;
+    FurryString* barcode_digits = barcode_data->correct_data;
     //BarcodeTypeObj* type_obj = barcode_data->type_obj;
 
-    int barcode_length = furi_string_size(barcode_digits);
+    int barcode_length = furry_string_size(barcode_digits);
     int total_pixels = 0;
 
     for(int i = 0; i < barcode_length; i++) {
         //1 for wide, 0 for narrow
-        char wide_or_narrow = furi_string_get_char(barcode_digits, i);
+        char wide_or_narrow = furry_string_get_char(barcode_digits, i);
         int wn_digit = wide_or_narrow - '0'; //wide(1) or narrow(0) digit
 
         if(wn_digit == 1) {
@@ -273,11 +273,11 @@ static void draw_code_39(Canvas* canvas, BarcodeData* barcode_data) {
     canvas_set_color(canvas, ColorBlack);
     // canvas_draw_str_aligned(canvas, 62, 30, AlignCenter, AlignCenter, error);
     canvas_draw_str_aligned(
-        canvas, 62, y + height + 8, AlignCenter, AlignBottom, furi_string_get_cstr(raw_data));
+        canvas, 62, y + height + 8, AlignCenter, AlignBottom, furry_string_get_cstr(raw_data));
 
     for(int i = 0; i < barcode_length; i++) {
         //1 for wide, 0 for narrow
-        char wide_or_narrow = furi_string_get_char(barcode_digits, i);
+        char wide_or_narrow = furry_string_get_char(barcode_digits, i);
         int wn_digit = wide_or_narrow - '0'; //wide(1) or narrow(0) digit
 
         if(filled_in) {
@@ -303,27 +303,27 @@ static void draw_code_39(Canvas* canvas, BarcodeData* barcode_data) {
 }
 
 static void draw_code_128(Canvas* canvas, BarcodeData* barcode_data) {
-    FuriString* raw_data = barcode_data->raw_data;
-    FuriString* barcode_digits = barcode_data->correct_data;
+    FurryString* raw_data = barcode_data->raw_data;
+    FurryString* barcode_digits = barcode_data->correct_data;
 
-    int barcode_length = furi_string_size(barcode_digits);
+    int barcode_length = furry_string_size(barcode_digits);
 
     int x = (128 - barcode_length) / 2;
     int y = BARCODE_Y_START;
     int width = 1;
     int height = BARCODE_HEIGHT;
 
-    x = draw_bits(canvas, furi_string_get_cstr(barcode_digits), x, y, width, height);
+    x = draw_bits(canvas, furry_string_get_cstr(barcode_digits), x, y, width, height);
 
     //set the canvas color to black to print the digit
     canvas_set_color(canvas, ColorBlack);
     // canvas_draw_str_aligned(canvas, 62, 30, AlignCenter, AlignCenter, error);
     canvas_draw_str_aligned(
-        canvas, 62, y + height + 8, AlignCenter, AlignBottom, furi_string_get_cstr(raw_data));
+        canvas, 62, y + height + 8, AlignCenter, AlignBottom, furry_string_get_cstr(raw_data));
 }
 
 static void barcode_draw_callback(Canvas* canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     BarcodeModel* barcode_model = ctx;
     BarcodeData* data = barcode_model->data;
     // const char* barcode_digits =;
@@ -382,7 +382,7 @@ static void barcode_draw_callback(Canvas* canvas, void* ctx) {
 
 bool barcode_input_callback(InputEvent* input_event, void* ctx) {
     UNUSED(ctx);
-    //furi_assert(ctx);
+    //furry_assert(ctx);
 
     //Barcode* test_view_object = ctx;
 
@@ -394,7 +394,7 @@ bool barcode_input_callback(InputEvent* input_event, void* ctx) {
 }
 
 Barcode* barcode_view_allocate(BarcodeApp* barcode_app) {
-    furi_assert(barcode_app);
+    furry_assert(barcode_app);
 
     Barcode* barcode = malloc(sizeof(Barcode));
 
@@ -415,14 +415,14 @@ void barcode_free_model(Barcode* barcode) {
         BarcodeModel * model,
         {
             if(model->file_path != NULL) {
-                furi_string_free(model->file_path);
+                furry_string_free(model->file_path);
             }
             if(model->data != NULL) {
                 if(model->data->raw_data != NULL) {
-                    furi_string_free(model->data->raw_data);
+                    furry_string_free(model->data->raw_data);
                 }
                 if(model->data->correct_data != NULL) {
-                    furi_string_free(model->data->correct_data);
+                    furry_string_free(model->data->correct_data);
                 }
                 free(model->data);
             }
@@ -431,7 +431,7 @@ void barcode_free_model(Barcode* barcode) {
 }
 
 void barcode_free(Barcode* barcode) {
-    furi_assert(barcode);
+    furry_assert(barcode);
 
     barcode_free_model(barcode);
     view_free(barcode->view);
@@ -439,6 +439,6 @@ void barcode_free(Barcode* barcode) {
 }
 
 View* barcode_get_view(Barcode* barcode) {
-    furi_assert(barcode);
+    furry_assert(barcode);
     return barcode->view;
 }

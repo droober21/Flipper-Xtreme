@@ -17,7 +17,7 @@ enum HidDebugSubmenuIndex {
 };
 
 static void hid_submenu_callback(void* context, uint32_t index) {
-    furi_assert(context);
+    furry_assert(context);
     Hid* app = context;
     if(index == HidSubmenuIndexKeynote) {
         app->view_id = HidViewKeynote;
@@ -47,7 +47,7 @@ static void hid_submenu_callback(void* context, uint32_t index) {
 }
 
 static void bt_hid_connection_status_changed_callback(BtStatus status, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Hid* hid = context;
     bool connected = (status == BtStatusConnected);
     if(hid->transport == HidTransportBle) {
@@ -68,7 +68,7 @@ static void bt_hid_connection_status_changed_callback(BtStatus status, void* con
 }
 
 static void hid_dialog_callback(DialogExResult result, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Hid* app = context;
     if(result == DialogExResultLeft) {
         view_dispatcher_stop(app->view_dispatcher);
@@ -94,13 +94,13 @@ Hid* hid_alloc(HidTransport transport) {
     app->transport = transport;
 
     // Gui
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
 
     // Bt
-    app->bt = furi_record_open(RECORD_BT);
+    app->bt = furry_record_open(RECORD_BT);
 
     // Notifications
-    app->notifications = furi_record_open(RECORD_NOTIFICATION);
+    app->notifications = furry_record_open(RECORD_NOTIFICATION);
 
     // View dispatcher
     app->view_dispatcher = view_dispatcher_alloc();
@@ -151,7 +151,7 @@ Hid* hid_alloc(HidTransport transport) {
 }
 
 Hid* hid_app_alloc_view(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Hid* app = context;
     // Dialog view
     app->dialog = dialog_ex_alloc();
@@ -222,7 +222,7 @@ Hid* hid_app_alloc_view(void* context) {
 }
 
 void hid_free(Hid* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // Reset notification
     if(app->transport == HidTransportBle) {
@@ -253,11 +253,11 @@ void hid_free(Hid* app) {
     view_dispatcher_free(app->view_dispatcher);
 
     // Close records
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     app->gui = NULL;
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
     app->notifications = NULL;
-    furi_record_close(RECORD_BT);
+    furry_record_close(RECORD_BT);
     app->bt = NULL;
 
     // Free rest
@@ -265,124 +265,124 @@ void hid_free(Hid* app) {
 }
 
 void hid_hal_keyboard_press(Hid* instance, uint16_t event) {
-    furi_assert(instance);
+    furry_assert(instance);
     if(instance->transport == HidTransportBle) {
-        furi_hal_bt_hid_kb_press(event);
+        furry_hal_bt_hid_kb_press(event);
     } else if(instance->transport == HidTransportUsb) {
-        furi_hal_hid_kb_press(event);
+        furry_hal_hid_kb_press(event);
     } else {
-        furi_crash(NULL);
+        furry_crash(NULL);
     }
 }
 
 void hid_hal_keyboard_release(Hid* instance, uint16_t event) {
-    furi_assert(instance);
+    furry_assert(instance);
     if(instance->transport == HidTransportBle) {
-        furi_hal_bt_hid_kb_release(event);
+        furry_hal_bt_hid_kb_release(event);
     } else if(instance->transport == HidTransportUsb) {
-        furi_hal_hid_kb_release(event);
+        furry_hal_hid_kb_release(event);
     } else {
-        furi_crash(NULL);
+        furry_crash(NULL);
     }
 }
 
 void hid_hal_keyboard_release_all(Hid* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     if(instance->transport == HidTransportBle) {
-        furi_hal_bt_hid_kb_release_all();
+        furry_hal_bt_hid_kb_release_all();
     } else if(instance->transport == HidTransportUsb) {
-        furi_hal_hid_kb_release_all();
+        furry_hal_hid_kb_release_all();
     } else {
-        furi_crash(NULL);
+        furry_crash(NULL);
     }
 }
 
 void hid_hal_consumer_key_press(Hid* instance, uint16_t event) {
-    furi_assert(instance);
+    furry_assert(instance);
     if(instance->transport == HidTransportBle) {
-        furi_hal_bt_hid_consumer_key_press(event);
+        furry_hal_bt_hid_consumer_key_press(event);
     } else if(instance->transport == HidTransportUsb) {
-        furi_hal_hid_consumer_key_press(event);
+        furry_hal_hid_consumer_key_press(event);
     } else {
-        furi_crash(NULL);
+        furry_crash(NULL);
     }
 }
 
 void hid_hal_consumer_key_release(Hid* instance, uint16_t event) {
-    furi_assert(instance);
+    furry_assert(instance);
     if(instance->transport == HidTransportBle) {
-        furi_hal_bt_hid_consumer_key_release(event);
+        furry_hal_bt_hid_consumer_key_release(event);
     } else if(instance->transport == HidTransportUsb) {
-        furi_hal_hid_consumer_key_release(event);
+        furry_hal_hid_consumer_key_release(event);
     } else {
-        furi_crash(NULL);
+        furry_crash(NULL);
     }
 }
 
 void hid_hal_consumer_key_release_all(Hid* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     if(instance->transport == HidTransportBle) {
-        furi_hal_bt_hid_consumer_key_release_all();
+        furry_hal_bt_hid_consumer_key_release_all();
     } else if(instance->transport == HidTransportUsb) {
-        furi_hal_hid_kb_release_all();
+        furry_hal_hid_kb_release_all();
     } else {
-        furi_crash(NULL);
+        furry_crash(NULL);
     }
 }
 
 void hid_hal_mouse_move(Hid* instance, int8_t dx, int8_t dy) {
-    furi_assert(instance);
+    furry_assert(instance);
     if(instance->transport == HidTransportBle) {
-        furi_hal_bt_hid_mouse_move(dx, dy);
+        furry_hal_bt_hid_mouse_move(dx, dy);
     } else if(instance->transport == HidTransportUsb) {
-        furi_hal_hid_mouse_move(dx, dy);
+        furry_hal_hid_mouse_move(dx, dy);
     } else {
-        furi_crash(NULL);
+        furry_crash(NULL);
     }
 }
 
 void hid_hal_mouse_scroll(Hid* instance, int8_t delta) {
-    furi_assert(instance);
+    furry_assert(instance);
     if(instance->transport == HidTransportBle) {
-        furi_hal_bt_hid_mouse_scroll(delta);
+        furry_hal_bt_hid_mouse_scroll(delta);
     } else if(instance->transport == HidTransportUsb) {
-        furi_hal_hid_mouse_scroll(delta);
+        furry_hal_hid_mouse_scroll(delta);
     } else {
-        furi_crash(NULL);
+        furry_crash(NULL);
     }
 }
 
 void hid_hal_mouse_press(Hid* instance, uint16_t event) {
-    furi_assert(instance);
+    furry_assert(instance);
     if(instance->transport == HidTransportBle) {
-        furi_hal_bt_hid_mouse_press(event);
+        furry_hal_bt_hid_mouse_press(event);
     } else if(instance->transport == HidTransportUsb) {
-        furi_hal_hid_mouse_press(event);
+        furry_hal_hid_mouse_press(event);
     } else {
-        furi_crash(NULL);
+        furry_crash(NULL);
     }
 }
 
 void hid_hal_mouse_release(Hid* instance, uint16_t event) {
-    furi_assert(instance);
+    furry_assert(instance);
     if(instance->transport == HidTransportBle) {
-        furi_hal_bt_hid_mouse_release(event);
+        furry_hal_bt_hid_mouse_release(event);
     } else if(instance->transport == HidTransportUsb) {
-        furi_hal_hid_mouse_release(event);
+        furry_hal_hid_mouse_release(event);
     } else {
-        furi_crash(NULL);
+        furry_crash(NULL);
     }
 }
 
 void hid_hal_mouse_release_all(Hid* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     if(instance->transport == HidTransportBle) {
-        furi_hal_bt_hid_mouse_release_all();
+        furry_hal_bt_hid_mouse_release_all();
     } else if(instance->transport == HidTransportUsb) {
-        furi_hal_hid_mouse_release(HID_MOUSE_BTN_LEFT);
-        furi_hal_hid_mouse_release(HID_MOUSE_BTN_RIGHT);
+        furry_hal_hid_mouse_release(HID_MOUSE_BTN_LEFT);
+        furry_hal_hid_mouse_release(HID_MOUSE_BTN_RIGHT);
     } else {
-        furi_crash(NULL);
+        furry_crash(NULL);
     }
 }
 
@@ -390,9 +390,9 @@ int32_t hid_usb_app(void* p) {
     UNUSED(p);
     Hid* app = hid_alloc(HidTransportUsb);
     app = hid_app_alloc_view(app);
-    FuriHalUsbInterface* usb_mode_prev = furi_hal_usb_get_config();
-    furi_hal_usb_unlock();
-    furi_check(furi_hal_usb_set_config(&usb_hid, NULL) == true);
+    FurryHalUsbInterface* usb_mode_prev = furry_hal_usb_get_config();
+    furry_hal_usb_unlock();
+    furry_check(furry_hal_usb_set_config(&usb_hid, NULL) == true);
 
     bt_hid_connection_status_changed_callback(BtStatusConnected, app);
 
@@ -400,7 +400,7 @@ int32_t hid_usb_app(void* p) {
 
     view_dispatcher_run(app->view_dispatcher);
 
-    furi_hal_usb_set_config(usb_mode_prev, NULL);
+    furry_hal_usb_set_config(usb_mode_prev, NULL);
 
     hid_free(app);
 
@@ -415,10 +415,10 @@ int32_t hid_ble_app(void* p) {
     bt_disconnect(app->bt);
 
     // Wait 2nd core to update nvm storage
-    furi_delay_ms(200);
+    furry_delay_ms(200);
 
     // Migrate data from old sd-card folder
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     storage_common_migrate(
         storage,
@@ -427,13 +427,13 @@ int32_t hid_ble_app(void* p) {
 
     bt_keys_storage_set_storage_path(app->bt, APP_DATA_PATH(HID_BT_KEYS_STORAGE_NAME));
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     if(!bt_set_profile(app->bt, BtProfileHidKeyboard)) {
-        FURI_LOG_E(TAG, "Failed to switch to HID profile");
+        FURRY_LOG_E(TAG, "Failed to switch to HID profile");
     }
 
-    furi_hal_bt_start_advertising();
+    furry_hal_bt_start_advertising();
     bt_set_status_changed_callback(app->bt, bt_hid_connection_status_changed_callback, app);
 
     DOLPHIN_DEED(DolphinDeedPluginStart);
@@ -445,12 +445,12 @@ int32_t hid_ble_app(void* p) {
     bt_disconnect(app->bt);
 
     // Wait 2nd core to update nvm storage
-    furi_delay_ms(200);
+    furry_delay_ms(200);
 
     bt_keys_storage_set_default_path(app->bt);
 
     if(!bt_set_profile(app->bt, BtProfileSerial)) {
-        FURI_LOG_E(TAG, "Failed to switch to Serial profile");
+        FURRY_LOG_E(TAG, "Failed to switch to Serial profile");
     }
 
     hid_free(app);

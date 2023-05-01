@@ -15,24 +15,24 @@ void nfc_scene_mf_desfire_read_success_widget_callback(
 void nfc_scene_mf_desfire_read_success_on_enter(void* context) {
     Nfc* nfc = context;
 
-    FuriHalNfcDevData* nfc_data = &nfc->dev->dev_data.nfc_data;
+    FurryHalNfcDevData* nfc_data = &nfc->dev->dev_data.nfc_data;
     MifareDesfireData* data = &nfc->dev->dev_data.mf_df_data;
     Widget* widget = nfc->widget;
 
     // Prepare string for data display
-    FuriString* temp_str = furi_string_alloc_printf("\e#MIFARE DESfire\n");
-    furi_string_cat_printf(temp_str, "UID:");
+    FurryString* temp_str = furry_string_alloc_printf("\e#MIFARE DESfire\n");
+    furry_string_cat_printf(temp_str, "UID:");
     for(size_t i = 0; i < nfc_data->uid_len; i++) {
-        furi_string_cat_printf(temp_str, " %02X", nfc_data->uid[i]);
+        furry_string_cat_printf(temp_str, " %02X", nfc_data->uid[i]);
     }
 
     uint32_t bytes_total = 1UL << (data->version.sw_storage >> 1);
     uint32_t bytes_free = data->free_memory ? data->free_memory->bytes : 0;
-    furi_string_cat_printf(temp_str, "\n%lu", bytes_total);
+    furry_string_cat_printf(temp_str, "\n%lu", bytes_total);
     if(data->version.sw_storage & 1) {
-        furi_string_push_back(temp_str, '+');
+        furry_string_push_back(temp_str, '+');
     }
-    furi_string_cat_printf(temp_str, " bytes, %lu bytes free\n", bytes_free);
+    furry_string_cat_printf(temp_str, " bytes, %lu bytes free\n", bytes_free);
 
     uint16_t n_apps = 0;
     uint16_t n_files = 0;
@@ -42,20 +42,20 @@ void nfc_scene_mf_desfire_read_success_on_enter(void* context) {
             n_files++;
         }
     }
-    furi_string_cat_printf(temp_str, "%d Application", n_apps);
+    furry_string_cat_printf(temp_str, "%d Application", n_apps);
     if(n_apps != 1) {
-        furi_string_push_back(temp_str, 's');
+        furry_string_push_back(temp_str, 's');
     }
-    furi_string_cat_printf(temp_str, ", %d file", n_files);
+    furry_string_cat_printf(temp_str, ", %d file", n_files);
     if(n_files != 1) {
-        furi_string_push_back(temp_str, 's');
+        furry_string_push_back(temp_str, 's');
     }
 
     notification_message_block(nfc->notifications, &sequence_set_green_255);
 
     // Add text scroll element
-    widget_add_text_scroll_element(widget, 0, 0, 128, 52, furi_string_get_cstr(temp_str));
-    furi_string_free(temp_str);
+    widget_add_text_scroll_element(widget, 0, 0, 128, 52, furry_string_get_cstr(temp_str));
+    furry_string_free(temp_str);
 
     // Add button elements
     widget_add_button_element(

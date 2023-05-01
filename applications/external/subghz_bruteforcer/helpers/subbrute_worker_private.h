@@ -16,7 +16,7 @@ struct SubBruteWorker {
     uint64_t step;
 
     // SubGhz
-    FuriThread* thread;
+    FurryThread* thread;
     SubGhzProtocolDecoderBase* decoder_result;
     SubGhzEnvironment* environment;
     SubGhzTransmitter* transmitter;
@@ -25,7 +25,7 @@ struct SubBruteWorker {
     // Initiated values
     SubBruteAttacks attack; // Attack state
     uint32_t frequency;
-    FuriHalSubGhzPreset preset;
+    FurryHalSubGhzPreset preset;
     SubBruteFileProtocol file;
     uint8_t bits;
     uint32_t te;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi.h>
+#include <furry.h>
 #include <input/input.h>
 #include <gui/elements.h>
 #include <flipper_format/flipper_format.h>
@@ -54,7 +54,7 @@ typedef enum {
 } Direction;
 
 typedef struct {
-    FuriMutex* mutex;
+    FurryMutex* mutex;
     Card player_cards[21];
     Card dealer_cards[21];
     uint8_t player_card_count;

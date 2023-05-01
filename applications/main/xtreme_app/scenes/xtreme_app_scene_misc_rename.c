@@ -13,13 +13,13 @@ static void xtreme_app_scene_misc_rename_text_input_callback(void* context) {
 }
 
 static bool
-    xtreme_app_scene_misc_rename_validator(const char* text, FuriString* error, void* context) {
+    xtreme_app_scene_misc_rename_validator(const char* text, FurryString* error, void* context) {
     UNUSED(context);
 
     for(; *text; ++text) {
         const char c = *text;
         if((c < '0' || c > '9') && (c < 'A' || c > 'Z') && (c < 'a' || c > 'z')) {
-            furi_string_printf(error, "Please only\nenter letters\nand numbers!");
+            furry_string_printf(error, "Please only\nenter letters\nand numbers!");
             return false;
         }
     }

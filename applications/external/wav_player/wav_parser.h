@@ -1,8 +1,8 @@
 #pragma once
 #include <toolbox/stream/stream.h>
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <cli/cli.h>
 #include <gui/gui.h>
 #include <stm32wbxx_ll_dma.h>
@@ -61,7 +61,7 @@ typedef struct {
     size_t samples_count_half;
     size_t samples_count;
 
-    FuriMessageQueue* queue;
+    FurryMessageQueue* queue;
 
     float volume;
     bool play;

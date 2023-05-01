@@ -3,9 +3,9 @@ Authors: Tanish Bhongade and RaZe
 */
 
 #include <stdio.h>
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
-#include "furi_hal_random.h"
+#include "furry_hal_random.h"
 #include <input/input.h>
 #include <gui/elements.h>
 #include "scrambler.h"
@@ -54,8 +54,8 @@ void scrambleReplace() {
 
     // Initialize the mainScramble array with all the possible moves
     for(int i = 0; i < SLEN; i++) {
-        a.mainScramble[i][0] = moves[furi_hal_random_get() % 6];
-        a.mainScramble[i][1] = dir[furi_hal_random_get() % 3];
+        a.mainScramble[i][0] = moves[furry_hal_random_get() % 6];
+        a.mainScramble[i][1] = dir[furry_hal_random_get() % 3];
     }
 
     // Perform the Fisher-Yates shuffle
@@ -69,12 +69,12 @@ void scrambleReplace() {
 
     // Select the first 10 elements as the scramble, using only the first three elements of the dir array
     for(int i = 0; i < SLEN; i++) {
-        a.mainScramble[i][1] = dir[furi_hal_random_get() % 3];
+        a.mainScramble[i][1] = dir[furry_hal_random_get() % 3];
     }
     for(int i = 1; i < SLEN; i++) {
         while(a.mainScramble[i][0] == a.mainScramble[i - 2][0] ||
               a.mainScramble[i][0] == a.mainScramble[i - 1][0]) {
-            a.mainScramble[i][0] = moves[furi_hal_random_get() % 5];
+            a.mainScramble[i][0] = moves[furry_hal_random_get() % 5];
         }
     }
 }

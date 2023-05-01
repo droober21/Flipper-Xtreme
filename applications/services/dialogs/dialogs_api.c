@@ -8,17 +8,17 @@
 
 bool dialog_file_browser_show(
     DialogsApp* context,
-    FuriString* result_path,
-    FuriString* path,
+    FurryString* result_path,
+    FurryString* path,
     const DialogsFileBrowserOptions* options) {
-    FuriApiLock lock = api_lock_alloc_locked();
-    furi_check(lock != NULL);
+    FurryApiLock lock = api_lock_alloc_locked();
+    furry_check(lock != NULL);
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
-    FuriString* base_path = furi_string_alloc();
+    Storage* storage = furry_record_open(RECORD_STORAGE);
+    FurryString* base_path = furry_string_alloc();
 
     if(options && options->base_path) {
-        furi_string_set(base_path, options->base_path);
+        furry_string_set(base_path, options->base_path);
         storage_common_resolve_path_and_ensure_app_directory(storage, base_path);
     }
 
@@ -41,7 +41,7 @@ bool dialog_file_browser_show(
             .preselected_filename = path,
             .item_callback = options ? options->item_loader_callback : NULL,
             .item_callback_context = options ? options->item_loader_context : NULL,
-            .base_path = furi_string_get_cstr(base_path),
+            .base_path = furry_string_get_cstr(base_path),
         }};
 
     DialogsAppReturn return_data;
@@ -52,12 +52,12 @@ bool dialog_file_browser_show(
         .return_data = &return_data,
     };
 
-    furi_check(
-        furi_message_queue_put(context->message_queue, &message, FuriWaitForever) == FuriStatusOk);
+    furry_check(
+        furry_message_queue_put(context->message_queue, &message, FurryWaitForever) == FurryStatusOk);
     api_lock_wait_unlock_and_free(lock);
 
-    furi_record_close(RECORD_STORAGE);
-    furi_string_free(base_path);
+    furry_record_close(RECORD_STORAGE);
+    furry_string_free(base_path);
 
     return return_data.bool_value;
 }
@@ -65,8 +65,8 @@ bool dialog_file_browser_show(
 /****************** Message ******************/
 
 DialogMessageButton dialog_message_show(DialogsApp* context, const DialogMessage* dialog_message) {
-    FuriApiLock lock = api_lock_alloc_locked();
-    furi_check(lock != NULL);
+    FurryApiLock lock = api_lock_alloc_locked();
+    furry_check(lock != NULL);
 
     DialogsAppData data = {
         .dialog = {
@@ -81,8 +81,8 @@ DialogMessageButton dialog_message_show(DialogsApp* context, const DialogMessage
         .return_data = &return_data,
     };
 
-    furi_check(
-        furi_message_queue_put(context->message_queue, &message, FuriWaitForever) == FuriStatusOk);
+    furry_check(
+        furry_message_queue_put(context->message_queue, &message, FurryWaitForever) == FurryStatusOk);
     api_lock_wait_unlock_and_free(lock);
 
     return return_data.dialog_value;

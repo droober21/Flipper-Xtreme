@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <furi_hal_bt.h>
+#include <furry_hal_bt.h>
 
 #ifdef __cplusplus
 extern "C" {

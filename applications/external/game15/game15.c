@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <notification/notification.h>
 #include <notification/notification_messages.h>
@@ -115,7 +115,7 @@ static int key_stack_push(uint8_t value) {
 }
 
 static bool storage_game_state_load() {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     File* file = storage_file_alloc(storage);
 
     uint16_t bytes_readed = 0;
@@ -123,12 +123,12 @@ static bool storage_game_state_load() {
         bytes_readed = storage_file_read(file, &game_state, sizeof(game_state_t));
     storage_file_close(file);
     storage_file_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     return bytes_readed == sizeof(game_state_t);
 }
 
 static void storage_game_state_save() {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     if(storage_common_stat(storage, SAVING_DIRECTORY, NULL) == FSE_NOT_EXIST) {
         if(!storage_simply_mkdir(storage, SAVING_DIRECTORY)) {
@@ -142,7 +142,7 @@ static void storage_game_state_save() {
     }
     storage_file_close(file);
     storage_file_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 static void set_moving_cell_by_direction(direction_e direction) {
@@ -437,13 +437,13 @@ static void game_event_handler(GameEvent const event) {
 
 static void game_alloc() {
     key_stack_init();
-    notification = furi_record_open(RECORD_NOTIFICATION);
+    notification = furry_record_open(RECORD_NOTIFICATION);
     notification_message_block(notification, &sequence_display_backlight_enforce_on);
 }
 
 static void game_free() {
     notification_message_block(notification, &sequence_display_backlight_enforce_auto);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
 }
 
 int32_t game15_app() {

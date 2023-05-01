@@ -1,6 +1,6 @@
 #include "protocol_group_dallas.h"
 
-#include <furi_hal_resources.h>
+#include <furry_hal_resources.h>
 
 #include "protocol_group_dallas_defs.h"
 
@@ -64,7 +64,7 @@ static uint32_t ibutton_protocol_group_dallas_get_features(
     iButtonProtocolGroupDallas* group,
     iButtonProtocolLocalId id) {
     UNUSED(group);
-    furi_assert(id < iButtonProtocolDSMax);
+    furry_assert(id < iButtonProtocolDSMax);
     return ibutton_protocols_dallas[id]->features;
 }
 
@@ -72,7 +72,7 @@ static const char* ibutton_protocol_group_dallas_get_manufacturer(
     iButtonProtocolGroupDallas* group,
     iButtonProtocolLocalId id) {
     UNUSED(group);
-    furi_assert(id < iButtonProtocolDSMax);
+    furry_assert(id < iButtonProtocolDSMax);
     return ibutton_protocols_dallas[id]->manufacturer;
 }
 
@@ -80,7 +80,7 @@ static const char* ibutton_protocol_group_dallas_get_name(
     iButtonProtocolGroupDallas* group,
     iButtonProtocolLocalId id) {
     UNUSED(group);
-    furi_assert(id < iButtonProtocolDSMax);
+    furry_assert(id < iButtonProtocolDSMax);
     return ibutton_protocols_dallas[id]->name;
 }
 
@@ -104,9 +104,9 @@ static bool ibutton_protocol_group_dallas_read(
     OneWireHost* host = group->host;
 
     onewire_host_start(host);
-    furi_delay_ms(100);
+    furry_delay_ms(100);
 
-    FURI_CRITICAL_ENTER();
+    FURRY_CRITICAL_ENTER();
 
     if(onewire_host_search(host, rom_data, OneWireHostSearchModeNormal)) {
         /* Considering any found 1-Wire device a success.
@@ -122,7 +122,7 @@ static bool ibutton_protocol_group_dallas_read(
     onewire_host_reset_search(host);
     onewire_host_stop(host);
 
-    FURI_CRITICAL_EXIT();
+    FURRY_CRITICAL_EXIT();
 
     return success;
 }
@@ -131,21 +131,21 @@ static bool ibutton_protocol_group_dallas_write_blank(
     iButtonProtocolGroupDallas* group,
     iButtonProtocolData* data,
     iButtonProtocolLocalId id) {
-    furi_assert(id < iButtonProtocolDSMax);
+    furry_assert(id < iButtonProtocolDSMax);
     const iButtonProtocolDallasBase* protocol = ibutton_protocols_dallas[id];
-    furi_assert(protocol->features & iButtonProtocolFeatureWriteBlank);
+    furry_assert(protocol->features & iButtonProtocolFeatureWriteBlank);
 
     OneWireHost* host = group->host;
 
     onewire_host_start(host);
-    furi_delay_ms(100);
+    furry_delay_ms(100);
 
-    FURI_CRITICAL_ENTER();
+    FURRY_CRITICAL_ENTER();
 
     const bool success = protocol->write_blank(host, data);
     onewire_host_stop(host);
 
-    FURI_CRITICAL_EXIT();
+    FURRY_CRITICAL_EXIT();
     return success;
 }
 
@@ -153,22 +153,22 @@ static bool ibutton_protocol_group_dallas_write_copy(
     iButtonProtocolGroupDallas* group,
     iButtonProtocolData* data,
     iButtonProtocolLocalId id) {
-    furi_assert(id < iButtonProtocolDSMax);
+    furry_assert(id < iButtonProtocolDSMax);
 
     const iButtonProtocolDallasBase* protocol = ibutton_protocols_dallas[id];
-    furi_assert(protocol->features & iButtonProtocolFeatureWriteCopy);
+    furry_assert(protocol->features & iButtonProtocolFeatureWriteCopy);
 
     OneWireHost* host = group->host;
 
     onewire_host_start(host);
-    furi_delay_ms(100);
+    furry_delay_ms(100);
 
-    FURI_CRITICAL_ENTER();
+    FURRY_CRITICAL_ENTER();
 
     const bool success = protocol->write_copy(host, data);
     onewire_host_stop(host);
 
-    FURI_CRITICAL_EXIT();
+    FURRY_CRITICAL_EXIT();
     return success;
 }
 
@@ -176,7 +176,7 @@ static void ibutton_protocol_group_dallas_emulate_start(
     iButtonProtocolGroupDallas* group,
     iButtonProtocolData* data,
     iButtonProtocolLocalId id) {
-    furi_assert(id < iButtonProtocolDSMax);
+    furry_assert(id < iButtonProtocolDSMax);
     OneWireSlave* bus = group->bus;
     ibutton_protocols_dallas[id]->emulate(bus, data);
     onewire_slave_start(bus);
@@ -186,7 +186,7 @@ static void ibutton_protocol_group_dallas_emulate_stop(
     iButtonProtocolGroupDallas* group,
     iButtonProtocolData* data,
     iButtonProtocolLocalId id) {
-    furi_assert(id < iButtonProtocolDSMax);
+    furry_assert(id < iButtonProtocolDSMax);
     UNUSED(data);
     onewire_slave_stop(group->bus);
 }
@@ -197,7 +197,7 @@ static bool ibutton_protocol_group_dallas_save(
     iButtonProtocolLocalId id,
     FlipperFormat* ff) {
     UNUSED(group);
-    furi_assert(id < iButtonProtocolDSMax);
+    furry_assert(id < iButtonProtocolDSMax);
     return ibutton_protocols_dallas[id]->save(ff, data);
 }
 
@@ -208,7 +208,7 @@ static bool ibutton_protocol_group_dallas_load(
     uint32_t version,
     FlipperFormat* ff) {
     UNUSED(group);
-    furi_assert(id < iButtonProtocolDSMax);
+    furry_assert(id < iButtonProtocolDSMax);
     return ibutton_protocols_dallas[id]->load(ff, version, data);
 }
 
@@ -216,11 +216,11 @@ static void ibutton_protocol_group_dallas_render_data(
     iButtonProtocolGroupDallas* group,
     const iButtonProtocolData* data,
     iButtonProtocolLocalId id,
-    FuriString* result) {
+    FurryString* result) {
     UNUSED(group);
-    furi_assert(id < iButtonProtocolDSMax);
+    furry_assert(id < iButtonProtocolDSMax);
     const iButtonProtocolDallasBase* protocol = ibutton_protocols_dallas[id];
-    furi_assert(protocol->render_data);
+    furry_assert(protocol->render_data);
     protocol->render_data(result, data);
 }
 
@@ -228,9 +228,9 @@ static void ibutton_protocol_group_dallas_render_brief_data(
     iButtonProtocolGroupDallas* group,
     const iButtonProtocolData* data,
     iButtonProtocolLocalId id,
-    FuriString* result) {
+    FurryString* result) {
     UNUSED(group);
-    furi_assert(id < iButtonProtocolDSMax);
+    furry_assert(id < iButtonProtocolDSMax);
     ibutton_protocols_dallas[id]->render_brief_data(result, data);
 }
 
@@ -238,9 +238,9 @@ static void ibutton_protocol_group_dallas_render_error(
     iButtonProtocolGroupDallas* group,
     const iButtonProtocolData* data,
     iButtonProtocolLocalId id,
-    FuriString* result) {
+    FurryString* result) {
     UNUSED(group);
-    furi_assert(id < iButtonProtocolDSMax);
+    furry_assert(id < iButtonProtocolDSMax);
     ibutton_protocols_dallas[id]->render_error(result, data);
 }
 
@@ -249,7 +249,7 @@ static bool ibutton_protocol_group_dallas_is_valid(
     const iButtonProtocolData* data,
     iButtonProtocolLocalId id) {
     UNUSED(group);
-    furi_assert(id < iButtonProtocolDSMax);
+    furry_assert(id < iButtonProtocolDSMax);
     return ibutton_protocols_dallas[id]->is_valid(data);
 }
 
@@ -259,7 +259,7 @@ static void ibutton_protocol_group_dallas_get_editable_data(
     iButtonProtocolLocalId id,
     iButtonEditableData* editable) {
     UNUSED(group);
-    furi_assert(id < iButtonProtocolDSMax);
+    furry_assert(id < iButtonProtocolDSMax);
     ibutton_protocols_dallas[id]->get_editable_data(editable, data);
 }
 
@@ -268,7 +268,7 @@ static void ibutton_protocol_group_dallas_apply_edits(
     iButtonProtocolData* data,
     iButtonProtocolLocalId id) {
     UNUSED(group);
-    furi_assert(id < iButtonProtocolDSMax);
+    furry_assert(id < iButtonProtocolDSMax);
     ibutton_protocols_dallas[id]->apply_edits(data);
 }
 

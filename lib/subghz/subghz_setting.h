@@ -2,9 +2,9 @@
 #pragma once
 
 #include <math.h>
-#include <furi.h>
+#include <furry.h>
 #include <m-list.h>
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include <lib/flipper_format/flipper_format.h>
 
 #ifdef __cplusplus

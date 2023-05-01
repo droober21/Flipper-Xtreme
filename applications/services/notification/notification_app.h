@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include "notification.h"
 #include "notification_messages.h"
 #include "notification_settings_filename.h"
@@ -16,7 +16,7 @@ typedef enum {
 typedef struct {
     const NotificationSequence* sequence;
     NotificationAppMessageType type;
-    FuriEventFlag* back_event;
+    FurryEventFlag* back_event;
 } NotificationAppMessage;
 
 typedef enum {
@@ -45,9 +45,9 @@ typedef struct {
 } NotificationSettings;
 
 struct NotificationApp {
-    FuriMessageQueue* queue;
-    FuriPubSub* event_record;
-    FuriTimer* display_timer;
+    FurryMessageQueue* queue;
+    FurryPubSub* event_record;
+    FurryTimer* display_timer;
 
     NotificationLedLayer display;
     NotificationLedLayer led[NOTIFICATION_LED_COUNT];

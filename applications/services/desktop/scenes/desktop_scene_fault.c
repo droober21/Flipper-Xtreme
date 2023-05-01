@@ -1,4 +1,4 @@
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 #include "../desktop_i.h"
 #include <xtreme.h>
@@ -33,7 +33,7 @@ void desktop_scene_fault_on_enter(void* context) {
             AlignCenter);
     }
 
-    char* message = (char*)furi_hal_rtc_get_fault_data();
+    char* message = (char*)furry_hal_rtc_get_fault_data();
     popup_set_text(popup, message, 60, 37 + STATUS_BAR_Y_SHIFT, AlignCenter, AlignCenter);
     popup_set_callback(popup, desktop_scene_fault_callback);
     view_dispatcher_switch_to_view(desktop->view_dispatcher, DesktopViewIdHwMismatch);
@@ -59,5 +59,5 @@ bool desktop_scene_fault_on_event(void* context, SceneManagerEvent event) {
 
 void desktop_scene_fault_on_exit(void* context) {
     UNUSED(context);
-    furi_hal_rtc_set_fault_data(0);
+    furry_hal_rtc_set_fault_data(0);
 }

@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <stdlib.h>
@@ -17,13 +17,13 @@ typedef struct {
 typedef struct {
     int pin;
     int pullMode;
-    FuriMutex* mutex;
+    FurryMutex* mutex;
 } PluginState;
 
 static void render_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     const PluginState* plugin_state = ctx;
-    furi_mutex_acquire(plugin_state->mutex, FuriWaitForever);
+    furry_mutex_acquire(plugin_state->mutex, FurryWaitForever);
 
     canvas_set_font(canvas, FontPrimary);
     canvas_draw_str_aligned(
@@ -60,14 +60,14 @@ static void render_callback(Canvas* const canvas, void* ctx) {
         AlignCenter,
         gpio_item_get_pin_level(plugin_state->pin));
 
-    furi_mutex_release(plugin_state->mutex);
+    furry_mutex_release(plugin_state->mutex);
 }
 
-static void input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     PluginEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 static void GPIO_reader_state_init(PluginState* const plugin_state) {
@@ -78,13 +78,13 @@ static void GPIO_reader_state_init(PluginState* const plugin_state) {
 
 int32_t GPIO_reader_app(void* p) {
     UNUSED(p);
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(PluginEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(PluginEvent));
 
     PluginState* plugin_state = malloc(sizeof(PluginState));
     GPIO_reader_state_init(plugin_state);
-    plugin_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    plugin_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!plugin_state->mutex) {
-        FURI_LOG_E("GPIO_reader", "cannot create mutex\r\n");
+        FURRY_LOG_E("GPIO_reader", "cannot create mutex\r\n");
         free(plugin_state);
         return 255;
     }
@@ -95,15 +95,15 @@ int32_t GPIO_reader_app(void* p) {
     view_port_input_callback_set(view_port, input_callback, event_queue);
 
     // Open GUI and register view_port
-    Gui* gui = furi_record_open("gui");
+    Gui* gui = furry_record_open("gui");
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     PluginEvent event;
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 100);
-        furi_mutex_acquire(plugin_state->mutex, FuriWaitForever);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 100);
+        furry_mutex_acquire(plugin_state->mutex, FurryWaitForever);
 
-        if(event_status == FuriStatusOk) {
+        if(event_status == FurryStatusOk) {
             // press events
             if(event.type == EventTypeKey) {
                 if(event.input.type == InputTypePress || event.input.type == InputTypeRepeat) {
@@ -137,15 +137,15 @@ int32_t GPIO_reader_app(void* p) {
         }
 
         view_port_update(view_port);
-        furi_mutex_release(plugin_state->mutex);
+        furry_mutex_release(plugin_state->mutex);
     }
 
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close("gui");
+    furry_record_close("gui");
     view_port_free(view_port);
-    furi_mutex_free(plugin_state->mutex);
-    furi_message_queue_free(event_queue);
+    furry_mutex_free(plugin_state->mutex);
+    furry_message_queue_free(event_queue);
     free(plugin_state);
 
     return 0;

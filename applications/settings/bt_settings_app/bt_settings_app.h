@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi.h>
+#include <furry.h>
 #include <bt/bt_service/bt.h>
 #include <bt/bt_service/bt_i.h>
 #include <gui/gui.h>

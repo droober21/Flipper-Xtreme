@@ -1,5 +1,5 @@
 #pragma once
-#include <furi.h>
+#include <furry.h>
 #include "dialogs_i.h"
 #include <toolbox/api_lock.h>
 
@@ -13,8 +13,8 @@ typedef struct {
     bool hide_ext;
     bool hide_dot_files;
     const Icon* file_icon;
-    FuriString* result_path;
-    FuriString* preselected_filename;
+    FurryString* result_path;
+    FurryString* preselected_filename;
     FileBrowserLoadItemCallback item_callback;
     void* item_callback_context;
     const char* base_path;
@@ -40,7 +40,7 @@ typedef enum {
 } DialogsAppCommand;
 
 typedef struct {
-    FuriApiLock lock;
+    FurryApiLock lock;
     DialogsAppCommand command;
     DialogsAppData* data;
     DialogsAppReturn* return_data;

@@ -15,8 +15,8 @@
 #define SCENE_EVENT_PINS_DIFFERENT (3U)
 
 static void pin_setup_done_callback(const PinCode* pin_code, void* context) {
-    furi_assert(pin_code);
-    furi_assert(context);
+    furry_assert(pin_code);
+    furry_assert(context);
     DesktopSettingsApp* app = context;
 
     if(!app->pincode_buffer_filled) {
@@ -101,7 +101,7 @@ bool desktop_settings_scene_pin_setup_on_event(void* context, SceneManagerEvent 
 }
 
 void desktop_settings_scene_pin_setup_on_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DesktopSettingsApp* app = context;
     desktop_view_pin_input_set_back_callback(app->pin_input_view, NULL);
     desktop_view_pin_input_set_done_callback(app->pin_input_view, NULL);

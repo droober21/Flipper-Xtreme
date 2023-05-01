@@ -14,20 +14,20 @@ const char* const log_level_text[] = {
 };
 
 const uint32_t log_level_value[] = {
-    FuriLogLevelDefault,
-    FuriLogLevelNone,
-    FuriLogLevelError,
-    FuriLogLevelWarn,
-    FuriLogLevelInfo,
-    FuriLogLevelDebug,
-    FuriLogLevelTrace,
+    FurryLogLevelDefault,
+    FurryLogLevelNone,
+    FurryLogLevelError,
+    FurryLogLevelWarn,
+    FurryLogLevelInfo,
+    FurryLogLevelDebug,
+    FurryLogLevelTrace,
 };
 
 static void log_level_changed(VariableItem* item) {
     // SystemSettings* app = variable_item_get_context(item);
     uint8_t index = variable_item_get_current_value_index(item);
     variable_item_set_current_value_text(item, log_level_text[index]);
-    furi_hal_rtc_set_log_level(log_level_value[index]);
+    furry_hal_rtc_set_log_level(log_level_value[index]);
 }
 
 const char* const debug_text[] = {
@@ -39,9 +39,9 @@ static void debug_changed(VariableItem* item) {
     uint8_t index = variable_item_get_current_value_index(item);
     variable_item_set_current_value_text(item, debug_text[index]);
     if(index) {
-        furi_hal_rtc_set_flag(FuriHalRtcFlagDebug);
+        furry_hal_rtc_set_flag(FurryHalRtcFlagDebug);
     } else {
-        furi_hal_rtc_reset_flag(FuriHalRtcFlagDebug);
+        furry_hal_rtc_reset_flag(FurryHalRtcFlagDebug);
     }
     loader_update_menu();
 }
@@ -49,18 +49,18 @@ static void debug_changed(VariableItem* item) {
 const char* const heap_trace_mode_text[] = {
     "None",
     "Main",
-#if FURI_DEBUG
+#if FURRY_DEBUG
     "Tree",
     "All",
 #endif
 };
 
 const uint32_t heap_trace_mode_value[] = {
-    FuriHalRtcHeapTrackModeNone,
-    FuriHalRtcHeapTrackModeMain,
-#if FURI_DEBUG
-    FuriHalRtcHeapTrackModeTree,
-    FuriHalRtcHeapTrackModeAll,
+    FurryHalRtcHeapTrackModeNone,
+    FurryHalRtcHeapTrackModeMain,
+#if FURRY_DEBUG
+    FurryHalRtcHeapTrackModeTree,
+    FurryHalRtcHeapTrackModeAll,
 #endif
 };
 
@@ -68,7 +68,7 @@ static void heap_trace_mode_changed(VariableItem* item) {
     // SystemSettings* app = variable_item_get_context(item);
     uint8_t index = variable_item_get_current_value_index(item);
     variable_item_set_current_value_text(item, heap_trace_mode_text[index]);
-    furi_hal_rtc_set_heap_track_mode(heap_trace_mode_value[index]);
+    furry_hal_rtc_set_heap_track_mode(heap_trace_mode_value[index]);
 }
 
 const char* const measurement_units_text[] = {
@@ -133,9 +133,9 @@ static void sleep_method_changed(VariableItem* item) {
     uint8_t index = variable_item_get_current_value_index(item);
     variable_item_set_current_value_text(item, sleep_method[index]);
     if(index) {
-        furi_hal_rtc_set_flag(FuriHalRtcFlagLegacySleep);
+        furry_hal_rtc_set_flag(FurryHalRtcFlagLegacySleep);
     } else {
-        furi_hal_rtc_reset_flag(FuriHalRtcFlagLegacySleep);
+        furry_hal_rtc_reset_flag(FurryHalRtcFlagLegacySleep);
     }
 }
 
@@ -148,7 +148,7 @@ SystemSettings* system_settings_alloc() {
     SystemSettings* app = malloc(sizeof(SystemSettings));
 
     // Load settings
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
 
     app->view_dispatcher = view_dispatcher_alloc();
     view_dispatcher_enable_queue(app->view_dispatcher);
@@ -188,13 +188,13 @@ SystemSettings* system_settings_alloc() {
     item = variable_item_list_add(
         app->var_item_list, "Log Level", COUNT_OF(log_level_text), log_level_changed, app);
     value_index = value_index_uint32(
-        furi_hal_rtc_get_log_level(), log_level_value, COUNT_OF(log_level_text));
+        furry_hal_rtc_get_log_level(), log_level_value, COUNT_OF(log_level_text));
     variable_item_set_current_value_index(item, value_index);
     variable_item_set_current_value_text(item, log_level_text[value_index]);
 
     item = variable_item_list_add(
         app->var_item_list, "Debug", COUNT_OF(debug_text), debug_changed, app);
-    value_index = furi_hal_rtc_is_flag_set(FuriHalRtcFlagDebug) ? 1 : 0;
+    value_index = furry_hal_rtc_is_flag_set(FurryHalRtcFlagDebug) ? 1 : 0;
     variable_item_set_current_value_index(item, value_index);
     variable_item_set_current_value_text(item, debug_text[value_index]);
 
@@ -205,14 +205,14 @@ SystemSettings* system_settings_alloc() {
         heap_trace_mode_changed,
         app);
     value_index = value_index_uint32(
-        furi_hal_rtc_get_heap_track_mode(), heap_trace_mode_value, COUNT_OF(heap_trace_mode_text));
-    furi_hal_rtc_set_heap_track_mode(heap_trace_mode_value[value_index]);
+        furry_hal_rtc_get_heap_track_mode(), heap_trace_mode_value, COUNT_OF(heap_trace_mode_text));
+    furry_hal_rtc_set_heap_track_mode(heap_trace_mode_value[value_index]);
     variable_item_set_current_value_index(item, value_index);
     variable_item_set_current_value_text(item, heap_trace_mode_text[value_index]);
 
     item = variable_item_list_add(
         app->var_item_list, "Sleep Method", COUNT_OF(sleep_method), sleep_method_changed, app);
-    value_index = furi_hal_rtc_is_flag_set(FuriHalRtcFlagLegacySleep) ? 1 : 0;
+    value_index = furry_hal_rtc_is_flag_set(FurryHalRtcFlagLegacySleep) ? 1 : 0;
     variable_item_set_current_value_index(item, value_index);
     variable_item_set_current_value_text(item, sleep_method[value_index]);
 
@@ -229,14 +229,14 @@ SystemSettings* system_settings_alloc() {
 }
 
 void system_settings_free(SystemSettings* app) {
-    furi_assert(app);
+    furry_assert(app);
     // Variable item list
     view_dispatcher_remove_view(app->view_dispatcher, SystemSettingsViewVarItemList);
     variable_item_list_free(app->var_item_list);
     // View dispatcher
     view_dispatcher_free(app->view_dispatcher);
     // Records
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     free(app);
 }
 

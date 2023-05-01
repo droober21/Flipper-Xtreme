@@ -3,10 +3,10 @@
 #include "picopass_worker.h"
 #include "picopass_i.h"
 
-#include <furi.h>
+#include <furry.h>
 #include <lib/toolbox/stream/file_stream.h>
 
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 #include <stdlib.h>
 #include <rfal_rf.h>
@@ -14,7 +14,7 @@
 #include <platform.h>
 
 struct PicopassWorker {
-    FuriThread* thread;
+    FurryThread* thread;
     Storage* storage;
     Stream* dict_stream;
 

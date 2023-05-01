@@ -1,6 +1,6 @@
 #include <projdefs.h>
 #include <stdint.h>
-#include <furi.h>
+#include <furry.h>
 #include <gui/elements.h>
 #include <gui/icon.h>
 #include <gui/view.h>
@@ -52,8 +52,8 @@ void desktop_view_locked_set_callback(
     DesktopViewLocked* locked_view,
     DesktopViewLockedCallback callback,
     void* context) {
-    furi_assert(locked_view);
-    furi_assert(callback);
+    furry_assert(locked_view);
+    furry_assert(callback);
     locked_view->callback = callback;
     locked_view->context = context;
 }
@@ -70,8 +70,8 @@ void desktop_view_locked_draw_lockscreen(Canvas* canvas, void* m) {
     char second_str[5];
     char date_str[14];
     char meridian_str[3];
-    FuriHalRtcDateTime datetime;
-    furi_hal_rtc_get_datetime(&datetime);
+    FurryHalRtcDateTime datetime;
+    furry_hal_rtc_get_datetime(&datetime);
     LocaleTimeFormat time_format = locale_get_time_format();
     LocaleDateFormat date_format = locale_get_date_format();
     XtremeSettings* xtreme_settings = XTREME_SETTINGS();
@@ -198,13 +198,13 @@ static void desktop_view_locked_draw(Canvas* canvas, void* model) {
 }
 
 View* desktop_view_locked_get_view(DesktopViewLocked* locked_view) {
-    furi_assert(locked_view);
+    furry_assert(locked_view);
     return locked_view->view;
 }
 
 static bool desktop_view_locked_input(InputEvent* event, void* context) {
-    furi_assert(event);
-    furi_assert(context);
+    furry_assert(event);
+    furry_assert(context);
 
     bool is_changed = false;
     const uint32_t press_time = xTaskGetTickCount();
@@ -272,15 +272,15 @@ DesktopViewLocked* desktop_view_locked_alloc() {
 }
 
 void desktop_view_locked_free(DesktopViewLocked* locked_view) {
-    furi_assert(locked_view);
-    furi_timer_free(locked_view->timer);
+    furry_assert(locked_view);
+    furry_timer_free(locked_view->timer);
     view_free(locked_view->view);
     free(locked_view);
 }
 
 void desktop_view_locked_close_cover(DesktopViewLocked* locked_view) {
     DesktopViewLockedModel* model = view_get_model(locked_view->view);
-    furi_assert(model->view_state == DesktopViewLockedStateLocked);
+    furry_assert(model->view_state == DesktopViewLockedStateLocked);
     model->view_state = DesktopViewLockedStateCoverClosing;
     model->cover_offset = COVER_OFFSET_START;
     view_commit_model(locked_view->view, true);
@@ -289,7 +289,7 @@ void desktop_view_locked_close_cover(DesktopViewLocked* locked_view) {
 
 void desktop_view_locked_lock(DesktopViewLocked* locked_view, bool pin_locked) {
     DesktopViewLockedModel* model = view_get_model(locked_view->view);
-    furi_assert(model->view_state == DesktopViewLockedStateUnlocked);
+    furry_assert(model->view_state == DesktopViewLockedStateUnlocked);
     model->view_state = DesktopViewLockedStateLocked;
     model->pin_locked = pin_locked;
     view_commit_model(locked_view->view, true);

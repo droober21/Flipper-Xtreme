@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#include <furi.h>
+#include <furry.h>
 
 #include "wii_ec_nunchuck.h"
 #include "wii_ec_classic.h"
@@ -103,7 +103,7 @@ typedef struct ecId {
     scene_t scene; // Default scene
     bool (*init)(wiiEC_t*); // Additional initialisation code
     void (*decode)(wiiEC_t*); // Decode function
-    void (*check)(wiiEC_t*, FuriMessageQueue*); // check (for action) function
+    void (*check)(wiiEC_t*, FurryMessageQueue*); // check (for action) function
     void (*calib)(wiiEC_t*, ecCalib_t); // calibrate analogue controllers [SOFTWARE]
     void (*show)(Canvas* const, state_t* const); // Draw scene
     bool (*keys)(const eventMsg_t* const, state_t* const); // Interpret keys
@@ -152,7 +152,7 @@ typedef struct state state_t;
 typedef struct eventMsg eventMsg_t;
 
 void ecDecode(wiiEC_t* const pec);
-void ecPoll(wiiEC_t* const pec, FuriMessageQueue* const queue);
+void ecPoll(wiiEC_t* const pec, FurryMessageQueue* const queue);
 void ecCalibrate(wiiEC_t* const pec, ecCalib_t c);
 
 void ec_show(Canvas* const canvas, state_t* const state);

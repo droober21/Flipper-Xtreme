@@ -1,9 +1,9 @@
-#if FURI_DEBUG
+#if FURRY_DEBUG
 #include "../subghz_i.h"
 #include "../views/subghz_test_packet.h"
 
 void subghz_scene_test_packet_callback(SubGhzTestPacketEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhz* subghz = context;
     view_dispatcher_send_custom_event(subghz->view_dispatcher, event);
 }

@@ -1,5 +1,5 @@
 #include "../storage_settings.h"
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 #define BENCH_DATA_SIZE 4096
 #define BENCH_COUNT 6
@@ -22,7 +22,7 @@ static bool storage_settings_scene_bench_write(
     bool result = true;
     if(storage_file_open(file, BENCH_FILE, FSAM_WRITE, FSOM_CREATE_ALWAYS)) {
         uint32_t ticks;
-        ticks = furi_get_tick();
+        ticks = furry_get_tick();
 
         for(size_t repeat = 0; repeat < BENCH_REPEATS; repeat++) {
             for(size_t i = 0; i < BENCH_DATA_SIZE / size; i++) {
@@ -33,8 +33,8 @@ static bool storage_settings_scene_bench_write(
             }
         }
 
-        ticks = furi_get_tick() - ticks;
-        *speed = BENCH_DATA_SIZE * furi_kernel_get_tick_frequency() * BENCH_REPEATS;
+        ticks = furry_get_tick() - ticks;
+        *speed = BENCH_DATA_SIZE * furry_kernel_get_tick_frequency() * BENCH_REPEATS;
         *speed /= ticks;
         *speed /= 1024;
     }
@@ -51,7 +51,7 @@ static bool
 
     if(storage_file_open(file, BENCH_FILE, FSAM_READ, FSOM_OPEN_EXISTING)) {
         uint32_t ticks;
-        ticks = furi_get_tick();
+        ticks = furry_get_tick();
 
         for(size_t repeat = 0; repeat < BENCH_REPEATS; repeat++) {
             for(size_t i = 0; i < BENCH_DATA_SIZE / size; i++) {
@@ -62,8 +62,8 @@ static bool
             }
         }
 
-        ticks = furi_get_tick() - ticks;
-        *speed = BENCH_DATA_SIZE * furi_kernel_get_tick_frequency() * BENCH_REPEATS;
+        ticks = furry_get_tick() - ticks;
+        *speed = BENCH_DATA_SIZE * furry_kernel_get_tick_frequency() * BENCH_REPEATS;
         *speed /= ticks;
         *speed /= 1024;
     }
@@ -92,22 +92,22 @@ static void storage_settings_scene_benchmark(StorageSettings* app) {
                app->fs_api, bench_size[i], bench_data, &bench_w_speed[i]))
             break;
 
-        if(i > 0) furi_string_cat_printf(app->text_string, "\n");
-        furi_string_cat_printf(app->text_string, "%ub : W %luK ", bench_size[i], bench_w_speed[i]);
+        if(i > 0) furry_string_cat_printf(app->text_string, "\n");
+        furry_string_cat_printf(app->text_string, "%ub : W %luK ", bench_size[i], bench_w_speed[i]);
         dialog_ex_set_header(dialog_ex, NULL, 0, 0, AlignCenter, AlignCenter);
         dialog_ex_set_text(
-            dialog_ex, furi_string_get_cstr(app->text_string), 0, 32, AlignLeft, AlignCenter);
+            dialog_ex, furry_string_get_cstr(app->text_string), 0, 32, AlignLeft, AlignCenter);
 
         if(!storage_settings_scene_bench_read(
                app->fs_api, bench_size[i], bench_data, &bench_r_speed[i]))
             break;
 
-        furi_string_cat_printf(app->text_string, "R %luK", bench_r_speed[i]);
+        furry_string_cat_printf(app->text_string, "R %luK", bench_r_speed[i]);
 
         storage_common_remove(app->fs_api, BENCH_FILE);
 
         dialog_ex_set_text(
-            dialog_ex, furi_string_get_cstr(app->text_string), 0, 32, AlignLeft, AlignCenter);
+            dialog_ex, furry_string_get_cstr(app->text_string), 0, 32, AlignLeft, AlignCenter);
     }
 
     free(bench_data);
@@ -162,5 +162,5 @@ void storage_settings_scene_benchmark_on_exit(void* context) {
 
     dialog_ex_reset(dialog_ex);
 
-    furi_string_reset(app->text_string);
+    furry_string_reset(app->text_string);
 }

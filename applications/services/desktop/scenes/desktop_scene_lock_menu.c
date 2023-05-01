@@ -1,6 +1,6 @@
 #include <gui/scene_manager.h>
 #include <applications.h>
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include <toolbox/saved_struct.h>
 #include <stdbool.h>
 #include <loader/loader.h>
@@ -29,12 +29,12 @@ void desktop_scene_lock_menu_on_enter(void* context) {
     desktop_lock_menu_set_callback(desktop->lock_menu, desktop_scene_lock_menu_callback, desktop);
     desktop_lock_menu_set_pin_state(desktop->lock_menu, desktop->settings.pin_code.length > 0);
     desktop_lock_menu_set_stealth_mode_state(
-        desktop->lock_menu, furi_hal_rtc_is_flag_set(FuriHalRtcFlagStealthMode));
+        desktop->lock_menu, furry_hal_rtc_is_flag_set(FurryHalRtcFlagStealthMode));
     desktop_lock_menu_set_idx(desktop->lock_menu, 3);
 
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_set_hide_statusbar(gui, true);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
     view_dispatcher_switch_to_view(desktop->view_dispatcher, DesktopViewIdLockMenu);
 }
@@ -69,10 +69,10 @@ bool desktop_scene_lock_menu_on_event(void* context, SceneManagerEvent event) {
                 desktop_pin_lock(&desktop->settings);
                 desktop_lock(desktop);
                 if(check_pin_changed == 2) {
-                    Power* power = furi_record_open(RECORD_POWER);
-                    furi_delay_ms(500);
+                    Power* power = furry_record_open(RECORD_POWER);
+                    furry_delay_ms(500);
                     power_off(power);
-                    furi_record_close(RECORD_POWER);
+                    furry_record_close(RECORD_POWER);
                 }
             }
         }
@@ -100,7 +100,7 @@ bool desktop_scene_lock_menu_on_event(void* context, SceneManagerEvent event) {
                 if(status == LoaderStatusOk) {
                     scene_manager_set_scene_state(desktop->scene_manager, DesktopSceneLockMenu, 1);
                 } else {
-                    FURI_LOG_E(TAG, "Unable to start desktop settings");
+                    FURRY_LOG_E(TAG, "Unable to start desktop settings");
                 }
             }
             consumed = true;
@@ -110,17 +110,17 @@ bool desktop_scene_lock_menu_on_event(void* context, SceneManagerEvent event) {
             if(desktop->settings.pin_code.length > 0) {
                 desktop_pin_lock(&desktop->settings);
                 desktop_lock(desktop);
-                Power* power = furi_record_open(RECORD_POWER);
-                furi_delay_ms(500);
+                Power* power = furry_record_open(RECORD_POWER);
+                furry_delay_ms(500);
                 power_off(power);
-                furi_record_close(RECORD_POWER);
+                furry_record_close(RECORD_POWER);
             } else {
                 LoaderStatus status =
                     loader_start(desktop->loader, "Desktop", DESKTOP_SETTINGS_RUN_PIN_SETUP_ARG);
                 if(status == LoaderStatusOk) {
                     scene_manager_set_scene_state(desktop->scene_manager, DesktopSceneLockMenu, 2);
                 } else {
-                    FURI_LOG_E(TAG, "Unable to start desktop settings");
+                    FURRY_LOG_E(TAG, "Unable to start desktop settings");
                 }
             }
             consumed = true;
@@ -150,7 +150,7 @@ void desktop_scene_lock_menu_on_exit(void* context) {
     Desktop* desktop = (Desktop*)context;
     desktop_scene_lock_menu_save_settings(desktop);
 
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_set_hide_statusbar(gui, false);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 }

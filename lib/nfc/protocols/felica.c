@@ -2,8 +2,8 @@
 #include <mbedtls/sha1.h>
 #include "felica.h"
 #include "nfc_util.h"
-#include <furi.h>
-#include "furi_hal_nfc.h"
+#include <furry.h>
+#include "furry_hal_nfc.h"
 
 #define TAG "FeliCa"
 
@@ -233,7 +233,7 @@ uint16_t felica_parse_unencrypted_read(
     len -= 2;
     buf += 2;
     if(reader->status_flags[0] != 0) {
-        FURI_LOG_W(TAG, "SF1: %02X SF2: %02X", reader->status_flags[0], reader->status_flags[1]);
+        FURRY_LOG_W(TAG, "SF1: %02X SF2: %02X", reader->status_flags[0], reader->status_flags[1]);
         return 0;
     }
 
@@ -336,7 +336,7 @@ bool felica_parse_unencrypted_write(uint8_t* buf, uint8_t len, FelicaReader* rea
     len -= 2;
     buf += 2;
     if(reader->status_flags[0] != 0) {
-        FURI_LOG_W(TAG, "SF1: %02X SF2: %02X", reader->status_flags[0], reader->status_flags[1]);
+        FURRY_LOG_W(TAG, "SF1: %02X SF2: %02X", reader->status_flags[0], reader->status_flags[1]);
         return 0;
     }
 
@@ -372,7 +372,7 @@ void felica_define_normal_block(FelicaService* service, uint16_t number, uint8_t
 }
 
 bool felica_read_lite_system(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     FelicaReader* reader,
     FelicaData* data,
     FelicaSystem* system) {
@@ -391,35 +391,35 @@ bool felica_read_lite_system(
 
     tx_rx->tx_bits =
         8 * felica_lite_prepare_unencrypted_read(tx_rx->tx_data, reader, true, fixed_blocks, 1);
-    if(!furi_hal_nfc_tx_rx_full(tx_rx)) {
-        FURI_LOG_W(TAG, "Bad exchange verifying Lite system code");
+    if(!furry_hal_nfc_tx_rx_full(tx_rx)) {
+        FURRY_LOG_W(TAG, "Bad exchange verifying Lite system code");
         return false;
     }
     if(felica_parse_unencrypted_read(
            tx_rx->rx_data, tx_rx->rx_bits / 8, reader, block_data, sizeof(block_data)) !=
        FELICA_BLOCK_SIZE) {
-        FURI_LOG_W(TAG, "Bad response to Read without Encryption (SYS_C)");
+        FURRY_LOG_W(TAG, "Bad response to Read without Encryption (SYS_C)");
         return false;
     }
     if(nfc_util_bytes2num(block_data, 2) != LITE_SYSTEM_CODE) {
-        FURI_LOG_W(TAG, "Unexpected SYS_C value");
+        FURRY_LOG_W(TAG, "Unexpected SYS_C value");
         return false;
     }
 
     tx_rx->tx_bits = 8 * felica_lite_prepare_unencrypted_read(
                              tx_rx->tx_data, reader, true, &fixed_blocks[1], 1);
-    if(!furi_hal_nfc_tx_rx_full(tx_rx)) {
-        FURI_LOG_W(TAG, "Bad exchange reading D_ID");
+    if(!furry_hal_nfc_tx_rx_full(tx_rx)) {
+        FURRY_LOG_W(TAG, "Bad exchange reading D_ID");
         return false;
     }
     if(felica_parse_unencrypted_read(
            tx_rx->rx_data, tx_rx->rx_bits / 8, reader, block_data, sizeof(block_data)) !=
        FELICA_BLOCK_SIZE) {
-        FURI_LOG_W(TAG, "Bad response to Read without Encryption (D_ID)");
+        FURRY_LOG_W(TAG, "Bad response to Read without Encryption (D_ID)");
         return false;
     }
     if(memcmp(system->idm, block_data, 8) != 0 || memcmp(system->pmm, block_data + 8, 8) != 0) {
-        FURI_LOG_W(TAG, "Mismatching values for D_ID");
+        FURRY_LOG_W(TAG, "Mismatching values for D_ID");
         return false;
     }
 
@@ -431,63 +431,63 @@ bool felica_read_lite_system(
 
     tx_rx->tx_bits = 8 * felica_lite_prepare_unencrypted_read(
                              tx_rx->tx_data, reader, true, &fixed_blocks[2], 1);
-    if(!furi_hal_nfc_tx_rx_full(tx_rx)) {
-        FURI_LOG_W(TAG, "Bad exchange reading ID");
+    if(!furry_hal_nfc_tx_rx_full(tx_rx)) {
+        FURRY_LOG_W(TAG, "Bad exchange reading ID");
         return false;
     }
     if(felica_parse_unencrypted_read(
            tx_rx->rx_data, tx_rx->rx_bits / 8, reader, block_data, sizeof(block_data)) !=
        FELICA_BLOCK_SIZE) {
-        FURI_LOG_W(TAG, "Bad response to Read without Encryption (ID)");
+        FURRY_LOG_W(TAG, "Bad response to Read without Encryption (ID)");
         return false;
     }
     lite_info->data_format_code = nfc_util_bytes2num(block_data + 8, 2);
     memcpy(lite_info->ID_value, block_data + 10, 6);
-    FURI_LOG_I(TAG, "ID:");
+    FURRY_LOG_I(TAG, "ID:");
     for(int i = 0; i < FELICA_BLOCK_SIZE; i++) {
-        FURI_LOG_I(TAG, "%02X", block_data[i]);
+        FURRY_LOG_I(TAG, "%02X", block_data[i]);
     }
 
     memset(block_data, 0, FELICA_BLOCK_SIZE);
     tx_rx->tx_bits = 8 * felica_lite_prepare_unencrypted_write(
                              tx_rx->tx_data, reader, &fixed_blocks[3], 1, block_data);
-    if(!furi_hal_nfc_tx_rx_full(tx_rx)) {
-        FURI_LOG_W(TAG, "Bad exchange writing random challenge");
+    if(!furry_hal_nfc_tx_rx_full(tx_rx)) {
+        FURRY_LOG_W(TAG, "Bad exchange writing random challenge");
         return false;
     }
     if(!felica_parse_unencrypted_write(tx_rx->rx_data, tx_rx->rx_bits / 8, reader)) {
-        FURI_LOG_W(TAG, "Bad response to Write without Encryption (RC)");
+        FURRY_LOG_W(TAG, "Bad response to Write without Encryption (RC)");
         return false;
     }
 
     tx_rx->tx_bits = 8 * felica_lite_prepare_unencrypted_read(
                              tx_rx->tx_data, reader, true, &fixed_blocks[4], 2);
-    if(!furi_hal_nfc_tx_rx_full(tx_rx)) {
-        FURI_LOG_W(TAG, "Bad exchange reading CK and MAC");
+    if(!furry_hal_nfc_tx_rx_full(tx_rx)) {
+        FURRY_LOG_W(TAG, "Bad exchange reading CK and MAC");
         return false;
     }
     if(felica_parse_unencrypted_read(
            tx_rx->rx_data, tx_rx->rx_bits / 8, reader, block_data, sizeof(block_data)) !=
        FELICA_BLOCK_SIZE * 2) {
-        FURI_LOG_W(TAG, "Bad response to Read without Encryption (CK, MAC)");
+        FURRY_LOG_W(TAG, "Bad response to Read without Encryption (CK, MAC)");
         return false;
     }
     memcpy(lite_info->MAC, block_data + FELICA_BLOCK_SIZE, 8);
-    FURI_LOG_I(TAG, "MAC:");
+    FURRY_LOG_I(TAG, "MAC:");
     for(int i = 0; i < FELICA_BLOCK_SIZE; i++) {
-        FURI_LOG_I(TAG, "%02X", block_data[i + FELICA_BLOCK_SIZE]);
+        FURRY_LOG_I(TAG, "%02X", block_data[i + FELICA_BLOCK_SIZE]);
     }
 
     tx_rx->tx_bits = 8 * felica_lite_prepare_unencrypted_read(
                              tx_rx->tx_data, reader, true, &fixed_blocks[6], 2);
-    if(!furi_hal_nfc_tx_rx_full(tx_rx)) {
-        FURI_LOG_W(TAG, "Bad exchange reading CKV and MC");
+    if(!furry_hal_nfc_tx_rx_full(tx_rx)) {
+        FURRY_LOG_W(TAG, "Bad exchange reading CKV and MC");
         return false;
     }
     if(felica_parse_unencrypted_read(
            tx_rx->rx_data, tx_rx->rx_bits / 8, reader, block_data, sizeof(block_data)) !=
        FELICA_BLOCK_SIZE * 2) {
-        FURI_LOG_W(TAG, "Bad response to Read without Encryption (CKV, MC)");
+        FURRY_LOG_W(TAG, "Bad response to Read without Encryption (CKV, MC)");
         return false;
     }
     lite_info->card_key_version = nfc_util_bytes2num(block_data, 2);
@@ -507,14 +507,14 @@ bool felica_read_lite_system(
 
         tx_rx->tx_bits = 8 * felica_lite_prepare_unencrypted_read(
                                  tx_rx->tx_data, reader, true, &block_number, 1);
-        if(!furi_hal_nfc_tx_rx_full(tx_rx)) {
-            FURI_LOG_W(TAG, "Bad exchange reading blocks");
+        if(!furry_hal_nfc_tx_rx_full(tx_rx)) {
+            FURRY_LOG_W(TAG, "Bad exchange reading blocks");
             return false;
         }
         if(felica_parse_unencrypted_read(
                tx_rx->rx_data, tx_rx->rx_bits / 8, reader, block_data, sizeof(block_data)) !=
            FELICA_BLOCK_SIZE) {
-            FURI_LOG_W(TAG, "Bad response to Read without Encryption (block %d)", block_number);
+            FURRY_LOG_W(TAG, "Bad response to Read without Encryption (block %d)", block_number);
             return false;
         }
         uint8_t* block = malloc(FELICA_BLOCK_SIZE);
@@ -535,28 +535,28 @@ bool felica_read_lite_system(
 
         tx_rx->tx_bits = 8 * felica_lite_prepare_unencrypted_read(
                                  tx_rx->tx_data, reader, true, fixed_s_blocks, 2);
-        if(!furi_hal_nfc_tx_rx_full(tx_rx)) {
-            FURI_LOG_W(TAG, "Bad exchange reading ID with MAC_A");
+        if(!furry_hal_nfc_tx_rx_full(tx_rx)) {
+            FURRY_LOG_W(TAG, "Bad exchange reading ID with MAC_A");
             return false;
         }
         if(felica_parse_unencrypted_read(
                tx_rx->rx_data, tx_rx->rx_bits / 8, reader, block_data, sizeof(block_data)) !=
            FELICA_BLOCK_SIZE * 2) {
-            FURI_LOG_W(TAG, "Bad response to Read without Encryption (CK, MAC_A)");
+            FURRY_LOG_W(TAG, "Bad response to Read without Encryption (CK, MAC_A)");
             return false;
         }
         memcpy(lite_info->MAC_A, block_data + FELICA_BLOCK_SIZE, FELICA_BLOCK_SIZE);
 
         tx_rx->tx_bits = 8 * felica_lite_prepare_unencrypted_read(
                                  tx_rx->tx_data, reader, true, &fixed_s_blocks[2], 2);
-        if(!furi_hal_nfc_tx_rx_full(tx_rx)) {
-            FURI_LOG_W(TAG, "Bad exchange reading ID with MAC_A");
+        if(!furry_hal_nfc_tx_rx_full(tx_rx)) {
+            FURRY_LOG_W(TAG, "Bad exchange reading ID with MAC_A");
             return false;
         }
         if(felica_parse_unencrypted_read(
                tx_rx->rx_data, tx_rx->rx_bits / 8, reader, block_data, sizeof(block_data)) !=
            FELICA_BLOCK_SIZE * 2) {
-            FURI_LOG_W(TAG, "Bad response to Read without Encryption (WC, CRC_CHECK)");
+            FURRY_LOG_W(TAG, "Bad response to Read without Encryption (WC, CRC_CHECK)");
             return false;
         }
         lite_info->write_count = nfc_util_bytes2num(block_data, 3);
@@ -567,13 +567,13 @@ bool felica_read_lite_system(
 }
 
 bool felica_read_card(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     FelicaData* data,
     uint8_t* polled_idm,
     uint8_t* polled_pmm) {
-    furi_assert(tx_rx);
-    furi_assert(polled_idm);
-    furi_assert(polled_pmm);
+    furry_assert(tx_rx);
+    furry_assert(polled_idm);
+    furry_assert(polled_pmm);
 
     bool card_read = false;
     do {
@@ -588,7 +588,7 @@ bool felica_read_card(
         felica_parse_system_info(current_system, polled_idm, polled_pmm);
 
         if(data->type == FelicaICTypeLite || data->type == FelicaICTypeLiteS) {
-            FURI_LOG_I(TAG, "Reading Felica Lite system");
+            FURRY_LOG_I(TAG, "Reading Felica Lite system");
             felica_read_lite_system(tx_rx, &reader, data, current_system);
             card_read = true;
             break;

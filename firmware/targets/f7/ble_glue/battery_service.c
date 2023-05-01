@@ -2,8 +2,8 @@
 #include "app_common.h"
 #include <ble/ble.h>
 
-#include <furi.h>
-#include <furi_hal_power.h>
+#include <furry.h>
+#include <furry_hal_power.h>
 
 #define TAG "BtBatterySvc"
 
@@ -56,7 +56,7 @@ void battery_svc_start() {
     status = aci_gatt_add_service(
         UUID_TYPE_16, (Service_UUID_t*)&service_uuid, PRIMARY_SERVICE, 8, &battery_svc->svc_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add Battery service: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add Battery service: %d", status);
     }
     // Add Battery level characteristic
     status = aci_gatt_add_char(
@@ -71,7 +71,7 @@ void battery_svc_start() {
         CHAR_VALUE_LEN_CONSTANT,
         &battery_svc->battery_level_char_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add Battery level characteristic: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add Battery level characteristic: %d", status);
     }
     // Add Power state characteristic
     status = aci_gatt_add_char(
@@ -86,7 +86,7 @@ void battery_svc_start() {
         CHAR_VALUE_LEN_CONSTANT,
         &battery_svc->power_state_char_handle);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to add Battery level characteristic: %d", status);
+        FURRY_LOG_E(TAG, "Failed to add Battery level characteristic: %d", status);
     }
     // Update power state charachteristic
     battery_svc_update_power_state();
@@ -99,17 +99,17 @@ void battery_svc_stop() {
         status =
             aci_gatt_del_char(battery_svc->svc_handle, battery_svc->battery_level_char_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete Battery level characteristic: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete Battery level characteristic: %d", status);
         }
         // Delete Power state characteristic
         status = aci_gatt_del_char(battery_svc->svc_handle, battery_svc->power_state_char_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete Battery level characteristic: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete Battery level characteristic: %d", status);
         }
         // Delete Battery service
         status = aci_gatt_del_service(battery_svc->svc_handle);
         if(status) {
-            FURI_LOG_E(TAG, "Failed to delete Battery service: %d", status);
+            FURRY_LOG_E(TAG, "Failed to delete Battery service: %d", status);
         }
         free(battery_svc);
         battery_svc = NULL;
@@ -126,11 +126,11 @@ bool battery_svc_update_level(uint8_t battery_charge) {
         return false;
     }
     // Update battery level characteristic
-    FURI_LOG_D(TAG, "Updating battery level characteristic");
+    FURRY_LOG_D(TAG, "Updating battery level characteristic");
     tBleStatus result = aci_gatt_update_char_value(
         battery_svc->svc_handle, battery_svc->battery_level_char_handle, 0, 1, &battery_charge);
     if(result) {
-        FURI_LOG_E(TAG, "Failed updating RX characteristic: %d", result);
+        FURRY_LOG_E(TAG, "Failed updating RX characteristic: %d", result);
     }
     return result != BLE_STATUS_SUCCESS;
 }
@@ -145,14 +145,14 @@ bool battery_svc_update_power_state() {
         .level = BatterySvcPowerStateUnsupported,
         .present = BatterySvcPowerStateBatteryPresent,
     };
-    if(furi_hal_power_is_charging()) {
+    if(furry_hal_power_is_charging()) {
         power_state.charging = BatterySvcPowerStateCharging;
         power_state.discharging = BatterySvcPowerStateNotDischarging;
     } else {
         power_state.charging = BatterySvcPowerStateNotCharging;
         power_state.discharging = BatterySvcPowerStateDischarging;
     }
-    FURI_LOG_D(TAG, "Updating power state characteristic");
+    FURRY_LOG_D(TAG, "Updating power state characteristic");
     tBleStatus result = aci_gatt_update_char_value(
         battery_svc->svc_handle,
         battery_svc->power_state_char_handle,
@@ -160,7 +160,7 @@ bool battery_svc_update_power_state() {
         1,
         (uint8_t*)&power_state);
     if(result) {
-        FURI_LOG_E(TAG, "Failed updating Power state characteristic: %d", result);
+        FURRY_LOG_E(TAG, "Failed updating Power state characteristic: %d", result);
     }
     return result != BLE_STATUS_SUCCESS;
 }

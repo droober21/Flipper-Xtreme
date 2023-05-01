@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <furi.h>
+#include <furry.h>
 #include "SK6805.h"
 
 #ifdef __cplusplus

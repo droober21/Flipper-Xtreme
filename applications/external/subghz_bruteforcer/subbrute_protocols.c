@@ -12,7 +12,7 @@ const SubBruteProtocol subbrute_protocol_came_12bit_303 = {
     .bits = 12,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = CAMEFileProtocol};
 
 /**
@@ -23,7 +23,7 @@ const SubBruteProtocol subbrute_protocol_came_12bit_307 = {
     .bits = 12,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = CAMEFileProtocol};
 
 /**
@@ -34,7 +34,7 @@ const SubBruteProtocol subbrute_protocol_came_12bit_315 = {
     .bits = 12,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = CAMEFileProtocol};
 
 /**
@@ -45,7 +45,7 @@ const SubBruteProtocol subbrute_protocol_came_12bit_433 = {
     .bits = 12,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = CAMEFileProtocol};
 
 /**
@@ -56,7 +56,7 @@ const SubBruteProtocol subbrute_protocol_came_12bit_868 = {
     .bits = 12,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = CAMEFileProtocol};
 
 /**
@@ -67,7 +67,7 @@ const SubBruteProtocol subbrute_protocol_nice_12bit_433 = {
     .bits = 12,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = NICEFileProtocol};
 
 /**
@@ -78,7 +78,7 @@ const SubBruteProtocol subbrute_protocol_nice_12bit_868 = {
     .bits = 12,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = NICEFileProtocol};
 
 /**
@@ -89,7 +89,7 @@ const SubBruteProtocol subbrute_protocol_ansonic_12bit_433075 = {
     .bits = 12,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPreset2FSKDev238Async,
+    .preset = FurryHalSubGhzPreset2FSKDev238Async,
     .file = AnsonicFileProtocol};
 
 /**
@@ -100,7 +100,7 @@ const SubBruteProtocol subbrute_protocol_ansonic_12bit_433 = {
     .bits = 12,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPreset2FSKDev238Async,
+    .preset = FurryHalSubGhzPreset2FSKDev238Async,
     .file = AnsonicFileProtocol};
 
 /**
@@ -111,7 +111,7 @@ const SubBruteProtocol subbrute_protocol_ansonic_12bit_434 = {
     .bits = 12,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPreset2FSKDev238Async,
+    .preset = FurryHalSubGhzPreset2FSKDev238Async,
     .file = AnsonicFileProtocol};
 
 /**
@@ -122,7 +122,7 @@ const SubBruteProtocol subbrute_protocol_chamberlain_9bit_300 = {
     .bits = 9,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = ChamberlainFileProtocol};
 
 /**
@@ -133,7 +133,7 @@ const SubBruteProtocol subbrute_protocol_chamberlain_9bit_315 = {
     .bits = 9,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = ChamberlainFileProtocol};
 
 /**
@@ -144,7 +144,7 @@ const SubBruteProtocol subbrute_protocol_chamberlain_9bit_390 = {
     .bits = 9,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = ChamberlainFileProtocol};
 
 /**
@@ -155,7 +155,7 @@ const SubBruteProtocol subbrute_protocol_chamberlain_9bit_433 = {
     .bits = 9,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = ChamberlainFileProtocol};
 
 /**
@@ -166,7 +166,7 @@ const SubBruteProtocol subbrute_protocol_chamberlain_8bit_300 = {
     .bits = 8,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = ChamberlainFileProtocol};
 
 /**
@@ -177,7 +177,7 @@ const SubBruteProtocol subbrute_protocol_chamberlain_8bit_315 = {
     .bits = 8,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = ChamberlainFileProtocol};
 
 /**
@@ -188,7 +188,7 @@ const SubBruteProtocol subbrute_protocol_chamberlain_8bit_390 = {
     .bits = 8,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = ChamberlainFileProtocol};
 
 /**
@@ -199,7 +199,7 @@ const SubBruteProtocol subbrute_protocol_chamberlain_7bit_300 = {
     .bits = 7,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = ChamberlainFileProtocol};
 
 /**
@@ -210,7 +210,7 @@ const SubBruteProtocol subbrute_protocol_chamberlain_7bit_315 = {
     .bits = 7,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = ChamberlainFileProtocol};
 
 /**
@@ -221,7 +221,7 @@ const SubBruteProtocol subbrute_protocol_chamberlain_7bit_390 = {
     .bits = 7,
     .te = 0,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = ChamberlainFileProtocol};
 
 /**
@@ -232,7 +232,7 @@ const SubBruteProtocol subbrute_protocol_linear_10bit_300 = {
     .bits = 10,
     .te = 0,
     .repeat = 5,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = LinearFileProtocol};
 
 /**
@@ -243,7 +243,7 @@ const SubBruteProtocol subbrute_protocol_linear_10bit_310 = {
     .bits = 10,
     .te = 0,
     .repeat = 5,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = LinearFileProtocol};
 
 /**
@@ -254,7 +254,7 @@ const SubBruteProtocol subbrute_protocol_linear_delta_8bit_310 = {
     .bits = 8,
     .te = 0,
     .repeat = 5,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = LinearDeltaFileProtocol};
 
 /**
@@ -265,7 +265,7 @@ const SubBruteProtocol subbrute_protocol_unilarm_24bit_330 = {
     .bits = 25,
     .te = 209,
     .repeat = 4,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = UNILARMFileProtocol};
 
 /**
@@ -276,7 +276,7 @@ const SubBruteProtocol subbrute_protocol_unilarm_24bit_433 = {
     .bits = 25,
     .te = 209,
     .repeat = 4,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = UNILARMFileProtocol};
 
 /**
@@ -287,7 +287,7 @@ const SubBruteProtocol subbrute_protocol_smc5326_24bit_330 = {
     .bits = 25,
     .te = 320,
     .repeat = 4,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = SMC5326FileProtocol};
 
 /**
@@ -298,7 +298,7 @@ const SubBruteProtocol subbrute_protocol_smc5326_24bit_433 = {
     .bits = 25,
     .te = 320,
     .repeat = 4,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = SMC5326FileProtocol};
 
 /**
@@ -309,7 +309,7 @@ const SubBruteProtocol subbrute_protocol_pt2260_24bit_315 = {
     .bits = 24,
     .te = 286,
     .repeat = 4,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = PT2260FileProtocol};
 
 /**
@@ -320,7 +320,7 @@ const SubBruteProtocol subbrute_protocol_pt2260_24bit_330 = {
     .bits = 24,
     .te = 286,
     .repeat = 4,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = PT2260FileProtocol};
 
 /**
@@ -331,7 +331,7 @@ const SubBruteProtocol subbrute_protocol_pt2260_24bit_390 = {
     .bits = 24,
     .te = 286,
     .repeat = 4,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = PT2260FileProtocol};
 
 /**
@@ -342,7 +342,7 @@ const SubBruteProtocol subbrute_protocol_pt2260_24bit_433 = {
     .bits = 24,
     .te = 286,
     .repeat = 4,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = PT2260FileProtocol};
 
 /**
@@ -353,7 +353,7 @@ const SubBruteProtocol subbrute_protocol_holtek_12bit_433 = {
     .bits = 12,
     .te = 204,
     .repeat = 4,
-    .preset = FuriHalSubGhzPreset2FSKDev476Async,
+    .preset = FurryHalSubGhzPreset2FSKDev476Async,
     .file = HoltekFileProtocol};
 
 /**
@@ -364,7 +364,7 @@ const SubBruteProtocol subbrute_protocol_holtek_12bit_am_433 = {
     .bits = 12,
     .te = 433,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = HoltekFileProtocol};
 
 /**
@@ -375,7 +375,7 @@ const SubBruteProtocol subbrute_protocol_holtek_12bit_am_315 = {
     .bits = 12,
     .te = 433,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = HoltekFileProtocol};
 
 /**
@@ -386,7 +386,7 @@ const SubBruteProtocol subbrute_protocol_holtek_12bit_am_868 = {
     .bits = 12,
     .te = 433,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = HoltekFileProtocol};
 
 /**
@@ -397,14 +397,14 @@ const SubBruteProtocol subbrute_protocol_holtek_12bit_am_915 = {
     .bits = 12,
     .te = 433,
     .repeat = 3,
-    .preset = FuriHalSubGhzPresetOok650Async,
+    .preset = FurryHalSubGhzPresetOok650Async,
     .file = HoltekFileProtocol};
 
 /**
  * BF existing dump
  */
 const SubBruteProtocol subbrute_protocol_load_file =
-    {0, 0, 0, 3, FuriHalSubGhzPresetOok650Async, UnknownFileProtocol};
+    {0, 0, 0, 3, FurryHalSubGhzPresetOok650Async, UnknownFileProtocol};
 
 static const char* subbrute_protocol_names[] = {
     [SubBruteAttackCAME12bit303] = "CAME 12bit 303MHz",
@@ -448,13 +448,13 @@ static const char* subbrute_protocol_names[] = {
 };
 
 static const char* subbrute_protocol_presets[] = {
-    [FuriHalSubGhzPresetIDLE] = "FuriHalSubGhzPresetIDLE",
-    [FuriHalSubGhzPresetOok270Async] = "FuriHalSubGhzPresetOok270Async",
-    [FuriHalSubGhzPresetOok650Async] = "FuriHalSubGhzPresetOok650Async",
-    [FuriHalSubGhzPreset2FSKDev238Async] = "FuriHalSubGhzPreset2FSKDev238Async",
-    [FuriHalSubGhzPreset2FSKDev476Async] = "FuriHalSubGhzPreset2FSKDev476Async",
-    [FuriHalSubGhzPresetMSK99_97KbAsync] = "FuriHalSubGhzPresetMSK99_97KbAsync",
-    [FuriHalSubGhzPresetGFSK9_99KbAsync] = "FuriHalSubGhzPresetGFSK9_99KbAsync",
+    [FurryHalSubGhzPresetIDLE] = "FurryHalSubGhzPresetIDLE",
+    [FurryHalSubGhzPresetOok270Async] = "FurryHalSubGhzPresetOok270Async",
+    [FurryHalSubGhzPresetOok650Async] = "FurryHalSubGhzPresetOok650Async",
+    [FurryHalSubGhzPreset2FSKDev238Async] = "FurryHalSubGhzPreset2FSKDev238Async",
+    [FurryHalSubGhzPreset2FSKDev476Async] = "FurryHalSubGhzPreset2FSKDev476Async",
+    [FurryHalSubGhzPresetMSK99_97KbAsync] = "FurryHalSubGhzPresetMSK99_97KbAsync",
+    [FurryHalSubGhzPresetGFSK9_99KbAsync] = "FurryHalSubGhzPresetGFSK9_99KbAsync",
 };
 
 const SubBruteProtocol* subbrute_protocol_registry[] = {
@@ -542,7 +542,7 @@ uint8_t subbrute_protocol_repeats_count(SubBruteAttacks index) {
     return subbrute_protocol_registry[index]->repeat;
 }
 
-const char* subbrute_protocol_preset(FuriHalSubGhzPreset preset) {
+const char* subbrute_protocol_preset(FurryHalSubGhzPreset preset) {
     return subbrute_protocol_presets[preset];
 }
 
@@ -550,19 +550,19 @@ const char* subbrute_protocol_file(SubBruteFileProtocol protocol) {
     return subbrute_protocol_file_types[protocol];
 }
 
-FuriHalSubGhzPreset subbrute_protocol_convert_preset(FuriString* preset_name) {
-    for(size_t i = FuriHalSubGhzPresetIDLE; i < FuriHalSubGhzPresetCustom; i++) {
-        if(furi_string_cmp_str(preset_name, subbrute_protocol_presets[i]) == 0) {
+FurryHalSubGhzPreset subbrute_protocol_convert_preset(FurryString* preset_name) {
+    for(size_t i = FurryHalSubGhzPresetIDLE; i < FurryHalSubGhzPresetCustom; i++) {
+        if(furry_string_cmp_str(preset_name, subbrute_protocol_presets[i]) == 0) {
             return i;
         }
     }
 
-    return FuriHalSubGhzPresetIDLE;
+    return FurryHalSubGhzPresetIDLE;
 }
 
-SubBruteFileProtocol subbrute_protocol_file_protocol_name(FuriString* name) {
+SubBruteFileProtocol subbrute_protocol_file_protocol_name(FurryString* name) {
     for(size_t i = CAMEFileProtocol; i < TotalFileProtocol - 1; i++) {
-        if(furi_string_cmp_str(name, subbrute_protocol_file_types[i]) == 0) {
+        if(furry_string_cmp_str(name, subbrute_protocol_file_types[i]) == 0) {
             return i;
         }
     }
@@ -571,7 +571,7 @@ SubBruteFileProtocol subbrute_protocol_file_protocol_name(FuriString* name) {
 }
 
 void subbrute_protocol_create_candidate_for_existing_file(
-    FuriString* candidate,
+    FurryString* candidate,
     uint64_t step,
     uint8_t bit_index,
     uint64_t file_key,
@@ -586,28 +586,28 @@ void subbrute_protocol_create_candidate_for_existing_file(
     size_t size = sizeof(uint64_t);
     for(uint8_t i = 0; i < size; i++) {
         if(i == bit_index - 1 && two_bytes) {
-            furi_string_cat_printf(candidate, "%02X %02X", high_byte, low_byte);
+            furry_string_cat_printf(candidate, "%02X %02X", high_byte, low_byte);
             i++;
         } else if(i == bit_index) {
-            furi_string_cat_printf(candidate, "%02X", low_byte);
+            furry_string_cat_printf(candidate, "%02X", low_byte);
         } else if(p[i] != 0) {
-            furi_string_cat_printf(candidate, "%02X", p[i]);
+            furry_string_cat_printf(candidate, "%02X", p[i]);
         } else {
-            furi_string_cat_printf(candidate, "%s", "00");
+            furry_string_cat_printf(candidate, "%s", "00");
         }
 
         if(i < size - 1) {
-            furi_string_push_back(candidate, ' ');
+            furry_string_push_back(candidate, ' ');
         }
     }
 
-#ifdef FURI_DEBUG
-    FURI_LOG_D(TAG, "file candidate: %s, step: %lld", furi_string_get_cstr(candidate), step);
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(TAG, "file candidate: %s, step: %lld", furry_string_get_cstr(candidate), step);
 #endif
 }
 
 void subbrute_protocol_create_candidate_for_default(
-    FuriString* candidate,
+    FurryString* candidate,
     SubBruteFileProtocol file,
     uint64_t step) {
     uint8_t p[8];
@@ -673,18 +673,18 @@ void subbrute_protocol_create_candidate_for_default(
     size_t size = sizeof(uint64_t);
     for(uint8_t i = 0; i < size; i++) {
         if(p[i] != 0) {
-            furi_string_cat_printf(candidate, "%02X", p[i]);
+            furry_string_cat_printf(candidate, "%02X", p[i]);
         } else {
-            furi_string_cat_printf(candidate, "%s", "00");
+            furry_string_cat_printf(candidate, "%s", "00");
         }
 
         if(i < size - 1) {
-            furi_string_push_back(candidate, ' ');
+            furry_string_push_back(candidate, ' ');
         }
     }
 
-#ifdef FURI_DEBUG
-    FURI_LOG_D(TAG, "candidate: %s, step: %lld", furi_string_get_cstr(candidate), step);
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(TAG, "candidate: %s, step: %lld", furry_string_get_cstr(candidate), step);
 #endif
 }
 
@@ -695,14 +695,14 @@ void subbrute_protocol_default_payload(
     uint8_t bits,
     uint32_t te,
     uint8_t repeat) {
-    FuriString* candidate = furi_string_alloc();
+    FurryString* candidate = furry_string_alloc();
     subbrute_protocol_create_candidate_for_default(candidate, file, step);
 
-#ifdef FURI_DEBUG
-    FURI_LOG_D(
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(
         TAG,
         "candidate: %s, step: %lld, repeat: %d, te: %s",
-        furi_string_get_cstr(candidate),
+        furry_string_get_cstr(candidate),
         step,
         repeat,
         te ? "true" : "false");
@@ -713,15 +713,15 @@ void subbrute_protocol_default_payload(
             stream,
             subbrute_key_small_with_tail,
             bits,
-            furi_string_get_cstr(candidate),
+            furry_string_get_cstr(candidate),
             te,
             repeat);
     } else {
         stream_write_format(
-            stream, subbrute_key_small_no_tail, bits, furi_string_get_cstr(candidate), repeat);
+            stream, subbrute_key_small_no_tail, bits, furry_string_get_cstr(candidate), repeat);
     }
 
-    furi_string_free(candidate);
+    furry_string_free(candidate);
 }
 
 void subbrute_protocol_file_payload(
@@ -733,15 +733,15 @@ void subbrute_protocol_file_payload(
     uint8_t bit_index,
     uint64_t file_key,
     bool two_bytes) {
-    FuriString* candidate = furi_string_alloc();
+    FurryString* candidate = furry_string_alloc();
     subbrute_protocol_create_candidate_for_existing_file(
         candidate, step, bit_index, file_key, two_bytes);
 
-#ifdef FURI_DEBUG
-    FURI_LOG_D(
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(
         TAG,
         "candidate: %s, step: %lld, repeat: %d, te: %s",
-        furi_string_get_cstr(candidate),
+        furry_string_get_cstr(candidate),
         step,
         repeat,
         te ? "true" : "false");
@@ -753,30 +753,30 @@ void subbrute_protocol_file_payload(
             stream,
             subbrute_key_small_with_tail,
             bits,
-            furi_string_get_cstr(candidate),
+            furry_string_get_cstr(candidate),
             te,
             repeat);
     } else {
         stream_write_format(
-            stream, subbrute_key_small_no_tail, bits, furi_string_get_cstr(candidate), repeat);
+            stream, subbrute_key_small_no_tail, bits, furry_string_get_cstr(candidate), repeat);
     }
 
-    furi_string_free(candidate);
+    furry_string_free(candidate);
 }
 
 void subbrute_protocol_default_generate_file(
     Stream* stream,
     uint32_t frequency,
-    FuriHalSubGhzPreset preset,
+    FurryHalSubGhzPreset preset,
     SubBruteFileProtocol file,
     uint64_t step,
     uint8_t bits,
     uint32_t te) {
-    FuriString* candidate = furi_string_alloc();
+    FurryString* candidate = furry_string_alloc();
     subbrute_protocol_create_candidate_for_default(candidate, file, step);
 
-#ifdef FURI_DEBUG
-    FURI_LOG_D(TAG, "candidate: %s, step: %lld", furi_string_get_cstr(candidate), step);
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(TAG, "candidate: %s, step: %lld", furry_string_get_cstr(candidate), step);
 #endif
     stream_clean(stream);
 
@@ -788,7 +788,7 @@ void subbrute_protocol_default_generate_file(
             subbrute_protocol_preset(preset),
             subbrute_protocol_file(file),
             bits,
-            furi_string_get_cstr(candidate),
+            furry_string_get_cstr(candidate),
             te);
     } else {
         stream_write_format(
@@ -798,16 +798,16 @@ void subbrute_protocol_default_generate_file(
             subbrute_protocol_preset(preset),
             subbrute_protocol_file(file),
             bits,
-            furi_string_get_cstr(candidate));
+            furry_string_get_cstr(candidate));
     }
 
-    furi_string_free(candidate);
+    furry_string_free(candidate);
 }
 
 void subbrute_protocol_file_generate_file(
     Stream* stream,
     uint32_t frequency,
-    FuriHalSubGhzPreset preset,
+    FurryHalSubGhzPreset preset,
     SubBruteFileProtocol file,
     uint64_t step,
     uint8_t bits,
@@ -815,9 +815,9 @@ void subbrute_protocol_file_generate_file(
     uint8_t bit_index,
     uint64_t file_key,
     bool two_bytes) {
-    FuriString* candidate = furi_string_alloc();
+    FurryString* candidate = furry_string_alloc();
     // char subbrute_payload_byte[8];
-    //furi_string_set_str(candidate, file_key);
+    //furry_string_set_str(candidate, file_key);
     subbrute_protocol_create_candidate_for_existing_file(
         candidate, step, bit_index, file_key, two_bytes);
 
@@ -831,7 +831,7 @@ void subbrute_protocol_file_generate_file(
             subbrute_protocol_preset(preset),
             subbrute_protocol_file(file),
             bits,
-            furi_string_get_cstr(candidate),
+            furry_string_get_cstr(candidate),
             te);
     } else {
         stream_write_format(
@@ -841,10 +841,10 @@ void subbrute_protocol_file_generate_file(
             subbrute_protocol_preset(preset),
             subbrute_protocol_file(file),
             bits,
-            furi_string_get_cstr(candidate));
+            furry_string_get_cstr(candidate));
     }
 
-    furi_string_free(candidate);
+    furry_string_free(candidate);
 }
 
 uint64_t
@@ -863,13 +863,13 @@ uint64_t
         attack_type == SubBruteAttackPT226024bit433) {
         max_value = 6561;
     } else {
-        FuriString* max_value_s;
-        max_value_s = furi_string_alloc();
+        FurryString* max_value_s;
+        max_value_s = furry_string_alloc();
         for(uint8_t i = 0; i < bits; i++) {
-            furi_string_cat_printf(max_value_s, "1");
+            furry_string_cat_printf(max_value_s, "1");
         }
-        max_value = (uint64_t)strtol(furi_string_get_cstr(max_value_s), NULL, 2);
-        furi_string_free(max_value_s);
+        max_value = (uint64_t)strtol(furry_string_get_cstr(max_value_s), NULL, 2);
+        furry_string_free(max_value_s);
     }
 
     return max_value;

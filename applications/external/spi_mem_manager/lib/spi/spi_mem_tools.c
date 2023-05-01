@@ -1,5 +1,5 @@
-#include <furi_hal.h>
-#include <furi_hal_spi_config.h>
+#include <furry_hal.h>
+#include <furry_hal_spi_config.h>
 #include "spi_mem_chip_i.h"
 #include "spi_mem_tools.h"
 
@@ -18,44 +18,44 @@ static bool spi_mem_tools_trx(
     uint8_t* rx_buf,
     size_t rx_size) {
     bool success = false;
-    furi_hal_spi_acquire(&furi_hal_spi_bus_handle_external);
+    furry_hal_spi_acquire(&furry_hal_spi_bus_handle_external);
     do {
-        if(!furi_hal_spi_bus_tx(
-               &furi_hal_spi_bus_handle_external, (uint8_t*)&cmd, 1, SPI_MEM_SPI_TIMEOUT))
+        if(!furry_hal_spi_bus_tx(
+               &furry_hal_spi_bus_handle_external, (uint8_t*)&cmd, 1, SPI_MEM_SPI_TIMEOUT))
             break;
         if(tx_buf) {
-            if(!furi_hal_spi_bus_tx(
-                   &furi_hal_spi_bus_handle_external, tx_buf, tx_size, SPI_MEM_SPI_TIMEOUT))
+            if(!furry_hal_spi_bus_tx(
+                   &furry_hal_spi_bus_handle_external, tx_buf, tx_size, SPI_MEM_SPI_TIMEOUT))
                 break;
         }
         if(rx_buf) {
-            if(!furi_hal_spi_bus_rx(
-                   &furi_hal_spi_bus_handle_external, rx_buf, rx_size, SPI_MEM_SPI_TIMEOUT))
+            if(!furry_hal_spi_bus_rx(
+                   &furry_hal_spi_bus_handle_external, rx_buf, rx_size, SPI_MEM_SPI_TIMEOUT))
                 break;
         }
         success = true;
     } while(0);
-    furi_hal_spi_release(&furi_hal_spi_bus_handle_external);
+    furry_hal_spi_release(&furry_hal_spi_bus_handle_external);
     return success;
 }
 
 static bool spi_mem_tools_write_buffer(uint8_t* data, size_t size, size_t offset) {
-    furi_hal_spi_acquire(&furi_hal_spi_bus_handle_external);
+    furry_hal_spi_acquire(&furry_hal_spi_bus_handle_external);
     uint8_t cmd = (uint8_t)SPIMemChipCMDWriteData;
     uint8_t address[4];
     uint8_t address_size = spi_mem_tools_addr_to_byte_arr(offset, address);
     bool success = false;
     do {
-        if(!furi_hal_spi_bus_tx(&furi_hal_spi_bus_handle_external, &cmd, 1, SPI_MEM_SPI_TIMEOUT))
+        if(!furry_hal_spi_bus_tx(&furry_hal_spi_bus_handle_external, &cmd, 1, SPI_MEM_SPI_TIMEOUT))
             break;
-        if(!furi_hal_spi_bus_tx(
-               &furi_hal_spi_bus_handle_external, address, address_size, SPI_MEM_SPI_TIMEOUT))
+        if(!furry_hal_spi_bus_tx(
+               &furry_hal_spi_bus_handle_external, address, address_size, SPI_MEM_SPI_TIMEOUT))
             break;
-        if(!furi_hal_spi_bus_tx(&furi_hal_spi_bus_handle_external, data, size, SPI_MEM_SPI_TIMEOUT))
+        if(!furry_hal_spi_bus_tx(&furry_hal_spi_bus_handle_external, data, size, SPI_MEM_SPI_TIMEOUT))
             break;
         success = true;
     } while(0);
-    furi_hal_spi_release(&furi_hal_spi_bus_handle_external);
+    furry_hal_spi_release(&furry_hal_spi_bus_handle_external);
     return success;
 }
 

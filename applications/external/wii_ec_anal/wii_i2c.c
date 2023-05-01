@@ -21,11 +21,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <furi.h>
-#include <furi_hal.h>
-#include <furi_hal_i2c.h>
+#include <furry.h>
+#include <furry_hal.h>
+#include <furry_hal_i2c.h>
 
-#include "i2c_workaround.h" //! temporary workaround for a bug in furi i2c [see header]
+#include "i2c_workaround.h" //! temporary workaround for a bug in furry i2c [see header]
 
 #include "wii_anal.h"
 #include "wii_i2c.h"
@@ -128,14 +128,14 @@ int ecRead(wiiEC_t* pec) {
         goto bail;
     }
 
-    if(!furi_hal_i2c_is_device_ready(i2cBus, i2cAddr, i2cTimeout)) {
+    if(!furry_hal_i2c_is_device_ready(i2cBus, i2cAddr, i2cTimeout)) {
         INFO("%s : device disconnected", __func__);
         pec->init = false;
         rv = 2;
         goto bail;
     }
 
-    if(!furi_hal_i2c_trxd(
+    if(!furry_hal_i2c_trxd(
            i2cBus, i2cAddr, &regJoy, 1, pec->joy, JOY_LEN, i2cTimeout, i2cReadWait)) {
         ERROR("%s : trxd fail", __func__);
         rv = 3;
@@ -164,20 +164,20 @@ bool ecInit(wiiEC_t* pec, const uint8_t* encKey) {
 
 #if 0 //! i2c workaround
 	//! I think this is done during OS startup - long before the plugin starts
-	furi_hal_i2c_init();
+	furry_hal_i2c_init();
 #endif
 
 #if 0 //! i2c workaround
 	// May become relevant when the i2c issues are resolved
 	// Take control of the i2c bus [which returns void !?]
-	// --> firmware/targets/f7/furi_hal/furi_hal_i2c.c
-	furi_hal_i2c_acquire(i2cBus);
+	// --> firmware/targets/f7/furry_hal/furry_hal_i2c.c
+	furry_hal_i2c_acquire(i2cBus);
 #endif
 
     pec->init = false; // assume failure
 
     // === See if the device is alive ===
-    if(!furi_hal_i2c_is_device_ready(i2cBus, i2cAddr, i2cTimeout)) {
+    if(!furry_hal_i2c_is_device_ready(i2cBus, i2cAddr, i2cTimeout)) {
         TRACE("%s : waiting for device", __func__);
         goto bail;
     }
@@ -192,13 +192,13 @@ bool ecInit(wiiEC_t* pec, const uint8_t* encKey) {
         //! todo - should this happen here, or AFTER we've got the ID ?
 
     } else {
-        if(!furi_hal_i2c_tx(i2cBus, i2cAddr, cmdInit1, sizeof(cmdInit1), i2cTimeout)) {
+        if(!furry_hal_i2c_tx(i2cBus, i2cAddr, cmdInit1, sizeof(cmdInit1), i2cTimeout)) {
             ERROR("%s : init fail (dec1)", __func__);
             goto bail;
         }
         TRACE("%s : init OK1", __func__);
 
-        if(!furi_hal_i2c_tx(i2cBus, i2cAddr, cmdInit2, sizeof(cmdInit2), i2cTimeout)) {
+        if(!furry_hal_i2c_tx(i2cBus, i2cAddr, cmdInit2, sizeof(cmdInit2), i2cTimeout)) {
             ERROR("%s : init fail (dec2)", __func__);
             goto bail;
         }
@@ -206,7 +206,7 @@ bool ecInit(wiiEC_t* pec, const uint8_t* encKey) {
     }
 
     // === Retrieve the Extension Controller ID ===
-    if(!furi_hal_i2c_trx(i2cBus, i2cAddr, &regPid, 1, pec->pid, PID_LEN, i2cTimeout)) {
+    if(!furry_hal_i2c_trx(i2cBus, i2cAddr, &regPid, 1, pec->pid, PID_LEN, i2cTimeout)) {
         ERROR("%s : T(R)x fail (pid)", __func__);
         goto bail;
     }
@@ -234,7 +234,7 @@ bool ecInit(wiiEC_t* pec, const uint8_t* encKey) {
         pec->encrypt = true;
 
         // ** Start the Controller in ENcrytped mode
-        if(!furi_hal_i2c_tx(i2cBus, i2cAddr, cmdInitEnc, sizeof(cmdInitEnc), i2cTimeout)) {
+        if(!furry_hal_i2c_tx(i2cBus, i2cAddr, cmdInitEnc, sizeof(cmdInitEnc), i2cTimeout)) {
             ERROR("%s : init fail (enc)", __func__);
             goto bail;
         }
@@ -247,7 +247,7 @@ bool ecInit(wiiEC_t* pec, const uint8_t* encKey) {
         memcpy(ep, pec->encKey, ENC_LEN);
 
         // ** Send encryption key (PSK)
-        if(!furi_hal_i2c_tx(i2cBus, i2cAddr, encTx, (1 + ENC_LEN), i2cTimeout)) {
+        if(!furry_hal_i2c_tx(i2cBus, i2cAddr, encTx, (1 + ENC_LEN), i2cTimeout)) {
             ERROR("%s : key fail", __func__);
             goto bail;
         }
@@ -260,7 +260,7 @@ bool ecInit(wiiEC_t* pec, const uint8_t* encKey) {
     pec->init = true;
 
     // === Read calibration data ===
-    if(!furi_hal_i2c_trx(i2cBus, i2cAddr, &regCal, 1, pec->calF, CAL_LEN, i2cTimeout)) {
+    if(!furry_hal_i2c_trx(i2cBus, i2cAddr, &regCal, 1, pec->calF, CAL_LEN, i2cTimeout)) {
         ERROR("%s : trx fail (cal)", __func__);
         goto bail;
     }
@@ -293,7 +293,7 @@ bool ecInit(wiiEC_t* pec, const uint8_t* encKey) {
 
 bail:
 #if 0 //! i2c workaround
-	furi_hal_i2c_release(i2cBus);
+	furry_hal_i2c_release(i2cBus);
 #endif
 
     LEAVE;

@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <flipper.h>
 #include <alt_boot.h>
 #include <assets_icons.h>
@@ -42,11 +42,11 @@ void flipper_boot_recovery_exec() {
 
     size_t counter = COUNTER_VALUE;
     while(counter) {
-        if(!furi_hal_gpio_read(&gpio_button_down)) {
+        if(!furry_hal_gpio_read(&gpio_button_down)) {
             break;
         }
 
-        if(!furi_hal_gpio_read(&gpio_button_right)) {
+        if(!furry_hal_gpio_read(&gpio_button_right)) {
             counter--;
         } else {
             counter = COUNTER_VALUE;
@@ -56,9 +56,9 @@ void flipper_boot_recovery_exec() {
     }
 
     if(!counter) {
-        furi_hal_rtc_set_flag(FuriHalRtcFlagResetPin);
-        furi_hal_rtc_set_flag(FuriHalRtcFlagFactoryReset);
-        furi_hal_rtc_set_pin_fails(0);
-        furi_hal_rtc_reset_flag(FuriHalRtcFlagLock);
+        furry_hal_rtc_set_flag(FurryHalRtcFlagResetPin);
+        furry_hal_rtc_set_flag(FurryHalRtcFlagFactoryReset);
+        furry_hal_rtc_set_pin_fails(0);
+        furry_hal_rtc_reset_flag(FurryHalRtcFlagLock);
     }
 }

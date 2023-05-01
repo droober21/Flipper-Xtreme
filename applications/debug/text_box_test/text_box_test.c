@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <gui/elements.h>
@@ -53,34 +53,34 @@ static void (*text_box_test_render[])(Canvas* canvas) = {
 
 typedef struct {
     uint32_t idx;
-    FuriMutex* mutex;
+    FurryMutex* mutex;
 } TextBoxTestState;
 
 static void text_box_test_render_callback(Canvas* canvas, void* ctx) {
     TextBoxTestState* state = ctx;
-    furi_mutex_acquire(state->mutex, FuriWaitForever);
+    furry_mutex_acquire(state->mutex, FurryWaitForever);
     canvas_clear(canvas);
 
     text_box_test_render[state->idx](canvas);
 
-    furi_mutex_release(state->mutex);
+    furry_mutex_release(state->mutex);
 }
 
 static void text_box_test_input_callback(InputEvent* input_event, void* ctx) {
-    FuriMessageQueue* event_queue = ctx;
-    furi_message_queue_put(event_queue, input_event, FuriWaitForever);
+    FurryMessageQueue* event_queue = ctx;
+    furry_message_queue_put(event_queue, input_event, FurryWaitForever);
 }
 
 int32_t text_box_test_app(void* p) {
     UNUSED(p);
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(32, sizeof(InputEvent));
-    furi_check(event_queue);
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(32, sizeof(InputEvent));
+    furry_check(event_queue);
 
     TextBoxTestState state = {.idx = 0, .mutex = NULL};
-    state.mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    state.mutex = furry_mutex_alloc(FurryMutexTypeNormal);
 
     if(!state.mutex) {
-        FURI_LOG_E(TAG, "Cannot create mutex");
+        FURRY_LOG_E(TAG, "Cannot create mutex");
         return 0;
     }
 
@@ -90,13 +90,13 @@ int32_t text_box_test_app(void* p) {
     view_port_input_callback_set(view_port, text_box_test_input_callback, event_queue);
 
     // Open GUI and register view_port
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     uint32_t test_renders_num = COUNT_OF(text_box_test_render);
     InputEvent event;
-    while(furi_message_queue_get(event_queue, &event, FuriWaitForever) == FuriStatusOk) {
-        furi_mutex_acquire(state.mutex, FuriWaitForever);
+    while(furry_message_queue_get(event_queue, &event, FurryWaitForever) == FurryStatusOk) {
+        furry_mutex_acquire(state.mutex, FurryWaitForever);
 
         if(event.type == InputTypeShort) {
             if(event.key == InputKeyRight) {
@@ -108,22 +108,22 @@ int32_t text_box_test_app(void* p) {
                     state.idx--;
                 }
             } else if(event.key == InputKeyBack) {
-                furi_mutex_release(state.mutex);
+                furry_mutex_release(state.mutex);
                 break;
             }
         }
 
-        furi_mutex_release(state.mutex);
+        furry_mutex_release(state.mutex);
         view_port_update(view_port);
     }
 
     // remove & free all stuff created by app
     gui_remove_view_port(gui, view_port);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_mutex_free(state.mutex);
+    furry_message_queue_free(event_queue);
+    furry_mutex_free(state.mutex);
 
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
     return 0;
 }

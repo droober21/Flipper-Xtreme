@@ -14,7 +14,7 @@
 
 #define SUBGHZ_RAW_TRESHOLD_MIN -90.0f
 typedef struct {
-    FuriString* item_str;
+    FurryString* item_str;
     uint8_t type;
 } WSReceiverMenuItem;
 
@@ -45,16 +45,16 @@ typedef enum {
 struct WSReceiver {
     WSLock lock;
     uint8_t lock_count;
-    FuriTimer* timer;
+    FurryTimer* timer;
     View* view;
     WSReceiverCallback callback;
     void* context;
 };
 
 typedef struct {
-    FuriString* frequency_str;
-    FuriString* preset_str;
-    FuriString* history_stat_str;
+    FurryString* frequency_str;
+    FurryString* preset_str;
+    FurryString* history_stat_str;
     WSReceiverHistory* history;
     uint16_t idx;
     uint16_t list_offset;
@@ -64,7 +64,7 @@ typedef struct {
 } WSReceiverModel;
 
 void ws_view_receiver_set_rssi(WSReceiver* instance, float rssi) {
-    furi_assert(instance);
+    furry_assert(instance);
     with_view_model(
         instance->view,
         WSReceiverModel * model,
@@ -79,7 +79,7 @@ void ws_view_receiver_set_rssi(WSReceiver* instance, float rssi) {
 }
 
 void ws_view_receiver_set_lock(WSReceiver* ws_receiver, WSLock lock) {
-    furi_assert(ws_receiver);
+    furry_assert(ws_receiver);
     ws_receiver->lock_count = 0;
     if(lock == WSLockOn) {
         ws_receiver->lock = lock;
@@ -88,7 +88,7 @@ void ws_view_receiver_set_lock(WSReceiver* ws_receiver, WSLock lock) {
             WSReceiverModel * model,
             { model->bar_show = WSReceiverBarShowLock; },
             true);
-        furi_timer_start(ws_receiver->timer, pdMS_TO_TICKS(1000));
+        furry_timer_start(ws_receiver->timer, pdMS_TO_TICKS(1000));
     } else {
         with_view_model(
             ws_receiver->view,
@@ -102,14 +102,14 @@ void ws_view_receiver_set_callback(
     WSReceiver* ws_receiver,
     WSReceiverCallback callback,
     void* context) {
-    furi_assert(ws_receiver);
-    furi_assert(callback);
+    furry_assert(ws_receiver);
+    furry_assert(callback);
     ws_receiver->callback = callback;
     ws_receiver->context = context;
 }
 
 static void ws_view_receiver_update_offset(WSReceiver* ws_receiver) {
-    furi_assert(ws_receiver);
+    furry_assert(ws_receiver);
 
     with_view_model(
         ws_receiver->view,
@@ -131,13 +131,13 @@ static void ws_view_receiver_update_offset(WSReceiver* ws_receiver) {
 }
 
 void ws_view_receiver_add_item_to_menu(WSReceiver* ws_receiver, const char* name, uint8_t type) {
-    furi_assert(ws_receiver);
+    furry_assert(ws_receiver);
     with_view_model(
         ws_receiver->view,
         WSReceiverModel * model,
         {
             WSReceiverMenuItem* item_menu = WSReceiverMenuItemArray_push_raw(model->history->data);
-            item_menu->item_str = furi_string_alloc_set(name);
+            item_menu->item_str = furry_string_alloc_set(name);
             item_menu->type = type;
             if((model->idx == model->history_item - 1)) {
                 model->history_item++;
@@ -155,14 +155,14 @@ void ws_view_receiver_add_data_statusbar(
     const char* frequency_str,
     const char* preset_str,
     const char* history_stat_str) {
-    furi_assert(ws_receiver);
+    furry_assert(ws_receiver);
     with_view_model(
         ws_receiver->view,
         WSReceiverModel * model,
         {
-            furi_string_set_str(model->frequency_str, frequency_str);
-            furi_string_set_str(model->preset_str, preset_str);
-            furi_string_set_str(model->history_stat_str, history_stat_str);
+            furry_string_set_str(model->frequency_str, frequency_str);
+            furry_string_set_str(model->preset_str, preset_str);
+            furry_string_set_str(model->history_stat_str, history_stat_str);
         },
         true);
 }
@@ -199,17 +199,17 @@ void ws_view_receiver_draw(Canvas* canvas, WSReceiverModel* model) {
     elements_button_left(canvas, "Config");
 
     bool scrollbar = model->history_item > 4;
-    FuriString* str_buff;
-    str_buff = furi_string_alloc();
+    FurryString* str_buff;
+    str_buff = furry_string_alloc();
 
-    bool ext_module = furi_hal_subghz_get_radio_type();
+    bool ext_module = furry_hal_subghz_get_radio_type();
 
     WSReceiverMenuItem* item_menu;
 
     for(size_t i = 0; i < MIN(model->history_item, MENU_ITEMS); ++i) {
         size_t idx = CLAMP((uint16_t)(i + model->list_offset), model->history_item, 0);
         item_menu = WSReceiverMenuItemArray_get(model->history->data, idx);
-        furi_string_set(str_buff, item_menu->item_str);
+        furry_string_set(str_buff, item_menu->item_str);
         elements_string_fit_width(canvas, str_buff, scrollbar ? MAX_LEN_PX - 6 : MAX_LEN_PX);
         if(model->idx == idx) {
             ws_view_receiver_draw_frame(canvas, i, scrollbar);
@@ -217,13 +217,13 @@ void ws_view_receiver_draw(Canvas* canvas, WSReceiverModel* model) {
             canvas_set_color(canvas, ColorBlack);
         }
         canvas_draw_icon(canvas, 4, 2 + i * FRAME_HEIGHT, ReceiverItemIcons[item_menu->type]);
-        canvas_draw_str(canvas, 14, 9 + i * FRAME_HEIGHT, furi_string_get_cstr(str_buff));
-        furi_string_reset(str_buff);
+        canvas_draw_str(canvas, 14, 9 + i * FRAME_HEIGHT, furry_string_get_cstr(str_buff));
+        furry_string_reset(str_buff);
     }
     if(scrollbar) {
         elements_scrollbar_pos(canvas, 128, 0, 49, model->idx, model->history_item);
     }
-    furi_string_free(str_buff);
+    furry_string_free(str_buff);
 
     canvas_set_color(canvas, ColorBlack);
 
@@ -244,9 +244,9 @@ void ws_view_receiver_draw(Canvas* canvas, WSReceiverModel* model) {
         canvas_draw_str(canvas, 74, 62, "Locked");
         break;
     case WSReceiverBarShowToUnlockPress:
-        canvas_draw_str(canvas, 44, 62, furi_string_get_cstr(model->frequency_str));
-        canvas_draw_str(canvas, 79, 62, furi_string_get_cstr(model->preset_str));
-        canvas_draw_str(canvas, 96, 62, furi_string_get_cstr(model->history_stat_str));
+        canvas_draw_str(canvas, 44, 62, furry_string_get_cstr(model->frequency_str));
+        canvas_draw_str(canvas, 79, 62, furry_string_get_cstr(model->preset_str));
+        canvas_draw_str(canvas, 96, 62, furry_string_get_cstr(model->history_stat_str));
         canvas_set_font(canvas, FontSecondary);
         elements_bold_rounded_frame(canvas, 14, 8, 99, 48);
         elements_multiline_text(canvas, 65, 26, "To unlock\npress:");
@@ -261,15 +261,15 @@ void ws_view_receiver_draw(Canvas* canvas, WSReceiverModel* model) {
         canvas_draw_str(canvas, 74, 62, "Unlocked");
         break;
     default:
-        canvas_draw_str(canvas, 44, 62, furi_string_get_cstr(model->frequency_str));
-        canvas_draw_str(canvas, 79, 62, furi_string_get_cstr(model->preset_str));
-        canvas_draw_str(canvas, 96, 62, furi_string_get_cstr(model->history_stat_str));
+        canvas_draw_str(canvas, 44, 62, furry_string_get_cstr(model->frequency_str));
+        canvas_draw_str(canvas, 79, 62, furry_string_get_cstr(model->preset_str));
+        canvas_draw_str(canvas, 96, 62, furry_string_get_cstr(model->history_stat_str));
         break;
     }
 }
 
 static void ws_view_receiver_timer_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSReceiver* ws_receiver = context;
     with_view_model(
         ws_receiver->view,
@@ -286,7 +286,7 @@ static void ws_view_receiver_timer_callback(void* context) {
 }
 
 bool ws_view_receiver_input(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSReceiver* ws_receiver = context;
 
     if(ws_receiver->lock == WSLockOn) {
@@ -296,7 +296,7 @@ bool ws_view_receiver_input(InputEvent* event, void* context) {
             { model->bar_show = WSReceiverBarShowToUnlockPress; },
             true);
         if(ws_receiver->lock_count == 0) {
-            furi_timer_start(ws_receiver->timer, pdMS_TO_TICKS(1000));
+            furry_timer_start(ws_receiver->timer, pdMS_TO_TICKS(1000));
         }
         if(event->key == InputKeyBack && event->type == InputTypeShort) {
             ws_receiver->lock_count++;
@@ -309,7 +309,7 @@ bool ws_view_receiver_input(InputEvent* event, void* context) {
                 { model->bar_show = WSReceiverBarShowUnlock; },
                 true);
             ws_receiver->lock = WSLockOff;
-            furi_timer_start(ws_receiver->timer, pdMS_TO_TICKS(650));
+            furry_timer_start(ws_receiver->timer, pdMS_TO_TICKS(650));
         }
 
         return true;
@@ -357,22 +357,22 @@ bool ws_view_receiver_input(InputEvent* event, void* context) {
 }
 
 void ws_view_receiver_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 }
 
 void ws_view_receiver_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSReceiver* ws_receiver = context;
     with_view_model(
         ws_receiver->view,
         WSReceiverModel * model,
         {
-            furi_string_reset(model->frequency_str);
-            furi_string_reset(model->preset_str);
-            furi_string_reset(model->history_stat_str);
+            furry_string_reset(model->frequency_str);
+            furry_string_reset(model->preset_str);
+            furry_string_reset(model->history_stat_str);
                 for
                     M_EACH(item_menu, model->history->data, WSReceiverMenuItemArray_t) {
-                        furi_string_free(item_menu->item_str);
+                        furry_string_free(item_menu->item_str);
                         item_menu->type = 0;
                     }
                 WSReceiverMenuItemArray_reset(model->history->data);
@@ -381,7 +381,7 @@ void ws_view_receiver_exit(void* context) {
                 model->history_item = 0;
         },
         false);
-    furi_timer_stop(ws_receiver->timer);
+    furry_timer_stop(ws_receiver->timer);
 }
 
 WSReceiver* ws_view_receiver_alloc() {
@@ -403,50 +403,50 @@ WSReceiver* ws_view_receiver_alloc() {
         ws_receiver->view,
         WSReceiverModel * model,
         {
-            model->frequency_str = furi_string_alloc();
-            model->preset_str = furi_string_alloc();
-            model->history_stat_str = furi_string_alloc();
+            model->frequency_str = furry_string_alloc();
+            model->preset_str = furry_string_alloc();
+            model->history_stat_str = furry_string_alloc();
             model->bar_show = WSReceiverBarShowDefault;
             model->history = malloc(sizeof(WSReceiverHistory));
             WSReceiverMenuItemArray_init(model->history->data);
         },
         true);
     ws_receiver->timer =
-        furi_timer_alloc(ws_view_receiver_timer_callback, FuriTimerTypeOnce, ws_receiver);
+        furry_timer_alloc(ws_view_receiver_timer_callback, FurryTimerTypeOnce, ws_receiver);
     return ws_receiver;
 }
 
 void ws_view_receiver_free(WSReceiver* ws_receiver) {
-    furi_assert(ws_receiver);
+    furry_assert(ws_receiver);
 
     with_view_model(
         ws_receiver->view,
         WSReceiverModel * model,
         {
-            furi_string_free(model->frequency_str);
-            furi_string_free(model->preset_str);
-            furi_string_free(model->history_stat_str);
+            furry_string_free(model->frequency_str);
+            furry_string_free(model->preset_str);
+            furry_string_free(model->history_stat_str);
                 for
                     M_EACH(item_menu, model->history->data, WSReceiverMenuItemArray_t) {
-                        furi_string_free(item_menu->item_str);
+                        furry_string_free(item_menu->item_str);
                         item_menu->type = 0;
                     }
                 WSReceiverMenuItemArray_clear(model->history->data);
                 free(model->history);
         },
         false);
-    furi_timer_free(ws_receiver->timer);
+    furry_timer_free(ws_receiver->timer);
     view_free(ws_receiver->view);
     free(ws_receiver);
 }
 
 View* ws_view_receiver_get_view(WSReceiver* ws_receiver) {
-    furi_assert(ws_receiver);
+    furry_assert(ws_receiver);
     return ws_receiver->view;
 }
 
 uint16_t ws_view_receiver_get_idx_menu(WSReceiver* ws_receiver) {
-    furi_assert(ws_receiver);
+    furry_assert(ws_receiver);
     uint32_t idx = 0;
     with_view_model(
         ws_receiver->view, WSReceiverModel * model, { idx = model->idx; }, false);
@@ -454,7 +454,7 @@ uint16_t ws_view_receiver_get_idx_menu(WSReceiver* ws_receiver) {
 }
 
 void ws_view_receiver_set_idx_menu(WSReceiver* ws_receiver, uint16_t idx) {
-    furi_assert(ws_receiver);
+    furry_assert(ws_receiver);
     with_view_model(
         ws_receiver->view,
         WSReceiverModel * model,

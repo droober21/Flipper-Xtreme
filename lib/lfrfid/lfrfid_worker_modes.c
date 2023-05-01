@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include "lfrfid_worker_i.h"
 #include "tools/t5577.h"
 #include <toolbox/pulse_protocols/pulse_glue.h>
@@ -44,7 +44,7 @@
 void lfrfid_worker_delay(LFRFIDWorker* worker, uint32_t milliseconds) {
     for(uint32_t i = 0; i < (milliseconds / LFRFID_WORKER_DELAY_QUANT); i++) {
         if(lfrfid_worker_check_for_stop(worker)) break;
-        furi_delay_ms(LFRFID_WORKER_DELAY_QUANT);
+        furry_delay_ms(LFRFID_WORKER_DELAY_QUANT);
     }
 }
 
@@ -77,7 +77,7 @@ static void lfrfid_worker_read_capture(bool level, uint32_t duration, void* cont
     }
 
 #ifdef LFRFID_WORKER_READ_DEBUG_GPIO
-    furi_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_VALUE, level);
+    furry_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_VALUE, level);
 #endif
 
     bool need_to_send = varint_pair_pack(ctx->pair, level, duration);
@@ -100,23 +100,23 @@ static LFRFIDWorkerReadState lfrfid_worker_read_internal(
     uint32_t timeout,
     ProtocolId* result_protocol) {
     LFRFIDWorkerReadState state = LFRFIDWorkerReadTimeout;
-    furi_hal_rfid_pins_read();
+    furry_hal_rfid_pins_read();
 
     if(feature & LFRFIDFeatureASK) {
-        furi_hal_rfid_tim_read(125000, 0.5);
-        FURI_LOG_D(TAG, "Start ASK");
+        furry_hal_rfid_tim_read(125000, 0.5);
+        FURRY_LOG_D(TAG, "Start ASK");
         if(worker->read_cb) {
             worker->read_cb(LFRFIDWorkerReadStartASK, PROTOCOL_NO, worker->cb_ctx);
         }
     } else {
-        furi_hal_rfid_tim_read(62500, 0.25);
-        FURI_LOG_D(TAG, "Start PSK");
+        furry_hal_rfid_tim_read(62500, 0.25);
+        FURRY_LOG_D(TAG, "Start PSK");
         if(worker->read_cb) {
             worker->read_cb(LFRFIDWorkerReadStartPSK, PROTOCOL_NO, worker->cb_ctx);
         }
     }
 
-    furi_hal_rfid_tim_read_start();
+    furry_hal_rfid_tim_read_start();
 
     // stabilize detector
     lfrfid_worker_delay(worker, LFRFID_WORKER_READ_STABILIZE_TIME_MS);
@@ -124,10 +124,10 @@ static LFRFIDWorkerReadState lfrfid_worker_read_internal(
     protocol_dict_decoders_start(worker->protocols);
 
 #ifdef LFRFID_WORKER_READ_DEBUG_GPIO
-    furi_hal_gpio_init_simple(LFRFID_WORKER_READ_DEBUG_GPIO_VALUE, GpioModeOutputPushPull);
-    furi_hal_gpio_init_simple(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, GpioModeOutputPushPull);
-    furi_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_VALUE, false);
-    furi_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, false);
+    furry_hal_gpio_init_simple(LFRFID_WORKER_READ_DEBUG_GPIO_VALUE, GpioModeOutputPushPull);
+    furry_hal_gpio_init_simple(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, GpioModeOutputPushPull);
+    furry_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_VALUE, false);
+    furry_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, false);
 #endif
 
     LFRFIDWorkerReadContext ctx;
@@ -135,7 +135,7 @@ static LFRFIDWorkerReadState lfrfid_worker_read_internal(
     ctx.stream =
         buffer_stream_alloc(LFRFID_WORKER_READ_BUFFER_SIZE, LFRFID_WORKER_READ_BUFFER_COUNT);
 
-    furi_hal_rfid_tim_read_capture_start(lfrfid_worker_read_capture, &ctx);
+    furry_hal_rfid_tim_read_capture_start(lfrfid_worker_read_capture, &ctx);
 
     *result_protocol = PROTOCOL_NO;
     ProtocolId last_protocol = PROTOCOL_NO;
@@ -144,14 +144,14 @@ static LFRFIDWorkerReadState lfrfid_worker_read_internal(
     uint8_t* protocol_data = malloc(last_size);
     size_t last_read_count = 0;
 
-    uint32_t switch_os_tick_last = furi_get_tick();
+    uint32_t switch_os_tick_last = furry_get_tick();
 
     uint32_t average_duration = 0;
     uint32_t average_pulse = 0;
     size_t average_index = 0;
     bool card_detected = false;
 
-    FURI_LOG_D(TAG, "Read started");
+    FURRY_LOG_D(TAG, "Read started");
     while(true) {
         if(lfrfid_worker_check_for_stop(worker)) {
             state = LFRFIDWorkerReadExit;
@@ -161,21 +161,21 @@ static LFRFIDWorkerReadState lfrfid_worker_read_internal(
         Buffer* buffer = buffer_stream_receive(ctx.stream, 100);
 
 #ifdef LFRFID_WORKER_READ_DEBUG_GPIO
-        furi_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, true);
+        furry_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, true);
 #endif
 
         if(buffer_stream_get_overrun_count(ctx.stream) > 0) {
-            FURI_LOG_E(TAG, "Read overrun, recovering");
+            FURRY_LOG_E(TAG, "Read overrun, recovering");
             buffer_stream_reset(ctx.stream);
 #ifdef LFRFID_WORKER_READ_DEBUG_GPIO
-            furi_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, false);
+            furry_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, false);
 #endif
             continue;
         }
 
         if(buffer == NULL) {
 #ifdef LFRFID_WORKER_READ_DEBUG_GPIO
-            furi_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, false);
+            furry_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, false);
 #endif
             continue;
         }
@@ -190,7 +190,7 @@ static LFRFIDWorkerReadState lfrfid_worker_read_internal(
             size_t tmp_size;
 
             if(!varint_pair_unpack(&data[index], size - index, &pulse, &duration, &tmp_size)) {
-                FURI_LOG_E(TAG, "can't unpack varint pair");
+                FURRY_LOG_E(TAG, "can't unpack varint pair");
                 break;
             } else {
                 index += tmp_size;
@@ -232,7 +232,7 @@ static LFRFIDWorkerReadState lfrfid_worker_read_internal(
 
                 if(protocol != PROTOCOL_NO) {
                     // reset switch timer
-                    switch_os_tick_last = furi_get_tick();
+                    switch_os_tick_last = furry_get_tick();
 
                     size_t protocol_data_size =
                         protocol_dict_get_data_size(worker->protocols, protocol);
@@ -263,24 +263,24 @@ static LFRFIDWorkerReadState lfrfid_worker_read_internal(
                         last_read_count = 0;
                     }
 
-                    if(furi_log_get_level() >= FuriLogLevelDebug) {
-                        FuriString* string_info;
-                        string_info = furi_string_alloc();
+                    if(furry_log_get_level() >= FurryLogLevelDebug) {
+                        FurryString* string_info;
+                        string_info = furry_string_alloc();
                         for(uint8_t i = 0; i < protocol_data_size; i++) {
                             if(i != 0) {
-                                furi_string_cat_printf(string_info, " ");
+                                furry_string_cat_printf(string_info, " ");
                             }
 
-                            furi_string_cat_printf(string_info, "%02X", protocol_data[i]);
+                            furry_string_cat_printf(string_info, "%02X", protocol_data[i]);
                         }
 
-                        FURI_LOG_D(
+                        FURRY_LOG_D(
                             TAG,
                             "%s, %zu, [%s]",
                             protocol_dict_get_name(worker->protocols, protocol),
                             last_read_count,
-                            furi_string_get_cstr(string_info));
-                        furi_string_free(string_info);
+                            furry_string_get_cstr(string_info));
+                        furry_string_free(string_info);
                     }
 
                     protocol_dict_decoders_start(worker->protocols);
@@ -291,20 +291,20 @@ static LFRFIDWorkerReadState lfrfid_worker_read_internal(
         buffer_reset(buffer);
 
 #ifdef LFRFID_WORKER_READ_DEBUG_GPIO
-        furi_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, false);
+        furry_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, false);
 #endif
 
         if(*result_protocol != PROTOCOL_NO) {
             break;
         }
 
-        if((furi_get_tick() - switch_os_tick_last) > timeout) {
+        if((furry_get_tick() - switch_os_tick_last) > timeout) {
             state = LFRFIDWorkerReadTimeout;
             break;
         }
     }
 
-    FURI_LOG_D(TAG, "Read stopped");
+    FURRY_LOG_D(TAG, "Read stopped");
 
     if(last_protocol != PROTOCOL_NO && worker->read_cb) {
         worker->read_cb(LFRFIDWorkerReadSenseCardEnd, last_protocol, worker->cb_ctx);
@@ -314,9 +314,9 @@ static LFRFIDWorkerReadState lfrfid_worker_read_internal(
         worker->read_cb(LFRFIDWorkerReadSenseEnd, last_protocol, worker->cb_ctx);
     }
 
-    furi_hal_rfid_tim_read_capture_stop();
-    furi_hal_rfid_tim_read_stop();
-    furi_hal_rfid_pins_reset();
+    furry_hal_rfid_tim_read_capture_stop();
+    furry_hal_rfid_tim_read_stop();
+    furry_hal_rfid_pins_reset();
 
     varint_pair_free(ctx.pair);
     buffer_stream_free(ctx.stream);
@@ -325,10 +325,10 @@ static LFRFIDWorkerReadState lfrfid_worker_read_internal(
     free(last_data);
 
 #ifdef LFRFID_WORKER_READ_DEBUG_GPIO
-    furi_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_VALUE, false);
-    furi_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, false);
-    furi_hal_gpio_init_simple(LFRFID_WORKER_READ_DEBUG_GPIO_VALUE, GpioModeAnalog);
-    furi_hal_gpio_init_simple(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, GpioModeAnalog);
+    furry_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_VALUE, false);
+    furry_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, false);
+    furry_hal_gpio_init_simple(LFRFID_WORKER_READ_DEBUG_GPIO_VALUE, GpioModeAnalog);
+    furry_hal_gpio_init_simple(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, GpioModeAnalog);
 #endif
 
     return state;
@@ -401,14 +401,14 @@ typedef enum {
 } LFRFIDWorkerEmulateDMAEvent;
 
 static void lfrfid_worker_emulate_dma_isr(bool half, void* context) {
-    FuriStreamBuffer* stream = context;
+    FurryStreamBuffer* stream = context;
     uint32_t flag = half ? HalfTransfer : TransferComplete;
-    furi_stream_buffer_send(stream, &flag, sizeof(uint32_t), 0);
+    furry_stream_buffer_send(stream, &flag, sizeof(uint32_t), 0);
 }
 
 static void lfrfid_worker_mode_emulate_process(LFRFIDWorker* worker) {
     LFRFIDWorkerEmulateBuffer* buffer = malloc(sizeof(LFRFIDWorkerEmulateBuffer));
-    FuriStreamBuffer* stream = furi_stream_buffer_alloc(sizeof(uint32_t), sizeof(uint32_t));
+    FurryStreamBuffer* stream = furry_stream_buffer_alloc(sizeof(uint32_t), sizeof(uint32_t));
     LFRFIDProtocol protocol = worker->protocol;
     PulseGlue* pulse_glue = pulse_glue_alloc();
 
@@ -431,10 +431,10 @@ static void lfrfid_worker_mode_emulate_process(LFRFIDWorker* worker) {
     }
 
 #ifdef LFRFID_WORKER_READ_DEBUG_GPIO
-    furi_hal_gpio_init_simple(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, GpioModeOutputPushPull);
+    furry_hal_gpio_init_simple(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, GpioModeOutputPushPull);
 #endif
 
-    furi_hal_rfid_tim_emulate_dma_start(
+    furry_hal_rfid_tim_emulate_dma_start(
         buffer->duration,
         buffer->pulse,
         LFRFID_WORKER_EMULATE_BUFFER_SIZE,
@@ -443,10 +443,10 @@ static void lfrfid_worker_mode_emulate_process(LFRFIDWorker* worker) {
 
     while(true) {
         uint32_t flag = 0;
-        size_t size = furi_stream_buffer_receive(stream, &flag, sizeof(uint32_t), 100);
+        size_t size = furry_stream_buffer_receive(stream, &flag, sizeof(uint32_t), 100);
 
 #ifdef LFRFID_WORKER_READ_DEBUG_GPIO
-        furi_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, true);
+        furry_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, true);
 #endif
 
         if(size == sizeof(uint32_t)) {
@@ -480,18 +480,18 @@ static void lfrfid_worker_mode_emulate_process(LFRFIDWorker* worker) {
         }
 
 #ifdef LFRFID_WORKER_READ_DEBUG_GPIO
-        furi_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, false);
+        furry_hal_gpio_write(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, false);
 #endif
     }
 
-    furi_hal_rfid_tim_emulate_dma_stop();
+    furry_hal_rfid_tim_emulate_dma_stop();
 
 #ifdef LFRFID_WORKER_READ_DEBUG_GPIO
-    furi_hal_gpio_init_simple(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, GpioModeAnalog);
+    furry_hal_gpio_init_simple(LFRFID_WORKER_READ_DEBUG_GPIO_LOAD, GpioModeAnalog);
 #endif
 
     free(buffer);
-    furi_stream_buffer_free(stream);
+    furry_stream_buffer_free(stream);
     pulse_glue_free(pulse_glue);
 }
 
@@ -506,7 +506,7 @@ static void lfrfid_worker_mode_write_process(LFRFIDWorker* worker) {
 
     bool can_be_written = protocol_dict_get_write_data(worker->protocols, protocol, request);
 
-    uint32_t write_start_time = furi_get_tick();
+    uint32_t write_start_time = furry_get_tick();
     bool too_long = false;
     size_t unsuccessful_reads = 0;
 
@@ -517,7 +517,7 @@ static void lfrfid_worker_mode_write_process(LFRFIDWorker* worker) {
 
     if(can_be_written) {
         while(!lfrfid_worker_check_for_stop(worker)) {
-            FURI_LOG_D(TAG, "Data write");
+            FURRY_LOG_D(TAG, "Data write");
             t5577_write(&request->t5577);
 
             ProtocolId read_result = PROTOCOL_NO;
@@ -557,7 +557,7 @@ static void lfrfid_worker_mode_write_process(LFRFIDWorker* worker) {
             }
 
             if(!too_long &&
-               (furi_get_tick() - write_start_time) > LFRFID_WORKER_WRITE_TOO_LONG_TIME_MS) {
+               (furry_get_tick() - write_start_time) > LFRFID_WORKER_WRITE_TOO_LONG_TIME_MS) {
                 too_long = true;
                 if(worker->write_cb) {
                     worker->write_cb(LFRFIDWorkerWriteTooLongToWrite, worker->cb_ctx);
@@ -594,12 +594,12 @@ static void lfrfid_worker_mode_read_raw_process(LFRFIDWorker* worker) {
             raw_worker, worker->raw_filename, 125000, 0.5, worker->read_raw_cb, worker->cb_ctx);
         break;
     default:
-        furi_crash("RAW can be only PSK or ASK");
+        furry_crash("RAW can be only PSK or ASK");
         break;
     }
 
     while(!lfrfid_worker_check_for_stop(worker)) {
-        furi_delay_ms(100);
+        furry_delay_ms(100);
     }
 
     lfrfid_raw_worker_stop(raw_worker);
@@ -617,7 +617,7 @@ static void lfrfid_worker_mode_emulate_raw_process(LFRFIDWorker* worker) {
         raw_worker, worker->raw_filename, worker->emulate_raw_cb, worker->cb_ctx);
 
     while(!lfrfid_worker_check_for_stop(worker)) {
-        furi_delay_ms(100);
+        furry_delay_ms(100);
     }
 
     lfrfid_raw_worker_stop(raw_worker);

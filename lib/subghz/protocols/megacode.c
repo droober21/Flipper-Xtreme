@@ -95,7 +95,7 @@ void* subghz_protocol_encoder_megacode_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_encoder_megacode_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderMegaCode* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -107,11 +107,11 @@ void subghz_protocol_encoder_megacode_free(void* context) {
  * @return true On success
  */
 static bool subghz_protocol_encoder_megacode_get_upload(SubGhzProtocolEncoderMegaCode* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     uint8_t last_bit = 0;
     size_t size_upload = (instance->generic.data_count_bit * 2);
     if(size_upload > instance->encoder.size_upload) {
-        FURI_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
+        FURRY_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
         return false;
     } else {
         instance->encoder.size_upload = size_upload;
@@ -177,7 +177,7 @@ static bool subghz_protocol_encoder_megacode_get_upload(SubGhzProtocolEncoderMeg
 
 SubGhzProtocolStatus
     subghz_protocol_encoder_megacode_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderMegaCode* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -234,19 +234,19 @@ void* subghz_protocol_decoder_megacode_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_megacode_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderMegaCode* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_megacode_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderMegaCode* instance = context;
     instance->decoder.parser_step = MegaCodeDecoderStepReset;
 }
 
 void subghz_protocol_decoder_megacode_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderMegaCode* instance = context;
     switch(instance->decoder.parser_step) {
     case MegaCodeDecoderStepReset:
@@ -375,7 +375,7 @@ static void subghz_protocol_megacode_check_remote_controller(SubGhzBlockGeneric*
 }
 
 uint8_t subghz_protocol_decoder_megacode_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderMegaCode* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -385,14 +385,14 @@ SubGhzProtocolStatus subghz_protocol_decoder_megacode_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderMegaCode* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_megacode_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderMegaCode* instance = context;
     return subghz_block_generic_deserialize_check_count_bit(
         &instance->generic,
@@ -400,12 +400,12 @@ SubGhzProtocolStatus
         subghz_protocol_megacode_const.min_count_bit_for_found);
 }
 
-void subghz_protocol_decoder_megacode_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_megacode_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderMegaCode* instance = context;
     subghz_protocol_megacode_check_remote_controller(&instance->generic);
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %dbit\r\n"
         "Key:0x%06lX\r\n"

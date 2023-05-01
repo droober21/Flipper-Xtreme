@@ -15,7 +15,7 @@ extern "C" {
 /** Text input anonymous structure */
 typedef struct TextInput TextInput;
 typedef void (*TextInputCallback)(void* context);
-typedef bool (*TextInputValidatorCallback)(const char* text, FuriString* error, void* context);
+typedef bool (*TextInputValidatorCallback)(const char* text, FurryString* error, void* context);
 
 /** Allocate and initialize text input 
  * 

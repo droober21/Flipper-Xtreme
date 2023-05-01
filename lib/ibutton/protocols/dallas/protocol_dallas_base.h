@@ -11,7 +11,7 @@ typedef bool (*iButtonProtocolDallasReadWriteFunc)(OneWireHost*, iButtonProtocol
 typedef void (*iButtonProtocolDallasEmulateFunc)(OneWireSlave*, iButtonProtocolData*);
 typedef bool (*iButtonProtocolDallasSaveFunc)(FlipperFormat*, const iButtonProtocolData*);
 typedef bool (*iButtonProtocolDallasLoadFunc)(FlipperFormat*, uint32_t, iButtonProtocolData*);
-typedef void (*iButtonProtocolDallasRenderDataFunc)(FuriString*, const iButtonProtocolData*);
+typedef void (*iButtonProtocolDallasRenderDataFunc)(FurryString*, const iButtonProtocolData*);
 typedef bool (*iButtonProtocolDallasIsValidFunc)(const iButtonProtocolData*);
 typedef void (
     *iButtonProtocolDallasGetEditableDataFunc)(iButtonEditableData*, iButtonProtocolData*);

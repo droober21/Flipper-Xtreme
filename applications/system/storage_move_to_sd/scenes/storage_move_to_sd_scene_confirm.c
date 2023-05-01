@@ -8,7 +8,7 @@ static void storage_move_to_sd_scene_confirm_widget_callback(
     InputType type,
     void* context) {
     StorageMoveToSd* app = context;
-    furi_assert(app);
+    furry_assert(app);
     if(type == InputTypeShort) {
         if(result == GuiButtonTypeRight) {
             view_dispatcher_send_custom_event(app->view_dispatcher, MoveToSdCustomEventConfirm);

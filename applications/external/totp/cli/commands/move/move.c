@@ -27,7 +27,7 @@ void totp_cli_command_move_docopt_arguments() {
                     "     New token index in the list\r\n");
 }
 
-void totp_cli_command_move_handle(PluginState* plugin_state, FuriString* args, Cli* cli) {
+void totp_cli_command_move_handle(PluginState* plugin_state, FurryString* args, Cli* cli) {
     if(!totp_cli_ensure_authenticated(plugin_state, cli)) {
         return;
     }
@@ -70,7 +70,7 @@ void totp_cli_command_move_handle(PluginState* plugin_state, FuriString* args, C
         totp_cli_delete_last_line();
         TOTP_CLI_PRINTF_SUCCESS(
             "Token \"%s\" has been successfully updated\r\n",
-            furi_string_get_cstr(
+            furry_string_get_cstr(
                 totp_token_info_iterator_get_current_token(iterator_context)->name));
     } else {
         totp_cli_delete_last_line();

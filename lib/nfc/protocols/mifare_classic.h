@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi_hal_nfc.h>
+#include <furry_hal_nfc.h>
 
 #include "crypto1.h"
 
@@ -94,9 +94,9 @@ typedef struct {
 
 const char* mf_classic_get_type_str(MfClassicType type);
 
-bool mf_classic_check_card_type(FuriHalNfcADevData* data);
+bool mf_classic_check_card_type(FurryHalNfcADevData* data);
 
-MfClassicType mf_classic_get_classic_type(FuriHalNfcADevData* data);
+MfClassicType mf_classic_get_classic_type(FurryHalNfcADevData* data);
 
 uint8_t mf_classic_get_total_sectors_num(MfClassicType type);
 
@@ -159,13 +159,13 @@ MfClassicSectorTrailer*
 void mf_classic_auth_init_context(MfClassicAuthContext* auth_ctx, uint8_t sector);
 
 bool mf_classic_authenticate(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     uint8_t block_num,
     uint64_t key,
     MfClassicKey key_type);
 
 bool mf_classic_authenticate_skip_activate(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     uint8_t block_num,
     uint64_t key,
     MfClassicKey key_type,
@@ -173,7 +173,7 @@ bool mf_classic_authenticate_skip_activate(
     uint32_t cuid);
 
 bool mf_classic_auth_attempt(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     Crypto1* crypto,
     MfClassicAuthContext* auth_ctx,
     uint64_t key);
@@ -185,48 +185,48 @@ void mf_classic_reader_add_sector(
     uint64_t key_b);
 
 bool mf_classic_read_block(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     Crypto1* crypto,
     uint8_t block_num,
     MfClassicBlock* block);
 
-void mf_classic_read_sector(FuriHalNfcTxRxContext* tx_rx, MfClassicData* data, uint8_t sec_num);
+void mf_classic_read_sector(FurryHalNfcTxRxContext* tx_rx, MfClassicData* data, uint8_t sec_num);
 
 uint8_t mf_classic_read_card(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     MfClassicReader* reader,
     MfClassicData* data);
 
-uint8_t mf_classic_update_card(FuriHalNfcTxRxContext* tx_rx, MfClassicData* data);
+uint8_t mf_classic_update_card(FurryHalNfcTxRxContext* tx_rx, MfClassicData* data);
 
-bool mf_classic_emulator(MfClassicEmulator* emulator, FuriHalNfcTxRxContext* tx_rx);
+bool mf_classic_emulator(MfClassicEmulator* emulator, FurryHalNfcTxRxContext* tx_rx);
 
-void mf_classic_halt(FuriHalNfcTxRxContext* tx_rx, Crypto1* crypto);
+void mf_classic_halt(FurryHalNfcTxRxContext* tx_rx, Crypto1* crypto);
 
 bool mf_classic_write_block(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     Crypto1* crypto,
     uint8_t block_num,
     MfClassicBlock* src_block);
 
 bool mf_classic_auth_write_block(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     MfClassicBlock* src_block,
     uint8_t block_num,
     MfClassicKey key_type,
     uint64_t key);
 
-bool mf_classic_transfer(FuriHalNfcTxRxContext* tx_rx, Crypto1* crypto, uint8_t block_num);
+bool mf_classic_transfer(FurryHalNfcTxRxContext* tx_rx, Crypto1* crypto, uint8_t block_num);
 
 bool mf_classic_value_cmd(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     Crypto1* crypto,
     uint8_t block_num,
     uint8_t cmd,
     int32_t d_value);
 
 bool mf_classic_value_cmd_full(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     MfClassicBlock* src_block,
     uint8_t block_num,
     MfClassicKey key_type,
@@ -234,7 +234,7 @@ bool mf_classic_value_cmd_full(
     int32_t d_value);
 
 bool mf_classic_write_sector(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     MfClassicData* dest_data,
     MfClassicData* src_data,
     uint8_t sec_num);

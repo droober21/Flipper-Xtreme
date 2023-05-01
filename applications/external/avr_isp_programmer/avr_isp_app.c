@@ -1,19 +1,19 @@
 #include "avr_isp_app_i.h"
 
 static bool avr_isp_app_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     AvrIspApp* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool avr_isp_app_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     AvrIspApp* app = context;
     return scene_manager_handle_back_event(app->scene_manager);
 }
 
 static void avr_isp_app_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     AvrIspApp* app = context;
     scene_manager_handle_tick_event(app->scene_manager);
 }
@@ -21,12 +21,12 @@ static void avr_isp_app_tick_event_callback(void* context) {
 AvrIspApp* avr_isp_app_alloc() {
     AvrIspApp* app = malloc(sizeof(AvrIspApp));
 
-    app->file_path = furi_string_alloc();
-    furi_string_set(app->file_path, STORAGE_APP_DATA_PATH_PREFIX);
+    app->file_path = furry_string_alloc();
+    furry_string_set(app->file_path, STORAGE_APP_DATA_PATH_PREFIX);
     app->error = AvrIspErrorNoError;
 
     // GUI
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
 
     // View Dispatcher
     app->view_dispatcher = view_dispatcher_alloc();
@@ -44,7 +44,7 @@ AvrIspApp* avr_isp_app_alloc() {
     view_dispatcher_attach_to_gui(app->view_dispatcher, app->gui, ViewDispatcherTypeFullscreen);
 
     // Open Notification record
-    app->notifications = furi_record_open(RECORD_NOTIFICATION);
+    app->notifications = furry_record_open(RECORD_NOTIFICATION);
 
     // SubMenu
     app->submenu = submenu_alloc();
@@ -65,7 +65,7 @@ AvrIspApp* avr_isp_app_alloc() {
     view_dispatcher_add_view(app->view_dispatcher, AvrIspViewPopup, popup_get_view(app->popup));
 
     //Dialog
-    app->dialogs = furi_record_open(RECORD_DIALOGS);
+    app->dialogs = furry_record_open(RECORD_DIALOGS);
 
     // Programmer view
     app->avr_isp_programmer_view = avr_isp_programmer_view_alloc();
@@ -97,9 +97,9 @@ AvrIspApp* avr_isp_app_alloc() {
 
     // Enable 5v power, multiple attempts to avoid issues with power chip protection false triggering
     uint8_t attempts = 0;
-    while(!furi_hal_power_is_otg_enabled() && attempts++ < 5) {
-        furi_hal_power_enable_otg();
-        furi_delay_ms(10);
+    while(!furry_hal_power_is_otg_enabled() && attempts++ < 5) {
+        furry_hal_power_enable_otg();
+        furry_delay_ms(10);
     }
 
     scene_manager_next_scene(app->scene_manager, AvrIspSceneStart);
@@ -108,11 +108,11 @@ AvrIspApp* avr_isp_app_alloc() {
 } //-V773
 
 void avr_isp_app_free(AvrIspApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // Disable 5v power
-    if(furi_hal_power_is_otg_enabled()) {
-        furi_hal_power_disable_otg();
+    if(furry_hal_power_is_otg_enabled()) {
+        furry_hal_power_disable_otg();
     }
 
     // Submenu
@@ -132,7 +132,7 @@ void avr_isp_app_free(AvrIspApp* app) {
     popup_free(app->popup);
 
     //Dialog
-    furi_record_close(RECORD_DIALOGS);
+    furry_record_close(RECORD_DIALOGS);
 
     // Programmer view
     view_dispatcher_remove_view(app->view_dispatcher, AvrIspViewProgrammer);
@@ -155,14 +155,14 @@ void avr_isp_app_free(AvrIspApp* app) {
     scene_manager_free(app->scene_manager);
 
     // Notifications
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
     app->notifications = NULL;
 
     // Close records
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
     // Path strings
-    furi_string_free(app->file_path);
+    furry_string_free(app->file_path);
 
     free(app);
 }

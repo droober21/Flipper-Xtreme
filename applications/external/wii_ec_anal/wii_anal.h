@@ -1,7 +1,7 @@
 #ifndef WII_ANAL_H_
 #define WII_ANAL_H_
 
-#include <furi.h> // Core API
+#include <furry.h> // Core API
 #include <input/input.h> // GUI Input extensions
 #include <notification/notification_messages.h>
 
@@ -56,11 +56,11 @@ typedef struct eventMsg {
 // Access to this memory is controlled by mutex
 //
 typedef struct state {
-    FuriMutex* mutex;
+    FurryMutex* mutex;
     bool run; // true : plugin is running
 
     bool timerEn; // controller scanning enabled
-    FuriTimer* timer; // the timer
+    FurryTimer* timer; // the timer
     uint32_t timerHz; // system ticks per second
     int fps; // poll/refresh [frames]-per-second
 

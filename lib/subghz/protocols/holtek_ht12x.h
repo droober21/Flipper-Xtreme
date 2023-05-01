@@ -106,4 +106,4 @@ SubGhzProtocolStatus
  * @param context Pointer to a SubGhzProtocolDecoderHoltek_HT12X instance
  * @param output Resulting text
  */
-void subghz_protocol_decoder_holtek_th12x_get_string(void* context, FuriString* output);
+void subghz_protocol_decoder_holtek_th12x_get_string(void* context, FurryString* output);

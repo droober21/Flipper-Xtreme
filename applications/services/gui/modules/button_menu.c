@@ -4,7 +4,7 @@
 #include <gui/elements.h>
 #include <input/input.h>
 
-#include <furi.h>
+#include <furry.h>
 #include <assets_icons.h>
 
 #include <stdint.h>
@@ -42,8 +42,8 @@ static void button_menu_draw_control_button(
     uint8_t item_position,
     const char* text,
     bool selected) {
-    furi_assert(canvas);
-    furi_assert(text);
+    furry_assert(canvas);
+    furry_assert(text);
 
     uint8_t item_x = 0;
     uint8_t item_y = ITEM_FIRST_OFFSET + (item_position * (ITEM_HEIGHT + ITEM_NEXT_OFFSET));
@@ -68,8 +68,8 @@ static void button_menu_draw_common_button(
     uint8_t item_position,
     const char* text,
     bool selected) {
-    furi_assert(canvas);
-    furi_assert(text);
+    furry_assert(canvas);
+    furry_assert(text);
 
     uint8_t item_x = 0;
     uint8_t item_y = ITEM_FIRST_OFFSET + (item_position * (ITEM_HEIGHT + ITEM_NEXT_OFFSET));
@@ -83,8 +83,8 @@ static void button_menu_draw_common_button(
         canvas_draw_rframe(canvas, item_x, item_y, ITEM_WIDTH, ITEM_HEIGHT, 5);
     }
 
-    FuriString* disp_str;
-    disp_str = furi_string_alloc_set(text);
+    FurryString* disp_str;
+    disp_str = furry_string_alloc_set(text);
     elements_string_fit_width(canvas, disp_str, ITEM_WIDTH - 6);
 
     canvas_draw_str_aligned(
@@ -93,14 +93,14 @@ static void button_menu_draw_common_button(
         item_y + (ITEM_HEIGHT / 2),
         AlignCenter,
         AlignCenter,
-        furi_string_get_cstr(disp_str));
+        furry_string_get_cstr(disp_str));
 
-    furi_string_free(disp_str);
+    furry_string_free(disp_str);
 }
 
 static void button_menu_view_draw_callback(Canvas* canvas, void* _model) {
-    furi_assert(canvas);
-    furi_assert(_model);
+    furry_assert(canvas);
+    furry_assert(_model);
 
     ButtonMenuModel* model = (ButtonMenuModel*)_model;
     canvas_set_font(canvas, FontSecondary);
@@ -118,12 +118,12 @@ static void button_menu_view_draw_callback(Canvas* canvas, void* _model) {
     }
 
     if(model->header) {
-        FuriString* disp_str;
-        disp_str = furi_string_alloc_set(model->header);
+        FurryString* disp_str;
+        disp_str = furry_string_alloc_set(model->header);
         elements_string_fit_width(canvas, disp_str, ITEM_WIDTH - 6);
         canvas_draw_str_aligned(
-            canvas, 32, 10, AlignCenter, AlignCenter, furi_string_get_cstr(disp_str));
-        furi_string_free(disp_str);
+            canvas, 32, 10, AlignCenter, AlignCenter, furry_string_get_cstr(disp_str));
+        furry_string_free(disp_str);
     }
 
     size_t item_position = 0;
@@ -150,7 +150,7 @@ static void button_menu_view_draw_callback(Canvas* canvas, void* _model) {
 }
 
 static void button_menu_process_up(ButtonMenu* button_menu) {
-    furi_assert(button_menu);
+    furry_assert(button_menu);
 
     with_view_model(
         button_menu->view,
@@ -166,7 +166,7 @@ static void button_menu_process_up(ButtonMenu* button_menu) {
 }
 
 static void button_menu_process_down(ButtonMenu* button_menu) {
-    furi_assert(button_menu);
+    furry_assert(button_menu);
 
     with_view_model(
         button_menu->view,
@@ -182,7 +182,7 @@ static void button_menu_process_down(ButtonMenu* button_menu) {
 }
 
 static void button_menu_process_right(ButtonMenu* button_menu) {
-    furi_assert(button_menu);
+    furry_assert(button_menu);
 
     with_view_model(
         button_menu->view,
@@ -202,7 +202,7 @@ static void button_menu_process_right(ButtonMenu* button_menu) {
 }
 
 static void button_menu_process_left(ButtonMenu* button_menu) {
-    furi_assert(button_menu);
+    furry_assert(button_menu);
 
     with_view_model(
         button_menu->view,
@@ -223,7 +223,7 @@ static void button_menu_process_left(ButtonMenu* button_menu) {
 }
 
 static void button_menu_process_ok(ButtonMenu* button_menu, InputType type) {
-    furi_assert(button_menu);
+    furry_assert(button_menu);
 
     ButtonMenuItem* item = NULL;
 
@@ -256,7 +256,7 @@ static void button_menu_process_ok(ButtonMenu* button_menu, InputType type) {
 }
 
 static bool button_menu_view_input_callback(InputEvent* event, void* context) {
-    furi_assert(event);
+    furry_assert(event);
 
     ButtonMenu* button_menu = context;
     bool consumed = false;
@@ -300,12 +300,12 @@ static bool button_menu_view_input_callback(InputEvent* event, void* context) {
 }
 
 View* button_menu_get_view(ButtonMenu* button_menu) {
-    furi_assert(button_menu);
+    furry_assert(button_menu);
     return button_menu->view;
 }
 
 void button_menu_reset(ButtonMenu* button_menu) {
-    furi_assert(button_menu);
+    furry_assert(button_menu);
 
     with_view_model(
         button_menu->view,
@@ -319,7 +319,7 @@ void button_menu_reset(ButtonMenu* button_menu) {
 }
 
 void button_menu_set_header(ButtonMenu* button_menu, const char* header) {
-    furi_assert(button_menu);
+    furry_assert(button_menu);
 
     with_view_model(
         button_menu->view, ButtonMenuModel * model, { model->header = header; }, true);
@@ -333,8 +333,8 @@ ButtonMenuItem* button_menu_add_item(
     ButtonMenuItemType type,
     void* callback_context) {
     ButtonMenuItem* item = NULL;
-    furi_assert(label);
-    furi_assert(button_menu);
+    furry_assert(label);
+    furry_assert(button_menu);
 
     with_view_model(
         button_menu->view,
@@ -376,7 +376,7 @@ ButtonMenu* button_menu_alloc(void) {
 }
 
 void button_menu_free(ButtonMenu* button_menu) {
-    furi_assert(button_menu);
+    furry_assert(button_menu);
 
     with_view_model(
         button_menu->view,
@@ -388,7 +388,7 @@ void button_menu_free(ButtonMenu* button_menu) {
 }
 
 void button_menu_set_selected_item(ButtonMenu* button_menu, uint32_t index) {
-    furi_assert(button_menu);
+    furry_assert(button_menu);
 
     with_view_model(
         button_menu->view,

@@ -8,17 +8,17 @@ void ibtnfuzzer_scene_entrypoint_menu_callback(
     case iBtnFuzzerAttackDefaultValues:
         context->attack = iBtnFuzzerAttackDefaultValues;
         context->current_scene = SceneAttack;
-        furi_string_set(context->attack_name, "Default Values");
+        furry_string_set(context->attack_name, "Default Values");
         break;
     case iBtnFuzzerAttackLoadFile:
         context->attack = iBtnFuzzerAttackLoadFile;
         context->current_scene = SceneSelectFile;
-        furi_string_set(context->attack_name, "Load File");
+        furry_string_set(context->attack_name, "Load File");
         break;
     case iBtnFuzzerAttackLoadFileCustomUids:
         context->attack = iBtnFuzzerAttackLoadFileCustomUids;
         context->current_scene = SceneLoadCustomUids;
-        furi_string_set(context->attack_name, "Load Custom UIDs");
+        furry_string_set(context->attack_name, "Load Custom UIDs");
         break;
     default:
         break;
@@ -27,15 +27,15 @@ void ibtnfuzzer_scene_entrypoint_menu_callback(
     switch(proto_index) {
     case DS1990:
         context->proto = DS1990;
-        furi_string_set(context->proto_name, "DS1990");
+        furry_string_set(context->proto_name, "DS1990");
         break;
     case Metakom:
         context->proto = Metakom;
-        furi_string_set(context->proto_name, "Metakom");
+        furry_string_set(context->proto_name, "Metakom");
         break;
     case Cyfral:
         context->proto = Cyfral;
-        furi_string_set(context->proto_name, "Cyfral");
+        furry_string_set(context->proto_name, "Cyfral");
         break;
     default:
         break;
@@ -55,12 +55,12 @@ void ibtnfuzzer_scene_entrypoint_on_enter(iBtnFuzzerState* context) {
 
     context->menu_index = 0;
     /*for(uint32_t i = 0; i < 4; i++) {
-        menu_items[i] = furi_string_alloc();
+        menu_items[i] = furry_string_alloc();
     }*/
 
     context->menu_proto_index = 0;
     /*for(uint32_t i = 0; i < 4; i++) {
-        menu_proto_items[i] = furi_string_alloc();
+        menu_proto_items[i] = furry_string_alloc();
     }*/
 }
 
@@ -133,7 +133,7 @@ void ibtnfuzzer_scene_entrypoint_on_draw(Canvas* canvas, iBtnFuzzerState* contex
                     24,
                     AlignCenter,
                     AlignTop,
-                    furi_string_get_cstr(context->main_menu_items[context->menu_index - 1]));
+                    furry_string_get_cstr(context->main_menu_items[context->menu_index - 1]));
             }
 
             canvas_set_font(canvas, FontPrimary);
@@ -143,7 +143,7 @@ void ibtnfuzzer_scene_entrypoint_on_draw(Canvas* canvas, iBtnFuzzerState* contex
                 36,
                 AlignCenter,
                 AlignTop,
-                furi_string_get_cstr(context->main_menu_items[context->menu_index]));
+                furry_string_get_cstr(context->main_menu_items[context->menu_index]));
 
             if(context->menu_index < iBtnFuzzerAttackLoadFileCustomUids) {
                 canvas_set_font(canvas, FontSecondary);
@@ -153,7 +153,7 @@ void ibtnfuzzer_scene_entrypoint_on_draw(Canvas* canvas, iBtnFuzzerState* contex
                     48,
                     AlignCenter,
                     AlignTop,
-                    furi_string_get_cstr(context->main_menu_items[context->menu_index + 1]));
+                    furry_string_get_cstr(context->main_menu_items[context->menu_index + 1]));
             }
 
             if(context->menu_proto_index > DS1990) {
@@ -164,7 +164,7 @@ void ibtnfuzzer_scene_entrypoint_on_draw(Canvas* canvas, iBtnFuzzerState* contex
                     -12,
                     AlignCenter,
                     AlignTop,
-                    furi_string_get_cstr(
+                    furry_string_get_cstr(
                         context->main_menu_proto_items[context->menu_proto_index - 1]));
             }
 
@@ -179,7 +179,7 @@ void ibtnfuzzer_scene_entrypoint_on_draw(Canvas* canvas, iBtnFuzzerState* contex
                     4,
                     AlignCenter,
                     AlignTop,
-                    furi_string_get_cstr(
+                    furry_string_get_cstr(
                         context->main_menu_proto_items[context->menu_proto_index]));
             }
             canvas_set_font(canvas, FontPrimary);
@@ -193,7 +193,7 @@ void ibtnfuzzer_scene_entrypoint_on_draw(Canvas* canvas, iBtnFuzzerState* contex
                     -12,
                     AlignCenter,
                     AlignTop,
-                    furi_string_get_cstr(
+                    furry_string_get_cstr(
                         context->main_menu_proto_items[context->menu_proto_index + 1]));
             }
         }

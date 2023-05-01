@@ -21,7 +21,7 @@ CountDownTimView* countdown_timer_view_new() {
 
     cdv->view = view_alloc();
 
-    cdv->timer = furi_timer_alloc(timer_cb, FuriTimerTypePeriodic, cdv);
+    cdv->timer = furry_timer_alloc(timer_cb, FurryTimerTypePeriodic, cdv);
 
     cdv->counting = false;
 
@@ -37,11 +37,11 @@ CountDownTimView* countdown_timer_view_new() {
 }
 
 void countdown_timer_view_delete(CountDownTimView* cdv) {
-    furi_assert(cdv);
+    furry_assert(cdv);
 
     view_free(cdv->view);
-    furi_timer_stop(cdv->timer);
-    furi_timer_free(cdv->timer);
+    furry_timer_stop(cdv->timer);
+    furry_timer_free(cdv->timer);
 
     free(cdv);
 }
@@ -70,7 +70,7 @@ void countdown_timer_state_toggle(CountDownTimView* cdv) {
 
 // on enter callback, CountDownTimView as ctx
 static void countdown_timer_view_on_enter(void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
 
     CountDownTimView* cdv = (CountDownTimView*)ctx;
 
@@ -87,7 +87,7 @@ static void countdown_timer_view_on_enter(void* ctx) {
 
 // view draw callback, CountDownModel as ctx
 static void countdown_timer_view_on_draw(Canvas* canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     CountDownModel* model = (CountDownModel*)ctx;
 
     char buffer[64];
@@ -111,7 +111,7 @@ static void countdown_timer_view_on_draw(Canvas* canvas, void* ctx) {
 
 // keys input event callback, CountDownTimView as ctx
 static bool countdown_timer_view_on_input(InputEvent* event, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
 
     CountDownTimView* hw = (CountDownTimView*)ctx;
 
@@ -158,7 +158,7 @@ static bool countdown_timer_view_on_input(InputEvent* event, void* ctx) {
 }
 
 static void timer_cb(void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
 
     CountDownTimView* cdv = (CountDownTimView*)ctx;
 
@@ -239,7 +239,7 @@ static void handle_misc_cmd(CountDownTimView* hw, CountDownViewCmd cmd) {
         break;
 
     case CountDownTimerReset:
-        furi_timer_stop(hw->timer);
+        furry_timer_stop(hw->timer);
         countdown_timer_view_state_reset(hw);
         notification_off();
 
@@ -337,10 +337,10 @@ static void draw_selection(Canvas* canvas, CountDownViewSelect selection) {
 }
 
 static void countdown_timer_start_counting(CountDownTimView* cdv) {
-    furi_timer_start(cdv->timer, furi_kernel_get_tick_frequency() * 1); // 1s
+    furry_timer_start(cdv->timer, furry_kernel_get_tick_frequency() * 1); // 1s
 }
 
 static void countdown_timer_pause_counting(CountDownTimView* cdv) {
-    furi_timer_stop(cdv->timer);
+    furry_timer_stop(cdv->timer);
     notification_off();
 }

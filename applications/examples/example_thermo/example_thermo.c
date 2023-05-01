@@ -19,7 +19,7 @@
 #include <one_wire/maxim_crc.h>
 #include <one_wire/one_wire_host.h>
 
-#include <furi_hal_power.h>
+#include <furry_hal_power.h>
 
 #define UPDATE_PERIOD_MS 1000UL
 #define TEXT_STORE_SIZE 64U
@@ -70,8 +70,8 @@ typedef union {
 typedef struct {
     Gui* gui;
     ViewPort* view_port;
-    FuriThread* reader_thread;
-    FuriMessageQueue* event_queue;
+    FurryThread* reader_thread;
+    FurryMessageQueue* event_queue;
     OneWireHost* onewire;
     float temp_celsius;
     bool has_device;
@@ -85,7 +85,7 @@ static void example_thermo_request_temperature(ExampleThermoContext* context) {
 
     /* All 1-wire transactions must happen in a critical section, i.e
        not interrupted by other threads. */
-    FURI_CRITICAL_ENTER();
+    FURRY_CRITICAL_ENTER();
 
     bool success = false;
     do {
@@ -105,7 +105,7 @@ static void example_thermo_request_temperature(ExampleThermoContext* context) {
 
     context->has_device = success;
 
-    FURI_CRITICAL_EXIT();
+    FURRY_CRITICAL_EXIT();
 }
 
 /* Reads the measured temperature from the thermometer. */
@@ -119,7 +119,7 @@ static void example_thermo_read_temperature(ExampleThermoContext* context) {
 
     /* All 1-wire transactions must happen in a critical section, i.e
        not interrupted by other threads. */
-    FURI_CRITICAL_ENTER();
+    FURRY_CRITICAL_ENTER();
 
     bool success = false;
 
@@ -183,7 +183,7 @@ static void example_thermo_read_temperature(ExampleThermoContext* context) {
 
     context->has_device = success;
 
-    FURI_CRITICAL_EXIT();
+    FURRY_CRITICAL_EXIT();
 }
 
 /* Periodically requests measurements and reads temperature. This function runs in a separare thread. */
@@ -196,10 +196,10 @@ static int32_t example_thermo_reader_thread_callback(void* ctx) {
 
         /* Wait for the measurement to finish. At the same time wait for an exit signal. */
         const uint32_t flags =
-            furi_thread_flags_wait(ReaderThreadFlagExit, FuriFlagWaitAny, UPDATE_PERIOD_MS);
+            furry_thread_flags_wait(ReaderThreadFlagExit, FurryFlagWaitAny, UPDATE_PERIOD_MS);
 
         /* If an exit signal was received, return from this thread. */
-        if(flags != (unsigned)FuriFlagErrorTimeout) break;
+        if(flags != (unsigned)FurryFlagErrorTimeout) break;
 
         /* The measurement is now ready, read it from the termometer. */
         example_thermo_read_temperature(context);
@@ -228,7 +228,7 @@ static void example_thermo_draw_callback(Canvas* canvas, void* ctx) {
         text_store,
         TEXT_STORE_SIZE,
         "to GPIO pin %ld",
-        furi_hal_resources_get_ext_pin_number(&THERMO_GPIO_PIN));
+        furry_hal_resources_get_ext_pin_number(&THERMO_GPIO_PIN));
     canvas_draw_str_aligned(canvas, middle_x, 42, AlignCenter, AlignBottom, text_store);
 
     canvas_set_font(canvas, FontKeyboard);
@@ -249,7 +249,7 @@ static void example_thermo_draw_callback(Canvas* canvas, void* ctx) {
             temp_units = 'F';
             break;
         default:
-            furi_crash("Illegal measurement units");
+            furry_crash("Illegal measurement units");
         }
         /* If a reading is available, display it */
         snprintf(text_store, TEXT_STORE_SIZE, "Temperature: %+.1f%c", (double)temp, temp_units);
@@ -265,29 +265,29 @@ static void example_thermo_draw_callback(Canvas* canvas, void* ctx) {
    into the application's queue so it can be processed later. */
 static void example_thermo_input_callback(InputEvent* event, void* ctx) {
     ExampleThermoContext* context = ctx;
-    furi_message_queue_put(context->event_queue, event, FuriWaitForever);
+    furry_message_queue_put(context->event_queue, event, FurryWaitForever);
 }
 
 /* Starts the reader thread and handles the input */
 static void example_thermo_run(ExampleThermoContext* context) {
     /* Enable power on external pins */
-    furi_hal_power_enable_otg();
+    furry_hal_power_enable_otg();
 
     /* Configure the hardware in host mode */
     onewire_host_start(context->onewire);
 
     /* Start the reader thread. It will talk to the thermometer in the background. */
-    furi_thread_start(context->reader_thread);
+    furry_thread_start(context->reader_thread);
 
     /* An endless loop which handles the input*/
     for(bool is_running = true; is_running;) {
         InputEvent event;
         /* Wait for an input event. Input events come from the GUI thread via a callback. */
-        const FuriStatus status =
-            furi_message_queue_get(context->event_queue, &event, FuriWaitForever);
+        const FurryStatus status =
+            furry_message_queue_get(context->event_queue, &event, FurryWaitForever);
 
         /* This application is only interested in short button presses. */
-        if((status != FuriStatusOk) || (event.type != InputTypeShort)) {
+        if((status != FurryStatusOk) || (event.type != InputTypeShort)) {
             continue;
         }
 
@@ -298,16 +298,16 @@ static void example_thermo_run(ExampleThermoContext* context) {
     }
 
     /* Signal the reader thread to cease operation and exit */
-    furi_thread_flags_set(furi_thread_get_id(context->reader_thread), ReaderThreadFlagExit);
+    furry_thread_flags_set(furry_thread_get_id(context->reader_thread), ReaderThreadFlagExit);
 
     /* Wait for the reader thread to finish */
-    furi_thread_join(context->reader_thread);
+    furry_thread_join(context->reader_thread);
 
     /* Reset the hardware */
     onewire_host_stop(context->onewire);
 
     /* Disable power on external pins */
-    furi_hal_power_disable_otg();
+    furry_hal_power_disable_otg();
 }
 
 /******************** Initialisation & startup *****************************/
@@ -320,14 +320,14 @@ static ExampleThermoContext* example_thermo_context_alloc() {
     view_port_draw_callback_set(context->view_port, example_thermo_draw_callback, context);
     view_port_input_callback_set(context->view_port, example_thermo_input_callback, context);
 
-    context->event_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+    context->event_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
 
-    context->reader_thread = furi_thread_alloc();
-    furi_thread_set_stack_size(context->reader_thread, 1024U);
-    furi_thread_set_context(context->reader_thread, context);
-    furi_thread_set_callback(context->reader_thread, example_thermo_reader_thread_callback);
+    context->reader_thread = furry_thread_alloc();
+    furry_thread_set_stack_size(context->reader_thread, 1024U);
+    furry_thread_set_context(context->reader_thread, context);
+    furry_thread_set_callback(context->reader_thread, example_thermo_reader_thread_callback);
 
-    context->gui = furi_record_open(RECORD_GUI);
+    context->gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(context->gui, context->view_port, GuiLayerFullscreen);
 
     context->onewire = onewire_host_alloc(&THERMO_GPIO_PIN);
@@ -341,11 +341,11 @@ static void example_thermo_context_free(ExampleThermoContext* context) {
     gui_remove_view_port(context->gui, context->view_port);
 
     onewire_host_free(context->onewire);
-    furi_thread_free(context->reader_thread);
-    furi_message_queue_free(context->event_queue);
+    furry_thread_free(context->reader_thread);
+    furry_message_queue_free(context->event_queue);
     view_port_free(context->view_port);
 
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 }
 
 /* The application's entry point. Execution starts from here. */

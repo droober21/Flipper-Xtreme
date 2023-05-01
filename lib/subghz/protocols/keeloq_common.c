@@ -1,6 +1,6 @@
 #include "keeloq_common.h"
 
-#include <furi.h>
+#include <furry.h>
 
 #include <m-array.h>
 

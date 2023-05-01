@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <notification/notification.h>
@@ -12,16 +12,16 @@ typedef struct selected_position {
 } selected_position;
 
 typedef struct {
-    FuriMutex* mutex;
+    FurryMutex* mutex;
     selected_position selected;
     bool board[32][16];
     bool isDrawing;
 } PaintData;
 
 void paint_draw_callback(Canvas* canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     const PaintData* paint_state = ctx;
-    furi_mutex_acquire(paint_state->mutex, FuriWaitForever);
+    furry_mutex_acquire(paint_state->mutex, FurryWaitForever);
 
     canvas_clear(canvas);
     canvas_set_color(canvas, ColorBlack);
@@ -42,24 +42,24 @@ void paint_draw_callback(Canvas* canvas, void* ctx) {
         canvas, paint_state->selected.x * 4 + 1, paint_state->selected.y * 4 + 1, 2, 2);
 
     //release the mutex
-    furi_mutex_release(paint_state->mutex);
+    furry_mutex_release(paint_state->mutex);
 }
 
 void paint_input_callback(InputEvent* input_event, void* ctx) {
-    furi_assert(ctx);
-    FuriMessageQueue* event_queue = ctx;
-    furi_message_queue_put(event_queue, input_event, FuriWaitForever);
+    furry_assert(ctx);
+    FurryMessageQueue* event_queue = ctx;
+    furry_message_queue_put(event_queue, input_event, FurryWaitForever);
 }
 
 int32_t paint_app(void* p) {
     UNUSED(p);
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
 
     PaintData* paint_state = malloc(sizeof(PaintData));
 
-    paint_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    paint_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!paint_state->mutex) {
-        FURI_LOG_E("paint", "cannot create mutex\r\n");
+        FURRY_LOG_E("paint", "cannot create mutex\r\n");
         free(paint_state);
         return -1;
     }
@@ -70,14 +70,14 @@ int32_t paint_app(void* p) {
     view_port_input_callback_set(view_port, paint_input_callback, event_queue);
 
     // Register view port in GUI
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
-    //NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+    //NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
 
     InputEvent event;
 
-    while(furi_message_queue_get(event_queue, &event, FuriWaitForever) == FuriStatusOk) {
+    while(furry_message_queue_get(event_queue, &event, FurryWaitForever) == FurryStatusOk) {
         //break out of the loop if the back key is pressed
         if(event.type == InputTypeShort && event.key == InputKeyBack) {
             break;
@@ -143,10 +143,10 @@ int32_t paint_app(void* p) {
 
     gui_remove_view_port(gui, view_port);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_mutex_free(paint_state->mutex);
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_record_close(RECORD_GUI);
+    furry_message_queue_free(event_queue);
+    furry_mutex_free(paint_state->mutex);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_GUI);
     free(paint_state);
 
     return 0;

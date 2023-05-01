@@ -1,6 +1,6 @@
 #include "gps_uart.h"
 
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <string.h>
 
@@ -15,9 +15,9 @@ typedef struct {
 } PluginEvent;
 
 static void render_callback(Canvas* const canvas, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     GpsUart* gps_uart = context;
-    furi_mutex_acquire(gps_uart->mutex, FuriWaitForever);
+    furry_mutex_acquire(gps_uart->mutex, FurryWaitForever);
 
     if(!gps_uart->changing_baudrate) {
         canvas_set_font(canvas, FontPrimary);
@@ -69,26 +69,26 @@ static void render_callback(Canvas* const canvas, void* context) {
         canvas_draw_str_aligned(canvas, 64, 47, AlignCenter, AlignBottom, buffer);
     }
 
-    furi_mutex_release(gps_uart->mutex);
+    furry_mutex_release(gps_uart->mutex);
 }
 
-static void input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     PluginEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 int32_t gps_app(void* p) {
     UNUSED(p);
 
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(PluginEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(PluginEvent));
 
     GpsUart* gps_uart = gps_uart_enable();
 
-    gps_uart->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    gps_uart->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!gps_uart->mutex) {
-        FURI_LOG_E("GPS", "cannot create mutex\r\n");
+        FURRY_LOG_E("GPS", "cannot create mutex\r\n");
         free(gps_uart);
         return 255;
     }
@@ -99,16 +99,16 @@ int32_t gps_app(void* p) {
     view_port_input_callback_set(view_port, input_callback, event_queue);
 
     // open GUI and register view_port
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     PluginEvent event;
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 100);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 100);
 
-        furi_mutex_acquire(gps_uart->mutex, FuriWaitForever);
+        furry_mutex_acquire(gps_uart->mutex, FurryWaitForever);
 
-        if(event_status == FuriStatusOk) {
+        if(event_status == FurryStatusOk) {
             // press events
             if(event.type == EventTypeKey) {
                 if(event.input.type == InputTypeShort) {
@@ -150,7 +150,7 @@ int32_t gps_app(void* p) {
                         gps_uart_init_thread(gps_uart);
                         gps_uart->changing_baudrate = true;
                         view_port_update(view_port);
-                        furi_mutex_release(gps_uart->mutex);
+                        furry_mutex_release(gps_uart->mutex);
                         break;
                     case InputKeyRight:
                         if(gps_uart->speed_in_kms) {
@@ -170,9 +170,9 @@ int32_t gps_app(void* p) {
         }
         if(!gps_uart->changing_baudrate) {
             view_port_update(view_port);
-            furi_mutex_release(gps_uart->mutex);
+            furry_mutex_release(gps_uart->mutex);
         } else {
-            furi_delay_ms(1000);
+            furry_delay_ms(1000);
             gps_uart->changing_baudrate = false;
         }
     }
@@ -180,10 +180,10 @@ int32_t gps_app(void* p) {
     notification_message_block(gps_uart->notifications, &sequence_display_backlight_enforce_auto);
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_mutex_free(gps_uart->mutex);
+    furry_message_queue_free(event_queue);
+    furry_mutex_free(gps_uart->mutex);
     gps_uart_disable(gps_uart);
 
     return 0;

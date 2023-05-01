@@ -1,9 +1,9 @@
-#include <furi.h>
+#include <furry.h>
 #include "u2f.h"
 #include "u2f_hid.h"
 #include "u2f_data.h"
-#include <furi_hal.h>
-#include <furi_hal_random.h>
+#include <furry_hal.h>
+#include <furry_hal_random.h>
 #include <littlefs/lfs_util.h> // for lfs_tobe32
 
 #include "toolbox/sha256.h"
@@ -89,7 +89,7 @@ struct U2fData {
 };
 
 static int u2f_uecc_random(uint8_t* dest, unsigned size) {
-    furi_hal_random_fill_buf(dest, size);
+    furry_hal_random_fill_buf(dest, size);
     return 1;
 }
 
@@ -98,33 +98,33 @@ U2fData* u2f_alloc() {
 }
 
 void u2f_free(U2fData* U2F) {
-    furi_assert(U2F);
+    furry_assert(U2F);
     free(U2F);
 }
 
 bool u2f_init(U2fData* U2F) {
-    furi_assert(U2F);
+    furry_assert(U2F);
 
     if(u2f_data_cert_check() == false) {
-        FURI_LOG_E(TAG, "Certificate load error");
+        FURRY_LOG_E(TAG, "Certificate load error");
         return false;
     }
     if(u2f_data_cert_key_load(U2F->cert_key) == false) {
-        FURI_LOG_E(TAG, "Certificate key load error");
+        FURRY_LOG_E(TAG, "Certificate key load error");
         return false;
     }
     if(u2f_data_key_load(U2F->device_key) == false) {
-        FURI_LOG_W(TAG, "Key loading error, generating new");
+        FURRY_LOG_W(TAG, "Key loading error, generating new");
         if(u2f_data_key_generate(U2F->device_key) == false) {
-            FURI_LOG_E(TAG, "Key write failed");
+            FURRY_LOG_E(TAG, "Key write failed");
             return false;
         }
     }
     if(u2f_data_cnt_read(&U2F->counter) == false) {
-        FURI_LOG_W(TAG, "Counter loading error, resetting counter");
+        FURRY_LOG_W(TAG, "Counter loading error, resetting counter");
         U2F->counter = 0;
         if(u2f_data_cnt_write(0) == false) {
-            FURI_LOG_E(TAG, "Counter write failed");
+            FURRY_LOG_E(TAG, "Counter write failed");
             return false;
         }
     }
@@ -137,8 +137,8 @@ bool u2f_init(U2fData* U2F) {
 }
 
 void u2f_set_event_callback(U2fData* U2F, U2fEvtCallback callback, void* context) {
-    furi_assert(U2F);
-    furi_assert(callback);
+    furry_assert(U2F);
+    furry_assert(callback);
     U2F->callback = callback;
     U2F->context = context;
 }
@@ -206,7 +206,7 @@ static uint16_t u2f_register(U2fData* U2F, uint8_t* buf) {
 
     handle.len = 32 * 2;
     // Generate random nonce
-    furi_hal_random_fill_buf(handle.nonce, 32);
+    furry_hal_random_fill_buf(handle.nonce, 32);
 
     // Generate private key
     hmac_sha256_init(&hmac_ctx, U2F->device_key);
@@ -301,7 +301,7 @@ static uint16_t u2f_authenticate(U2fData* U2F, uint8_t* buf) {
     hmac_sha256_finish(&hmac_ctx, U2F->device_key, mac_control);
 
     if(memcmp(req->key_handle.hash, mac_control, 32) != 0) {
-        FURI_LOG_W(TAG, "Wrong handle!");
+        FURRY_LOG_W(TAG, "Wrong handle!");
         memcpy(&buf[0], state_wrong_data, 2);
         return 2;
     }
@@ -319,7 +319,7 @@ static uint16_t u2f_authenticate(U2fData* U2F, uint8_t* buf) {
     memcpy(resp->signature + signature_len, state_no_error, 2);
 
     U2F->counter++;
-    FURI_LOG_D(TAG, "Counter: %lu", U2F->counter);
+    FURRY_LOG_D(TAG, "Counter: %lu", U2F->counter);
     u2f_data_cnt_write(U2F->counter);
 
     if(U2F->callback != NULL) U2F->callback(U2fNotifyAuthSuccess, U2F->context);
@@ -328,7 +328,7 @@ static uint16_t u2f_authenticate(U2fData* U2F, uint8_t* buf) {
 }
 
 uint16_t u2f_msg_parse(U2fData* U2F, uint8_t* buf, uint16_t len) {
-    furi_assert(U2F);
+    furry_assert(U2F);
     if(!U2F->ready) return 0;
     if((buf[0] != 0x00) && (len < 5)) return 0;
     if(buf[1] == U2F_CMD_REGISTER) { // Register request

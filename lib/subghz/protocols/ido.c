@@ -78,19 +78,19 @@ void* subghz_protocol_decoder_ido_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_ido_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderIDo* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_ido_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderIDo* instance = context;
     instance->decoder.parser_step = IDoDecoderStepReset;
 }
 
 void subghz_protocol_decoder_ido_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderIDo* instance = context;
 
     switch(instance->decoder.parser_step) {
@@ -174,7 +174,7 @@ static void subghz_protocol_ido_check_remote_controller(SubGhzBlockGeneric* inst
 }
 
 uint8_t subghz_protocol_decoder_ido_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderIDo* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -184,21 +184,21 @@ SubGhzProtocolStatus subghz_protocol_decoder_ido_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderIDo* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_ido_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderIDo* instance = context;
     return subghz_block_generic_deserialize_check_count_bit(
         &instance->generic, flipper_format, subghz_protocol_ido_const.min_count_bit_for_found);
 }
 
-void subghz_protocol_decoder_ido_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_ido_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderIDo* instance = context;
 
     subghz_protocol_ido_check_remote_controller(&instance->generic);
@@ -207,7 +207,7 @@ void subghz_protocol_decoder_ido_get_string(void* context, FuriString* output) {
     uint32_t code_fix = code_found_reverse & 0xFFFFFF;
     uint32_t code_hop = (code_found_reverse >> 24) & 0xFFFFFF;
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %dbit\r\n"
         "Key:0x%lX%08lX\r\n"

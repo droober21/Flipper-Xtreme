@@ -50,9 +50,9 @@ typedef struct {
  * Get storage pubsub.
  * Storage will send StorageEvent messages.
  * @param storage 
- * @return FuriPubSub* 
+ * @return FurryPubSub* 
  */
-FuriPubSub* storage_get_pubsub(Storage* storage);
+FurryPubSub* storage_get_pubsub(Storage* storage);
 
 /******************* File Functions *******************/
 
@@ -280,7 +280,7 @@ FS_Error storage_common_fs_info(
  * @param path 
  * @return bool 
  */
-void storage_common_resolve_path_and_ensure_app_directory(Storage* storage, FuriString* path);
+void storage_common_resolve_path_and_ensure_app_directory(Storage* storage, FurryString* path);
 
 /**
  * @brief Move content of one folder to another, with rename of all conflicting files. 
@@ -357,7 +357,7 @@ FS_Error storage_sd_status(Storage* api);
 
 /******************* Internal LFS Functions *******************/
 
-typedef void (*Storage_name_converter)(FuriString*);
+typedef void (*Storage_name_converter)(FurryString*);
 
 /** Backs up internal storage to a tar archive
  * @param api pointer to the api
@@ -415,7 +415,7 @@ void storage_get_next_filename(
     const char* dirname,
     const char* filename,
     const char* fileextension,
-    FuriString* nextfilename,
+    FurryString* nextfilename,
     uint8_t max_len);
 
 #ifdef __cplusplus

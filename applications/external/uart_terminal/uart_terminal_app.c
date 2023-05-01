@@ -1,22 +1,22 @@
 #include "uart_terminal_app_i.h"
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 static bool uart_terminal_app_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     UART_TerminalApp* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool uart_terminal_app_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     UART_TerminalApp* app = context;
     return scene_manager_handle_back_event(app->scene_manager);
 }
 
 static void uart_terminal_app_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     UART_TerminalApp* app = context;
     scene_manager_handle_tick_event(app->scene_manager);
 }
@@ -24,7 +24,7 @@ static void uart_terminal_app_tick_event_callback(void* context) {
 UART_TerminalApp* uart_terminal_app_alloc() {
     UART_TerminalApp* app = malloc(sizeof(UART_TerminalApp));
 
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
 
     app->view_dispatcher = view_dispatcher_alloc();
     app->scene_manager = scene_manager_alloc(&uart_terminal_scene_handlers, app);
@@ -53,8 +53,8 @@ UART_TerminalApp* uart_terminal_app_alloc() {
     app->text_box = text_box_alloc();
     view_dispatcher_add_view(
         app->view_dispatcher, UART_TerminalAppViewConsoleOutput, text_box_get_view(app->text_box));
-    app->text_box_store = furi_string_alloc();
-    furi_string_reserve(app->text_box_store, UART_TERMINAL_TEXT_BOX_STORE_SIZE);
+    app->text_box_store = furry_string_alloc();
+    furry_string_reserve(app->text_box_store, UART_TERMINAL_TEXT_BOX_STORE_SIZE);
 
     app->text_input = uart_text_input_alloc();
     view_dispatcher_add_view(
@@ -68,14 +68,14 @@ UART_TerminalApp* uart_terminal_app_alloc() {
 }
 
 void uart_terminal_app_free(UART_TerminalApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // Views
     view_dispatcher_remove_view(app->view_dispatcher, UART_TerminalAppViewVarItemList);
     view_dispatcher_remove_view(app->view_dispatcher, UART_TerminalAppViewConsoleOutput);
     view_dispatcher_remove_view(app->view_dispatcher, UART_TerminalAppViewTextInput);
     text_box_free(app->text_box);
-    furi_string_free(app->text_box_store);
+    furry_string_free(app->text_box_store);
     uart_text_input_free(app->text_input);
 
     // View dispatcher
@@ -85,7 +85,7 @@ void uart_terminal_app_free(UART_TerminalApp* app) {
     uart_terminal_uart_free(app->uart);
 
     // Close records
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
     free(app);
 }

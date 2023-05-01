@@ -6,7 +6,7 @@ InfraredMessage* infrared_decoder_kaseikyo_check_ready(void* ctx) {
 }
 
 bool infrared_decoder_kaseikyo_interpret(InfraredCommonDecoder* decoder) {
-    furi_assert(decoder);
+    furry_assert(decoder);
 
     bool result = false;
     uint16_t vendor_id = ((uint16_t)(decoder->data[1]) << 8) | (uint16_t)decoder->data[0];

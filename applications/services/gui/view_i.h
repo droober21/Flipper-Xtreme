@@ -6,11 +6,11 @@
 #pragma once
 
 #include "view.h"
-#include <furi.h>
+#include <furry.h>
 
 typedef struct {
     void* data;
-    FuriMutex* mutex;
+    FurryMutex* mutex;
 } ViewModelLocking;
 
 struct View {

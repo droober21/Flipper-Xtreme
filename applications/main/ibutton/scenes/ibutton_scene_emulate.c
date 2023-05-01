@@ -17,18 +17,18 @@ void ibutton_scene_emulate_on_enter(void* context) {
     iButtonKey* key = ibutton->key;
 
     Widget* widget = ibutton->widget;
-    FuriString* tmp = furi_string_alloc();
+    FurryString* tmp = furry_string_alloc();
 
     widget_add_icon_element(widget, 3, 10, &I_iButtonKey_49x44);
 
-    furi_string_printf(
+    furry_string_printf(
         tmp,
         "%s\n[%s]",
-        furi_string_empty(ibutton->file_path) ? "Unsaved Key" : ibutton->key_name,
+        furry_string_empty(ibutton->file_path) ? "Unsaved Key" : ibutton->key_name,
         ibutton_protocols_get_name(ibutton->protocols, ibutton_key_get_protocol_id(key)));
 
     widget_add_text_box_element(
-        widget, 52, 38, 75, 26, AlignCenter, AlignCenter, furi_string_get_cstr(tmp), true);
+        widget, 52, 38, 75, 26, AlignCenter, AlignCenter, furry_string_get_cstr(tmp), true);
 
     widget_add_string_multiline_element(
         widget, 88, 10, AlignCenter, AlignTop, FontPrimary, "iButton\nemulating");
@@ -39,7 +39,7 @@ void ibutton_scene_emulate_on_enter(void* context) {
     ibutton_notification_message(ibutton, iButtonNotificationMessageEmulateStart);
     view_dispatcher_switch_to_view(ibutton->view_dispatcher, iButtonViewWidget);
 
-    furi_string_free(tmp);
+    furry_string_free(tmp);
 }
 
 bool ibutton_scene_emulate_on_event(void* context, SceneManagerEvent event) {

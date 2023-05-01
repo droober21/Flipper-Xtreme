@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <furi/core/mutex.h>
+#include <furry/core/mutex.h>
 
 typedef uint8_t TotpBtTypeCodeWorkerEvent;
 
@@ -52,7 +52,7 @@ void totp_bt_type_code_worker_start(
     TotpBtTypeCodeWorkerContext* context,
     char* code_buffer,
     uint8_t code_buffer_size,
-    FuriMutex* code_buffer_sync);
+    FurryMutex* code_buffer_sync);
 
 /**
  * @brief Stops bluetooth token input automation worker

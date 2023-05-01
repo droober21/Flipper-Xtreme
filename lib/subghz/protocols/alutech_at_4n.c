@@ -100,7 +100,7 @@ void* subghz_protocol_encoder_alutech_at_4n_alloc(SubGhzEnvironment* environment
     instance->alutech_at_4n_rainbow_table_file_name =
         subghz_environment_get_alutech_at_4n_rainbow_table_file_name(environment);
     if(instance->alutech_at_4n_rainbow_table_file_name) {
-        FURI_LOG_I(
+        FURRY_LOG_I(
             TAG, "Loading rainbow table from %s", instance->alutech_at_4n_rainbow_table_file_name);
     }
 
@@ -108,7 +108,7 @@ void* subghz_protocol_encoder_alutech_at_4n_alloc(SubGhzEnvironment* environment
 }
 
 void subghz_protocol_encoder_alutech_at_4n_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderAlutech_at_4n* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -274,10 +274,10 @@ static bool subghz_protocol_alutech_at_4n_gen_data(
     }
 
     if(instance->generic.cnt < 0xFFFF) {
-        if((instance->generic.cnt + furi_hal_subghz_get_rolling_counter_mult()) >= 0xFFFF) {
+        if((instance->generic.cnt + furry_hal_subghz_get_rolling_counter_mult()) >= 0xFFFF) {
             instance->generic.cnt = 0;
         } else {
-            instance->generic.cnt += furi_hal_subghz_get_rolling_counter_mult();
+            instance->generic.cnt += furry_hal_subghz_get_rolling_counter_mult();
         }
     } else if(instance->generic.cnt >= 0xFFFF) {
         instance->generic.cnt = 0;
@@ -301,7 +301,7 @@ bool subghz_protocol_alutech_at_4n_create_data(
     uint8_t btn,
     uint16_t cnt,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderAlutech_at_4n* instance = context;
     instance->generic.serial = serial;
     instance->generic.cnt = cnt;
@@ -311,7 +311,7 @@ bool subghz_protocol_alutech_at_4n_create_data(
         res = subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
         if((res == SubGhzProtocolStatusOk) &&
            !flipper_format_write_uint32(flipper_format, "CRC", &instance->crc, 1)) {
-            FURI_LOG_E(TAG, "Unable to add CRC");
+            FURRY_LOG_E(TAG, "Unable to add CRC");
             res = false;
         }
     }
@@ -326,7 +326,7 @@ bool subghz_protocol_alutech_at_4n_create_data(
 static bool subghz_protocol_encoder_alutech_at_4n_get_upload(
     SubGhzProtocolEncoderAlutech_at_4n* instance,
     uint8_t btn) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     // Save original button for later use
     if(subghz_custom_btn_get_original() == 0) {
@@ -487,7 +487,7 @@ static bool subghz_protocol_encoder_alutech_at_4n_get_upload(
     size_t size_upload = index;
 
     if(size_upload > instance->encoder.size_upload) {
-        FURI_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
+        FURRY_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
         return false;
     } else {
         instance->encoder.size_upload = size_upload;
@@ -498,18 +498,18 @@ static bool subghz_protocol_encoder_alutech_at_4n_get_upload(
 SubGhzProtocolStatus subghz_protocol_encoder_alutech_at_4n_deserialize(
     void* context,
     FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderAlutech_at_4n* instance = context;
     SubGhzProtocolStatus res = SubGhzProtocolStatusError;
     do {
         if(SubGhzProtocolStatusOk !=
            subghz_block_generic_deserialize(&instance->generic, flipper_format)) {
-            FURI_LOG_E(TAG, "Deserialize error");
+            FURRY_LOG_E(TAG, "Deserialize error");
             break;
         }
 
         if(!flipper_format_read_uint32(flipper_format, "CRC", (uint32_t*)&instance->crc, 1)) {
-            FURI_LOG_E(TAG, "Missing CRC");
+            FURRY_LOG_E(TAG, "Missing CRC");
             break;
         }
 
@@ -523,7 +523,7 @@ SubGhzProtocolStatus subghz_protocol_encoder_alutech_at_4n_deserialize(
         subghz_protocol_encoder_alutech_at_4n_get_upload(instance, instance->generic.btn);
 
         if(!flipper_format_rewind(flipper_format)) {
-            FURI_LOG_E(TAG, "Rewind error");
+            FURRY_LOG_E(TAG, "Rewind error");
             break;
         }
         uint8_t key_data[sizeof(uint64_t)] = {0};
@@ -531,15 +531,15 @@ SubGhzProtocolStatus subghz_protocol_encoder_alutech_at_4n_deserialize(
             key_data[sizeof(uint64_t) - i - 1] = (instance->generic.data >> i * 8) & 0xFF;
         }
         if(!flipper_format_update_hex(flipper_format, "Key", key_data, sizeof(uint64_t))) {
-            FURI_LOG_E(TAG, "Unable to add Key");
+            FURRY_LOG_E(TAG, "Unable to add Key");
             break;
         }
         if(!flipper_format_rewind(flipper_format)) {
-            FURI_LOG_E(TAG, "Rewind error");
+            FURRY_LOG_E(TAG, "Rewind error");
             break;
         }
         if(!flipper_format_update_uint32(flipper_format, "CRC", &instance->crc, 1)) {
-            FURI_LOG_E(TAG, "Unable to add CRC");
+            FURRY_LOG_E(TAG, "Unable to add CRC");
             break;
         }
 
@@ -559,27 +559,27 @@ void* subghz_protocol_decoder_alutech_at_4n_alloc(SubGhzEnvironment* environment
     instance->alutech_at_4n_rainbow_table_file_name =
         subghz_environment_get_alutech_at_4n_rainbow_table_file_name(environment);
     if(instance->alutech_at_4n_rainbow_table_file_name) {
-        FURI_LOG_I(
+        FURRY_LOG_I(
             TAG, "Loading rainbow table from %s", instance->alutech_at_4n_rainbow_table_file_name);
     }
     return instance;
 }
 
 void subghz_protocol_decoder_alutech_at_4n_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderAlutech_at_4n* instance = context;
     instance->alutech_at_4n_rainbow_table_file_name = NULL;
     free(instance);
 }
 
 void subghz_protocol_decoder_alutech_at_4n_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderAlutech_at_4n* instance = context;
     instance->decoder.parser_step = Alutech_at_4nDecoderStepReset;
 }
 
 void subghz_protocol_decoder_alutech_at_4n_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderAlutech_at_4n* instance = context;
 
     switch(instance->decoder.parser_step) {
@@ -741,7 +741,7 @@ static void subghz_protocol_alutech_at_4n_remote_controller(
 }
 
 uint8_t subghz_protocol_decoder_alutech_at_4n_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderAlutech_at_4n* instance = context;
     return (uint8_t)instance->crc;
 }
@@ -750,13 +750,13 @@ SubGhzProtocolStatus subghz_protocol_decoder_alutech_at_4n_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderAlutech_at_4n* instance = context;
     SubGhzProtocolStatus res =
         subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
     if((res == SubGhzProtocolStatusOk) &&
        !flipper_format_write_uint32(flipper_format, "CRC", &instance->crc, 1)) {
-        FURI_LOG_E(TAG, "Unable to add CRC");
+        FURRY_LOG_E(TAG, "Unable to add CRC");
         res = SubGhzProtocolStatusErrorParserOthers;
     }
     return res;
@@ -765,7 +765,7 @@ SubGhzProtocolStatus subghz_protocol_decoder_alutech_at_4n_serialize(
 SubGhzProtocolStatus subghz_protocol_decoder_alutech_at_4n_deserialize(
     void* context,
     FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderAlutech_at_4n* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -777,12 +777,12 @@ SubGhzProtocolStatus subghz_protocol_decoder_alutech_at_4n_deserialize(
             break;
         }
         if(!flipper_format_rewind(flipper_format)) {
-            FURI_LOG_E(TAG, "Rewind error");
+            FURRY_LOG_E(TAG, "Rewind error");
             ret = SubGhzProtocolStatusErrorParserOthers;
             break;
         }
         if(!flipper_format_read_uint32(flipper_format, "CRC", (uint32_t*)&instance->crc, 1)) {
-            FURI_LOG_E(TAG, "Missing CRC");
+            FURRY_LOG_E(TAG, "Missing CRC");
             ret = SubGhzProtocolStatusErrorParserOthers;
             break;
         }
@@ -790,15 +790,15 @@ SubGhzProtocolStatus subghz_protocol_decoder_alutech_at_4n_deserialize(
     return ret;
 }
 
-void subghz_protocol_decoder_alutech_at_4n_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_alutech_at_4n_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderAlutech_at_4n* instance = context;
     subghz_protocol_alutech_at_4n_remote_controller(
         &instance->generic, instance->crc, instance->alutech_at_4n_rainbow_table_file_name);
     uint32_t code_found_hi = instance->generic.data >> 32;
     uint32_t code_found_lo = instance->generic.data & 0x00000000ffffffff;
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s\r\n"
         "Key:0x%08lX%08lX\nCRC:%02X  %dbit\r\n"

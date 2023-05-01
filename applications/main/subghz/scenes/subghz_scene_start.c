@@ -58,7 +58,7 @@ void subghz_scene_start_on_enter(void* context) {
         SubmenuIndexTest,
         subghz_scene_start_submenu_callback,
         subghz,
-        !furi_hal_rtc_is_flag_set(FuriHalRtcFlagDebug),
+        !furry_hal_rtc_is_flag_set(FurryHalRtcFlagDebug),
         "Enable\nDebug!");
     submenu_set_selected_item(
         subghz->submenu, scene_manager_get_scene_state(subghz->scene_manager, SubGhzSceneStart));
@@ -85,13 +85,13 @@ bool subghz_scene_start_on_event(void* context, SceneManagerEvent event) {
             scene_manager_next_scene(subghz->scene_manager, SubGhzSceneSetType);
             return true;
         } else {
-            furi_hal_subghz_enable_ext_power();
+            furry_hal_subghz_enable_ext_power();
 
-            if(!furi_hal_subghz_check_radio()) {
-                furi_hal_subghz_select_radio_type(SubGhzRadioInternal);
-                furi_hal_subghz_init_radio_type(SubGhzRadioInternal);
+            if(!furry_hal_subghz_check_radio()) {
+                furry_hal_subghz_select_radio_type(SubGhzRadioInternal);
+                furry_hal_subghz_init_radio_type(SubGhzRadioInternal);
                 subghz->last_settings->external_module_enabled = false;
-                furi_string_set(subghz->error_str, "Please connect\nexternal radio");
+                furry_string_set(subghz->error_str, "Please connect\nexternal radio");
                 scene_manager_next_scene(subghz->scene_manager, SubGhzSceneShowErrorSub);
                 return true;
             } else if(event.event == SubmenuIndexReadRAW) {

@@ -6,7 +6,7 @@ typedef void (*DevEnvOkCallback)(InputType type, void* context);
 
 BFDevEnv* bf_dev_env_alloc(BFApp* application);
 
-void bf_dev_set_file_path(FuriString* path);
+void bf_dev_set_file_path(FurryString* path);
 
 void bf_dev_env_free(BFDevEnv* devEnv);
 

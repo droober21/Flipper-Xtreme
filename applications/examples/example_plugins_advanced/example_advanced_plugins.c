@@ -13,7 +13,7 @@
 int32_t example_advanced_plugins_app(void* p) {
     UNUSED(p);
 
-    FURI_LOG_I(TAG, "Starting");
+    FURRY_LOG_I(TAG, "Starting");
 
     CompositeApiResolver* resolver = composite_api_resolver_alloc();
     composite_api_resolver_add(resolver, firmware_api_interface);
@@ -24,25 +24,25 @@ int32_t example_advanced_plugins_app(void* p) {
 
     do {
         if(plugin_manager_load_all(manager, APP_DATA_PATH("plugins")) != PluginManagerErrorNone) {
-            FURI_LOG_E(TAG, "Failed to load all libs");
+            FURRY_LOG_E(TAG, "Failed to load all libs");
             break;
         }
 
         uint32_t plugin_count = plugin_manager_get_count(manager);
-        FURI_LOG_I(TAG, "Loaded libs: %lu", plugin_count);
+        FURRY_LOG_I(TAG, "Loaded libs: %lu", plugin_count);
 
         for(uint32_t i = 0; i < plugin_count; i++) {
             const AdvancedPlugin* plugin = plugin_manager_get_ep(manager, i);
-            FURI_LOG_I(TAG, "plugin name: %s. Calling methods", plugin->name);
+            FURRY_LOG_I(TAG, "plugin name: %s. Calling methods", plugin->name);
             plugin->method1(228);
             plugin->method2();
-            FURI_LOG_I(TAG, "Accumulator: %lu", app_api_accumulator_get());
+            FURRY_LOG_I(TAG, "Accumulator: %lu", app_api_accumulator_get());
         }
     } while(0);
 
     plugin_manager_free(manager);
     composite_api_resolver_free(resolver);
-    FURI_LOG_I(TAG, "Goodbye!");
+    FURRY_LOG_I(TAG, "Goodbye!");
 
     return 0;
 }

@@ -7,9 +7,9 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include <furi.h>
-#include <furi_hal.h>
-#include <furi_hal_speaker.h>
+#include <furry.h>
+#include <furry_hal.h>
+#include <furry_hal_speaker.h>
 #include <gui/gui.h>
 #include <gui/elements.h>
 #include <dialogs/dialogs.h>
@@ -27,12 +27,12 @@
 #define TAG "SWD"
 
 /* short debug message */
-#define DBGS(format) furi_log_print_format(FuriLogLevelDebug, TAG, "%s: " format, __FUNCTION__)
+#define DBGS(format) furry_log_print_format(FurryLogLevelDebug, TAG, "%s: " format, __FUNCTION__)
 /* formatted debug message */
 #define DBG(format, ...) \
-    furi_log_print_format(FuriLogLevelDebug, TAG, "%s: " format, __FUNCTION__, __VA_ARGS__)
+    furry_log_print_format(FurryLogLevelDebug, TAG, "%s: " format, __FUNCTION__, __VA_ARGS__)
 /* log message*/
-#define LOG(...) furi_log_print_format(FuriLogLevelDefault, TAG, __VA_ARGS__)
+#define LOG(...) furry_log_print_format(FurryLogLevelDefault, TAG, __VA_ARGS__)
 
 #define COUNT(x) ((size_t)(sizeof(x) / sizeof((x)[0])))
 #define ARRAY_SIZE(x) COUNT(x)
@@ -163,13 +163,13 @@ typedef struct {
     DialogsApp* dialogs;
     NotificationApp* notification;
 
-    FuriTimer* timer;
+    FurryTimer* timer;
     UsbUart* uart;
     ViewPort* view_port;
 
-    FuriMessageQueue* event_queue;
-    FuriMutex* swd_mutex;
-    FuriMutex* gui_mutex;
+    FurryMessageQueue* event_queue;
+    FurryMutex* swd_mutex;
+    FurryMutex* gui_mutex;
 
     swd_targetid_info_t targetid_info;
     swd_dpidr_info_t dpidr_info;

@@ -11,7 +11,7 @@ struct FlipperApplication {
     ELFDebugInfo state;
     FlipperApplicationManifest manifest;
     ELFFile* elf;
-    FuriThread* thread;
+    FurryThread* thread;
     void* ep_thread_args;
 };
 
@@ -23,7 +23,7 @@ FlipperApplicationList_t flipper_application_loaded_app_list = {0};
 static bool flipper_application_loaded_app_list_initialized = false;
 
 static void flipper_application_list_add_app(const FlipperApplication* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     if(!flipper_application_loaded_app_list_initialized) {
         FlipperApplicationList_init(flipper_application_loaded_app_list);
@@ -33,8 +33,8 @@ static void flipper_application_list_add_app(const FlipperApplication* app) {
 }
 
 static void flipper_application_list_remove_app(const FlipperApplication* app) {
-    furi_assert(flipper_application_loaded_app_list_initialized);
-    furi_assert(app);
+    furry_assert(flipper_application_loaded_app_list_initialized);
+    furry_assert(app);
 
     FlipperApplicationList_it_t it;
     for(FlipperApplicationList_it(it, flipper_application_loaded_app_list);
@@ -63,11 +63,11 @@ bool flipper_application_is_plugin(FlipperApplication* app) {
 }
 
 void flipper_application_free(FlipperApplication* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     if(app->thread) {
-        furi_thread_join(app->thread);
-        furi_thread_free(app->thread);
+        furry_thread_join(app->thread);
+        furry_thread_free(app->thread);
     }
 
     if(app->state.entry) {
@@ -203,7 +203,7 @@ FlipperApplicationLoadStatus flipper_application_map_to_memory(FlipperApplicatio
 }
 
 static int32_t flipper_application_thread(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     FlipperApplication* app = (FlipperApplication*)context;
 
     elf_file_call_init(app->elf);
@@ -214,23 +214,23 @@ static int32_t flipper_application_thread(void* context) {
     elf_file_call_fini(app->elf);
 
     // wait until all notifications from RAM are completed
-    NotificationApp* notifications = furi_record_open(RECORD_NOTIFICATION);
+    NotificationApp* notifications = furry_record_open(RECORD_NOTIFICATION);
     const NotificationSequence sequence_empty = {
         NULL,
     };
     notification_message_block(notifications, &sequence_empty);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
 
     return ret_code;
 }
 
-FuriThread* flipper_application_spawn(FlipperApplication* app, void* args) {
-    furi_check(app->thread == NULL);
-    furi_check(!flipper_application_is_plugin(app));
+FurryThread* flipper_application_spawn(FlipperApplication* app, void* args) {
+    furry_check(app->thread == NULL);
+    furry_check(!flipper_application_is_plugin(app));
     app->ep_thread_args = args;
 
     const FlipperApplicationManifest* manifest = flipper_application_get_manifest(app);
-    app->thread = furi_thread_alloc_ex(
+    app->thread = furry_thread_alloc_ex(
         manifest->name, manifest->stack_size, flipper_application_thread, app);
 
     return app->thread;
@@ -278,11 +278,11 @@ const FlipperAppPluginDescriptor*
 
     typedef const FlipperAppPluginDescriptor* (*get_lib_descriptor_t)(void);
     get_lib_descriptor_t lib_ep = elf_file_get_entry_point(app->elf);
-    furi_check(lib_ep);
+    furry_check(lib_ep);
 
     const FlipperAppPluginDescriptor* lib_descriptor = lib_ep();
 
-    FURI_LOG_D(
+    FURRY_LOG_D(
         TAG,
         "Library for %s, API v. %lu loaded",
         lib_descriptor->appid,

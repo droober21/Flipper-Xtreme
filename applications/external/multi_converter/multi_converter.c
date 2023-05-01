@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <stdlib.h>
@@ -8,9 +8,9 @@
 #include "multi_converter_mode_select.h"
 
 static void multi_converter_render_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     const MultiConverterState* multi_converter_state = ctx;
-    furi_mutex_acquire(multi_converter_state->mutex, FuriWaitForever);
+    furry_mutex_acquire(multi_converter_state->mutex, FurryWaitForever);
 
     if(multi_converter_state->mode == ModeDisplay) {
         multi_converter_mode_display_draw(canvas, multi_converter_state);
@@ -18,15 +18,15 @@ static void multi_converter_render_callback(Canvas* const canvas, void* ctx) {
         multi_converter_mode_select_draw(canvas, multi_converter_state);
     }
 
-    furi_mutex_release(multi_converter_state->mutex);
+    furry_mutex_release(multi_converter_state->mutex);
 }
 
 static void
-    multi_converter_input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+    multi_converter_input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     MultiConverterEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 static void multi_converter_init(MultiConverterState* const multi_converter_state) {
@@ -55,16 +55,16 @@ int32_t multi_converter_app(void* p) {
     UNUSED(p);
 
     // get event queue
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(MultiConverterEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(MultiConverterEvent));
 
     // allocate state
     MultiConverterState* multi_converter_state = malloc(sizeof(MultiConverterState));
 
     // set mutex for plugin state (different threads can access it)
-    multi_converter_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    multi_converter_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!multi_converter_state->mutex) {
-        FURI_LOG_E("MultiConverter", "cannot create mutex\r\n");
-        furi_message_queue_free(event_queue);
+        FURRY_LOG_E("MultiConverter", "cannot create mutex\r\n");
+        furry_message_queue_free(event_queue);
         free(multi_converter_state);
         return 255;
     }
@@ -75,7 +75,7 @@ int32_t multi_converter_app(void* p) {
     view_port_input_callback_set(view_port, multi_converter_input_callback, event_queue);
 
     // open GUI and register view_port
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     multi_converter_init(multi_converter_state);
@@ -83,10 +83,10 @@ int32_t multi_converter_app(void* p) {
     // main loop
     MultiConverterEvent event;
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 100);
-        furi_mutex_acquire(multi_converter_state->mutex, FuriWaitForever);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 100);
+        furry_mutex_acquire(multi_converter_state->mutex, FurryWaitForever);
 
-        if(event_status == FuriStatusOk) {
+        if(event_status == FurryStatusOk) {
             // press events
             if(event.type == EventTypeKey && !multi_converter_state->keyboard_lock) {
                 if(multi_converter_state->mode == ModeDisplay) {
@@ -149,15 +149,15 @@ int32_t multi_converter_app(void* p) {
         }
 
         view_port_update(view_port);
-        furi_mutex_release(multi_converter_state->mutex);
+        furry_mutex_release(multi_converter_state->mutex);
     }
 
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_mutex_free(multi_converter_state->mutex);
+    furry_message_queue_free(event_queue);
+    furry_mutex_free(multi_converter_state->mutex);
     free(multi_converter_state);
 
     return 0;

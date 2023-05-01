@@ -19,8 +19,8 @@ void avr_isp_programmer_view_set_callback(
     AvrIspProgrammerView* instance,
     AvrIspProgrammerViewCallback callback,
     void* context) {
-    furi_assert(instance);
-    furi_assert(callback);
+    furry_assert(instance);
+    furry_assert(callback);
 
     instance->callback = callback;
     instance->context = context;
@@ -41,7 +41,7 @@ void avr_isp_programmer_view_draw(Canvas* canvas, AvrIspProgrammerViewModel* mod
 }
 
 bool avr_isp_programmer_view_input(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     UNUSED(context);
 
     if(event->key == InputKeyBack || event->type != InputTypeShort) {
@@ -52,7 +52,7 @@ bool avr_isp_programmer_view_input(InputEvent* event, void* context) {
 }
 
 static void avr_isp_programmer_usb_connect_callback(void* context, bool status_connect) {
-    furi_assert(context);
+    furry_assert(context);
     AvrIspProgrammerView* instance = context;
 
     with_view_model(
@@ -69,7 +69,7 @@ static void avr_isp_programmer_usb_connect_callback(void* context, bool status_c
 }
 
 void avr_isp_programmer_view_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspProgrammerView* instance = context;
     with_view_model(
@@ -88,7 +88,7 @@ void avr_isp_programmer_view_enter(void* context) {
 }
 
 void avr_isp_programmer_view_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspProgrammerView* instance = context;
     //Stop worker
@@ -121,14 +121,14 @@ AvrIspProgrammerView* avr_isp_programmer_view_alloc() {
 }
 
 void avr_isp_programmer_view_free(AvrIspProgrammerView* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     view_free(instance->view);
     free(instance);
 }
 
 View* avr_isp_programmer_view_get_view(AvrIspProgrammerView* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     return instance->view;
 }

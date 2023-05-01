@@ -29,14 +29,14 @@ extern "C" {
 
 #include "cmsis_compiler.h"
 #include "string.h"
-#include <furi.h>
+#include <furry.h>
 
 /******************************************************************************
  * common
  ******************************************************************************/
-#define UTILS_ENTER_CRITICAL_SECTION() FURI_CRITICAL_ENTER()
+#define UTILS_ENTER_CRITICAL_SECTION() FURRY_CRITICAL_ENTER()
 
-#define UTILS_EXIT_CRITICAL_SECTION() FURI_CRITICAL_EXIT()
+#define UTILS_EXIT_CRITICAL_SECTION() FURRY_CRITICAL_EXIT()
 
 #define UTILS_MEMSET8(dest, value, size) memset(dest, value, size);
 

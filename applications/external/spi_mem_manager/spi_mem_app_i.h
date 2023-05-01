@@ -1,8 +1,8 @@
 #pragma once
 
-#include <furi.h>
-#include <furi_hal_spi.h>
-#include <furi_hal_spi_config.h>
+#include <furry.h>
+#include <furry_hal_spi.h>
+#include <furry_hal_spi_config.h>
 #include "spi_mem_app.h"
 #include <gui/gui.h>
 #include <gui/view_dispatcher.h>
@@ -44,7 +44,7 @@ struct SPIMemApp {
     DialogEx* dialog_ex;
     Popup* popup;
     NotificationApp* notifications;
-    FuriString* file_path;
+    FurryString* file_path;
     DialogsApp* dialogs;
     Storage* storage;
     File* file;

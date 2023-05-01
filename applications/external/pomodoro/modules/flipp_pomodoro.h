@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include "../helpers/time.h"
 
 /// @brief Options of pomodoro stages

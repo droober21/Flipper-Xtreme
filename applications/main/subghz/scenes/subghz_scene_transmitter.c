@@ -7,7 +7,7 @@
 #include <lib/subghz/blocks/custom_btn.h>
 
 void subghz_scene_transmitter_callback(SubGhzCustomEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhz* subghz = context;
     view_dispatcher_send_custom_event(subghz->view_dispatcher, event);
 }
@@ -16,13 +16,13 @@ bool subghz_scene_transmitter_update_data_show(void* context) {
     SubGhz* subghz = context;
     bool ret = false;
     if(subghz->txrx->decoder_result) {
-        FuriString* key_str;
-        FuriString* frequency_str;
-        FuriString* modulation_str;
+        FurryString* key_str;
+        FurryString* frequency_str;
+        FurryString* modulation_str;
 
-        key_str = furi_string_alloc();
-        frequency_str = furi_string_alloc();
-        modulation_str = furi_string_alloc();
+        key_str = furry_string_alloc();
+        frequency_str = furry_string_alloc();
+        modulation_str = furry_string_alloc();
         uint8_t show_button = 0;
 
         if(subghz_protocol_decoder_base_deserialize(
@@ -37,15 +37,15 @@ bool subghz_scene_transmitter_update_data_show(void* context) {
             subghz_get_frequency_modulation(subghz, frequency_str, modulation_str);
             subghz_view_transmitter_add_data_to_show(
                 subghz->subghz_transmitter,
-                furi_string_get_cstr(key_str),
-                furi_string_get_cstr(frequency_str),
-                furi_string_get_cstr(modulation_str),
+                furry_string_get_cstr(key_str),
+                furry_string_get_cstr(frequency_str),
+                furry_string_get_cstr(modulation_str),
                 show_button);
             ret = true;
         }
-        furi_string_free(frequency_str);
-        furi_string_free(modulation_str);
-        furi_string_free(key_str);
+        furry_string_free(frequency_str);
+        furry_string_free(modulation_str);
+        furry_string_free(key_str);
     }
     return ret;
 }
@@ -93,8 +93,8 @@ bool subghz_scene_transmitter_on_event(void* context, SceneManagerEvent event) {
             }
             if(subghz_custom_btn_get() != 0) {
                 subghz_custom_btn_set(0);
-                uint8_t tmp_counter = furi_hal_subghz_get_rolling_counter_mult();
-                furi_hal_subghz_set_rolling_counter_mult(0);
+                uint8_t tmp_counter = furry_hal_subghz_get_rolling_counter_mult();
+                furry_hal_subghz_set_rolling_counter_mult(0);
                 // Calling restore!
                 if(subghz->txrx->txrx_state == SubGhzTxRxStateRx) {
                     subghz_rx_end(subghz);
@@ -107,7 +107,7 @@ bool subghz_scene_transmitter_on_event(void* context, SceneManagerEvent event) {
                 }
                 subghz_tx_stop(subghz);
                 subghz_sleep(subghz);
-                furi_hal_subghz_set_rolling_counter_mult(tmp_counter);
+                furry_hal_subghz_set_rolling_counter_mult(tmp_counter);
             }
             return true;
         } else if(event.event == SubGhzCustomEventViewTransmitterBack) {
@@ -116,7 +116,7 @@ bool subghz_scene_transmitter_on_event(void* context, SceneManagerEvent event) {
                 subghz->scene_manager, SubGhzSceneStart);
             return true;
         } else if(event.event == SubGhzCustomEventViewTransmitterError) {
-            furi_string_set(subghz->error_str, "Protocol not\nfound!");
+            furry_string_set(subghz->error_str, "Protocol not\nfound!");
             scene_manager_next_scene(subghz->scene_manager, SubGhzSceneShowErrorSub);
         }
     } else if(event.type == SceneManagerEventTypeTick) {

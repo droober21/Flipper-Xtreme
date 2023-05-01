@@ -92,13 +92,13 @@ void* ws_protocol_decoder_lacrosse_tx141thbv2_alloc(SubGhzEnvironment* environme
 }
 
 void ws_protocol_decoder_lacrosse_tx141thbv2_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderLaCrosse_TX141THBv2* instance = context;
     free(instance);
 }
 
 void ws_protocol_decoder_lacrosse_tx141thbv2_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderLaCrosse_TX141THBv2* instance = context;
     instance->decoder.parser_step = LaCrosse_TX141THBv2DecoderStepReset;
 }
@@ -141,7 +141,7 @@ static bool ws_protocol_decoder_lacrosse_tx141thbv2_add_bit(
     WSProtocolDecoderLaCrosse_TX141THBv2* instance,
     uint32_t te_last,
     uint32_t te_current) {
-    furi_assert(instance);
+    furry_assert(instance);
     bool ret = false;
     if(DURATION_DIFF(
            te_last + te_current,
@@ -159,7 +159,7 @@ static bool ws_protocol_decoder_lacrosse_tx141thbv2_add_bit(
     return ret;
 }
 void ws_protocol_decoder_lacrosse_tx141thbv2_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderLaCrosse_TX141THBv2* instance = context;
 
     switch(instance->decoder.parser_step) {
@@ -247,7 +247,7 @@ void ws_protocol_decoder_lacrosse_tx141thbv2_feed(void* context, bool level, uin
 }
 
 uint8_t ws_protocol_decoder_lacrosse_tx141thbv2_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderLaCrosse_TX141THBv2* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -257,7 +257,7 @@ SubGhzProtocolStatus ws_protocol_decoder_lacrosse_tx141thbv2_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderLaCrosse_TX141THBv2* instance = context;
     return ws_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
@@ -265,7 +265,7 @@ SubGhzProtocolStatus ws_protocol_decoder_lacrosse_tx141thbv2_serialize(
 SubGhzProtocolStatus ws_protocol_decoder_lacrosse_tx141thbv2_deserialize(
     void* context,
     FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderLaCrosse_TX141THBv2* instance = context;
     return ws_block_generic_deserialize_check_count_bit(
         &instance->generic,
@@ -273,10 +273,10 @@ SubGhzProtocolStatus ws_protocol_decoder_lacrosse_tx141thbv2_deserialize(
         ws_protocol_lacrosse_tx141thbv2_const.min_count_bit_for_found);
 }
 
-void ws_protocol_decoder_lacrosse_tx141thbv2_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void ws_protocol_decoder_lacrosse_tx141thbv2_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     WSProtocolDecoderLaCrosse_TX141THBv2* instance = context;
-    furi_string_printf(
+    furry_string_printf(
         output,
         "%s %dbit\r\n"
         "Key:0x%lX%08lX\r\n"

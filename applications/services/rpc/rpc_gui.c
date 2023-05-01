@@ -25,7 +25,7 @@ typedef struct {
 
     // Transmit
     PB_Main* transmit_frame;
-    FuriThread* transmit_thread;
+    FurryThread* transmit_thread;
 
     bool virtual_display_not_empty;
     bool is_streaming;
@@ -48,40 +48,40 @@ static void rpc_system_gui_screen_stream_frame_callback(
     size_t size,
     CanvasOrientation orientation,
     void* context) {
-    furi_assert(data);
-    furi_assert(context);
+    furry_assert(data);
+    furry_assert(context);
 
     RpcGuiSystem* rpc_gui = (RpcGuiSystem*)context;
     uint8_t* buffer = rpc_gui->transmit_frame->content.gui_screen_frame.data->bytes;
 
-    furi_assert(size == rpc_gui->transmit_frame->content.gui_screen_frame.data->size);
+    furry_assert(size == rpc_gui->transmit_frame->content.gui_screen_frame.data->size);
 
     memcpy(buffer, data, size);
     rpc_gui->transmit_frame->content.gui_screen_frame.orientation =
         rpc_system_gui_screen_orientation_map[orientation];
 
-    furi_thread_flags_set(furi_thread_get_id(rpc_gui->transmit_thread), RpcGuiWorkerFlagTransmit);
+    furry_thread_flags_set(furry_thread_get_id(rpc_gui->transmit_thread), RpcGuiWorkerFlagTransmit);
 }
 
 static int32_t rpc_system_gui_screen_stream_frame_transmit_thread(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     RpcGuiSystem* rpc_gui = (RpcGuiSystem*)context;
 
     uint32_t transmit_time = 0;
     while(true) {
         uint32_t flags =
-            furi_thread_flags_wait(RpcGuiWorkerFlagAny, FuriFlagWaitAny, FuriWaitForever);
+            furry_thread_flags_wait(RpcGuiWorkerFlagAny, FurryFlagWaitAny, FurryWaitForever);
 
         if(flags & RpcGuiWorkerFlagTransmit) {
-            transmit_time = furi_get_tick();
+            transmit_time = furry_get_tick();
             rpc_send(rpc_gui->session, rpc_gui->transmit_frame);
-            transmit_time = furi_get_tick() - transmit_time;
+            transmit_time = furry_get_tick() - transmit_time;
 
             // Guaranteed bandwidth reserve
             uint32_t extra_delay = transmit_time / 20;
             if(extra_delay > 500) extra_delay = 500;
-            if(extra_delay) furi_delay_tick(extra_delay);
+            if(extra_delay) furry_delay_tick(extra_delay);
         }
 
         if(flags & RpcGuiWorkerFlagExit) {
@@ -93,14 +93,14 @@ static int32_t rpc_system_gui_screen_stream_frame_transmit_thread(void* context)
 }
 
 static void rpc_system_gui_start_screen_stream_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(context);
+    furry_assert(request);
+    furry_assert(context);
 
-    FURI_LOG_D(TAG, "StartScreenStream");
+    FURRY_LOG_D(TAG, "StartScreenStream");
 
     RpcGuiSystem* rpc_gui = context;
     RpcSession* session = rpc_gui->session;
-    furi_assert(session);
+    furry_assert(session);
 
     if(rpc_gui->is_streaming) {
         rpc_send_and_release_empty(
@@ -118,9 +118,9 @@ static void rpc_system_gui_start_screen_stream_process(const PB_Main* request, v
             malloc(PB_BYTES_ARRAY_T_ALLOCSIZE(framebuffer_size));
         rpc_gui->transmit_frame->content.gui_screen_frame.data->size = framebuffer_size;
         // Transmission thread for async TX
-        rpc_gui->transmit_thread = furi_thread_alloc_ex(
+        rpc_gui->transmit_thread = furry_thread_alloc_ex(
             "GuiRpcWorker", 1024, rpc_system_gui_screen_stream_frame_transmit_thread, rpc_gui);
-        furi_thread_start(rpc_gui->transmit_thread);
+        furry_thread_start(rpc_gui->transmit_thread);
         // GUI framebuffer callback
         gui_add_framebuffer_callback(
             rpc_gui->gui, rpc_system_gui_screen_stream_frame_callback, context);
@@ -128,14 +128,14 @@ static void rpc_system_gui_start_screen_stream_process(const PB_Main* request, v
 }
 
 static void rpc_system_gui_stop_screen_stream_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(context);
+    furry_assert(request);
+    furry_assert(context);
 
-    FURI_LOG_D(TAG, "StopScreenStream");
+    FURRY_LOG_D(TAG, "StopScreenStream");
 
     RpcGuiSystem* rpc_gui = context;
     RpcSession* session = rpc_gui->session;
-    furi_assert(session);
+    furry_assert(session);
 
     if(rpc_gui->is_streaming) {
         rpc_gui->is_streaming = false;
@@ -143,9 +143,9 @@ static void rpc_system_gui_stop_screen_stream_process(const PB_Main* request, vo
         gui_remove_framebuffer_callback(
             rpc_gui->gui, rpc_system_gui_screen_stream_frame_callback, context);
         // Stop and release worker thread
-        furi_thread_flags_set(furi_thread_get_id(rpc_gui->transmit_thread), RpcGuiWorkerFlagExit);
-        furi_thread_join(rpc_gui->transmit_thread);
-        furi_thread_free(rpc_gui->transmit_thread);
+        furry_thread_flags_set(furry_thread_get_id(rpc_gui->transmit_thread), RpcGuiWorkerFlagExit);
+        furry_thread_join(rpc_gui->transmit_thread);
+        furry_thread_free(rpc_gui->transmit_thread);
         // Release frame
         pb_release(&PB_Main_msg, rpc_gui->transmit_frame);
         free(rpc_gui->transmit_frame);
@@ -157,15 +157,15 @@ static void rpc_system_gui_stop_screen_stream_process(const PB_Main* request, vo
 
 static void
     rpc_system_gui_send_input_event_request_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(request->which_content == PB_Main_gui_send_input_event_request_tag);
-    furi_assert(context);
+    furry_assert(request);
+    furry_assert(request->which_content == PB_Main_gui_send_input_event_request_tag);
+    furry_assert(context);
 
-    FURI_LOG_D(TAG, "SendInputEvent");
+    FURRY_LOG_D(TAG, "SendInputEvent");
 
     RpcGuiSystem* rpc_gui = context;
     RpcSession* session = rpc_gui->session;
-    furi_assert(session);
+    furry_assert(session);
 
     InputEvent event;
 
@@ -232,7 +232,7 @@ static void
         rpc_gui->input_key_counter[event.key] = rpc_gui->input_counter;
     }
     if(rpc_gui->input_key_counter[event.key] == RPC_GUI_INPUT_RESET) {
-        FURI_LOG_W(TAG, "Out of sequence input event: key %d, type %d,", event.key, event.type);
+        FURRY_LOG_W(TAG, "Out of sequence input event: key %d, type %d,", event.key, event.type);
     }
     event.sequence_counter = rpc_gui->input_key_counter[event.key];
     if(event.type == InputTypeRelease) {
@@ -240,16 +240,16 @@ static void
     }
 
     // Submit event
-    FuriPubSub* input_events = furi_record_open(RECORD_INPUT_EVENTS);
-    furi_check(input_events);
-    furi_pubsub_publish(input_events, &event);
-    furi_record_close(RECORD_INPUT_EVENTS);
+    FurryPubSub* input_events = furry_record_open(RECORD_INPUT_EVENTS);
+    furry_check(input_events);
+    furry_pubsub_publish(input_events, &event);
+    furry_record_close(RECORD_INPUT_EVENTS);
     rpc_send_and_release_empty(session, request->command_id, PB_CommandStatus_OK);
 }
 
 static void rpc_system_gui_virtual_display_render_callback(Canvas* canvas, void* context) {
-    furi_assert(canvas);
-    furi_assert(context);
+    furry_assert(canvas);
+    furry_assert(context);
 
     RpcGuiSystem* rpc_gui = context;
 
@@ -264,14 +264,14 @@ static void rpc_system_gui_virtual_display_render_callback(Canvas* canvas, void*
 }
 
 static void rpc_system_gui_start_virtual_display_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(context);
+    furry_assert(request);
+    furry_assert(context);
 
-    FURI_LOG_D(TAG, "StartVirtualDisplay");
+    FURRY_LOG_D(TAG, "StartVirtualDisplay");
 
     RpcGuiSystem* rpc_gui = context;
     RpcSession* session = rpc_gui->session;
-    furi_assert(session);
+    furry_assert(session);
 
     if(rpc_gui->virtual_display_view_port) {
         rpc_send_and_release_empty(
@@ -305,14 +305,14 @@ static void rpc_system_gui_start_virtual_display_process(const PB_Main* request,
 }
 
 static void rpc_system_gui_stop_virtual_display_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(context);
+    furry_assert(request);
+    furry_assert(context);
 
-    FURI_LOG_D(TAG, "StopVirtualDisplay");
+    FURRY_LOG_D(TAG, "StopVirtualDisplay");
 
     RpcGuiSystem* rpc_gui = context;
     RpcSession* session = rpc_gui->session;
-    furi_assert(session);
+    furry_assert(session);
 
     if(!rpc_gui->virtual_display_view_port) {
         rpc_send_and_release_empty(
@@ -330,17 +330,17 @@ static void rpc_system_gui_stop_virtual_display_process(const PB_Main* request, 
 }
 
 static void rpc_system_gui_virtual_display_frame_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(context);
+    furry_assert(request);
+    furry_assert(context);
 
-    FURI_LOG_D(TAG, "VirtualDisplayFrame");
+    FURRY_LOG_D(TAG, "VirtualDisplayFrame");
 
     RpcGuiSystem* rpc_gui = context;
     RpcSession* session = rpc_gui->session;
-    furi_assert(session);
+    furry_assert(session);
 
     if(!rpc_gui->virtual_display_view_port) {
-        FURI_LOG_W(TAG, "Virtual display is not started, ignoring incoming frame packet");
+        FURRY_LOG_W(TAG, "Virtual display is not started, ignoring incoming frame packet");
         return;
     }
 
@@ -357,15 +357,15 @@ static void rpc_system_gui_virtual_display_frame_process(const PB_Main* request,
 
 static void rpc_active_session_icon_draw_callback(Canvas* canvas, void* context) {
     UNUSED(context);
-    furi_assert(canvas);
+    furry_assert(canvas);
     canvas_draw_icon(canvas, 0, 0, &I_Rpc_active_7x8);
 }
 
 void* rpc_system_gui_alloc(RpcSession* session) {
-    furi_assert(session);
+    furry_assert(session);
 
     RpcGuiSystem* rpc_gui = malloc(sizeof(RpcGuiSystem));
-    rpc_gui->gui = furi_record_open(RECORD_GUI);
+    rpc_gui->gui = furry_record_open(RECORD_GUI);
     rpc_gui->session = session;
 
     // Active session icon
@@ -408,9 +408,9 @@ void* rpc_system_gui_alloc(RpcSession* session) {
 }
 
 void rpc_system_gui_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     RpcGuiSystem* rpc_gui = context;
-    furi_assert(rpc_gui->gui);
+    furry_assert(rpc_gui->gui);
 
     if(rpc_gui->virtual_display_view_port) {
         gui_remove_view_port(rpc_gui->gui, rpc_gui->virtual_display_view_port);
@@ -429,14 +429,14 @@ void rpc_system_gui_free(void* context) {
         gui_remove_framebuffer_callback(
             rpc_gui->gui, rpc_system_gui_screen_stream_frame_callback, context);
         // Stop and release worker thread
-        furi_thread_flags_set(furi_thread_get_id(rpc_gui->transmit_thread), RpcGuiWorkerFlagExit);
-        furi_thread_join(rpc_gui->transmit_thread);
-        furi_thread_free(rpc_gui->transmit_thread);
+        furry_thread_flags_set(furry_thread_get_id(rpc_gui->transmit_thread), RpcGuiWorkerFlagExit);
+        furry_thread_join(rpc_gui->transmit_thread);
+        furry_thread_free(rpc_gui->transmit_thread);
         // Release frame
         pb_release(&PB_Main_msg, rpc_gui->transmit_frame);
         free(rpc_gui->transmit_frame);
         rpc_gui->transmit_frame = NULL;
     }
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     free(rpc_gui);
 }

@@ -148,7 +148,7 @@ void dap_scene_main_on_exit(void* context) {
     DapSceneMainState* state =
         (DapSceneMainState*)scene_manager_get_scene_state(app->scene_manager, DapSceneMain);
     scene_manager_set_scene_state(app->scene_manager, DapSceneMain, (uint32_t)NULL);
-    FURI_SW_MEMBARRIER();
+    FURRY_SW_MEMBARRIER();
     free(state);
     notification_message(app->notifications, &sequence_blink_stop);
 }

@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <flipper.h>
 #include <alt_boot.h>
 #include <assets_icons.h>
@@ -30,10 +30,10 @@ void flipper_boot_dfu_exec() {
     WRITE_REG(FLASH->SR, FLASH_SR_OPTVERR);
 
     // Cleanup before jumping to DFU
-    furi_hal_deinit_early();
+    furry_hal_deinit_early();
 
     // Remap memory to system bootloader
     LL_SYSCFG_SetRemapMemory(LL_SYSCFG_REMAP_SYSTEMFLASH);
     // Jump
-    furi_hal_switch(0x0);
+    furry_hal_switch(0x0);
 }

@@ -1,5 +1,5 @@
 #include "saved_struct.h"
-#include <furi.h>
+#include <furry.h>
 #include <stdint.h>
 #include <storage/storage.h>
 
@@ -14,20 +14,20 @@ typedef struct {
 } SavedStructHeader;
 
 bool saved_struct_save(const char* path, void* data, size_t size, uint8_t magic, uint8_t version) {
-    furi_assert(path);
-    furi_assert(data);
-    furi_assert(size);
+    furry_assert(path);
+    furry_assert(data);
+    furry_assert(size);
     SavedStructHeader header;
 
-    FURI_LOG_I(TAG, "Saving \"%s\"", path);
+    FURRY_LOG_I(TAG, "Saving \"%s\"", path);
 
     // Store
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     File* file = storage_file_alloc(storage);
     bool result = true;
     bool saved = storage_file_open(file, path, FSAM_WRITE, FSOM_CREATE_ALWAYS);
     if(!saved) {
-        FURI_LOG_E(
+        FURRY_LOG_E(
             TAG, "Open failed \"%s\". Error: \'%s\'", path, storage_file_get_error_desc(file));
         result = false;
     }
@@ -50,7 +50,7 @@ bool saved_struct_save(const char* path, void* data, size_t size, uint8_t magic,
         bytes_count += storage_file_write(file, data, size);
 
         if(bytes_count != (size + sizeof(header))) {
-            FURI_LOG_E(
+            FURRY_LOG_E(
                 TAG, "Write failed \"%s\". Error: \'%s\'", path, storage_file_get_error_desc(file));
             result = false;
         }
@@ -58,22 +58,22 @@ bool saved_struct_save(const char* path, void* data, size_t size, uint8_t magic,
 
     storage_file_close(file);
     storage_file_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     return result;
 }
 
 bool saved_struct_load(const char* path, void* data, size_t size, uint8_t magic, uint8_t version) {
-    FURI_LOG_I(TAG, "Loading \"%s\"", path);
+    FURRY_LOG_I(TAG, "Loading \"%s\"", path);
 
     SavedStructHeader header;
 
     uint8_t* data_read = malloc(size);
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     File* file = storage_file_alloc(storage);
     bool result = true;
     bool loaded = storage_file_open(file, path, FSAM_READ, FSOM_OPEN_EXISTING);
     if(!loaded) {
-        FURI_LOG_E(
+        FURRY_LOG_E(
             TAG, "Failed to read \"%s\". Error: %s", path, storage_file_get_error_desc(file));
         result = false;
     }
@@ -83,13 +83,13 @@ bool saved_struct_load(const char* path, void* data, size_t size, uint8_t magic,
         bytes_count += storage_file_read(file, data_read, size);
 
         if(bytes_count != (sizeof(SavedStructHeader) + size)) {
-            FURI_LOG_E(TAG, "Size mismatch of file \"%s\"", path);
+            FURRY_LOG_E(TAG, "Size mismatch of file \"%s\"", path);
             result = false;
         }
     }
 
     if(result && (header.magic != magic || header.version != version)) {
-        FURI_LOG_E(
+        FURRY_LOG_E(
             TAG,
             "Magic(%d != %d) or Version(%d != %d) mismatch of file \"%s\"",
             header.magic,
@@ -108,7 +108,7 @@ bool saved_struct_load(const char* path, void* data, size_t size, uint8_t magic,
         }
 
         if(header.checksum != checksum) {
-            FURI_LOG_E(
+            FURRY_LOG_E(
                 TAG, "Checksum(%d != %d) mismatch of file \"%s\"", header.checksum, checksum, path);
             result = false;
         }
@@ -120,7 +120,7 @@ bool saved_struct_load(const char* path, void* data, size_t size, uint8_t magic,
 
     storage_file_close(file);
     storage_file_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     free(data_read);
 
     return result;
@@ -131,29 +131,29 @@ bool saved_struct_get_payload_size(
     uint8_t magic,
     uint8_t version,
     size_t* payload_size) {
-    furi_assert(path);
-    furi_assert(payload_size);
+    furry_assert(path);
+    furry_assert(payload_size);
 
     SavedStructHeader header;
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     File* file = storage_file_alloc(storage);
 
     bool result = false;
     do {
         if(!storage_file_open(file, path, FSAM_READ, FSOM_OPEN_EXISTING)) {
-            FURI_LOG_E(
+            FURRY_LOG_E(
                 TAG, "Failed to read \"%s\". Error: %s", path, storage_file_get_error_desc(file));
             break;
         }
 
         uint16_t bytes_count = storage_file_read(file, &header, sizeof(SavedStructHeader));
         if(bytes_count != sizeof(SavedStructHeader)) {
-            FURI_LOG_E(TAG, "Failed to read header");
+            FURRY_LOG_E(TAG, "Failed to read header");
             break;
         }
 
         if((header.magic != magic) || (header.version != version)) {
-            FURI_LOG_E(
+            FURRY_LOG_E(
                 TAG,
                 "Magic(%d != %d) or Version(%d != %d) mismatch of file \"%s\"",
                 header.magic,
@@ -172,7 +172,7 @@ bool saved_struct_get_payload_size(
 
     storage_file_close(file);
     storage_file_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return result;
 }

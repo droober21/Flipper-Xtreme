@@ -1,19 +1,19 @@
 #include "power_settings_app.h"
 
 static bool power_settings_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     PowerSettingsApp* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool power_settings_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     PowerSettingsApp* app = context;
     return scene_manager_handle_back_event(app->scene_manager);
 }
 
 static void power_settings_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     PowerSettingsApp* app = context;
     scene_manager_handle_tick_event(app->scene_manager);
 }
@@ -22,8 +22,8 @@ PowerSettingsApp* power_settings_app_alloc(uint32_t first_scene) {
     PowerSettingsApp* app = malloc(sizeof(PowerSettingsApp));
 
     // Records
-    app->gui = furi_record_open(RECORD_GUI);
-    app->power = furi_record_open(RECORD_POWER);
+    app->gui = furry_record_open(RECORD_GUI);
+    app->power = furry_record_open(RECORD_POWER);
 
     //PubSub
     app->settings_events = power_get_settings_events_pubsub(app->power);
@@ -65,7 +65,7 @@ PowerSettingsApp* power_settings_app_alloc(uint32_t first_scene) {
 }
 
 void power_settings_app_free(PowerSettingsApp* app) {
-    furi_assert(app);
+    furry_assert(app);
     // Views
     view_dispatcher_remove_view(app->view_dispatcher, PowerSettingsAppViewBatteryInfo);
     battery_info_free(app->battery_info);
@@ -84,8 +84,8 @@ void power_settings_app_free(PowerSettingsApp* app) {
     scene_manager_free(app->scene_manager);
 
     // Records
-    furi_record_close(RECORD_POWER);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_POWER);
+    furry_record_close(RECORD_GUI);
 
     free(app);
 }

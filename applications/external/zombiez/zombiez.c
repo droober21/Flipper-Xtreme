@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <stdlib.h>
@@ -51,7 +51,7 @@ typedef struct {
 } Projectile;
 
 typedef struct {
-    FuriMutex* mutex;
+    FurryMutex* mutex;
     GameState game_state;
     Player player;
 
@@ -66,9 +66,9 @@ typedef struct {
 } PluginState;
 
 static void render_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     const PluginState* plugin_state = ctx;
-    furi_mutex_acquire(plugin_state->mutex, FuriWaitForever);
+    furry_mutex_acquire(plugin_state->mutex, FurryWaitForever);
 
     canvas_draw_frame(canvas, 0, 0, 128, 64);
 
@@ -180,13 +180,13 @@ static void render_callback(Canvas* const canvas, void* ctx) {
     //canvas_draw_str_aligned(canvas, 32, 16, AlignLeft, AlignBottom, info);
     //free(info);
 
-    furi_mutex_release(plugin_state->mutex);
+    furry_mutex_release(plugin_state->mutex);
 }
 
-static void input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
     PluginEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 static void tick(PluginState* const plugin_state) {
@@ -243,7 +243,7 @@ static void tick(PluginState* const plugin_state) {
                             plugin_state->game_state = GameStateGameOver;
                         }
                     } else {
-                        if(furi_get_tick() % 2 == 0) z->position.x--;
+                        if(furry_get_tick() % 2 == 0) z->position.x--;
                     }
                 }
             }
@@ -259,10 +259,10 @@ static void tick(PluginState* const plugin_state) {
 }
 
 static void timer_callback(void* ctx) {
-    furi_assert(ctx);
-    FuriMessageQueue* event_queue = ctx;
+    furry_assert(ctx);
+    FurryMessageQueue* event_queue = ctx;
     PluginEvent event = {.type = EventTypeTick};
-    furi_message_queue_put(event_queue, &event, 0);
+    furry_message_queue_put(event_queue, &event, 0);
 }
 
 static void zombiez_state_init(PluginState* const plugin_state) {
@@ -289,14 +289,14 @@ static void zombiez_state_init(PluginState* const plugin_state) {
 int32_t zombiez_game_app(void* p) {
     UNUSED(p);
     uint32_t return_code = 0;
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(PluginEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(PluginEvent));
 
     PluginState* plugin_state = malloc(sizeof(PluginState));
     zombiez_state_init(plugin_state);
 
-    plugin_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    plugin_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!plugin_state->mutex) {
-        FURI_LOG_E("Zombiez", "cannot create mutex\r\n");
+        FURRY_LOG_E("Zombiez", "cannot create mutex\r\n");
         return_code = 255;
         goto free_and_exit;
     }
@@ -306,19 +306,19 @@ int32_t zombiez_game_app(void* p) {
     view_port_draw_callback_set(view_port, render_callback, plugin_state);
     view_port_input_callback_set(view_port, input_callback, event_queue);
 
-    FuriTimer* timer = furi_timer_alloc(timer_callback, FuriTimerTypePeriodic, event_queue);
-    furi_timer_start(timer, furi_kernel_get_tick_frequency() / 22);
+    FurryTimer* timer = furry_timer_alloc(timer_callback, FurryTimerTypePeriodic, event_queue);
+    furry_timer_start(timer, furry_kernel_get_tick_frequency() / 22);
 
     // Open GUI and register view_port
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     PluginEvent event;
     bool isRunning = true;
     while(isRunning) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 100);
-        furi_mutex_acquire(plugin_state->mutex, FuriWaitForever);
-        if(event_status == FuriStatusOk) {
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 100);
+        furry_mutex_acquire(plugin_state->mutex, FurryWaitForever);
+        if(event_status == FurryStatusOk) {
             if(event.type == EventTypeKey) {
                 if(event.input.type == InputTypePress) {
                     switch(event.input.key) {
@@ -380,19 +380,19 @@ int32_t zombiez_game_app(void* p) {
         }
 
         view_port_update(view_port);
-        furi_mutex_release(plugin_state->mutex);
+        furry_mutex_release(plugin_state->mutex);
     }
 
-    furi_timer_free(timer);
+    furry_timer_free(timer);
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(view_port);
-    furi_mutex_free(plugin_state->mutex);
+    furry_mutex_free(plugin_state->mutex);
 
 free_and_exit:
     free(plugin_state);
-    furi_message_queue_free(event_queue);
+    furry_message_queue_free(event_queue);
 
     return return_code;
 }

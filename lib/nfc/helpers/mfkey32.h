@@ -23,4 +23,4 @@ void mfkey32_process_data(
 
 void mfkey32_set_callback(Mfkey32* instance, Mfkey32ParseDataCallback callback, void* context);
 
-uint16_t mfkey32_get_auth_sectors(FuriString* string);
+uint16_t mfkey32_get_auth_sectors(FurryString* string);

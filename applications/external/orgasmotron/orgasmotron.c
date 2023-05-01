@@ -1,12 +1,12 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #include <gui/gui.h>
 #include <input/input.h>
 #include <notification/notification_messages.h>
 
 typedef struct {
-    FuriMutex* mutex;
+    FurryMutex* mutex;
     int mode;
 } PluginState;
 
@@ -26,23 +26,23 @@ void vibro_test_draw_callback(Canvas* canvas, void* ctx) {
 }
 
 void vibro_test_input_callback(InputEvent* input_event, void* ctx) {
-    furi_assert(ctx);
-    FuriMessageQueue* event_queue = ctx;
-    furi_message_queue_put(event_queue, input_event, FuriWaitForever);
+    furry_assert(ctx);
+    FurryMessageQueue* event_queue = ctx;
+    furry_message_queue_put(event_queue, input_event, FurryWaitForever);
 }
 
 void delay(int milliseconds) {
-    furi_thread_flags_wait(0, FuriFlagWaitAny, milliseconds);
+    furry_thread_flags_wait(0, FurryFlagWaitAny, milliseconds);
 }
 
 int32_t orgasmotron_app(void* p) {
     UNUSED(p);
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
 
     PluginState* plugin_state = malloc(sizeof(PluginState));
-    plugin_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    plugin_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!plugin_state->mutex) {
-        FURI_LOG_E("Orgasmatron", "cannot create mutex\r\n");
+        FURRY_LOG_E("Orgasmatron", "cannot create mutex\r\n");
         free(plugin_state);
         return 255;
     }
@@ -53,19 +53,19 @@ int32_t orgasmotron_app(void* p) {
     view_port_input_callback_set(view_port, vibro_test_input_callback, event_queue);
 
     // Register view port in GUI
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
-    NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+    NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
 
     InputEvent event;
     //int mode = 0;
     bool processing = true;
-    //while(furi_message_queue_get(event_queue, &event, FuriWaitForever) == FuriStatusOk) {
+    //while(furry_message_queue_get(event_queue, &event, FurryWaitForever) == FurryStatusOk) {
     while(processing) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 100);
-        furi_mutex_acquire(plugin_state->mutex, FuriWaitForever);
-        if(event_status == FuriStatusOk) {
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 100);
+        furry_mutex_acquire(plugin_state->mutex, FurryWaitForever);
+        if(event_status == FurryStatusOk) {
             if(event.key == InputKeyBack && event.type == InputTypeShort) {
                 //Exit Application
                 notification_message(notification, &sequence_reset_vibro);
@@ -133,15 +133,15 @@ int32_t orgasmotron_app(void* p) {
                 delay(50);
             }
         }
-        furi_mutex_release(plugin_state->mutex);
+        furry_mutex_release(plugin_state->mutex);
     }
     gui_remove_view_port(gui, view_port);
     view_port_free(view_port);
-    furi_mutex_free(plugin_state->mutex);
-    furi_message_queue_free(event_queue);
+    furry_mutex_free(plugin_state->mutex);
+    furry_message_queue_free(event_queue);
 
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_GUI);
 
     return 0;
 }

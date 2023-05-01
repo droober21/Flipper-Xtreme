@@ -3,7 +3,7 @@
 #include <gui/modules/widget.h>
 #include <nfc_worker_i.h>
 
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 static const MfClassicAuthContext plantain_keys[] = {
     {.sector = 0, .key_a = 0xffffffffffff, .key_b = 0xffffffffffff},
@@ -24,8 +24,8 @@ static const MfClassicAuthContext plantain_keys[] = {
     {.sector = 15, .key_a = 0xffffffffffff, .key_b = 0xffffffffffff},
 };
 
-bool plantain_parser_verify(NfcWorker* nfc_worker, FuriHalNfcTxRxContext* tx_rx) {
-    furi_assert(nfc_worker);
+bool plantain_parser_verify(NfcWorker* nfc_worker, FurryHalNfcTxRxContext* tx_rx) {
+    furry_assert(nfc_worker);
     UNUSED(nfc_worker);
     if(nfc_worker->dev_data->mf_classic_data.type != MfClassicType1k) {
         return false;
@@ -33,19 +33,19 @@ bool plantain_parser_verify(NfcWorker* nfc_worker, FuriHalNfcTxRxContext* tx_rx)
 
     uint8_t sector = 8;
     uint8_t block = mf_classic_get_sector_trailer_block_num_by_sector(sector);
-    FURI_LOG_D("Plant", "Verifying sector %d", sector);
+    FURRY_LOG_D("Plant", "Verifying sector %d", sector);
     if(mf_classic_authenticate(tx_rx, block, 0x26973ea74321, MfClassicKeyA)) {
-        FURI_LOG_D("Plant", "Sector %d verified", sector);
+        FURRY_LOG_D("Plant", "Sector %d verified", sector);
         return true;
     }
     return false;
 }
 
-bool plantain_parser_read(NfcWorker* nfc_worker, FuriHalNfcTxRxContext* tx_rx) {
-    furi_assert(nfc_worker);
+bool plantain_parser_read(NfcWorker* nfc_worker, FurryHalNfcTxRxContext* tx_rx) {
+    furry_assert(nfc_worker);
 
     MfClassicReader reader = {};
-    FuriHalNfcADevData* nfc_a_data = &nfc_worker->dev_data->nfc_data.a_data;
+    FurryHalNfcADevData* nfc_a_data = &nfc_worker->dev_data->nfc_data.a_data;
     reader.type = mf_classic_get_classic_type(nfc_a_data);
     for(size_t i = 0; i < COUNT_OF(plantain_keys); i++) {
         mf_classic_reader_add_sector(
@@ -90,7 +90,7 @@ bool plantain_parser_parse(NfcDeviceData* dev_data) {
         card_number = (card_number << 8) | card_number_arr[i];
     }
 
-    furi_string_printf(
+    furry_string_printf(
         dev_data->parsed_data, "\e#Plantain\nN:%llu-\nBalance:%lu\n", card_number, balance);
 
     return true;

@@ -1,6 +1,6 @@
 #pragma once
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <input/input.h>
 #include <gui/gui.h>
 #include <gui/modules/submenu.h>
@@ -56,7 +56,7 @@ typedef struct {
 
 // STRUCTS
 typedef struct {
-    FuriMutex* mutex;
+    FurryMutex* mutex;
     bool is_running;
     bool is_attacking;
     iBtnFuzzerScene current_scene;
@@ -65,19 +65,19 @@ typedef struct {
     u_int8_t menu_index;
     u_int8_t menu_proto_index;
 
-    FuriString* data_str;
+    FurryString* data_str;
     uint8_t data[8];
     uint8_t payload[8];
     uint8_t attack_step;
     iBtnFuzzerAttacks attack;
     iBtnFuzzerProtos proto;
-    FuriString* attack_name;
-    FuriString* proto_name;
-    FuriString* main_menu_items[3];
-    FuriString* main_menu_proto_items[3];
+    FurryString* attack_name;
+    FurryString* proto_name;
+    FurryString* main_menu_items[3];
+    FurryString* main_menu_proto_items[3];
 
     DialogsApp* dialogs;
-    FuriString* notification_msg;
+    FurryString* notification_msg;
     uint8_t key_index;
     iButtonWorker* worker;
     iButtonKey* key;

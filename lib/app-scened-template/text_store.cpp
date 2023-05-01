@@ -1,5 +1,5 @@
 #include "text_store.h"
-#include <furi.h>
+#include <furry.h>
 
 TextStore::TextStore(uint8_t _text_size)
     : text_size(_text_size) {

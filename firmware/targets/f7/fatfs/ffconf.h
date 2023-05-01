@@ -27,7 +27,7 @@
 /*-----------------------------------------------------------------------------/
 / Function Configurations
 /-----------------------------------------------------------------------------*/
-#ifdef FURI_RAM_EXEC
+#ifdef FURRY_RAM_EXEC
 #define _FS_READONLY 1 /* 0:Read/Write or 1:Read only */
 #else
 #define _FS_READONLY 0 /* 0:Read/Write or 1:Read only */
@@ -58,7 +58,7 @@
 /* This option switches filtered directory read functions, f_findfirst() and
 /  f_findnext(). (0:Disable, 1:Enable 2:Enable with matching altname[] too) */
 
-#ifdef FURI_RAM_EXEC
+#ifdef FURRY_RAM_EXEC
 #define _USE_MKFS 0
 #else
 #define _USE_MKFS 1
@@ -242,7 +242,7 @@
 
 #define _FS_REENTRANT 0 /* 0:Disable or 1:Enable */
 #define _FS_TIMEOUT 1000 /* Timeout period in unit of time ticks */
-#define _SYNC_t FuriMutex*
+#define _SYNC_t FurryMutex*
 /* The option _FS_REENTRANT switches the re-entrancy (thread safe) of the FatFs
 /  module itself. Note that regardless of this option, file access to different
 /  volume is always re-entrant and volume control functions, f_mount(), f_mkfs()

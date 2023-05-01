@@ -18,8 +18,8 @@
 //Использован код Дмитрия Погребняка: https://aterlux.ru/article/1wire
 
 #include "OneWireSensor.h"
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 const SensorType Dallas = {
     .typename = "Dallas",
@@ -72,9 +72,9 @@ bool unitemp_onewire_bus_init(OneWireBus* bus) {
 
     unitemp_gpio_lock(bus->gpio, &ONE_WIRE);
     //Высокий уровень по умолчанию
-    furi_hal_gpio_write(bus->gpio->pin, true);
+    furry_hal_gpio_write(bus->gpio->pin, true);
     //Режим работы - OpenDrain, подтяжка включается на всякий случай
-    furi_hal_gpio_init(
+    furry_hal_gpio_init(
         bus->gpio->pin, //Порт FZ
         GpioModeOutputOpenDrain, //Режим работы - открытый сток
         GpioPullUp, //Принудительная подтяжка линии данных к питанию
@@ -90,13 +90,13 @@ bool unitemp_onewire_bus_deinit(OneWireBus* bus) {
         bus->device_count = 0;
         unitemp_gpio_unlock(bus->gpio);
         //Режим работы - аналог, подтяжка выключена
-        furi_hal_gpio_init(
+        furry_hal_gpio_init(
             bus->gpio->pin, //Порт FZ
             GpioModeAnalog, //Режим работы - аналог
             GpioPullNo, //Подтяжка выключена
             GpioSpeedLow); //Скорость работы - минимальная
         //Низкий уровень по умолчанию
-        furi_hal_gpio_write(bus->gpio->pin, false);
+        furry_hal_gpio_write(bus->gpio->pin, false);
         return true;
     } else {
         return false;
@@ -194,7 +194,7 @@ void unitemp_onewire_bus_select_sensor(OneWireSensor* instance) {
 bool unitemp_onewire_sensor_alloc(Sensor* sensor, char* args) {
     OneWireSensor* instance = malloc(sizeof(OneWireSensor));
     if(instance == NULL) {
-        FURI_LOG_E(APP_NAME, "Sensor %s instance allocation error", sensor->name);
+        FURRY_LOG_E(APP_NAME, "Sensor %s instance allocation error", sensor->name);
         return false;
     }
     sensor->instance = instance;
@@ -230,7 +230,7 @@ bool unitemp_onewire_sensor_alloc(Sensor* sensor, char* args) {
     if(instance != NULL) {
         return true;
     }
-    FURI_LOG_E(APP_NAME, "Sensor %s bus allocation error", sensor->name);
+    FURRY_LOG_E(APP_NAME, "Sensor %s bus allocation error", sensor->name);
     free(instance);
     return false;
 }
@@ -250,7 +250,7 @@ bool unitemp_onewire_sensor_free(Sensor* sensor) {
 bool unitemp_onewire_sensor_init(Sensor* sensor) {
     OneWireSensor* instance = sensor->instance;
     if(instance == NULL || instance->bus == NULL) {
-        FURI_LOG_E(APP_NAME, "Sensor pointer is null!");
+        FURRY_LOG_E(APP_NAME, "Sensor pointer is null!");
         return false;
     }
 
@@ -325,15 +325,15 @@ UnitempStatus unitemp_onewire_sensor_update(Sensor* sensor) {
 
         unitemp_onewire_bus_send_byte(instance->bus, 0x44); // convert t
         if(instance->bus->powerMode == PWR_PASSIVE) {
-            furi_hal_gpio_write(instance->bus->gpio->pin, true);
-            furi_hal_gpio_init(
+            furry_hal_gpio_write(instance->bus->gpio->pin, true);
+            furry_hal_gpio_init(
                 instance->bus->gpio->pin, GpioModeOutputPushPull, GpioPullUp, GpioSpeedVeryHigh);
         }
         return UT_SENSORSTATUS_POLLING;
     } else {
         if(instance->bus->powerMode == PWR_PASSIVE) {
-            furi_hal_gpio_write(instance->bus->gpio->pin, true);
-            furi_hal_gpio_init(
+            furry_hal_gpio_write(instance->bus->gpio->pin, true);
+            furry_hal_gpio_init(
                 instance->bus->gpio->pin, GpioModeOutputOpenDrain, GpioPullUp, GpioSpeedVeryHigh);
         }
         if(!unitemp_onewire_bus_start(instance->bus)) return UT_SENSORSTATUS_TIMEOUT;

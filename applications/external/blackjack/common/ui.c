@@ -4,7 +4,7 @@
 #include <gui/icon_animation_i.h>
 #include <gui/icon.h>
 #include <gui/icon_i.h>
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 TileMap* tileMap;
 uint8_t tileMapCount = 0;

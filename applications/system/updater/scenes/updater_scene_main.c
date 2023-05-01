@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <applications.h>
 #include <storage/storage.h>
 
@@ -28,8 +28,8 @@ void updater_scene_main_on_enter(void* context) {
     notification_message(updater->notification, &sequence_display_backlight_enforce_on);
     UpdaterMainView* main_view = updater->main_view;
 
-    FuriPubSubSubscription* sub =
-        furi_pubsub_subscribe(storage_get_pubsub(updater->storage), &sd_mount_callback, updater);
+    FurryPubSubSubscription* sub =
+        furry_pubsub_subscribe(storage_get_pubsub(updater->storage), &sd_mount_callback, updater);
     updater_main_set_storage_pubsub(main_view, sub);
 
     /* FIXME: there's a misbehavior in storage subsystem. If we produce heavy load on it before it
@@ -47,7 +47,7 @@ void updater_scene_main_on_enter(void* context) {
 
 static void updater_scene_cancel_update() {
     update_operation_disarm();
-    furi_hal_power_reset();
+    furry_hal_power_reset();
 }
 
 bool updater_scene_main_on_event(void* context, SceneManagerEvent event) {
@@ -94,7 +94,7 @@ void updater_scene_main_on_exit(void* context) {
     Updater* updater = (Updater*)context;
 
     notification_message(updater->notification, &sequence_display_backlight_enforce_auto);
-    furi_pubsub_unsubscribe(
+    furry_pubsub_unsubscribe(
         storage_get_pubsub(updater->storage), updater_main_get_storage_pubsub(updater->main_view));
 
     scene_manager_set_scene_state(updater->scene_manager, UpdaterSceneMain, 0);

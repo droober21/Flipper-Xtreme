@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <notification/notification_app.h>
 #include <gui/modules/variable_item_list.h>
 #include <gui/view_dispatcher.h>
@@ -126,8 +126,8 @@ static uint32_t notification_app_settings_exit(void* context) {
 
 static NotificationAppSettings* alloc_settings() {
     NotificationAppSettings* app = malloc(sizeof(NotificationAppSettings));
-    app->notification = furi_record_open(RECORD_NOTIFICATION);
-    app->gui = furi_record_open(RECORD_GUI);
+    app->notification = furry_record_open(RECORD_NOTIFICATION);
+    app->gui = furry_record_open(RECORD_GUI);
 
     app->variable_item_list = variable_item_list_alloc();
     View* view = variable_item_list_get_view(app->variable_item_list);
@@ -157,7 +157,7 @@ static NotificationAppSettings* alloc_settings() {
     variable_item_set_current_value_index(item, value_index);
     variable_item_set_current_value_text(item, backlight_text[value_index]);
 
-    if(furi_hal_rtc_is_flag_set(FuriHalRtcFlagStealthMode)) {
+    if(furry_hal_rtc_is_flag_set(FurryHalRtcFlagStealthMode)) {
         item = variable_item_list_add(app->variable_item_list, "Volume", 1, NULL, app);
         value_index = 0;
         variable_item_set_current_value_index(item, value_index);
@@ -171,7 +171,7 @@ static NotificationAppSettings* alloc_settings() {
         variable_item_set_current_value_text(item, volume_text[value_index]);
     }
 
-    if(furi_hal_rtc_is_flag_set(FuriHalRtcFlagStealthMode)) {
+    if(furry_hal_rtc_is_flag_set(FurryHalRtcFlagStealthMode)) {
         item = variable_item_list_add(app->variable_item_list, "Vibro", 1, NULL, app);
         value_index = 0;
         variable_item_set_current_value_index(item, value_index);
@@ -199,8 +199,8 @@ static void free_settings(NotificationAppSettings* app) {
     variable_item_list_free(app->variable_item_list);
     view_dispatcher_free(app->view_dispatcher);
 
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
     free(app);
 }
 

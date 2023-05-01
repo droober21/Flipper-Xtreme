@@ -8,7 +8,7 @@
 #include <flipper.pb.h>
 #include <portmacro.h>
 
-#include <furi.h>
+#include <furry.h>
 
 #include <cli/cli.h>
 #include <stdint.h>
@@ -62,16 +62,16 @@ static RpcSystemCallbacks rpc_systems[] = {
 struct RpcSession {
     Rpc* rpc;
 
-    FuriThread* thread;
+    FurryThread* thread;
 
     RpcHandlerDict_t handlers;
-    FuriStreamBuffer* stream;
+    FurryStreamBuffer* stream;
     PB_Main* decoded_message;
     bool terminate;
     void** system_contexts;
     bool decode_error;
 
-    FuriMutex* callbacks_mutex;
+    FurryMutex* callbacks_mutex;
     RpcSendBytesCallback send_bytes_callback;
     RpcBufferIsEmptyCallback buffer_is_empty_callback;
     RpcSessionClosedCallback closed_callback;
@@ -81,72 +81,72 @@ struct RpcSession {
 };
 
 struct Rpc {
-    FuriMutex* busy_mutex;
+    FurryMutex* busy_mutex;
 };
 
 RpcOwner rpc_session_get_owner(RpcSession* session) {
-    furi_assert(session);
+    furry_assert(session);
     return session->owner;
 }
 
 static void rpc_close_session_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(context);
+    furry_assert(request);
+    furry_assert(context);
 
     RpcSession* session = (RpcSession*)context;
 
     rpc_send_and_release_empty(session, request->command_id, PB_CommandStatus_OK);
-    furi_mutex_acquire(session->callbacks_mutex, FuriWaitForever);
+    furry_mutex_acquire(session->callbacks_mutex, FurryWaitForever);
     if(session->closed_callback) {
         session->closed_callback(session->context);
     } else {
-        FURI_LOG_W(TAG, "Session stop isn't processed by transport layer");
+        FURRY_LOG_W(TAG, "Session stop isn't processed by transport layer");
     }
-    furi_mutex_release(session->callbacks_mutex);
+    furry_mutex_release(session->callbacks_mutex);
 }
 
 void rpc_session_set_context(RpcSession* session, void* context) {
-    furi_assert(session);
+    furry_assert(session);
 
-    furi_mutex_acquire(session->callbacks_mutex, FuriWaitForever);
+    furry_mutex_acquire(session->callbacks_mutex, FurryWaitForever);
     session->context = context;
-    furi_mutex_release(session->callbacks_mutex);
+    furry_mutex_release(session->callbacks_mutex);
 }
 
 void rpc_session_set_close_callback(RpcSession* session, RpcSessionClosedCallback callback) {
-    furi_assert(session);
+    furry_assert(session);
 
-    furi_mutex_acquire(session->callbacks_mutex, FuriWaitForever);
+    furry_mutex_acquire(session->callbacks_mutex, FurryWaitForever);
     session->closed_callback = callback;
-    furi_mutex_release(session->callbacks_mutex);
+    furry_mutex_release(session->callbacks_mutex);
 }
 
 void rpc_session_set_send_bytes_callback(RpcSession* session, RpcSendBytesCallback callback) {
-    furi_assert(session);
+    furry_assert(session);
 
-    furi_mutex_acquire(session->callbacks_mutex, FuriWaitForever);
+    furry_mutex_acquire(session->callbacks_mutex, FurryWaitForever);
     session->send_bytes_callback = callback;
-    furi_mutex_release(session->callbacks_mutex);
+    furry_mutex_release(session->callbacks_mutex);
 }
 
 void rpc_session_set_buffer_is_empty_callback(
     RpcSession* session,
     RpcBufferIsEmptyCallback callback) {
-    furi_assert(session);
+    furry_assert(session);
 
-    furi_mutex_acquire(session->callbacks_mutex, FuriWaitForever);
+    furry_mutex_acquire(session->callbacks_mutex, FurryWaitForever);
     session->buffer_is_empty_callback = callback;
-    furi_mutex_release(session->callbacks_mutex);
+    furry_mutex_release(session->callbacks_mutex);
 }
 
 void rpc_session_set_terminated_callback(
     RpcSession* session,
     RpcSessionTerminatedCallback callback) {
-    furi_assert(session);
+    furry_assert(session);
 
-    furi_mutex_acquire(session->callbacks_mutex, FuriWaitForever);
+    furry_mutex_acquire(session->callbacks_mutex, FurryWaitForever);
     session->terminated_callback = callback;
-    furi_mutex_release(session->callbacks_mutex);
+    furry_mutex_release(session->callbacks_mutex);
 }
 
 /* Doesn't forbid using rpc_feed_bytes() after session close - it's safe.
@@ -157,37 +157,37 @@ void rpc_session_set_terminated_callback(
  */
 size_t
     rpc_session_feed(RpcSession* session, uint8_t* encoded_bytes, size_t size, TickType_t timeout) {
-    furi_assert(session);
-    furi_assert(encoded_bytes);
+    furry_assert(session);
+    furry_assert(encoded_bytes);
 
     if(!size) return 0;
 
-    size_t bytes_sent = furi_stream_buffer_send(session->stream, encoded_bytes, size, timeout);
+    size_t bytes_sent = furry_stream_buffer_send(session->stream, encoded_bytes, size, timeout);
 
-    furi_thread_flags_set(furi_thread_get_id(session->thread), RpcEvtNewData);
+    furry_thread_flags_set(furry_thread_get_id(session->thread), RpcEvtNewData);
 
     return bytes_sent;
 }
 
 size_t rpc_session_get_available_size(RpcSession* session) {
-    furi_assert(session);
-    return furi_stream_buffer_spaces_available(session->stream);
+    furry_assert(session);
+    return furry_stream_buffer_spaces_available(session->stream);
 }
 
 bool rpc_pb_stream_read(pb_istream_t* istream, pb_byte_t* buf, size_t count) {
-    furi_assert(istream);
-    furi_assert(buf);
+    furry_assert(istream);
+    furry_assert(buf);
     RpcSession* session = istream->state;
-    furi_assert(session);
-    furi_assert(istream->bytes_left);
+    furry_assert(session);
+    furry_assert(istream->bytes_left);
 
     uint32_t flags = 0;
     size_t bytes_received = 0;
 
     while(1) {
-        bytes_received += furi_stream_buffer_receive(
+        bytes_received += furry_stream_buffer_receive(
             session->stream, buf + bytes_received, count - bytes_received, 0);
-        if(furi_stream_buffer_is_empty(session->stream)) {
+        if(furry_stream_buffer_is_empty(session->stream)) {
             if(session->buffer_is_empty_callback) {
                 session->buffer_is_empty_callback(session->context);
             }
@@ -199,16 +199,16 @@ bool rpc_pb_stream_read(pb_istream_t* istream, pb_byte_t* buf, size_t count) {
         if(count == bytes_received) {
             break;
         } else {
-            flags = furi_thread_flags_wait(RPC_ALL_EVENTS, FuriFlagWaitAny, FuriWaitForever);
+            flags = furry_thread_flags_wait(RPC_ALL_EVENTS, FurryFlagWaitAny, FurryWaitForever);
             if(flags & RpcEvtDisconnect) {
-                if(furi_stream_buffer_is_empty(session->stream)) {
+                if(furry_stream_buffer_is_empty(session->stream)) {
                     session->terminate = true;
                     istream->bytes_left = 0;
                     bytes_received = 0;
                     break;
                 } else {
                     /* Save disconnect flag and continue reading buffer */
-                    furi_thread_flags_set(furi_thread_get_id(session->thread), RpcEvtDisconnect);
+                    furry_thread_flags_set(furry_thread_get_id(session->thread), RpcEvtDisconnect);
                 }
             } else if(flags & RpcEvtNewData) {
                 // Just wake thread up
@@ -224,10 +224,10 @@ bool rpc_pb_stream_read(pb_istream_t* istream, pb_byte_t* buf, size_t count) {
 }
 
 static bool rpc_pb_content_callback(pb_istream_t* stream, const pb_field_t* field, void** arg) {
-    furi_assert(stream);
+    furry_assert(stream);
     RpcSession* session = stream->state;
-    furi_assert(session);
-    furi_assert(field);
+    furry_assert(session);
+    furry_assert(field);
 
     RpcHandler* handler = RpcHandlerDict_get(session->handlers, field->tag);
 
@@ -239,11 +239,11 @@ static bool rpc_pb_content_callback(pb_istream_t* stream, const pb_field_t* fiel
 }
 
 static int32_t rpc_session_worker(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     RpcSession* session = (RpcSession*)context;
     Rpc* rpc = session->rpc;
 
-    FURI_LOG_D(TAG, "Session started");
+    FURRY_LOG_D(TAG, "Session started");
 
     while(1) {
         pb_istream_t istream = {
@@ -257,16 +257,16 @@ static int32_t rpc_session_worker(void* context) {
 
         if(pb_decode_ex(&istream, &PB_Main_msg, session->decoded_message, PB_DECODE_DELIMITED)) {
 #if SRV_RPC_DEBUG
-            FURI_LOG_I(TAG, "INPUT:");
+            FURRY_LOG_I(TAG, "INPUT:");
             rpc_debug_print_message(session->decoded_message);
 #endif
             RpcHandler* handler =
                 RpcHandlerDict_get(session->handlers, session->decoded_message->which_content);
 
             if(handler && handler->message_handler) {
-                furi_check(furi_mutex_acquire(rpc->busy_mutex, FuriWaitForever) == FuriStatusOk);
+                furry_check(furry_mutex_acquire(rpc->busy_mutex, FurryWaitForever) == FurryStatusOk);
                 handler->message_handler(session->decoded_message, handler->context);
-                furi_check(furi_mutex_release(rpc->busy_mutex) == FuriStatusOk);
+                furry_check(furry_mutex_release(rpc->busy_mutex) == FurryStatusOk);
             } else if(session->decoded_message->which_content == 0) {
                 /* Receiving zeroes means message is 0-length, which
                  * is valid for proto3: all fields are filled with default values.
@@ -276,7 +276,7 @@ static int32_t rpc_session_worker(void* context) {
                  */
                 message_decode_failed = true;
             } else if(!handler && !session->terminate) {
-                FURI_LOG_E(
+                FURRY_LOG_E(
                     TAG,
                     "Message(%d) decoded, but not implemented",
                     session->decoded_message->which_content);
@@ -290,7 +290,7 @@ static int32_t rpc_session_worker(void* context) {
         }
 
         if(message_decode_failed) {
-            furi_stream_buffer_reset(session->stream);
+            furry_stream_buffer_reset(session->stream);
             if(!session->terminate) {
                 /* Protobuf can't determine start and end of message.
                  * Handle this by adding varint at beginning
@@ -304,21 +304,21 @@ static int32_t rpc_session_worker(void* context) {
                  * Who are responsible to handle RPC session lifecycle.
                  * Companion receives 2 messages: ERROR_DECODE and session_closed.
                  */
-                FURI_LOG_E(TAG, "Decode failed, error: \'%.128s\'", PB_GET_ERROR(&istream));
+                FURRY_LOG_E(TAG, "Decode failed, error: \'%.128s\'", PB_GET_ERROR(&istream));
                 session->decode_error = true;
                 rpc_send_and_release_empty(session, 0, PB_CommandStatus_ERROR_DECODE);
-                furi_mutex_acquire(session->callbacks_mutex, FuriWaitForever);
+                furry_mutex_acquire(session->callbacks_mutex, FurryWaitForever);
                 if(session->closed_callback) {
                     session->closed_callback(session->context);
                 }
-                furi_mutex_release(session->callbacks_mutex);
+                furry_mutex_release(session->callbacks_mutex);
             }
         }
 
         pb_release(&PB_Main_msg, session->decoded_message);
 
         if(session->terminate) {
-            FURI_LOG_D(TAG, "Session terminated");
+            FURRY_LOG_D(TAG, "Session terminated");
             break;
         }
     }
@@ -326,12 +326,12 @@ static int32_t rpc_session_worker(void* context) {
     return 0;
 }
 
-static void rpc_session_free_callback(FuriThreadState thread_state, void* context) {
-    furi_assert(context);
+static void rpc_session_free_callback(FurryThreadState thread_state, void* context) {
+    furry_assert(context);
 
     RpcSession* session = (RpcSession*)context;
 
-    if(thread_state == FuriThreadStateStopped) {
+    if(thread_state == FurryThreadStateStopped) {
         for(size_t i = 0; i < COUNT_OF(rpc_systems); ++i) {
             if(rpc_systems[i].free) {
                 rpc_systems[i].free(session->system_contexts[i]);
@@ -340,26 +340,26 @@ static void rpc_session_free_callback(FuriThreadState thread_state, void* contex
         free(session->system_contexts);
         free(session->decoded_message);
         RpcHandlerDict_clear(session->handlers);
-        furi_stream_buffer_free(session->stream);
+        furry_stream_buffer_free(session->stream);
 
-        furi_mutex_acquire(session->callbacks_mutex, FuriWaitForever);
+        furry_mutex_acquire(session->callbacks_mutex, FurryWaitForever);
         if(session->terminated_callback) {
             session->terminated_callback(session->context);
         }
-        furi_mutex_release(session->callbacks_mutex);
+        furry_mutex_release(session->callbacks_mutex);
 
-        furi_mutex_free(session->callbacks_mutex);
-        furi_thread_free(session->thread);
+        furry_mutex_free(session->callbacks_mutex);
+        furry_thread_free(session->thread);
         free(session);
     }
 }
 
 RpcSession* rpc_session_open(Rpc* rpc, RpcOwner owner) {
-    furi_assert(rpc);
+    furry_assert(rpc);
 
     RpcSession* session = malloc(sizeof(RpcSession));
-    session->callbacks_mutex = furi_mutex_alloc(FuriMutexTypeNormal);
-    session->stream = furi_stream_buffer_alloc(RPC_BUFFER_SIZE, 1);
+    session->callbacks_mutex = furry_mutex_alloc(FurryMutexTypeNormal);
+    session->stream = furry_stream_buffer_alloc(RPC_BUFFER_SIZE, 1);
     session->rpc = rpc;
     session->terminate = false;
     session->decode_error = false;
@@ -382,58 +382,58 @@ RpcSession* rpc_session_open(Rpc* rpc, RpcOwner owner) {
     };
     rpc_add_handler(session, PB_Main_stop_session_tag, &rpc_handler);
 
-    session->thread = furi_thread_alloc_ex("RpcSessionWorker", 3072, rpc_session_worker, session);
+    session->thread = furry_thread_alloc_ex("RpcSessionWorker", 3072, rpc_session_worker, session);
 
-    furi_thread_set_state_context(session->thread, session);
-    furi_thread_set_state_callback(session->thread, rpc_session_free_callback);
+    furry_thread_set_state_context(session->thread, session);
+    furry_thread_set_state_callback(session->thread, rpc_session_free_callback);
 
-    furi_thread_start(session->thread);
+    furry_thread_start(session->thread);
 
     return session;
 }
 
 void rpc_session_close(RpcSession* session) {
-    furi_assert(session);
-    furi_assert(session->rpc);
+    furry_assert(session);
+    furry_assert(session->rpc);
 
     rpc_session_set_send_bytes_callback(session, NULL);
     rpc_session_set_close_callback(session, NULL);
     rpc_session_set_buffer_is_empty_callback(session, NULL);
-    furi_thread_flags_set(furi_thread_get_id(session->thread), RpcEvtDisconnect);
+    furry_thread_flags_set(furry_thread_get_id(session->thread), RpcEvtDisconnect);
 }
 
 void rpc_on_system_start(void* p) {
     UNUSED(p);
     Rpc* rpc = malloc(sizeof(Rpc));
 
-    rpc->busy_mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    rpc->busy_mutex = furry_mutex_alloc(FurryMutexTypeNormal);
 
-    Cli* cli = furi_record_open(RECORD_CLI);
+    Cli* cli = furry_record_open(RECORD_CLI);
     cli_add_command(
         cli, "start_rpc_session", CliCommandFlagParallelSafe, rpc_cli_command_start_session, rpc);
 
-    furi_record_create(RECORD_RPC, rpc);
+    furry_record_create(RECORD_RPC, rpc);
 }
 
 void rpc_add_handler(RpcSession* session, pb_size_t message_tag, RpcHandler* handler) {
-    furi_assert(RpcHandlerDict_get(session->handlers, message_tag) == NULL);
+    furry_assert(RpcHandlerDict_get(session->handlers, message_tag) == NULL);
 
     RpcHandlerDict_set_at(session->handlers, message_tag, *handler);
 }
 
 void rpc_send(RpcSession* session, PB_Main* message) {
-    furi_assert(session);
-    furi_assert(message);
+    furry_assert(session);
+    furry_assert(message);
 
     pb_ostream_t ostream = PB_OSTREAM_SIZING;
 
 #if SRV_RPC_DEBUG
-    FURI_LOG_I(TAG, "OUTPUT:");
+    FURRY_LOG_I(TAG, "OUTPUT:");
     rpc_debug_print_message(message);
 #endif
 
     bool result = pb_encode_ex(&ostream, &PB_Main_msg, message, PB_ENCODE_DELIMITED);
-    furi_check(result && ostream.bytes_written);
+    furry_check(result && ostream.bytes_written);
 
     uint8_t* buffer = malloc(ostream.bytes_written);
     ostream = pb_ostream_from_buffer(buffer, ostream.bytes_written);
@@ -444,11 +444,11 @@ void rpc_send(RpcSession* session, PB_Main* message) {
     rpc_debug_print_data("OUTPUT", buffer, ostream.bytes_written);
 #endif
 
-    furi_mutex_acquire(session->callbacks_mutex, FuriWaitForever);
+    furry_mutex_acquire(session->callbacks_mutex, FurryWaitForever);
     if(session->send_bytes_callback) {
         session->send_bytes_callback(session->context, buffer, ostream.bytes_written);
     }
-    furi_mutex_release(session->callbacks_mutex);
+    furry_mutex_release(session->callbacks_mutex);
 
     free(buffer);
 }

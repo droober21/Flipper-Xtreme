@@ -1,11 +1,11 @@
 #pragma once
 
-#include <furi.h>
+#include <furry.h>
 
 #include "nfc_magic_worker.h"
 
 struct NfcMagicWorker {
-    FuriThread* thread;
+    FurryThread* thread;
 
     NfcDeviceData* dev_data;
 

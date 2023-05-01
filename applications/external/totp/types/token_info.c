@@ -7,8 +7,8 @@
 
 TokenInfo* token_info_alloc() {
     TokenInfo* tokenInfo = malloc(sizeof(TokenInfo));
-    furi_check(tokenInfo != NULL);
-    tokenInfo->name = furi_string_alloc();
+    furry_check(tokenInfo != NULL);
+    tokenInfo->name = furry_string_alloc();
     token_info_set_defaults(tokenInfo);
     return tokenInfo;
 }
@@ -16,7 +16,7 @@ TokenInfo* token_info_alloc() {
 void token_info_free(TokenInfo* token_info) {
     if(token_info == NULL) return;
     free(token_info->token);
-    furi_string_free(token_info->name);
+    furry_string_free(token_info->name);
     free(token_info);
 }
 
@@ -33,7 +33,7 @@ bool token_info_set_secret(
     if(plain_token_secret_encoding == PlainTokenSecretEncodingBase32) {
         plain_secret_size = token_secret_length;
         plain_secret = malloc(plain_secret_size);
-        furi_check(plain_secret != NULL);
+        furry_check(plain_secret != NULL);
         plain_secret_length =
             base32_decode((const uint8_t*)plain_token_secret, plain_secret, plain_secret_size);
     } else if(plain_token_secret_encoding == PlainTokenSecretEncodingBase64) {
@@ -43,7 +43,7 @@ bool token_info_set_secret(
             token_secret_length,
             &plain_secret_length,
             &plain_secret_size);
-        furi_check(plain_secret != NULL);
+        furry_check(plain_secret != NULL);
     } else {
         return false;
     }
@@ -93,23 +93,23 @@ bool token_info_set_duration_from_int(TokenInfo* token_info, uint8_t duration) {
     return false;
 }
 
-bool token_info_set_algo_from_str(TokenInfo* token_info, const FuriString* str) {
-    if(furi_string_cmpi_str(str, TOTP_TOKEN_ALGO_SHA1_NAME) == 0) {
+bool token_info_set_algo_from_str(TokenInfo* token_info, const FurryString* str) {
+    if(furry_string_cmpi_str(str, TOTP_TOKEN_ALGO_SHA1_NAME) == 0) {
         token_info->algo = SHA1;
         return true;
     }
 
-    if(furi_string_cmpi_str(str, TOTP_TOKEN_ALGO_SHA256_NAME) == 0) {
+    if(furry_string_cmpi_str(str, TOTP_TOKEN_ALGO_SHA256_NAME) == 0) {
         token_info->algo = SHA256;
         return true;
     }
 
-    if(furi_string_cmpi_str(str, TOTP_TOKEN_ALGO_SHA512_NAME) == 0) {
+    if(furry_string_cmpi_str(str, TOTP_TOKEN_ALGO_SHA512_NAME) == 0) {
         token_info->algo = SHA512;
         return true;
     }
 
-    if(furi_string_cmpi_str(str, TOTP_TOKEN_ALGO_STEAM_NAME) == 0) {
+    if(furry_string_cmpi_str(str, TOTP_TOKEN_ALGO_STEAM_NAME) == 0) {
         token_info->algo = STEAM;
         return true;
     }
@@ -155,23 +155,23 @@ char* token_info_get_algo_as_cstr(const TokenInfo* token_info) {
     return NULL;
 }
 
-bool token_info_set_automation_feature_from_str(TokenInfo* token_info, const FuriString* str) {
-    if(furi_string_cmpi_str(str, TOTP_TOKEN_AUTOMATION_FEATURE_ENTER_AT_THE_END_NAME) == 0) {
+bool token_info_set_automation_feature_from_str(TokenInfo* token_info, const FurryString* str) {
+    if(furry_string_cmpi_str(str, TOTP_TOKEN_AUTOMATION_FEATURE_ENTER_AT_THE_END_NAME) == 0) {
         token_info->automation_features |= TokenAutomationFeatureEnterAtTheEnd;
         return true;
     }
 
-    if(furi_string_cmpi_str(str, TOTP_TOKEN_AUTOMATION_FEATURE_TAB_AT_THE_END_NAME) == 0) {
+    if(furry_string_cmpi_str(str, TOTP_TOKEN_AUTOMATION_FEATURE_TAB_AT_THE_END_NAME) == 0) {
         token_info->automation_features |= TokenAutomationFeatureTabAtTheEnd;
         return true;
     }
 
-    if(furi_string_cmpi_str(str, TOTP_TOKEN_AUTOMATION_FEATURE_TYPE_SLOWER_NAME) == 0) {
+    if(furry_string_cmpi_str(str, TOTP_TOKEN_AUTOMATION_FEATURE_TYPE_SLOWER_NAME) == 0) {
         token_info->automation_features |= TokenAutomationFeatureTypeSlower;
         return true;
     }
 
-    if(furi_string_cmpi_str(str, TOTP_TOKEN_AUTOMATION_FEATURE_NONE_NAME) == 0) {
+    if(furry_string_cmpi_str(str, TOTP_TOKEN_AUTOMATION_FEATURE_NONE_NAME) == 0) {
         token_info->automation_features = TokenAutomationFeatureNone;
         return true;
     }
@@ -184,20 +184,20 @@ TokenInfo* token_info_clone(const TokenInfo* src) {
     memcpy(clone, src, sizeof(TokenInfo));
 
     clone->token = malloc(src->token_length);
-    furi_check(clone->token != NULL);
+    furry_check(clone->token != NULL);
     memcpy(clone->token, src->token, src->token_length);
 
-    clone->name = furi_string_alloc();
-    furi_string_set(clone->name, src->name);
+    clone->name = furry_string_alloc();
+    furry_string_set(clone->name, src->name);
 
     return clone;
 }
 
 void token_info_set_defaults(TokenInfo* token_info) {
-    furi_check(token_info != NULL);
+    furry_check(token_info != NULL);
     token_info->algo = SHA1;
     token_info->digits = TotpSixDigitsCount;
     token_info->duration = TOTP_TOKEN_DURATION_DEFAULT;
     token_info->automation_features = TokenAutomationFeatureNone;
-    furi_string_reset(token_info->name);
+    furry_string_reset(token_info->name);
 }

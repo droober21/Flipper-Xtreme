@@ -2,7 +2,7 @@
 #include "../views/subghz_test_carrier.h"
 
 void subghz_scene_test_carrier_callback(SubGhzTestCarrierEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhz* subghz = context;
     view_dispatcher_send_custom_event(subghz->view_dispatcher, event);
 }

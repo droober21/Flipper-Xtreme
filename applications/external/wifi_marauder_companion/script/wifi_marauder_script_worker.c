@@ -53,12 +53,12 @@ bool wifi_marauder_script_worker_start(
     instance->script = script;
     instance->context = instance;
     instance->is_running = true;
-    instance->worker_thread = furi_thread_alloc_ex(
+    instance->worker_thread = furry_thread_alloc_ex(
         "WifiMarauderScriptWorker", 1024, _wifi_marauder_script_worker_task, instance);
     if(!instance->worker_thread) {
         return false;
     }
-    furi_thread_start(instance->worker_thread);
+    furry_thread_start(instance->worker_thread);
     return true;
 }
 
@@ -66,8 +66,8 @@ void wifi_marauder_script_worker_free(WifiMarauderScriptWorker* worker) {
     if(worker != NULL) {
         if(worker->worker_thread != NULL) {
             worker->is_running = false;
-            furi_thread_join(worker->worker_thread);
-            furi_thread_free(worker->worker_thread);
+            furry_thread_join(worker->worker_thread);
+            furry_thread_free(worker->worker_thread);
         }
         free(worker);
     }

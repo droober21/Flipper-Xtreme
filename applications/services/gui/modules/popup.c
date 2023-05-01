@@ -1,13 +1,13 @@
 #include "popup.h"
 #include <gui/elements.h>
-#include <furi.h>
+#include <furry.h>
 
 struct Popup {
     View* view;
     void* context;
     PopupCallback callback;
 
-    FuriTimer* timer;
+    FurryTimer* timer;
     uint32_t timer_period_in_ms;
     bool timer_enabled;
 };
@@ -69,7 +69,7 @@ static void popup_view_draw_callback(Canvas* canvas, void* _model) {
 }
 
 static void popup_timer_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Popup* popup = context;
 
     if(popup->callback) {
@@ -94,25 +94,25 @@ void popup_start_timer(void* context) {
     Popup* popup = context;
     if(popup->timer_enabled) {
         uint32_t timer_period =
-            popup->timer_period_in_ms / (1000.0f / furi_kernel_get_tick_frequency());
+            popup->timer_period_in_ms / (1000.0f / furry_kernel_get_tick_frequency());
         if(timer_period == 0) timer_period = 1;
 
-        if(furi_timer_start(popup->timer, timer_period) != FuriStatusOk) {
-            furi_assert(0);
+        if(furry_timer_start(popup->timer, timer_period) != FurryStatusOk) {
+            furry_assert(0);
         };
     }
 }
 
 void popup_stop_timer(void* context) {
     Popup* popup = context;
-    furi_timer_stop(popup->timer);
+    furry_timer_stop(popup->timer);
 }
 
 Popup* popup_alloc() {
     Popup* popup = malloc(sizeof(Popup));
     popup->view = view_alloc();
-    popup->timer = furi_timer_alloc(popup_timer_callback, FuriTimerTypeOnce, popup);
-    furi_assert(popup->timer);
+    popup->timer = furry_timer_alloc(popup_timer_callback, FurryTimerTypeOnce, popup);
+    furry_assert(popup->timer);
     popup->timer_period_in_ms = 1000;
     popup->timer_enabled = false;
 
@@ -148,24 +148,24 @@ Popup* popup_alloc() {
 }
 
 void popup_free(Popup* popup) {
-    furi_assert(popup);
-    furi_timer_free(popup->timer);
+    furry_assert(popup);
+    furry_timer_free(popup->timer);
     view_free(popup->view);
     free(popup);
 }
 
 View* popup_get_view(Popup* popup) {
-    furi_assert(popup);
+    furry_assert(popup);
     return popup->view;
 }
 
 void popup_set_callback(Popup* popup, PopupCallback callback) {
-    furi_assert(popup);
+    furry_assert(popup);
     popup->callback = callback;
 }
 
 void popup_set_context(Popup* popup, void* context) {
-    furi_assert(popup);
+    furry_assert(popup);
     popup->context = context;
 }
 
@@ -176,7 +176,7 @@ void popup_set_header(
     uint8_t y,
     Align horizontal,
     Align vertical) {
-    furi_assert(popup);
+    furry_assert(popup);
     with_view_model(
         popup->view,
         PopupModel * model,
@@ -197,7 +197,7 @@ void popup_set_text(
     uint8_t y,
     Align horizontal,
     Align vertical) {
-    furi_assert(popup);
+    furry_assert(popup);
     with_view_model(
         popup->view,
         PopupModel * model,
@@ -212,7 +212,7 @@ void popup_set_text(
 }
 
 void popup_set_icon(Popup* popup, uint8_t x, uint8_t y, const Icon* icon) {
-    furi_assert(popup);
+    furry_assert(popup);
     with_view_model(
         popup->view,
         PopupModel * model,
@@ -225,7 +225,7 @@ void popup_set_icon(Popup* popup, uint8_t x, uint8_t y, const Icon* icon) {
 }
 
 void popup_set_timeout(Popup* popup, uint32_t timeout_in_ms) {
-    furi_assert(popup);
+    furry_assert(popup);
     popup->timer_period_in_ms = timeout_in_ms;
 }
 
@@ -238,7 +238,7 @@ void popup_disable_timeout(Popup* popup) {
 }
 
 void popup_reset(Popup* popup) {
-    furi_assert(popup);
+    furry_assert(popup);
 
     with_view_model(
         popup->view,

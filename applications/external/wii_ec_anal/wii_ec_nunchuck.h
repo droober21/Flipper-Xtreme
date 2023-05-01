@@ -41,7 +41,7 @@ typedef struct state state_t;
 typedef struct eventMsg eventMsg_t;
 
 void nunchuck_decode(wiiEC_t* const pec);
-void nunchuck_msg(wiiEC_t* const pec, FuriMessageQueue* const queue);
+void nunchuck_msg(wiiEC_t* const pec, FurryMessageQueue* const queue);
 void nunchuck_calib(wiiEC_t* const pec, ecCalib_t c);
 
 void nunchuck_show(Canvas* const canvas, state_t* const state);

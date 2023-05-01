@@ -6,7 +6,7 @@ InfraredMessage* infrared_decoder_sirc_check_ready(void* ctx) {
 }
 
 bool infrared_decoder_sirc_interpret(InfraredCommonDecoder* decoder) {
-    furi_assert(decoder);
+    furry_assert(decoder);
 
     uint32_t* data = (void*)&decoder->data[0];
     uint16_t address = 0;

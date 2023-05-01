@@ -27,8 +27,8 @@ static bool dallas_ds1420_write_blank(OneWireHost*, iButtonProtocolData*);
 static void dallas_ds1420_emulate(OneWireSlave*, iButtonProtocolData*);
 static bool dallas_ds1420_load(FlipperFormat*, uint32_t, iButtonProtocolData*);
 static bool dallas_ds1420_save(FlipperFormat*, const iButtonProtocolData*);
-static void dallas_ds1420_render_brief_data(FuriString*, const iButtonProtocolData*);
-static void dallas_ds1420_render_error(FuriString*, const iButtonProtocolData*);
+static void dallas_ds1420_render_brief_data(FurryString*, const iButtonProtocolData*);
+static void dallas_ds1420_render_error(FurryString*, const iButtonProtocolData*);
 static bool dallas_ds1420_is_data_valid(const iButtonProtocolData*);
 static void dallas_ds1420_get_editable_data(iButtonEditableData*, iButtonProtocolData*);
 static void dallas_ds1420_apply_edits(iButtonProtocolData*);
@@ -76,7 +76,7 @@ static bool dallas_ds1420_reset_callback(bool is_short, void* context) {
 }
 
 static bool dallas_ds1420_command_callback(uint8_t command, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DS1420ProtocolData* data = context;
     OneWireSlave* bus = data->state.bus;
 
@@ -117,15 +117,15 @@ bool dallas_ds1420_load(
     return dallas_common_load_rom_data(ff, format_version, &data->rom_data);
 }
 
-void dallas_ds1420_render_brief_data(FuriString* result, const iButtonProtocolData* protocol_data) {
+void dallas_ds1420_render_brief_data(FurryString* result, const iButtonProtocolData* protocol_data) {
     const DS1420ProtocolData* data = protocol_data;
 
     for(size_t i = 0; i < sizeof(DallasCommonRomData); ++i) {
-        furi_string_cat_printf(result, "%02X ", data->rom_data.bytes[i]);
+        furry_string_cat_printf(result, "%02X ", data->rom_data.bytes[i]);
     }
 }
 
-void dallas_ds1420_render_error(FuriString* result, const iButtonProtocolData* protocol_data) {
+void dallas_ds1420_render_error(FurryString* result, const iButtonProtocolData* protocol_data) {
     const DS1420ProtocolData* data = protocol_data;
 
     if(!dallas_common_is_valid_crc(&data->rom_data)) {

@@ -4,7 +4,7 @@ void nfc_scene_read_card_success_widget_callback(
     GuiButtonType result,
     InputType type,
     void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Nfc* nfc = context;
 
     if(type == InputTypeShort) {
@@ -15,25 +15,25 @@ void nfc_scene_read_card_success_widget_callback(
 void nfc_scene_read_card_success_on_enter(void* context) {
     Nfc* nfc = context;
 
-    FuriString* temp_str;
-    temp_str = furi_string_alloc();
+    FurryString* temp_str;
+    temp_str = furry_string_alloc();
 
     // Setup view
-    FuriHalNfcDevData* data = &nfc->dev->dev_data.nfc_data;
+    FurryHalNfcDevData* data = &nfc->dev->dev_data.nfc_data;
     Widget* widget = nfc->widget;
-    furi_string_set(temp_str, nfc_get_dev_type(data->type));
+    furry_string_set(temp_str, nfc_get_dev_type(data->type));
     widget_add_string_element(
-        widget, 64, 12, AlignCenter, AlignBottom, FontPrimary, furi_string_get_cstr(temp_str));
-    furi_string_set(temp_str, "UID:");
+        widget, 64, 12, AlignCenter, AlignBottom, FontPrimary, furry_string_get_cstr(temp_str));
+    furry_string_set(temp_str, "UID:");
     for(uint8_t i = 0; i < data->uid_len; i++) {
-        furi_string_cat_printf(temp_str, " %02X", data->uid[i]);
+        furry_string_cat_printf(temp_str, " %02X", data->uid[i]);
     }
     widget_add_string_element(
-        widget, 64, 32, AlignCenter, AlignCenter, FontSecondary, furi_string_get_cstr(temp_str));
+        widget, 64, 32, AlignCenter, AlignCenter, FontSecondary, furry_string_get_cstr(temp_str));
     widget_add_button_element(
         widget, GuiButtonTypeLeft, "Retry", nfc_scene_read_card_success_widget_callback, nfc);
 
-    furi_string_free(temp_str);
+    furry_string_free(temp_str);
 
     view_dispatcher_switch_to_view(nfc->view_dispatcher, NfcViewWidget);
 }

@@ -31,22 +31,22 @@ void nfc_scene_save_name_on_enter(void* context) {
         NFC_DEV_NAME_MAX_LEN,
         dev_name_empty);
 
-    FuriString* folder_path;
-    folder_path = furi_string_alloc();
+    FurryString* folder_path;
+    folder_path = furry_string_alloc();
 
-    if(furi_string_end_with(nfc->dev->load_path, NFC_APP_EXTENSION)) {
-        path_extract_dirname(furi_string_get_cstr(nfc->dev->load_path), folder_path);
+    if(furry_string_end_with(nfc->dev->load_path, NFC_APP_EXTENSION)) {
+        path_extract_dirname(furry_string_get_cstr(nfc->dev->load_path), folder_path);
     } else {
-        furi_string_set(folder_path, NFC_APP_FOLDER);
+        furry_string_set(folder_path, NFC_APP_FOLDER);
     }
 
     ValidatorIsFile* validator_is_file = validator_is_file_alloc_init(
-        furi_string_get_cstr(folder_path), NFC_APP_EXTENSION, nfc->dev->dev_name);
+        furry_string_get_cstr(folder_path), NFC_APP_EXTENSION, nfc->dev->dev_name);
     text_input_set_validator(text_input, validator_is_file_callback, validator_is_file);
 
     view_dispatcher_switch_to_view(nfc->view_dispatcher, NfcViewTextInput);
 
-    furi_string_free(folder_path);
+    furry_string_free(folder_path);
 }
 
 bool nfc_scene_save_name_on_event(void* context, SceneManagerEvent event) {

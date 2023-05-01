@@ -2435,7 +2435,7 @@ void STM32SAM::Output8BitAry(int index, unsigned char ary[5]) {
         // while(micros() < f) {
         // };
         f = sample_uS / (_STM32SAM_SPEED + 1);
-        furi_delay_us(f);
+        furry_delay_us(f);
         SetAUDIO(ary[k]);
         //  delayMicroseconds(sample_uS / 5 );
     }
@@ -5629,8 +5629,8 @@ void STM32SAM::setThroat(unsigned char _throat /* = 128 */) {
 #include <math.h>
 #include <stm32wbxx_ll_tim.h>
 
-#define FURI_HAL_SPEAKER_TIMER TIM16
-#define FURI_HAL_SPEAKER_CHANNEL LL_TIM_CHANNEL_CH1
+#define FURRY_HAL_SPEAKER_TIMER TIM16
+#define FURRY_HAL_SPEAKER_CHANNEL LL_TIM_CHANNEL_CH1
 
 void STM32SAM::begin(void) {
 #ifdef USE_ROGER_CORE
@@ -5657,17 +5657,17 @@ void STM32SAM::begin(void) {
     memset(&TIM_InitStruct, 0, sizeof(LL_TIM_InitTypeDef));
     TIM_InitStruct.Prescaler = 4;
     TIM_InitStruct.Autoreload = 255;
-    LL_TIM_Init(FURI_HAL_SPEAKER_TIMER, &TIM_InitStruct);
+    LL_TIM_Init(FURRY_HAL_SPEAKER_TIMER, &TIM_InitStruct);
 
     LL_TIM_OC_InitTypeDef TIM_OC_InitStruct;
     memset(&TIM_OC_InitStruct, 0, sizeof(LL_TIM_OC_InitTypeDef));
     TIM_OC_InitStruct.OCMode = LL_TIM_OCMODE_PWM1;
     TIM_OC_InitStruct.OCState = LL_TIM_OCSTATE_ENABLE;
     TIM_OC_InitStruct.CompareValue = 127;
-    LL_TIM_OC_Init(FURI_HAL_SPEAKER_TIMER, FURI_HAL_SPEAKER_CHANNEL, &TIM_OC_InitStruct);
+    LL_TIM_OC_Init(FURRY_HAL_SPEAKER_TIMER, FURRY_HAL_SPEAKER_CHANNEL, &TIM_OC_InitStruct);
 
-    LL_TIM_EnableAllOutputs(FURI_HAL_SPEAKER_TIMER);
-    LL_TIM_EnableCounter(FURI_HAL_SPEAKER_TIMER);
+    LL_TIM_EnableAllOutputs(FURRY_HAL_SPEAKER_TIMER);
+    LL_TIM_EnableCounter(FURRY_HAL_SPEAKER_TIMER);
 } // begin
 
 inline void STM32SAM::SetAUDIO(unsigned char main_volume) {
@@ -5680,9 +5680,9 @@ inline void STM32SAM::SetAUDIO(unsigned char main_volume) {
 #endif
 
     // if(main_volume > 64) {
-    //     LL_TIM_OC_SetCompareCH1(FURI_HAL_SPEAKER_TIMER, 127);
+    //     LL_TIM_OC_SetCompareCH1(FURRY_HAL_SPEAKER_TIMER, 127);
     // } else {
-    //     LL_TIM_OC_SetCompareCH1(FURI_HAL_SPEAKER_TIMER, main_volume);
+    //     LL_TIM_OC_SetCompareCH1(FURRY_HAL_SPEAKER_TIMER, main_volume);
     // }
 
     float data = main_volume;
@@ -5700,5 +5700,5 @@ inline void STM32SAM::SetAUDIO(unsigned char main_volume) {
         data = 255;
     }
 
-    LL_TIM_OC_SetCompareCH1(FURI_HAL_SPEAKER_TIMER, data);
+    LL_TIM_OC_SetCompareCH1(FURRY_HAL_SPEAKER_TIMER, data);
 }

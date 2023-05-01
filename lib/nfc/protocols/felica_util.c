@@ -1,7 +1,7 @@
 #include "./felica.h"
-#include <furi.h>
+#include <furry.h>
 
-FuriString* felica_get_system_name(FelicaSystem* system) {
+FurryString* felica_get_system_name(FelicaSystem* system) {
     uint16_t code = system->code;
 
     const char* prefix;
@@ -36,8 +36,8 @@ FuriString* felica_get_system_name(FelicaSystem* system) {
     } else if(code == PLUG_SYSTEM_CODE) {
         prefix = "FeliCa Plug";
     } else {
-        return furi_string_alloc_printf("System %04X", code);
+        return furry_string_alloc_printf("System %04X", code);
     }
 
-    return furi_string_alloc_printf("%s (%04X)", prefix, code);
+    return furry_string_alloc_printf("%s (%04X)", prefix, code);
 }

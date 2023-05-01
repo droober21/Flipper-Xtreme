@@ -28,13 +28,13 @@ View* spi_mem_view_progress_get_view(SPIMemProgressView* app) {
 }
 
 static void spi_mem_view_progress_draw_progress(Canvas* canvas, float progress) {
-    FuriString* progress_str = furi_string_alloc();
+    FurryString* progress_str = furry_string_alloc();
     if(progress > 1.0) progress = 1.0;
-    furi_string_printf(progress_str, "%d %%", (int)(progress * 100));
+    furry_string_printf(progress_str, "%d %%", (int)(progress * 100));
     elements_progress_bar(canvas, 13, 35, 100, progress);
     canvas_draw_str_aligned(
-        canvas, 64, 25, AlignCenter, AlignTop, furi_string_get_cstr(progress_str));
-    furi_string_free(progress_str);
+        canvas, 64, 25, AlignCenter, AlignTop, furry_string_get_cstr(progress_str));
+    furry_string_free(progress_str);
 }
 
 static void

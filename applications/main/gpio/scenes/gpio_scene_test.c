@@ -1,7 +1,7 @@
 #include "../gpio_app_i.h"
 
 void gpio_scene_test_ok_callback(InputType type, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     GpioApp* app = context;
 
     if(type == InputTypePress) {
@@ -12,7 +12,7 @@ void gpio_scene_test_ok_callback(InputType type, void* context) {
 }
 
 void gpio_scene_test_on_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     GpioApp* app = context;
     gpio_items_configure_all_pins(app->gpio_items, GpioModeOutputPushPull);
     gpio_test_set_ok_callback(app->gpio_test, gpio_scene_test_ok_callback, app);
@@ -26,7 +26,7 @@ bool gpio_scene_test_on_event(void* context, SceneManagerEvent event) {
 }
 
 void gpio_scene_test_on_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     GpioApp* app = context;
     gpio_items_configure_all_pins(app->gpio_items, GpioModeAnalog);
 }

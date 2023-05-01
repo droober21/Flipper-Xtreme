@@ -35,19 +35,19 @@ void subbrute_attack_view_set_callback(
     SubBruteAttackView* instance,
     SubBruteAttackViewCallback callback,
     void* context) {
-    furi_assert(instance);
-    furi_assert(callback);
+    furry_assert(instance);
+    furry_assert(callback);
 
     instance->callback = callback;
     instance->context = context;
 }
 
 bool subbrute_attack_view_input(InputEvent* event, void* context) {
-    furi_assert(event);
-    furi_assert(context);
+    furry_assert(event);
+    furry_assert(context);
     SubBruteAttackView* instance = context;
-#ifdef FURI_DEBUG
-    FURI_LOG_D(TAG, "InputKey: %d", event->key);
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(TAG, "InputKey: %d", event->key);
 #endif
 
     if(event->key == InputKeyBack && event->type == InputTypeShort) {
@@ -66,8 +66,8 @@ bool subbrute_attack_view_input(InputEvent* event, void* context) {
 
     if(!instance->is_attacking) {
         if(event->type == InputTypeShort && event->key == InputKeyOk) {
-#ifdef FURI_DEBUG
-            FURI_LOG_D(TAG, "InputKey: %d OK", event->key);
+#ifdef FURRY_DEBUG
+            FURRY_LOG_D(TAG, "InputKey: %d OK", event->key);
 #endif
             instance->is_attacking = true;
             instance->callback(SubBruteCustomEventTypeTransmitStarted, instance->context);
@@ -159,18 +159,18 @@ SubBruteAttackView* subbrute_attack_view_alloc() {
 }
 
 void subbrute_attack_view_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
-#ifdef FURI_DEBUG
-    FURI_LOG_D(TAG, "subbrute_attack_view_enter");
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(TAG, "subbrute_attack_view_enter");
 #endif
 }
 
 void subbrute_attack_view_free(SubBruteAttackView* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
-#ifdef FURI_DEBUG
-    FURI_LOG_D(TAG, "subbrute_attack_view_free");
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(TAG, "subbrute_attack_view_free");
 #endif
 
     with_view_model(
@@ -184,14 +184,14 @@ void subbrute_attack_view_free(SubBruteAttackView* instance) {
 }
 
 View* subbrute_attack_view_get_view(SubBruteAttackView* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     return instance->view;
 }
 
 void subbrute_attack_view_set_current_step(SubBruteAttackView* instance, uint64_t current_step) {
-    furi_assert(instance);
-#ifdef FURI_DEBUG
-    //FURI_LOG_D(TAG, "Set step: %d", current_step);
+    furry_assert(instance);
+#ifdef FURRY_DEBUG
+    //FURRY_LOG_D(TAG, "Set step: %d", current_step);
 #endif
     instance->current_step = current_step;
     with_view_model(
@@ -210,8 +210,8 @@ void subbrute_attack_view_init_values(
     uint64_t current_step,
     bool is_attacking,
     uint8_t extra_repeats) {
-#ifdef FURI_DEBUG
-    FURI_LOG_I(
+#ifdef FURRY_DEBUG
+    FURRY_LOG_I(
         TAG,
         "INIT, attack_type: %d, max_value: %lld, current_step: %lld, extra_repeats: %d",
         index,
@@ -244,10 +244,10 @@ void subbrute_attack_view_init_values(
 }
 
 void subbrute_attack_view_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubBruteAttackView* instance = context;
-#ifdef FURI_DEBUG
-    FURI_LOG_D(TAG, "subbrute_attack_view_exit");
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(TAG, "subbrute_attack_view_exit");
 #endif
     with_view_model(
         instance->view,
@@ -257,7 +257,7 @@ void subbrute_attack_view_exit(void* context) {
 }
 
 void subbrute_attack_view_draw(Canvas* canvas, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubBruteAttackViewModel* model = (SubBruteAttackViewModel*)context;
     char buffer[64];
 

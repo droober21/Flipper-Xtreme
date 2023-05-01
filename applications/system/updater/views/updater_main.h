@@ -3,7 +3,7 @@
 #include <gui/view.h>
 
 typedef struct UpdaterMainView UpdaterMainView;
-typedef struct FuriPubSubSubscription FuriPubSubSubscription;
+typedef struct FurryPubSubSubscription FurryPubSubSubscription;
 typedef struct ViewDispatcher ViewDispatcher;
 typedef void (*UpdaterMainInputCallback)(InputType type, void* context);
 
@@ -19,8 +19,8 @@ void updater_main_model_set_state(
     uint8_t progress,
     bool failed);
 
-void updater_main_set_storage_pubsub(UpdaterMainView* main_view, FuriPubSubSubscription* sub);
+void updater_main_set_storage_pubsub(UpdaterMainView* main_view, FurryPubSubSubscription* sub);
 
-FuriPubSubSubscription* updater_main_get_storage_pubsub(UpdaterMainView* main_view);
+FurryPubSubSubscription* updater_main_get_storage_pubsub(UpdaterMainView* main_view);
 
 void updater_main_set_view_dispatcher(UpdaterMainView* main_view, ViewDispatcher* view_dispatcher);

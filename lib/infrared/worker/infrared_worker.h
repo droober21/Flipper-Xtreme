@@ -1,7 +1,7 @@
 #pragma once
 
 #include <infrared.h>
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,13 +45,13 @@ InfraredWorker* infrared_worker_alloc();
  */
 void infrared_worker_free(InfraredWorker* instance);
 
-/** Start InfraredWorker thread, initialise furi_hal, prepare all work.
+/** Start InfraredWorker thread, initialise furry_hal, prepare all work.
  *
  * @param[in]   instance - InfraredWorker instance
  */
 void infrared_worker_rx_start(InfraredWorker* instance);
 
-/** Stop InfraredWorker thread, deinitialize furi_hal.
+/** Stop InfraredWorker thread, deinitialize furry_hal.
  *
  * @param[in]   instance - InfraredWorker instance
  */

@@ -1,13 +1,13 @@
 #include "../file_browser_app_i.h"
 
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include <gui/modules/widget_elements/widget_element_i.h>
 #include <storage/storage.h>
 
 static void
     file_browser_scene_start_ok_callback(GuiButtonType result, InputType type, void* context) {
     UNUSED(result);
-    furi_assert(context);
+    furry_assert(context);
     FileBrowserApp* app = context;
     if(type == InputTypeShort) {
         view_dispatcher_send_custom_event(app->view_dispatcher, type);
@@ -19,7 +19,7 @@ bool file_browser_scene_start_on_event(void* context, SceneManagerEvent event) {
     bool consumed = false;
 
     if(event.type == SceneManagerEventTypeCustom) {
-        furi_string_set(app->file_path, ANY_PATH("badkb/demo_windows.txt"));
+        furry_string_set(app->file_path, ANY_PATH("badkb/demo_windows.txt"));
         scene_manager_next_scene(app->scene_manager, FileBrowserSceneBrowser);
         consumed = true;
     } else if(event.type == SceneManagerEventTypeTick) {

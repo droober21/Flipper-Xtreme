@@ -79,7 +79,7 @@ bool lfrfid_scene_read_on_event(void* context, SceneManagerEvent event) {
         } else if(event.event == LfRfidEventReadDone) {
             app->protocol_id = app->protocol_id_next;
             notification_message(app->notifications, &sequence_success);
-            furi_string_reset(app->file_name);
+            furry_string_reset(app->file_name);
             scene_manager_next_scene(app->scene_manager, LfRfidSceneReadSuccess);
             DOLPHIN_DEED(DolphinDeedRfidReadSuccess);
             consumed = true;

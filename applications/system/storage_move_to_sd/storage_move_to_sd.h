@@ -10,7 +10,7 @@
 #include <notification/notification_messages.h>
 #include <storage/storage.h>
 #include <storage/storage_sd_api.h>
-#include <furi.h>
+#include <furry.h>
 
 #include "scenes/storage_move_to_sd_scene.h"
 
@@ -33,7 +33,7 @@ typedef struct {
     SceneManager* scene_manager;
     ViewDispatcher* view_dispatcher;
 
-    FuriPubSubSubscription* sub;
+    FurryPubSubSubscription* sub;
 
 } StorageMoveToSd;
 

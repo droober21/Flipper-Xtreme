@@ -2,7 +2,7 @@
 
 #include <inttypes.h>
 #include <stdbool.h>
-#include <furi/core/string.h>
+#include <furry/core/string.h>
 
 #define TOTP_TOKEN_DURATION_DEFAULT (30)
 
@@ -130,7 +130,7 @@ typedef struct {
     /**
      * @brief User-friendly token name 
      */
-    FuriString* name;
+    FurryString* name;
 
     /**
      * @brief Hashing algorithm
@@ -203,7 +203,7 @@ bool token_info_set_duration_from_int(TokenInfo* token_info, uint8_t duration);
  * @param str desired token algorithm
  * @return \c true if token hashing algorithm has been updated; \c false otherwise
  */
-bool token_info_set_algo_from_str(TokenInfo* token_info, const FuriString* str);
+bool token_info_set_algo_from_str(TokenInfo* token_info, const FurryString* str);
 
 /**
  * @brief Sets token hashing algorithm from \c algo_code code
@@ -226,7 +226,7 @@ char* token_info_get_algo_as_cstr(const TokenInfo* token_info);
  * @param str desired token automation feature
  * @return \c true if token automation feature has been set; \c false otherwise
  */
-bool token_info_set_automation_feature_from_str(TokenInfo* token_info, const FuriString* str);
+bool token_info_set_automation_feature_from_str(TokenInfo* token_info, const FurryString* str);
 
 /**
  * @brief Clones \c TokenInfo instance

@@ -6,7 +6,7 @@ void picopass_scene_read_factory_success_widget_callback(
     GuiButtonType result,
     InputType type,
     void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Picopass* picopass = context;
 
     if(type == InputTypeShort) {
@@ -16,8 +16,8 @@ void picopass_scene_read_factory_success_widget_callback(
 
 void picopass_scene_read_factory_success_on_enter(void* context) {
     Picopass* picopass = context;
-    FuriString* title = furi_string_alloc_set("Factory Default");
-    FuriString* subtitle = furi_string_alloc_set("");
+    FurryString* title = furry_string_alloc_set("Factory Default");
+    FurryString* subtitle = furry_string_alloc_set("");
 
     DOLPHIN_DEED(DolphinDeedNfcReadSuccess);
 
@@ -33,9 +33,9 @@ void picopass_scene_read_factory_success_on_enter(void* context) {
     uint8_t fuses = configBlock[7];
 
     if((fuses & 0x80) == 0x80) {
-        furi_string_cat_printf(subtitle, "Personalization mode");
+        furry_string_cat_printf(subtitle, "Personalization mode");
     } else {
-        furi_string_cat_printf(subtitle, "Application mode");
+        furry_string_cat_printf(subtitle, "Application mode");
     }
 
     widget_add_button_element(
@@ -46,12 +46,12 @@ void picopass_scene_read_factory_success_on_enter(void* context) {
         picopass);
 
     widget_add_string_element(
-        widget, 64, 5, AlignCenter, AlignCenter, FontSecondary, furi_string_get_cstr(title));
+        widget, 64, 5, AlignCenter, AlignCenter, FontSecondary, furry_string_get_cstr(title));
     widget_add_string_element(
-        widget, 64, 20, AlignCenter, AlignCenter, FontPrimary, furi_string_get_cstr(subtitle));
+        widget, 64, 20, AlignCenter, AlignCenter, FontPrimary, furry_string_get_cstr(subtitle));
 
-    furi_string_free(title);
-    furi_string_free(subtitle);
+    furry_string_free(title);
+    furry_string_free(subtitle);
 
     view_dispatcher_switch_to_view(picopass->view_dispatcher, PicopassViewWidget);
 }

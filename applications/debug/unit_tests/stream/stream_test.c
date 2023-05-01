@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <toolbox/stream/stream.h>
 #include <toolbox/stream/string_stream.h>
 #include <toolbox/stream/file_stream.h>
@@ -18,8 +18,8 @@ static const char* stream_test_right_data =
 MU_TEST_1(stream_composite_subtest, Stream* stream) {
     const size_t data_size = 128;
     uint8_t data[data_size];
-    FuriString* string_lee;
-    string_lee = furi_string_alloc_set("lee");
+    FurryString* string_lee;
+    string_lee = furry_string_alloc_set("lee");
 
     // test that stream is empty
     // "" -> ""
@@ -291,7 +291,7 @@ MU_TEST_1(stream_composite_subtest, Stream* stream) {
     mu_assert_int_eq(9, stream_tell(stream));
     mu_check(stream_eof(stream));
 
-    furi_string_free(string_lee);
+    furry_string_free(string_lee);
 }
 
 MU_TEST(stream_composite_test) {
@@ -302,7 +302,7 @@ MU_TEST(stream_composite_test) {
     stream_free(stream);
 
     // test file stream
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     stream = file_stream_alloc(storage);
     mu_check(
         file_stream_open(stream, EXT_PATH("filestream.str"), FSAM_READ_WRITE, FSOM_CREATE_ALWAYS));
@@ -315,7 +315,7 @@ MU_TEST(stream_composite_test) {
         stream, EXT_PATH("filestream.str"), FSAM_READ_WRITE, FSOM_CREATE_ALWAYS));
     MU_RUN_TEST_1(stream_composite_subtest, stream);
     stream_free(stream);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 MU_TEST_1(stream_write_subtest, Stream* stream) {
@@ -332,7 +332,7 @@ MU_TEST_1(stream_read_subtest, Stream* stream) {
 MU_TEST(stream_write_read_save_load_test) {
     Stream* stream_orig = string_stream_alloc();
     Stream* stream_copy = string_stream_alloc();
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     // write, read
     MU_RUN_TEST_1(stream_write_subtest, stream_orig);
@@ -359,7 +359,7 @@ MU_TEST(stream_write_read_save_load_test) {
     MU_RUN_TEST_1(stream_read_subtest, stream_new);
     stream_free(stream_new);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 MU_TEST_1(stream_split_subtest, Stream* stream) {
@@ -394,7 +394,7 @@ MU_TEST(stream_split_test) {
     stream_free(stream);
 
     // test file stream
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     stream = file_stream_alloc(storage);
     mu_check(
         file_stream_open(stream, EXT_PATH("filestream.str"), FSAM_READ_WRITE, FSOM_CREATE_ALWAYS));
@@ -408,7 +408,7 @@ MU_TEST(stream_split_test) {
     MU_RUN_TEST_1(stream_split_subtest, stream);
     stream_free(stream);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 MU_TEST(stream_buffered_write_after_read_test) {
@@ -422,7 +422,7 @@ MU_TEST(stream_buffered_write_after_read_test) {
     char buf[buf_size];
     memset(buf, 0, buf_size);
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     Stream* stream = buffered_file_stream_alloc(storage);
     mu_check(buffered_file_stream_open(
         stream, EXT_PATH("filestream.str"), FSAM_READ_WRITE, FSOM_CREATE_ALWAYS));
@@ -436,16 +436,16 @@ MU_TEST(stream_buffered_write_after_read_test) {
     mu_assert_string_eq(substr, buf);
 
     stream_free(stream);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 MU_TEST(stream_buffered_large_file_test) {
-    FuriString* input_data;
-    FuriString* output_data;
-    input_data = furi_string_alloc();
-    output_data = furi_string_alloc();
+    FurryString* input_data;
+    FurryString* output_data;
+    input_data = furry_string_alloc();
+    output_data = furry_string_alloc();
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     // generate test data consisting of several identical lines
     const size_t data_size = 4096;
@@ -453,7 +453,7 @@ MU_TEST(stream_buffered_large_file_test) {
     const size_t rep_count = data_size / line_size + 1;
 
     for(size_t i = 0; i < rep_count; ++i) {
-        furi_string_cat_printf(input_data, "%s\n", stream_test_data);
+        furry_string_cat_printf(input_data, "%s\n", stream_test_data);
     }
 
     // write test data to file
@@ -461,8 +461,8 @@ MU_TEST(stream_buffered_large_file_test) {
     mu_check(buffered_file_stream_open(
         stream, EXT_PATH("filestream.str"), FSAM_READ_WRITE, FSOM_CREATE_ALWAYS));
     mu_assert_int_eq(0, stream_size(stream));
-    mu_assert_int_eq(furi_string_size(input_data), stream_write_string(stream, input_data));
-    mu_assert_int_eq(furi_string_size(input_data), stream_size(stream));
+    mu_assert_int_eq(furry_string_size(input_data), stream_write_string(stream, input_data));
+    mu_assert_int_eq(furry_string_size(input_data), stream_size(stream));
 
     const size_t substr_start = 8;
     const size_t substr_len = 11;
@@ -499,23 +499,23 @@ MU_TEST(stream_buffered_large_file_test) {
 
     // read the whole file
     mu_check(stream_rewind(stream));
-    FuriString* tmp;
-    tmp = furi_string_alloc();
+    FurryString* tmp;
+    tmp = furry_string_alloc();
     while(stream_read_line(stream, tmp)) {
-        furi_string_cat(output_data, tmp);
+        furry_string_cat(output_data, tmp);
     }
-    furi_string_free(tmp);
+    furry_string_free(tmp);
 
     // check against generated data
-    mu_assert_int_eq(furi_string_size(input_data), furi_string_size(output_data));
-    mu_check(furi_string_equal(input_data, output_data));
+    mu_assert_int_eq(furry_string_size(input_data), furry_string_size(output_data));
+    mu_check(furry_string_equal(input_data, output_data));
     mu_check(stream_eof(stream));
 
     stream_free(stream);
 
-    furi_record_close(RECORD_STORAGE);
-    furi_string_free(input_data);
-    furi_string_free(output_data);
+    furry_record_close(RECORD_STORAGE);
+    furry_string_free(input_data);
+    furry_string_free(output_data);
 }
 
 MU_TEST_SUITE(stream_suite) {

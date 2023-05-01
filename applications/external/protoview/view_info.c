@@ -143,10 +143,10 @@ static void text_input_done_callback(void* context) {
     ProtoViewApp* app = context;
     InfoViewPrivData* privdata = app->view_privdata;
 
-    FuriString* save_path =
-        furi_string_alloc_printf("%s/%s.sub", EXT_PATH("subghz"), privdata->filename);
-    save_signal(app, furi_string_get_cstr(save_path));
-    furi_string_free(save_path);
+    FurryString* save_path =
+        furry_string_alloc_printf("%s/%s.sub", EXT_PATH("subghz"), privdata->filename);
+    save_signal(app, furry_string_get_cstr(save_path));
+    furry_string_free(save_path);
 
     free(privdata->filename);
     privdata->filename = NULL; // Don't free it again on view exit

@@ -19,7 +19,7 @@
 #ifndef SK6805_H_
 #define SK6805_H_
 
-#include <furi.h>
+#include <furry.h>
 
 /**
  * @brief Инициализация линии управления подсветкой

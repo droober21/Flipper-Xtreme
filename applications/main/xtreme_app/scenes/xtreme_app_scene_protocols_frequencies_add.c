@@ -10,7 +10,7 @@ static void xtreme_app_scene_protocols_frequencies_add_text_input_callback(void*
 
     char* end;
     uint32_t value = strtol(app->subghz_freq_buffer, &end, 0) * 10000;
-    if(*end || !furi_hal_subghz_is_frequency_valid(value)) {
+    if(*end || !furry_hal_subghz_is_frequency_valid(value)) {
         view_dispatcher_send_custom_event(app->view_dispatcher, TextInputResultError);
         return;
     }

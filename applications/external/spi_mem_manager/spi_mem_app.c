@@ -1,16 +1,16 @@
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include "spi_mem_app_i.h"
 #include "spi_mem_files.h"
 #include "lib/spi/spi_mem_chip_i.h"
 
 static bool spi_mem_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     SPIMemApp* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool spi_mem_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SPIMemApp* app = context;
     return scene_manager_handle_back_event(app->scene_manager);
 }
@@ -18,17 +18,17 @@ static bool spi_mem_back_event_callback(void* context) {
 SPIMemApp* spi_mem_alloc(void) {
     SPIMemApp* instance = malloc(sizeof(SPIMemApp)); //-V799
 
-    instance->file_path = furi_string_alloc_set(STORAGE_APP_DATA_PATH_PREFIX);
-    instance->gui = furi_record_open(RECORD_GUI);
-    instance->notifications = furi_record_open(RECORD_NOTIFICATION);
+    instance->file_path = furry_string_alloc_set(STORAGE_APP_DATA_PATH_PREFIX);
+    instance->gui = furry_record_open(RECORD_GUI);
+    instance->notifications = furry_record_open(RECORD_NOTIFICATION);
     instance->view_dispatcher = view_dispatcher_alloc();
     instance->scene_manager = scene_manager_alloc(&spi_mem_scene_handlers, instance);
     instance->submenu = submenu_alloc();
     instance->dialog_ex = dialog_ex_alloc();
     instance->popup = popup_alloc();
     instance->worker = spi_mem_worker_alloc();
-    instance->dialogs = furi_record_open(RECORD_DIALOGS);
-    instance->storage = furi_record_open(RECORD_STORAGE);
+    instance->dialogs = furry_record_open(RECORD_DIALOGS);
+    instance->storage = furry_record_open(RECORD_STORAGE);
     instance->widget = widget_alloc();
     instance->chip_info = malloc(sizeof(SPIMemChip));
     found_chips_init(instance->found_chips);
@@ -67,8 +67,8 @@ SPIMemApp* spi_mem_alloc(void) {
     view_dispatcher_add_view(
         instance->view_dispatcher, SPIMemViewTextInput, text_input_get_view(instance->text_input));
 
-    furi_hal_power_enable_otg();
-    furi_hal_spi_bus_handle_init(&furi_hal_spi_bus_handle_external);
+    furry_hal_power_enable_otg();
+    furry_hal_spi_bus_handle_init(&furry_hal_spi_bus_handle_external);
     scene_manager_next_scene(instance->scene_manager, SPIMemSceneStart);
     return instance;
 } //-V773
@@ -93,13 +93,13 @@ void spi_mem_free(SPIMemApp* instance) {
     spi_mem_worker_free(instance->worker);
     free(instance->chip_info);
     found_chips_clear(instance->found_chips);
-    furi_record_close(RECORD_STORAGE);
-    furi_record_close(RECORD_DIALOGS);
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_record_close(RECORD_GUI);
-    furi_string_free(instance->file_path);
-    furi_hal_spi_bus_handle_deinit(&furi_hal_spi_bus_handle_external);
-    furi_hal_power_disable_otg();
+    furry_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_DIALOGS);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_GUI);
+    furry_string_free(instance->file_path);
+    furry_hal_spi_bus_handle_deinit(&furry_hal_spi_bus_handle_external);
+    furry_hal_power_disable_otg();
     free(instance);
 }
 

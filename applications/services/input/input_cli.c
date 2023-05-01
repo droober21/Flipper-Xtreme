@@ -1,6 +1,6 @@
 #include "input_i.h"
 
-#include <furi.h>
+#include <furry.h>
 #include <cli/cli.h>
 #include <toolbox/args.h>
 
@@ -13,22 +13,22 @@ static void input_cli_usage() {
 }
 
 static void input_cli_dump_events_callback(const void* value, void* ctx) {
-    furi_assert(value);
-    furi_assert(ctx);
-    FuriMessageQueue* input_queue = ctx;
-    furi_message_queue_put(input_queue, value, FuriWaitForever);
+    furry_assert(value);
+    furry_assert(ctx);
+    FurryMessageQueue* input_queue = ctx;
+    furry_message_queue_put(input_queue, value, FurryWaitForever);
 }
 
-static void input_cli_dump(Cli* cli, FuriString* args, Input* input) {
+static void input_cli_dump(Cli* cli, FurryString* args, Input* input) {
     UNUSED(args);
-    FuriMessageQueue* input_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
-    FuriPubSubSubscription* input_subscription =
-        furi_pubsub_subscribe(input->event_pubsub, input_cli_dump_events_callback, input_queue);
+    FurryMessageQueue* input_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
+    FurryPubSubSubscription* input_subscription =
+        furry_pubsub_subscribe(input->event_pubsub, input_cli_dump_events_callback, input_queue);
 
     InputEvent input_event;
     printf("Press CTRL+C to stop\r\n");
     while(!cli_cmd_interrupt_received(cli)) {
-        if(furi_message_queue_get(input_queue, &input_event, 100) == FuriStatusOk) {
+        if(furry_message_queue_get(input_queue, &input_event, 100) == FurryStatusOk) {
             printf(
                 "key: %s type: %s\r\n",
                 input_get_key_name(input_event.key),
@@ -36,8 +36,8 @@ static void input_cli_dump(Cli* cli, FuriString* args, Input* input) {
         }
     }
 
-    furi_pubsub_unsubscribe(input->event_pubsub, input_subscription);
-    furi_message_queue_free(input_queue);
+    furry_pubsub_unsubscribe(input->event_pubsub, input_subscription);
+    furry_message_queue_free(input_queue);
 }
 
 static void input_cli_send_print_usage() {
@@ -47,11 +47,11 @@ static void input_cli_send_print_usage() {
     printf("\t\t <type>\t - one of 'press', 'release', 'short', 'long'\r\n");
 }
 
-static void input_cli_send(Cli* cli, FuriString* args, Input* input) {
+static void input_cli_send(Cli* cli, FurryString* args, Input* input) {
     UNUSED(cli);
     InputEvent event;
-    FuriString* key_str;
-    key_str = furi_string_alloc();
+    FurryString* key_str;
+    key_str = furry_string_alloc();
     bool parsed = false;
 
     do {
@@ -59,29 +59,29 @@ static void input_cli_send(Cli* cli, FuriString* args, Input* input) {
         if(!args_read_string_and_trim(args, key_str)) {
             break;
         }
-        if(!furi_string_cmp(key_str, "up")) {
+        if(!furry_string_cmp(key_str, "up")) {
             event.key = InputKeyUp;
-        } else if(!furi_string_cmp(key_str, "down")) {
+        } else if(!furry_string_cmp(key_str, "down")) {
             event.key = InputKeyDown;
-        } else if(!furi_string_cmp(key_str, "left")) {
+        } else if(!furry_string_cmp(key_str, "left")) {
             event.key = InputKeyLeft;
-        } else if(!furi_string_cmp(key_str, "right")) {
+        } else if(!furry_string_cmp(key_str, "right")) {
             event.key = InputKeyRight;
-        } else if(!furi_string_cmp(key_str, "ok")) {
+        } else if(!furry_string_cmp(key_str, "ok")) {
             event.key = InputKeyOk;
-        } else if(!furi_string_cmp(key_str, "back")) {
+        } else if(!furry_string_cmp(key_str, "back")) {
             event.key = InputKeyBack;
         } else {
             break;
         }
         // Parse Type
-        if(!furi_string_cmp(args, "press")) {
+        if(!furry_string_cmp(args, "press")) {
             event.type = InputTypePress;
-        } else if(!furi_string_cmp(args, "release")) {
+        } else if(!furry_string_cmp(args, "release")) {
             event.type = InputTypeRelease;
-        } else if(!furi_string_cmp(args, "short")) {
+        } else if(!furry_string_cmp(args, "short")) {
             event.type = InputTypeShort;
-        } else if(!furi_string_cmp(args, "long")) {
+        } else if(!furry_string_cmp(args, "long")) {
             event.type = InputTypeLong;
         } else {
             break;
@@ -90,30 +90,30 @@ static void input_cli_send(Cli* cli, FuriString* args, Input* input) {
     } while(false);
 
     if(parsed) { //-V547
-        furi_pubsub_publish(input->event_pubsub, &event);
+        furry_pubsub_publish(input->event_pubsub, &event);
     } else {
         input_cli_send_print_usage();
     }
-    furi_string_free(key_str);
+    furry_string_free(key_str);
 }
 
-void input_cli(Cli* cli, FuriString* args, void* context) {
-    furi_assert(cli);
-    furi_assert(context);
+void input_cli(Cli* cli, FurryString* args, void* context) {
+    furry_assert(cli);
+    furry_assert(context);
     Input* input = context;
-    FuriString* cmd;
-    cmd = furi_string_alloc();
+    FurryString* cmd;
+    cmd = furry_string_alloc();
 
     do {
         if(!args_read_string_and_trim(args, cmd)) {
             input_cli_usage();
             break;
         }
-        if(furi_string_cmp_str(cmd, "dump") == 0) {
+        if(furry_string_cmp_str(cmd, "dump") == 0) {
             input_cli_dump(cli, args, input);
             break;
         }
-        if(furi_string_cmp_str(cmd, "send") == 0) {
+        if(furry_string_cmp_str(cmd, "send") == 0) {
             input_cli_send(cli, args, input);
             break;
         }
@@ -121,5 +121,5 @@ void input_cli(Cli* cli, FuriString* args, void* context) {
         input_cli_usage();
     } while(false);
 
-    furi_string_free(cmd);
+    furry_string_free(cmd);
 }

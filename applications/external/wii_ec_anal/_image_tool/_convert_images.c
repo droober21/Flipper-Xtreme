@@ -105,7 +105,7 @@ void show(
         }
         break;
     }
-    furi_check(fnShow);
+    furry_check(fnShow);
 
     // I want nested functions!
     _canvas = canvas;

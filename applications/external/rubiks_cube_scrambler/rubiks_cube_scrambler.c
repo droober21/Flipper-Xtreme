@@ -1,12 +1,12 @@
 #include <stdio.h>
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <gui/elements.h>
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 #include "scrambler.h"
-#include "furi_hal_random.h"
+#include "furry_hal_random.h"
 
 int scrambleStarted = 0;
 char scramble_str[100] = {0};
@@ -15,10 +15,10 @@ char scramble_end[100] = {0};
 int notifications_enabled = 0;
 
 static void success_vibration() {
-    furi_hal_vibro_on(false);
-    furi_hal_vibro_on(true);
-    furi_delay_ms(50);
-    furi_hal_vibro_on(false);
+    furry_hal_vibro_on(false);
+    furry_hal_vibro_on(true);
+    furry_delay_ms(50);
+    furry_hal_vibro_on(false);
     return;
 }
 void split_array(char original[], int size, char first[], char second[]) {
@@ -66,16 +66,16 @@ static void draw_callback(Canvas* canvas, void* ctx) {
 };
 
 static void input_callback(InputEvent* input_event, void* ctx) {
-    furi_assert(ctx);
-    FuriMessageQueue* event_queue = ctx;
-    furi_message_queue_put(event_queue, input_event, FuriWaitForever);
+    furry_assert(ctx);
+    FurryMessageQueue* event_queue = ctx;
+    furry_message_queue_put(event_queue, input_event, FurryWaitForever);
 }
 
 int32_t rubiks_cube_scrambler_main(void* p) {
     UNUSED(p);
     InputEvent event;
 
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
 
     ViewPort* view_port = view_port_alloc();
 
@@ -83,11 +83,11 @@ int32_t rubiks_cube_scrambler_main(void* p) {
 
     view_port_input_callback_set(view_port, input_callback, event_queue);
 
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     while(true) {
-        furi_check(furi_message_queue_get(event_queue, &event, FuriWaitForever) == FuriStatusOk);
+        furry_check(furry_message_queue_get(event_queue, &event, FurryWaitForever) == FurryStatusOk);
 
         if(event.key == InputKeyOk && event.type == InputTypeShort) {
             scrambleStarted = 1;
@@ -105,11 +105,11 @@ int32_t rubiks_cube_scrambler_main(void* p) {
         }
     }
 
-    furi_message_queue_free(event_queue);
+    furry_message_queue_free(event_queue);
 
     gui_remove_view_port(gui, view_port);
 
     view_port_free(view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     return 0;
 }

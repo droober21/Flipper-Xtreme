@@ -1,6 +1,6 @@
 #pragma once
 
-#define FURI_DEBUG 1
+#define FURRY_DEBUG 1
 
 /**
  * Index of dependencies for the main app
@@ -8,8 +8,8 @@
 
 // Platform Imports
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <gui/gui.h>
 #include <gui/view_stack.h>
 #include <gui/view_dispatcher.h>

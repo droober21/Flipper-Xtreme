@@ -3,8 +3,8 @@
 #include "../helpers/subghz_testing.h"
 
 #include <math.h>
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <input/input.h>
 #include <toolbox/level_duration.h>
 #include <lib/subghz/protocols/princeton_for_testing.h>
@@ -13,7 +13,7 @@
 
 struct SubGhzTestPacket {
     View* view;
-    FuriTimer* timer;
+    FurryTimer* timer;
 
     SubGhzDecoderPrinceton* decoder;
     SubGhzEncoderPrinceton* encoder;
@@ -31,7 +31,7 @@ typedef enum {
 typedef struct {
     uint8_t frequency;
     uint32_t real_frequency;
-    FuriHalSubGhzPath path;
+    FurryHalSubGhzPath path;
     float rssi;
     size_t packets;
     SubGhzTestPacketModelStatus status;
@@ -43,14 +43,14 @@ void subghz_test_packet_set_callback(
     SubGhzTestPacket* subghz_test_packet,
     SubGhzTestPacketCallback callback,
     void* context) {
-    furi_assert(subghz_test_packet);
-    furi_assert(callback);
+    furry_assert(subghz_test_packet);
+    furry_assert(callback);
     subghz_test_packet->callback = callback;
     subghz_test_packet->context = context;
 }
 
 static void subghz_test_packet_rx_callback(bool level, uint32_t duration, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzTestPacket* instance = context;
     subghz_decoder_princeton_for_testing_parse(instance->decoder, level, duration);
 }
@@ -58,13 +58,13 @@ static void subghz_test_packet_rx_callback(bool level, uint32_t duration, void* 
 //todo
 static void subghz_test_packet_rx_pt_callback(SubGhzDecoderPrinceton* parser, void* context) {
     UNUSED(parser);
-    furi_assert(context);
+    furry_assert(context);
     SubGhzTestPacket* instance = context;
     instance->packet_rx++;
 }
 
 static void subghz_test_packet_rssi_timer_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzTestPacket* instance = context;
 
     with_view_model(
@@ -72,7 +72,7 @@ static void subghz_test_packet_rssi_timer_callback(void* context) {
         SubGhzTestPacketModel * model,
         {
             if(model->status == SubGhzTestPacketModelStatusRx) {
-                model->rssi = furi_hal_subghz_get_rssi();
+                model->rssi = furry_hal_subghz_get_rssi();
                 model->packets = instance->packet_rx;
             } else if(model->status == SubGhzTestPacketModelStatusTx) {
                 model->packets =
@@ -102,13 +102,13 @@ static void subghz_test_packet_draw(Canvas* canvas, SubGhzTestPacketModel* model
     canvas_draw_str(canvas, 0, 20, buffer);
     // Path
     char* path_name = "Unknown";
-    if(model->path == FuriHalSubGhzPathIsolate) {
+    if(model->path == FurryHalSubGhzPathIsolate) {
         path_name = "isolate";
-    } else if(model->path == FuriHalSubGhzPath433) {
+    } else if(model->path == FurryHalSubGhzPath433) {
         path_name = "433MHz";
-    } else if(model->path == FuriHalSubGhzPath315) {
+    } else if(model->path == FurryHalSubGhzPath315) {
         path_name = "315MHz";
-    } else if(model->path == FuriHalSubGhzPath868) {
+    } else if(model->path == FurryHalSubGhzPath868) {
         path_name = "868MHz";
     }
     snprintf(buffer, sizeof(buffer), "Path: %d - %s", model->path, path_name);
@@ -131,7 +131,7 @@ static void subghz_test_packet_draw(Canvas* canvas, SubGhzTestPacketModel* model
 }
 
 static bool subghz_test_packet_input(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzTestPacket* instance = context;
 
     if(event->key == InputKeyBack || event->type != InputTypeShort) {
@@ -143,10 +143,10 @@ static bool subghz_test_packet_input(InputEvent* event, void* context) {
         SubGhzTestPacketModel * model,
         {
             if(model->status == SubGhzTestPacketModelStatusRx) {
-                furi_hal_subghz_stop_async_rx();
+                furry_hal_subghz_stop_async_rx();
             } else if(model->status == SubGhzTestPacketModelStatusTx) {
-                subghz_encoder_princeton_for_testing_stop(instance->encoder, furi_get_tick());
-                furi_hal_subghz_stop_async_tx();
+                subghz_encoder_princeton_for_testing_stop(instance->encoder, furry_get_tick());
+                furry_hal_subghz_stop_async_tx();
             }
 
             if(event->key == InputKeyLeft) {
@@ -156,7 +156,7 @@ static bool subghz_test_packet_input(InputEvent* event, void* context) {
             } else if(event->key == InputKeyDown) {
                 if(model->path > 0) model->path--;
             } else if(event->key == InputKeyUp) {
-                if(model->path < FuriHalSubGhzPath868) model->path++;
+                if(model->path < FurryHalSubGhzPath868) model->path++;
             } else if(event->key == InputKeyOk) {
                 if(model->status == SubGhzTestPacketModelStatusRx) {
                     model->status = SubGhzTestPacketModelStatusTx;
@@ -166,18 +166,18 @@ static bool subghz_test_packet_input(InputEvent* event, void* context) {
             }
 
             model->real_frequency =
-                furi_hal_subghz_set_frequency(subghz_frequencies_testing[model->frequency]);
-            furi_hal_subghz_set_path(model->path);
+                furry_hal_subghz_set_frequency(subghz_frequencies_testing[model->frequency]);
+            furry_hal_subghz_set_path(model->path);
 
             if(model->status == SubGhzTestPacketModelStatusRx) {
-                furi_hal_subghz_start_async_rx(subghz_test_packet_rx_callback, instance);
+                furry_hal_subghz_start_async_rx(subghz_test_packet_rx_callback, instance);
             } else {
                 subghz_encoder_princeton_for_testing_set(
                     instance->encoder,
                     0x00AABBCC,
                     SUBGHZ_TEST_PACKET_COUNT,
                     subghz_frequencies_testing[model->frequency]);
-                if(!furi_hal_subghz_start_async_tx(
+                if(!furry_hal_subghz_start_async_tx(
                        subghz_encoder_princeton_for_testing_yield, instance->encoder)) {
                     model->status = SubGhzTestPacketModelStatusOnlyRx;
                     instance->callback(SubGhzTestPacketEventOnlyRx, instance->context);
@@ -190,11 +190,11 @@ static bool subghz_test_packet_input(InputEvent* event, void* context) {
 }
 
 void subghz_test_packet_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzTestPacket* instance = context;
 
-    furi_hal_subghz_reset();
-    furi_hal_subghz_load_preset(FuriHalSubGhzPresetOok650Async);
+    furry_hal_subghz_reset();
+    furry_hal_subghz_load_preset(FurryHalSubGhzPresetOok650Async);
 
     with_view_model(
         instance->view,
@@ -202,23 +202,23 @@ void subghz_test_packet_enter(void* context) {
         {
             model->frequency = subghz_frequencies_433_92_testing;
             model->real_frequency =
-                furi_hal_subghz_set_frequency(subghz_frequencies_testing[model->frequency]);
-            model->path = FuriHalSubGhzPathIsolate; // isolate
+                furry_hal_subghz_set_frequency(subghz_frequencies_testing[model->frequency]);
+            model->path = FurryHalSubGhzPathIsolate; // isolate
             model->rssi = 0.0f;
             model->status = SubGhzTestPacketModelStatusRx;
         },
         true);
 
-    furi_hal_subghz_start_async_rx(subghz_test_packet_rx_callback, instance);
+    furry_hal_subghz_start_async_rx(subghz_test_packet_rx_callback, instance);
 
-    furi_timer_start(instance->timer, furi_kernel_get_tick_frequency() / 4);
+    furry_timer_start(instance->timer, furry_kernel_get_tick_frequency() / 4);
 }
 
 void subghz_test_packet_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzTestPacket* instance = context;
 
-    furi_timer_stop(instance->timer);
+    furry_timer_stop(instance->timer);
 
     // Reinitialize IC to default state
     with_view_model(
@@ -226,14 +226,14 @@ void subghz_test_packet_exit(void* context) {
         SubGhzTestPacketModel * model,
         {
             if(model->status == SubGhzTestPacketModelStatusRx) {
-                furi_hal_subghz_stop_async_rx();
+                furry_hal_subghz_stop_async_rx();
             } else if(model->status == SubGhzTestPacketModelStatusTx) {
-                subghz_encoder_princeton_for_testing_stop(instance->encoder, furi_get_tick());
-                furi_hal_subghz_stop_async_tx();
+                subghz_encoder_princeton_for_testing_stop(instance->encoder, furry_get_tick());
+                furry_hal_subghz_stop_async_tx();
             }
         },
         true);
-    furi_hal_subghz_sleep();
+    furry_hal_subghz_sleep();
 }
 
 SubGhzTestPacket* subghz_test_packet_alloc() {
@@ -249,7 +249,7 @@ SubGhzTestPacket* subghz_test_packet_alloc() {
     view_set_exit_callback(instance->view, subghz_test_packet_exit);
 
     instance->timer =
-        furi_timer_alloc(subghz_test_packet_rssi_timer_callback, FuriTimerTypePeriodic, instance);
+        furry_timer_alloc(subghz_test_packet_rssi_timer_callback, FurryTimerTypePeriodic, instance);
 
     instance->decoder = subghz_decoder_princeton_for_testing_alloc();
     subghz_decoder_princeton_for_testing_set_callback(
@@ -260,17 +260,17 @@ SubGhzTestPacket* subghz_test_packet_alloc() {
 }
 
 void subghz_test_packet_free(SubGhzTestPacket* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     subghz_decoder_princeton_for_testing_free(instance->decoder);
     subghz_encoder_princeton_for_testing_free(instance->encoder);
 
-    furi_timer_free(instance->timer);
+    furry_timer_free(instance->timer);
     view_free(instance->view);
     free(instance);
 }
 
 View* subghz_test_packet_get_view(SubGhzTestPacket* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     return instance->view;
 }

@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <flipper_format.h>
 #include <infrared.h>
 #include <common/infrared_common_i.h>
@@ -11,38 +11,38 @@
 typedef struct {
     InfraredDecoderHandler* decoder_handler;
     InfraredEncoderHandler* encoder_handler;
-    FuriString* file_path;
+    FurryString* file_path;
     FlipperFormat* ff;
 } InfraredTest;
 
 static InfraredTest* test;
 
 static void infrared_test_alloc() {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     test = malloc(sizeof(InfraredTest));
     test->decoder_handler = infrared_alloc_decoder();
     test->encoder_handler = infrared_alloc_encoder();
     test->ff = flipper_format_buffered_file_alloc(storage);
-    test->file_path = furi_string_alloc();
+    test->file_path = furry_string_alloc();
 }
 
 static void infrared_test_free() {
-    furi_assert(test);
+    furry_assert(test);
     infrared_free_decoder(test->decoder_handler);
     infrared_free_encoder(test->encoder_handler);
     flipper_format_free(test->ff);
-    furi_string_free(test->file_path);
-    furi_record_close(RECORD_STORAGE);
+    furry_string_free(test->file_path);
+    furry_record_close(RECORD_STORAGE);
     free(test);
     test = NULL;
 }
 
 static bool infrared_test_prepare_file(const char* protocol_name) {
-    FuriString* file_type;
-    file_type = furi_string_alloc();
+    FurryString* file_type;
+    file_type = furry_string_alloc();
     bool success = false;
 
-    furi_string_printf(
+    furry_string_printf(
         test->file_path,
         "%s%s%s%s",
         IR_TEST_FILES_DIR,
@@ -53,14 +53,14 @@ static bool infrared_test_prepare_file(const char* protocol_name) {
     do {
         uint32_t format_version;
         if(!flipper_format_buffered_file_open_existing(
-               test->ff, furi_string_get_cstr(test->file_path)))
+               test->ff, furry_string_get_cstr(test->file_path)))
             break;
         if(!flipper_format_read_header(test->ff, file_type, &format_version)) break;
-        if(furi_string_cmp_str(file_type, "IR tests file") || format_version != 1) break;
+        if(furry_string_cmp_str(file_type, "IR tests file") || format_version != 1) break;
         success = true;
     } while(false);
 
-    furi_string_free(file_type);
+    furry_string_free(file_type);
     return success;
 }
 
@@ -69,18 +69,18 @@ static bool infrared_test_load_raw_signal(
     const char* signal_name,
     uint32_t** timings,
     uint32_t* timings_count) {
-    FuriString* buf;
-    buf = furi_string_alloc();
+    FurryString* buf;
+    buf = furry_string_alloc();
     bool success = false;
 
     do {
         bool is_name_found = false;
         for(; !is_name_found && flipper_format_read_string(ff, "name", buf);
-            is_name_found = !furi_string_cmp(buf, signal_name))
+            is_name_found = !furry_string_cmp(buf, signal_name))
             ;
 
         if(!is_name_found) break;
-        if(!flipper_format_read_string(ff, "type", buf) || furi_string_cmp_str(buf, "raw")) break;
+        if(!flipper_format_read_string(ff, "type", buf) || furry_string_cmp_str(buf, "raw")) break;
         if(!flipper_format_get_value_count(ff, "data", timings_count)) break;
         if(!*timings_count) break;
 
@@ -92,18 +92,18 @@ static bool infrared_test_load_raw_signal(
         success = true;
     } while(false);
 
-    furi_string_free(buf);
+    furry_string_free(buf);
     return success;
 }
 
 static bool infrared_test_read_message(FlipperFormat* ff, InfraredMessage* message) {
-    FuriString* buf;
-    buf = furi_string_alloc();
+    FurryString* buf;
+    buf = furry_string_alloc();
     bool success = false;
 
     do {
         if(!flipper_format_read_string(ff, "protocol", buf)) break;
-        message->protocol = infrared_get_protocol_by_name(furi_string_get_cstr(buf));
+        message->protocol = infrared_get_protocol_by_name(furry_string_get_cstr(buf));
         if(!infrared_is_protocol_valid(message->protocol)) break;
         if(!flipper_format_read_hex(ff, "address", (uint8_t*)&message->address, sizeof(uint32_t)))
             break;
@@ -113,7 +113,7 @@ static bool infrared_test_read_message(FlipperFormat* ff, InfraredMessage* messa
         success = true;
     } while(false);
 
-    furi_string_free(buf);
+    furry_string_free(buf);
     return success;
 }
 
@@ -122,19 +122,19 @@ static bool infrared_test_load_messages(
     const char* signal_name,
     InfraredMessage** messages,
     uint32_t* messages_count) {
-    FuriString* buf;
-    buf = furi_string_alloc();
+    FurryString* buf;
+    buf = furry_string_alloc();
     bool success = false;
 
     do {
         bool is_name_found = false;
         for(; !is_name_found && flipper_format_read_string(ff, "name", buf);
-            is_name_found = !furi_string_cmp(buf, signal_name))
+            is_name_found = !furry_string_cmp(buf, signal_name))
             ;
 
         if(!is_name_found) break;
         if(!flipper_format_read_string(ff, "type", buf) ||
-           furi_string_cmp_str(buf, "parsed_array"))
+           furry_string_cmp_str(buf, "parsed_array"))
             break;
         if(!flipper_format_read_uint32(ff, "count", messages_count, 1)) break;
         if(!*messages_count) break;
@@ -153,7 +153,7 @@ static bool infrared_test_load_messages(
         success = true;
     } while(false);
 
-    furi_string_free(buf);
+    furry_string_free(buf);
     return success;
 }
 
@@ -193,13 +193,13 @@ static void infrared_test_run_encoder_fill_array(
             timings[0] = 0;
         } else if(level_read != level) {
             ++i;
-            furi_check(i < *timings_len);
+            furry_check(i < *timings_len);
             timings[i] = 0;
         }
         level = level_read;
         timings[i] += duration;
 
-        furi_check((status == InfraredStatusOk) || (status == InfraredStatusDone));
+        furry_check((status == InfraredStatusOk) || (status == InfraredStatusDone));
         if(status == InfraredStatusDone) break;
     }
 
@@ -215,26 +215,26 @@ static void infrared_test_run_encoder(InfraredProtocol protocol, uint32_t test_i
     InfraredMessage* input_messages;
     uint32_t input_messages_count;
 
-    FuriString* buf;
-    buf = furi_string_alloc();
+    FurryString* buf;
+    buf = furry_string_alloc();
 
     const char* protocol_name = infrared_get_protocol_name(protocol);
     mu_assert(infrared_test_prepare_file(protocol_name), "Failed to prepare test file");
 
-    furi_string_printf(buf, "encoder_input%ld", test_index);
+    furry_string_printf(buf, "encoder_input%ld", test_index);
     mu_assert(
         infrared_test_load_messages(
-            test->ff, furi_string_get_cstr(buf), &input_messages, &input_messages_count),
+            test->ff, furry_string_get_cstr(buf), &input_messages, &input_messages_count),
         "Failed to load messages from file");
 
-    furi_string_printf(buf, "encoder_expected%ld", test_index);
+    furry_string_printf(buf, "encoder_expected%ld", test_index);
     mu_assert(
         infrared_test_load_raw_signal(
-            test->ff, furi_string_get_cstr(buf), &expected_timings, &expected_timings_count),
+            test->ff, furry_string_get_cstr(buf), &expected_timings, &expected_timings_count),
         "Failed to load raw signal from file");
 
     flipper_format_buffered_file_close(test->ff);
-    furi_string_free(buf);
+    furry_string_free(buf);
 
     uint32_t j = 0;
     timings = malloc(sizeof(uint32_t) * timings_count);
@@ -247,7 +247,7 @@ static void infrared_test_run_encoder(InfraredProtocol protocol, uint32_t test_i
 
         timings_count = 200;
         infrared_test_run_encoder_fill_array(test->encoder_handler, timings, &timings_count, NULL);
-        furi_check(timings_count <= 200);
+        furry_check(timings_count <= 200);
 
         for(size_t i = 0; i < timings_count; ++i, ++j) {
             mu_check(MATCH_TIMING(timings[i], expected_timings[j], 120));
@@ -269,22 +269,22 @@ static void infrared_test_run_encoder_decoder(InfraredProtocol protocol, uint32_
     uint32_t input_messages_count;
     bool level = false;
 
-    FuriString* buf;
-    buf = furi_string_alloc();
+    FurryString* buf;
+    buf = furry_string_alloc();
 
     timings = malloc(sizeof(uint32_t) * timings_count);
 
     const char* protocol_name = infrared_get_protocol_name(protocol);
     mu_assert(infrared_test_prepare_file(protocol_name), "Failed to prepare test file");
 
-    furi_string_printf(buf, "encoder_decoder_input%ld", test_index);
+    furry_string_printf(buf, "encoder_decoder_input%ld", test_index);
     mu_assert(
         infrared_test_load_messages(
-            test->ff, furi_string_get_cstr(buf), &input_messages, &input_messages_count),
+            test->ff, furry_string_get_cstr(buf), &input_messages, &input_messages_count),
         "Failed to load messages from file");
 
     flipper_format_buffered_file_close(test->ff);
-    furi_string_free(buf);
+    furry_string_free(buf);
 
     for(uint32_t message_counter = 0; message_counter < input_messages_count; ++message_counter) {
         const InfraredMessage* message_encoded = &input_messages[message_counter];
@@ -295,7 +295,7 @@ static void infrared_test_run_encoder_decoder(InfraredProtocol protocol, uint32_
         timings_count = 200;
         infrared_test_run_encoder_fill_array(
             test->encoder_handler, timings, &timings_count, &level);
-        furi_check(timings_count <= 200);
+        furry_check(timings_count <= 200);
 
         const InfraredMessage* message_decoded = 0;
         for(size_t i = 0; i < timings_count; ++i) {
@@ -329,27 +329,27 @@ static void infrared_test_run_decoder(InfraredProtocol protocol, uint32_t test_i
     InfraredMessage* messages;
     uint32_t messages_count;
 
-    FuriString* buf;
-    buf = furi_string_alloc();
+    FurryString* buf;
+    buf = furry_string_alloc();
 
     mu_assert(
         infrared_test_prepare_file(infrared_get_protocol_name(protocol)),
         "Failed to prepare test file");
 
-    furi_string_printf(buf, "decoder_input%ld", test_index);
+    furry_string_printf(buf, "decoder_input%ld", test_index);
     mu_assert(
         infrared_test_load_raw_signal(
-            test->ff, furi_string_get_cstr(buf), &timings, &timings_count),
+            test->ff, furry_string_get_cstr(buf), &timings, &timings_count),
         "Failed to load raw signal from file");
 
-    furi_string_printf(buf, "decoder_expected%ld", test_index);
+    furry_string_printf(buf, "decoder_expected%ld", test_index);
     mu_assert(
         infrared_test_load_messages(
-            test->ff, furi_string_get_cstr(buf), &messages, &messages_count),
+            test->ff, furry_string_get_cstr(buf), &messages, &messages_count),
         "Failed to load messages from file");
 
     flipper_format_buffered_file_close(test->ff);
-    furi_string_free(buf);
+    furry_string_free(buf);
 
     InfraredMessage message_decoded_check_local;
     bool level = 0;

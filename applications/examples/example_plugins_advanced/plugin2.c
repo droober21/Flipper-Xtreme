@@ -8,7 +8,7 @@
 #include "plugin_interface.h"
 
 #include <flipper_application/flipper_application.h>
-#include <furi.h>
+#include <furry.h>
 
 static void advanced_plugin2_method1(int arg1) {
     /* This function is implemented inside host application */
@@ -17,7 +17,7 @@ static void advanced_plugin2_method1(int arg1) {
 
 static void advanced_plugin2_method2() {
     /* Accumulator value is stored inside host application */
-    FURI_LOG_I("TEST", "Plugin 2, accumulator: %lu", app_api_accumulator_get());
+    FURRY_LOG_I("TEST", "Plugin 2, accumulator: %lu", app_api_accumulator_get());
 }
 
 /* Actual implementation of app<>plugin interface */

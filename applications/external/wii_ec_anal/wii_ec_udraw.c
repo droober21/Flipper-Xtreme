@@ -1,12 +1,12 @@
 //! udraw support is NOT written - this is just notes about the init function
 #include <stdint.h>
-#include <furi.h> // Core API
+#include <furry.h> // Core API
 
 #include "wii_anal.h"
 #include "wii_ec.h"
 #include "bc_logging.h"
 
-#include "i2c_workaround.h" //! temporary workaround for a bug in furi i2c [see header]
+#include "i2c_workaround.h" //! temporary workaround for a bug in furry i2c [see header]
 
 // ** If you want to see what this source code looks like with all the MACROs expanded
 // **   grep -v '#include  ' wii_ec_udraw.c | gcc -E -o /dev/stdout -xc -
@@ -38,29 +38,29 @@ bool udraw_init(wiiEC_t* const pec) {
 	const uint8_t*        p      = reg;
 	uint8_t               buf[6] = {0};
 
-	if (!furi_hal_i2c_trxd(bus,addr, p++,1, buf,sizeof(buf), timeout,300))  goto fail ;  // 0
-	if (!furi_hal_i2c_trxd(bus,addr, p++,1, buf,sizeof(buf), timeout,300))  goto fail ;  // 1
-	furi_delay_ms(100);
+	if (!furry_hal_i2c_trxd(bus,addr, p++,1, buf,sizeof(buf), timeout,300))  goto fail ;  // 0
+	if (!furry_hal_i2c_trxd(bus,addr, p++,1, buf,sizeof(buf), timeout,300))  goto fail ;  // 1
+	furry_delay_ms(100);
 
-	if (!furi_hal_i2c_trxd(bus,addr, p++,1, buf,sizeof(buf), timeout,300))  goto fail ;  // 2
-	if (!furi_hal_i2c_trxd(bus,addr, p++,1, buf,sizeof(buf), timeout,300))  goto fail ;  // 3
-	furi_delay_ms(100);
+	if (!furry_hal_i2c_trxd(bus,addr, p++,1, buf,sizeof(buf), timeout,300))  goto fail ;  // 2
+	if (!furry_hal_i2c_trxd(bus,addr, p++,1, buf,sizeof(buf), timeout,300))  goto fail ;  // 3
+	furry_delay_ms(100);
 
-	if (!furi_hal_i2c_trxd(bus,addr, p++,1, buf,sizeof(buf), timeout,300))  goto fail ;  // 4
-	furi_delay_ms(100);
+	if (!furry_hal_i2c_trxd(bus,addr, p++,1, buf,sizeof(buf), timeout,300))  goto fail ;  // 4
+	furry_delay_ms(100);
 
-	if (!furi_hal_i2c_trxd(bus,addr, p++,1, buf,sizeof(buf), timeout,300))  goto fail ;  // 5
-	furi_delay_ms(100);
+	if (!furry_hal_i2c_trxd(bus,addr, p++,1, buf,sizeof(buf), timeout,300))  goto fail ;  // 5
+	furry_delay_ms(100);
 
 	buf[0] = *p++;
 	buf[1] = 0x01;
-	if (!furi_hal_i2c_tx(bus,addr, buf,2, timeout))  goto fail ;  // 6
+	if (!furry_hal_i2c_tx(bus,addr, buf,2, timeout))  goto fail ;  // 6
 
-	if (!furi_hal_i2c_trxd(bus,addr, p++,1, buf,sizeof(buf), timeout,300))  goto fail ;  // 7
-	furi_delay_ms(100);
+	if (!furry_hal_i2c_trxd(bus,addr, p++,1, buf,sizeof(buf), timeout,300))  goto fail ;  // 7
+	furry_delay_ms(100);
 
-	if (!furi_hal_i2c_trxd(bus,addr, p++,1, buf,sizeof(buf), timeout,300))  goto fail ;  // 8
-	furi_delay_ms(100);
+	if (!furry_hal_i2c_trxd(bus,addr, p++,1, buf,sizeof(buf), timeout,300))  goto fail ;  // 8
+	furry_delay_ms(100);
 
 	TRACE("%s : OK #%d", __func__, (p-reg));
 	goto done;

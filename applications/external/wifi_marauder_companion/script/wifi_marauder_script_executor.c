@@ -2,7 +2,7 @@
 #include "wifi_marauder_script_executor.h"
 
 void _wifi_marauder_script_delay(WifiMarauderScriptWorker* worker, uint32_t delay_secs) {
-    for(uint32_t i = 0; i < delay_secs && worker->is_running; i++) furi_delay_ms(1000);
+    for(uint32_t i = 0; i < delay_secs && worker->is_running; i++) furry_delay_ms(1000);
 }
 
 void _send_stop() {
@@ -219,7 +219,7 @@ void _wifi_marauder_script_execute_delay(
 }
 
 void wifi_marauder_script_execute_start(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WifiMarauderScriptWorker* worker = context;
     WifiMarauderScript* script = worker->script;
     char command[100];
@@ -248,7 +248,7 @@ void wifi_marauder_script_execute_start(void* context) {
 }
 
 void wifi_marauder_script_execute_stage(WifiMarauderScriptStage* stage, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WifiMarauderScriptWorker* worker = context;
     void* stage_data = stage->stage;
 

@@ -9,9 +9,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <furi.h>
+#include <furry.h>
 #include <cli/cli.h>
-#include <furi_hal_gpio.h>
+#include <furry_hal_gpio.h>
 
 #define INPUT_DEBOUNCE_TICKS_HALF (INPUT_DEBOUNCE_TICKS / 2)
 #define INPUT_PRESS_TICKS 150
@@ -24,15 +24,15 @@ typedef struct {
     // State
     volatile bool state;
     volatile uint8_t debounce;
-    FuriTimer* press_timer;
+    FurryTimer* press_timer;
     volatile uint8_t press_counter;
     volatile uint32_t counter;
 } InputPinState;
 
 /** Input state */
 typedef struct {
-    FuriThreadId thread_id;
-    FuriPubSub* event_pubsub;
+    FurryThreadId thread_id;
+    FurryPubSub* event_pubsub;
     InputPinState* pin_states;
     Cli* cli;
     volatile uint32_t counter;
@@ -45,4 +45,4 @@ void input_press_timer_callback(void* arg);
 void input_isr(void* _ctx);
 
 /** Input CLI command handler */
-void input_cli(Cli* cli, FuriString* args, void* context);
+void input_cli(Cli* cli, FurryString* args, void* context);

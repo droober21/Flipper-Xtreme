@@ -24,7 +24,7 @@ typedef struct {
 } HidYTShortsModel;
 
 static void hid_ytshorts_draw_callback(Canvas* canvas, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     HidYTShortsModel* model = context;
 
     // Header
@@ -114,12 +114,12 @@ static void hid_ytshorts_reset_cursor(HidYTShorts* hid_ytshorts) {
     // Delays to guarantee one packet per connection interval
     for(size_t i = 0; i < 8; i++) {
         hid_hal_mouse_move(hid_ytshorts->hid, -127, -127);
-        furi_delay_ms(50);
+        furry_delay_ms(50);
     }
     // Move cursor from the corner
     hid_hal_mouse_move(hid_ytshorts->hid, 40, 120);
     hid_hal_mouse_move(hid_ytshorts->hid, 0, 120);
-    furi_delay_ms(50);
+    furry_delay_ms(50);
 }
 
 static void hid_ytshorts_process_press(
@@ -165,7 +165,7 @@ static void hid_ytshorts_process_release(
 }
 
 static bool hid_ytshorts_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     HidYTShorts* hid_ytshorts = context;
     bool consumed = false;
 
@@ -186,11 +186,11 @@ static bool hid_ytshorts_input_callback(InputEvent* event, void* context) {
             } else if(event->type == InputTypeShort) {
                 if(event->key == InputKeyOk) {
                     hid_hal_mouse_press(hid_ytshorts->hid, HID_MOUSE_BTN_LEFT);
-                    furi_delay_ms(50);
+                    furry_delay_ms(50);
                     hid_hal_mouse_release(hid_ytshorts->hid, HID_MOUSE_BTN_LEFT);
-                    furi_delay_ms(50);
+                    furry_delay_ms(50);
                     hid_hal_mouse_press(hid_ytshorts->hid, HID_MOUSE_BTN_LEFT);
-                    furi_delay_ms(50);
+                    furry_delay_ms(50);
                     hid_hal_mouse_release(hid_ytshorts->hid, HID_MOUSE_BTN_LEFT);
                     consumed = true;
                 } else if(event->key == InputKeyDown) {
@@ -212,9 +212,9 @@ static bool hid_ytshorts_input_callback(InputEvent* event, void* context) {
                 } else if(event->key == InputKeyBack) {
                     // Pause
                     hid_hal_mouse_press(hid_ytshorts->hid, HID_MOUSE_BTN_LEFT);
-                    furi_delay_ms(50);
+                    furry_delay_ms(50);
                     hid_hal_mouse_release(hid_ytshorts->hid, HID_MOUSE_BTN_LEFT);
-                    furi_delay_ms(50);
+                    furry_delay_ms(50);
                     consumed = true;
                 }
             } else if(event->type == InputTypeLong) {
@@ -249,18 +249,18 @@ HidYTShorts* hid_ytshorts_alloc(Hid* bt_hid) {
 }
 
 void hid_ytshorts_free(HidYTShorts* hid_ytshorts) {
-    furi_assert(hid_ytshorts);
+    furry_assert(hid_ytshorts);
     view_free(hid_ytshorts->view);
     free(hid_ytshorts);
 }
 
 View* hid_ytshorts_get_view(HidYTShorts* hid_ytshorts) {
-    furi_assert(hid_ytshorts);
+    furry_assert(hid_ytshorts);
     return hid_ytshorts->view;
 }
 
 void hid_ytshorts_set_connected_status(HidYTShorts* hid_ytshorts, bool connected) {
-    furi_assert(hid_ytshorts);
+    furry_assert(hid_ytshorts);
     with_view_model(
         hid_ytshorts->view,
         HidYTShortsModel * model,

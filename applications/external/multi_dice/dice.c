@@ -1,6 +1,6 @@
-#include <furi.h>
-#include <furi_hal.h>
-#include "furi_hal_random.h"
+#include <furry.h>
+#include <furry_hal.h>
+#include "furry_hal_random.h"
 #include <gui/elements.h>
 #include <gui/gui.h>
 #include <input/input.h>
@@ -18,9 +18,9 @@ typedef struct {
 } PluginEvent;
 
 typedef struct {
-    FuriMutex* mutex;
-    FuriMessageQueue* event_queue;
-    FuriHalRtcDateTime datetime;
+    FurryMutex* mutex;
+    FurryMessageQueue* event_queue;
+    FurryHalRtcDateTime datetime;
     uint8_t diceSelect;
     uint8_t diceQty;
     uint8_t diceRoll;
@@ -33,18 +33,18 @@ typedef struct {
     bool letsRoll;
 } DiceState;
 
-static void dice_input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void dice_input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
     PluginEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 static void dice_render_callback(Canvas* const canvas, void* ctx) {
     DiceState* state = ctx;
-    if(furi_mutex_acquire(state->mutex, 200) != FuriStatusOk) {
+    if(furry_mutex_acquire(state->mutex, 200) != FurryStatusOk) {
         // Can't obtain mutex, requeue render
         PluginEvent event = {.type = EventTypeTick};
-        furi_message_queue_put(state->event_queue, &event, 0);
+        furry_message_queue_put(state->event_queue, &event, 0);
         return;
     }
 
@@ -65,7 +65,7 @@ static void dice_render_callback(Canvas* const canvas, void* ctx) {
         }
     }
     if(state->letsRoll) {
-        furi_hal_rtc_get_datetime(&state->datetime);
+        furry_hal_rtc_get_datetime(&state->datetime);
         uint8_t hour = state->datetime.hour;
         char strAMPM[3];
         snprintf(strAMPM, sizeof(strAMPM), "%s", "AM");
@@ -340,7 +340,7 @@ static void dice_render_callback(Canvas* const canvas, void* ctx) {
         }
         state->letsRoll = false;
     }
-    furi_mutex_release(state->mutex);
+    furry_mutex_release(state->mutex);
     if(state->diceRoll != 0) {
         if(state->diceSelect == 232) {
             canvas_set_font(canvas, FontSecondary);
@@ -416,7 +416,7 @@ static void dice_render_callback(Canvas* const canvas, void* ctx) {
 
 static void dice_state_init(DiceState* const state) {
     memset(state, 0, sizeof(DiceState));
-    furi_hal_rtc_get_datetime(&state->datetime);
+    furry_hal_rtc_get_datetime(&state->datetime);
     state->diceSelect = 20;
     state->diceQty = 1;
     state->diceRoll = 0;
@@ -426,38 +426,38 @@ static void dice_state_init(DiceState* const state) {
 }
 
 static void dice_tick(void* ctx) {
-    furi_assert(ctx);
-    FuriMessageQueue* event_queue = ctx;
+    furry_assert(ctx);
+    FurryMessageQueue* event_queue = ctx;
     PluginEvent event = {.type = EventTypeTick};
     // It's OK to lose this event if system overloaded
-    furi_message_queue_put(event_queue, &event, 0);
+    furry_message_queue_put(event_queue, &event, 0);
 }
 
 int32_t dice_app(void* p) {
     UNUSED(p);
     DiceState* plugin_state = malloc(sizeof(DiceState));
     dice_state_init(plugin_state);
-    plugin_state->event_queue = furi_message_queue_alloc(8, sizeof(PluginEvent));
+    plugin_state->event_queue = furry_message_queue_alloc(8, sizeof(PluginEvent));
     if(plugin_state->event_queue == NULL) {
-        FURI_LOG_E(TAG, "cannot create event queue\n");
+        FURRY_LOG_E(TAG, "cannot create event queue\n");
         free(plugin_state);
         return 255;
     }
 
-    plugin_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    plugin_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(plugin_state->mutex == NULL) {
-        FURI_LOG_E(TAG, "cannot create mutex\n");
-        furi_message_queue_free(plugin_state->event_queue);
+        FURRY_LOG_E(TAG, "cannot create mutex\n");
+        furry_message_queue_free(plugin_state->event_queue);
         free(plugin_state);
         return 255;
     }
 
-    FuriTimer* timer =
-        furi_timer_alloc(dice_tick, FuriTimerTypePeriodic, plugin_state->event_queue);
+    FurryTimer* timer =
+        furry_timer_alloc(dice_tick, FurryTimerTypePeriodic, plugin_state->event_queue);
     if(timer == NULL) {
-        FURI_LOG_E(TAG, "cannot create timer\n");
-        furi_mutex_free(plugin_state->mutex);
-        furi_message_queue_free(plugin_state->event_queue);
+        FURRY_LOG_E(TAG, "cannot create timer\n");
+        furry_mutex_free(plugin_state->mutex);
+        furry_message_queue_free(plugin_state->event_queue);
         free(plugin_state);
         return 255;
     }
@@ -466,15 +466,15 @@ int32_t dice_app(void* p) {
     view_port_draw_callback_set(view_port, dice_render_callback, plugin_state);
     view_port_input_callback_set(view_port, dice_input_callback, plugin_state->event_queue);
 
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
-    furi_timer_start(timer, furi_kernel_get_tick_frequency());
+    furry_timer_start(timer, furry_kernel_get_tick_frequency());
 
     // Main loop
     PluginEvent event;
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(plugin_state->event_queue, &event, 100);
-        if(event_status == FuriStatusOk) {
+        FurryStatus event_status = furry_message_queue_get(plugin_state->event_queue, &event, 100);
+        if(event_status == FurryStatusOk) {
             if(event.type == EventTypeKey) {
                 if(event.input.type == InputTypeShort || event.input.type == InputTypeRepeat) {
                     switch(event.input.key) {
@@ -537,22 +537,22 @@ int32_t dice_app(void* p) {
                     }
                 }
             } else if(event.type == EventTypeTick) {
-                // furi_hal_rtc_get_datetime(&plugin_state->datetime);
+                // furry_hal_rtc_get_datetime(&plugin_state->datetime);
             }
             view_port_update(view_port);
-            furi_mutex_release(plugin_state->mutex);
+            furry_mutex_release(plugin_state->mutex);
         } else {
-            // FURI_LOG_D(TAG, "osMessageQueue: event timeout");
+            // FURRY_LOG_D(TAG, "osMessageQueue: event timeout");
         }
     }
     // Cleanup
-    furi_timer_free(timer);
+    furry_timer_free(timer);
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(view_port);
-    furi_message_queue_free(plugin_state->event_queue);
-    furi_mutex_free(plugin_state->mutex);
+    furry_message_queue_free(plugin_state->event_queue);
+    furry_mutex_free(plugin_state->mutex);
     free(plugin_state);
     return 0;
 }

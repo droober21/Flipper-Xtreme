@@ -77,11 +77,11 @@ to exclude the API function. */
 #define INCLUDE_xTaskGetSchedulerState 1
 #define INCLUDE_xTimerPendFunctionCall 1
 
-/* Furi-specific */
+/* Furry-specific */
 #define configTASK_NOTIFICATION_ARRAY_ENTRIES 2
 
-extern __attribute__((__noreturn__)) void furi_thread_catch();
-#define configTASK_RETURN_ADDRESS (furi_thread_catch + 2)
+extern __attribute__((__noreturn__)) void furry_thread_catch();
+#define configTASK_RETURN_ADDRESS (furry_thread_catch + 2)
 
 /*
  * The CMSIS-RTOS V2 FreeRTOS wrapper is dependent on the heap implementation used
@@ -123,7 +123,7 @@ header file. */
 #include <core/check.h>
 #define configASSERT(x)                \
     if((x) == 0) {                     \
-        furi_crash("FreeRTOS Assert"); \
+        furry_crash("FreeRTOS Assert"); \
     }
 #endif
 
@@ -137,9 +137,9 @@ standard names. */
     1 /* required only for Keil but does not hurt otherwise */
 
 #define traceTASK_SWITCHED_IN()                                     \
-    extern void furi_hal_mpu_set_stack_protection(uint32_t* stack); \
-    furi_hal_mpu_set_stack_protection((uint32_t*)pxCurrentTCB->pxStack)
+    extern void furry_hal_mpu_set_stack_protection(uint32_t* stack); \
+    furry_hal_mpu_set_stack_protection((uint32_t*)pxCurrentTCB->pxStack)
 
 #define portCLEAN_UP_TCB(pxTCB)                                   \
-    extern void furi_thread_cleanup_tcb_event(TaskHandle_t task); \
-    furi_thread_cleanup_tcb_event(pxTCB)
+    extern void furry_thread_cleanup_tcb_event(TaskHandle_t task); \
+    furry_thread_cleanup_tcb_event(pxTCB)

@@ -35,9 +35,9 @@ BH1750_STATUS bh1750_reset() {
     uint8_t command = 0x07;
     bool status;
 
-    furi_hal_i2c_acquire(I2C_BUS);
-    status = furi_hal_i2c_tx(I2C_BUS, bh1750_addr, &command, 1, I2C_TIMEOUT);
-    furi_hal_i2c_release(I2C_BUS);
+    furry_hal_i2c_acquire(I2C_BUS);
+    status = furry_hal_i2c_tx(I2C_BUS, bh1750_addr, &command, 1, I2C_TIMEOUT);
+    furry_hal_i2c_release(I2C_BUS);
 
     if(status) {
         return BH1750_OK;
@@ -50,9 +50,9 @@ BH1750_STATUS bh1750_set_power_state(uint8_t PowerOn) {
     PowerOn = (PowerOn ? 1 : 0);
     bool status;
 
-    furi_hal_i2c_acquire(I2C_BUS);
-    status = furi_hal_i2c_tx(I2C_BUS, bh1750_addr, &PowerOn, 1, I2C_TIMEOUT);
-    furi_hal_i2c_release(I2C_BUS);
+    furry_hal_i2c_acquire(I2C_BUS);
+    status = furry_hal_i2c_tx(I2C_BUS, bh1750_addr, &PowerOn, 1, I2C_TIMEOUT);
+    furry_hal_i2c_release(I2C_BUS);
 
     if(status) {
         return BH1750_OK;
@@ -74,9 +74,9 @@ BH1750_STATUS bh1750_set_mode(BH1750_mode mode) {
 
     bh1750_mode = mode;
 
-    furi_hal_i2c_acquire(I2C_BUS);
-    status = furi_hal_i2c_tx(I2C_BUS, bh1750_addr, &mode, 1, I2C_TIMEOUT);
-    furi_hal_i2c_release(I2C_BUS);
+    furry_hal_i2c_acquire(I2C_BUS);
+    status = furry_hal_i2c_tx(I2C_BUS, bh1750_addr, &mode, 1, I2C_TIMEOUT);
+    furry_hal_i2c_release(I2C_BUS);
 
     if(status) {
         return BH1750_OK;
@@ -98,16 +98,16 @@ BH1750_STATUS bh1750_set_mt_reg(uint8_t mt_reg) {
     tmp[0] = (0x40 | (mt_reg >> 5));
     tmp[1] = (0x60 | (mt_reg & 0x1F));
 
-    furi_hal_i2c_acquire(I2C_BUS);
-    status = furi_hal_i2c_tx(I2C_BUS, bh1750_addr, &tmp[0], 1, I2C_TIMEOUT);
-    furi_hal_i2c_release(I2C_BUS);
+    furry_hal_i2c_acquire(I2C_BUS);
+    status = furry_hal_i2c_tx(I2C_BUS, bh1750_addr, &tmp[0], 1, I2C_TIMEOUT);
+    furry_hal_i2c_release(I2C_BUS);
     if(!status) {
         return BH1750_ERROR;
     }
 
-    furi_hal_i2c_acquire(I2C_BUS);
-    status = furi_hal_i2c_tx(I2C_BUS, bh1750_addr, &tmp[1], 1, I2C_TIMEOUT);
-    furi_hal_i2c_release(I2C_BUS);
+    furry_hal_i2c_acquire(I2C_BUS);
+    status = furry_hal_i2c_tx(I2C_BUS, bh1750_addr, &tmp[1], 1, I2C_TIMEOUT);
+    furry_hal_i2c_release(I2C_BUS);
     if(status) {
         return BH1750_OK;
     }
@@ -127,9 +127,9 @@ BH1750_STATUS bh1750_read_light(float* result) {
     uint8_t rcv[2];
     bool status;
 
-    furi_hal_i2c_acquire(I2C_BUS);
-    status = furi_hal_i2c_rx(I2C_BUS, bh1750_addr, rcv, 2, I2C_TIMEOUT);
-    furi_hal_i2c_release(I2C_BUS);
+    furry_hal_i2c_acquire(I2C_BUS);
+    status = furry_hal_i2c_rx(I2C_BUS, bh1750_addr, rcv, 2, I2C_TIMEOUT);
+    furry_hal_i2c_release(I2C_BUS);
 
     if(status) {
         result_tmp = (rcv[0] << 8) | (rcv[1]);

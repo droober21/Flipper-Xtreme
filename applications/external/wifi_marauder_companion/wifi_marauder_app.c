@@ -1,23 +1,23 @@
 #include "wifi_marauder_app_i.h"
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <dolphin/dolphin.h>
 
 static bool wifi_marauder_app_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     WifiMarauderApp* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool wifi_marauder_app_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WifiMarauderApp* app = context;
     return scene_manager_handle_back_event(app->scene_manager);
 }
 
 static void wifi_marauder_app_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WifiMarauderApp* app = context;
     scene_manager_handle_tick_event(app->scene_manager);
 }
@@ -26,9 +26,9 @@ WifiMarauderApp* wifi_marauder_app_alloc() {
     WifiMarauderApp* app = malloc(sizeof(WifiMarauderApp));
     DOLPHIN_DEED(DolphinDeedPluginStart);
 
-    app->gui = furi_record_open(RECORD_GUI);
-    app->dialogs = furi_record_open(RECORD_DIALOGS);
-    app->storage = furi_record_open(RECORD_STORAGE);
+    app->gui = furry_record_open(RECORD_GUI);
+    app->dialogs = furry_record_open(RECORD_DIALOGS);
+    app->storage = furry_record_open(RECORD_STORAGE);
     app->capture_file = storage_file_alloc(app->storage);
     app->log_file = storage_file_alloc(app->storage);
     app->save_pcap_setting_file = storage_file_alloc(app->storage);
@@ -63,8 +63,8 @@ WifiMarauderApp* wifi_marauder_app_alloc() {
     app->text_box = text_box_alloc();
     view_dispatcher_add_view(
         app->view_dispatcher, WifiMarauderAppViewConsoleOutput, text_box_get_view(app->text_box));
-    app->text_box_store = furi_string_alloc();
-    furi_string_reserve(app->text_box_store, WIFI_MARAUDER_TEXT_BOX_STORE_SIZE);
+    app->text_box_store = furry_string_alloc();
+    furry_string_reserve(app->text_box_store, WIFI_MARAUDER_TEXT_BOX_STORE_SIZE);
 
     app->text_input = wifi_text_input_alloc();
     view_dispatcher_add_view(
@@ -94,7 +94,7 @@ WifiMarauderApp* wifi_marauder_app_alloc() {
 }
 
 void wifi_marauder_make_app_folder(WifiMarauderApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     if(!storage_simply_mkdir(app->storage, MARAUDER_APP_FOLDER)) {
         dialog_message_show_storage_error(app->dialogs, "Cannot create\napp folder");
@@ -138,7 +138,7 @@ void wifi_marauder_load_settings(WifiMarauderApp* app) {
 }
 
 void wifi_marauder_app_free(WifiMarauderApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // Views
     view_dispatcher_remove_view(app->view_dispatcher, WifiMarauderAppViewVarItemList);
@@ -149,7 +149,7 @@ void wifi_marauder_app_free(WifiMarauderApp* app) {
 
     widget_free(app->widget);
     text_box_free(app->text_box);
-    furi_string_free(app->text_box_store);
+    furry_string_free(app->text_box_store);
     wifi_text_input_free(app->text_input);
     submenu_free(app->submenu);
     variable_item_list_free(app->var_item_list);
@@ -166,9 +166,9 @@ void wifi_marauder_app_free(WifiMarauderApp* app) {
     wifi_marauder_uart_free(app->lp_uart);
 
     // Close records
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_STORAGE);
-    furi_record_close(RECORD_DIALOGS);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_DIALOGS);
 
     free(app);
 }
@@ -177,11 +177,11 @@ int32_t wifi_marauder_app(void* p) {
     UNUSED(p);
 
     uint8_t attempts = 0;
-    while(!furi_hal_power_is_otg_enabled() && attempts++ < 5) {
-        furi_hal_power_enable_otg();
-        furi_delay_ms(10);
+    while(!furry_hal_power_is_otg_enabled() && attempts++ < 5) {
+        furry_hal_power_enable_otg();
+        furry_delay_ms(10);
     }
-    furi_delay_ms(200);
+    furry_delay_ms(200);
 
     WifiMarauderApp* wifi_marauder_app = wifi_marauder_app_alloc();
 
@@ -195,8 +195,8 @@ int32_t wifi_marauder_app(void* p) {
 
     wifi_marauder_app_free(wifi_marauder_app);
 
-    if(furi_hal_power_is_otg_enabled()) {
-        furi_hal_power_disable_otg();
+    if(furry_hal_power_is_otg_enabled()) {
+        furry_hal_power_disable_otg();
     }
 
     return 0;

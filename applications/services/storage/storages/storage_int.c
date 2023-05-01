@@ -1,6 +1,6 @@
 #include "storage_int.h"
 #include <lfs.h>
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include <toolbox/path.h>
 
 #define TAG "StorageInt"
@@ -75,7 +75,7 @@ static int storage_int_device_read(
     LFSData* lfs_data = c->context;
     size_t address = lfs_data->start_address + block * c->block_size + off;
 
-    FURI_LOG_T(
+    FURRY_LOG_T(
         TAG,
         "Device read: block %lu, off %lu, buffer: %p, size %lu, translated address: %p",
         block,
@@ -98,7 +98,7 @@ static int storage_int_device_prog(
     LFSData* lfs_data = c->context;
     size_t address = lfs_data->start_address + block * c->block_size + off;
 
-    FURI_LOG_T(
+    FURRY_LOG_T(
         TAG,
         "Device prog: block %lu, off %lu, buffer: %p, size %lu, translated address: %p",
         block,
@@ -109,7 +109,7 @@ static int storage_int_device_prog(
 
     int ret = 0;
     while(size > 0) {
-        furi_hal_flash_write_dword(address, *(uint64_t*)buffer);
+        furry_hal_flash_write_dword(address, *(uint64_t*)buffer);
         address += c->prog_size;
         buffer += c->prog_size;
         size -= c->prog_size;
@@ -122,15 +122,15 @@ static int storage_int_device_erase(const struct lfs_config* c, lfs_block_t bloc
     LFSData* lfs_data = c->context;
     size_t page = lfs_data->start_page + block;
 
-    FURI_LOG_D(TAG, "Device erase: page %lu, translated page: %zx", block, page);
+    FURRY_LOG_D(TAG, "Device erase: page %lu, translated page: %zx", block, page);
 
-    furi_hal_flash_erase(page);
+    furry_hal_flash_erase(page);
     return 0;
 }
 
 static int storage_int_device_sync(const struct lfs_config* c) {
     UNUSED(c);
-    FURI_LOG_D(TAG, "Device sync: skipping");
+    FURRY_LOG_D(TAG, "Device sync: skipping");
     return 0;
 }
 
@@ -138,9 +138,9 @@ static LFSData* storage_int_lfs_data_alloc() {
     LFSData* lfs_data = malloc(sizeof(LFSData));
 
     // Internal storage start address
-    *(size_t*)(&lfs_data->start_address) = furi_hal_flash_get_free_page_start_address();
+    *(size_t*)(&lfs_data->start_address) = furry_hal_flash_get_free_page_start_address();
     *(size_t*)(&lfs_data->start_page) =
-        (lfs_data->start_address - furi_hal_flash_get_base()) / furi_hal_flash_get_page_size();
+        (lfs_data->start_address - furry_hal_flash_get_base()) / furry_hal_flash_get_page_size();
 
     // LFS configuration
     // Glue and context
@@ -151,11 +151,11 @@ static LFSData* storage_int_lfs_data_alloc() {
     lfs_data->config.sync = storage_int_device_sync;
 
     // Block device description
-    lfs_data->config.read_size = furi_hal_flash_get_read_block_size();
-    lfs_data->config.prog_size = furi_hal_flash_get_write_block_size();
-    lfs_data->config.block_size = furi_hal_flash_get_page_size();
-    lfs_data->config.block_count = furi_hal_flash_get_free_page_count();
-    lfs_data->config.block_cycles = furi_hal_flash_get_cycles_count();
+    lfs_data->config.read_size = furry_hal_flash_get_read_block_size();
+    lfs_data->config.prog_size = furry_hal_flash_get_write_block_size();
+    lfs_data->config.block_size = furry_hal_flash_get_page_size();
+    lfs_data->config.block_count = furry_hal_flash_get_free_page_count();
+    lfs_data->config.block_cycles = furry_hal_flash_get_cycles_count();
     lfs_data->config.cache_size = 16;
     lfs_data->config.lookahead_size = 16;
 
@@ -171,13 +171,13 @@ static bool storage_int_check_and_set_fingerprint(LFSData* lfs_data) {
     os_fingerprint |= ((lfs_data->config.block_count & 0xFF) << 8);
     os_fingerprint |= ((LFS_DISK_VERSION_MAJOR & 0xFFFF) << 16);
 
-    uint32_t rtc_fingerprint = furi_hal_rtc_get_register(FuriHalRtcRegisterLfsFingerprint);
+    uint32_t rtc_fingerprint = furry_hal_rtc_get_register(FurryHalRtcRegisterLfsFingerprint);
     if(rtc_fingerprint == LFS_CLEAN_FINGERPRINT) {
-        FURI_LOG_I(TAG, "Storing LFS fingerprint in RTC");
-        furi_hal_rtc_set_register(FuriHalRtcRegisterLfsFingerprint, os_fingerprint);
+        FURRY_LOG_I(TAG, "Storing LFS fingerprint in RTC");
+        furry_hal_rtc_set_register(FurryHalRtcRegisterLfsFingerprint, os_fingerprint);
     } else if(rtc_fingerprint != os_fingerprint) {
-        FURI_LOG_E(TAG, "LFS fingerprint mismatch");
-        furi_hal_rtc_set_register(FuriHalRtcRegisterLfsFingerprint, os_fingerprint);
+        FURRY_LOG_E(TAG, "LFS fingerprint mismatch");
+        furry_hal_rtc_set_register(FurryHalRtcRegisterLfsFingerprint, os_fingerprint);
         value = true;
     }
 
@@ -189,7 +189,7 @@ static void storage_int_lfs_mount(LFSData* lfs_data, StorageData* storage) {
     lfs_t* lfs = &lfs_data->lfs;
 
     bool was_fingerprint_outdated = storage_int_check_and_set_fingerprint(lfs_data);
-    bool need_format = furi_hal_rtc_is_flag_set(FuriHalRtcFlagFactoryReset) ||
+    bool need_format = furry_hal_rtc_is_flag_set(FurryHalRtcFlagFactoryReset) ||
                        was_fingerprint_outdated;
 
     if(need_format) {
@@ -200,7 +200,7 @@ static void storage_int_lfs_mount(LFSData* lfs_data, StorageData* storage) {
         uint8_t* key = NULL;
         uint32_t key_size;
         if(lfs_mount(lfs, &lfs_data->config) == 0) {
-            FURI_LOG_I(TAG, "Factory reset: Mounted for backup");
+            FURRY_LOG_I(TAG, "Factory reset: Mounted for backup");
 
             if(lfs_file_open(lfs, &file, ".cnt.u2f", LFS_O_RDONLY) == 0) {
                 cnt_size = file.ctz.size;
@@ -222,20 +222,20 @@ static void storage_int_lfs_mount(LFSData* lfs_data, StorageData* storage) {
             }
 
             if(lfs_unmount(lfs) == 0) {
-                FURI_LOG_E(TAG, "Factory reset: Unmounted after backup");
+                FURRY_LOG_E(TAG, "Factory reset: Unmounted after backup");
             } else {
-                FURI_LOG_E(TAG, "Factory reset: Unmount after backup failed");
+                FURRY_LOG_E(TAG, "Factory reset: Unmount after backup failed");
             }
         } else {
-            FURI_LOG_E(TAG, "Factory reset: Mount for backup failed");
+            FURRY_LOG_E(TAG, "Factory reset: Mount for backup failed");
         }
 
         // Format storage
         if(lfs_format(lfs, &lfs_data->config) == 0) {
-            FURI_LOG_I(TAG, "Factory reset: Format successful, trying to mount");
-            furi_hal_rtc_reset_flag(FuriHalRtcFlagFactoryReset);
+            FURRY_LOG_I(TAG, "Factory reset: Format successful, trying to mount");
+            furry_hal_rtc_reset_flag(FurryHalRtcFlagFactoryReset);
             if(lfs_mount(lfs, &lfs_data->config) == 0) {
-                FURI_LOG_I(TAG, "Factory reset: Mounted");
+                FURRY_LOG_I(TAG, "Factory reset: Mounted");
                 storage->status = StorageStatusOK;
 
                 // Restore U2F keys
@@ -253,34 +253,34 @@ static void storage_int_lfs_mount(LFSData* lfs_data, StorageData* storage) {
                 if(cnt != NULL) free(cnt);
                 if(key != NULL) free(key);
             } else {
-                FURI_LOG_E(TAG, "Factory reset: Mount after format failed");
+                FURRY_LOG_E(TAG, "Factory reset: Mount after format failed");
                 storage->status = StorageStatusNotMounted;
             }
         } else {
-            FURI_LOG_E(TAG, "Factory reset: Format failed");
+            FURRY_LOG_E(TAG, "Factory reset: Format failed");
             storage->status = StorageStatusNoFS;
         }
     } else {
         // Normal
         err = lfs_mount(lfs, &lfs_data->config);
         if(err == 0) {
-            FURI_LOG_I(TAG, "Mounted");
+            FURRY_LOG_I(TAG, "Mounted");
             storage->status = StorageStatusOK;
         } else {
-            FURI_LOG_E(TAG, "Mount failed, formatting");
+            FURRY_LOG_E(TAG, "Mount failed, formatting");
             err = lfs_format(lfs, &lfs_data->config);
             if(err == 0) {
-                FURI_LOG_I(TAG, "Format successful, trying to mount");
+                FURRY_LOG_I(TAG, "Format successful, trying to mount");
                 err = lfs_mount(lfs, &lfs_data->config);
                 if(err == 0) {
-                    FURI_LOG_I(TAG, "Mounted");
+                    FURRY_LOG_I(TAG, "Mounted");
                     storage->status = StorageStatusOK;
                 } else {
-                    FURI_LOG_E(TAG, "Mount after format failed");
+                    FURRY_LOG_E(TAG, "Mount after format failed");
                     storage->status = StorageStatusNotMounted;
                 }
             } else {
-                FURI_LOG_E(TAG, "Format failed");
+                FURRY_LOG_E(TAG, "Format failed");
                 storage->status = StorageStatusNoFS;
             }
         }
@@ -337,7 +337,7 @@ static bool storage_int_check_for_free_space(StorageData* storage) {
         lfs_size_t free_space =
             (lfs_data->config.block_count - result) * lfs_data->config.block_size;
 
-        return (free_space > LFS_RESERVED_PAGES_COUNT * furi_hal_flash_get_page_size());
+        return (free_space > LFS_RESERVED_PAGES_COUNT * furry_hal_flash_get_page_size());
     }
 
     return false;
@@ -370,18 +370,18 @@ static bool storage_int_file_open(
     storage_set_storage_file_data(file, handle, storage);
 
     if(!enough_free_space) {
-        FuriString* filename;
-        filename = furi_string_alloc();
+        FurryString* filename;
+        filename = furry_string_alloc();
         path_extract_basename(path, filename);
         bool is_dot_file =
-            (!furi_string_empty(filename) && (furi_string_get_char(filename, 0) == '.'));
-        furi_string_free(filename);
+            (!furry_string_empty(filename) && (furry_string_get_char(filename, 0) == '.'));
+        furry_string_free(filename);
 
         /* Restrict write & creation access to all non-dot files */
         if(!is_dot_file && (flags & (LFS_O_CREAT | LFS_O_WRONLY))) {
             file->internal_error_id = LFS_ERR_NOSPC;
             file->error_id = FSE_DENIED;
-            FURI_LOG_W(TAG, "Denied access to '%s': no free space", path);
+            FURRY_LOG_W(TAG, "Denied access to '%s': no free space", path);
             return false;
         }
     }
@@ -768,9 +768,9 @@ static const FS_Api fs_api = {
 };
 
 void storage_int_init(StorageData* storage) {
-    FURI_LOG_I(TAG, "Starting");
+    FURRY_LOG_I(TAG, "Starting");
     LFSData* lfs_data = storage_int_lfs_data_alloc();
-    FURI_LOG_I(
+    FURRY_LOG_I(
         TAG,
         "Config: start %p, read %lu, write %lu, page size: %lu, page count: %lu, cycles: %ld",
         (void*)lfs_data->start_address,

@@ -7,13 +7,13 @@
 
 #include "icon_animation.h"
 
-#include <furi.h>
+#include <furry.h>
 
 struct IconAnimation {
     const Icon* icon;
     uint8_t frame;
     bool animating;
-    FuriTimer* timer;
+    FurryTimer* timer;
     IconAnimationCallback callback;
     void* callback_context;
 };

@@ -196,7 +196,7 @@ class FlipperAppStateHelper:
         self.set_debug_mode(False)
 
     def set_debug_mode(self, mode: bool) -> None:
-        gdb.execute(f"set variable furi_hal_debug_gdb_session_active = {int(mode)}")
+        gdb.execute(f"set variable furry_hal_debug_gdb_session_active = {int(mode)}")
 
 
 # Init additional 'fap-set-debug-elf-root' command and set up hooks

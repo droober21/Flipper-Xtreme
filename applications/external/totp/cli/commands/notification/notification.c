@@ -47,23 +47,23 @@ static void
     }
 }
 
-void totp_cli_command_notification_handle(PluginState* plugin_state, FuriString* args, Cli* cli) {
+void totp_cli_command_notification_handle(PluginState* plugin_state, FurryString* args, Cli* cli) {
     if(!totp_cli_ensure_authenticated(plugin_state, cli)) {
         return;
     }
 
-    FuriString* temp_str = furi_string_alloc();
+    FurryString* temp_str = furry_string_alloc();
     bool new_method_provided = false;
     NotificationMethod new_method = NotificationMethodNone;
     bool args_valid = true;
     while(args_read_string_and_trim(args, temp_str)) {
-        if(furi_string_cmpi_str(temp_str, TOTP_CLI_COMMAND_NOTIFICATION_METHOD_NONE) == 0) {
+        if(furry_string_cmpi_str(temp_str, TOTP_CLI_COMMAND_NOTIFICATION_METHOD_NONE) == 0) {
             new_method_provided = true;
             new_method = NotificationMethodNone;
-        } else if(furi_string_cmpi_str(temp_str, TOTP_CLI_COMMAND_NOTIFICATION_METHOD_SOUND) == 0) {
+        } else if(furry_string_cmpi_str(temp_str, TOTP_CLI_COMMAND_NOTIFICATION_METHOD_SOUND) == 0) {
             new_method_provided = true;
             new_method |= NotificationMethodSound;
-        } else if(furi_string_cmpi_str(temp_str, TOTP_CLI_COMMAND_NOTIFICATION_METHOD_VIBRO) == 0) {
+        } else if(furry_string_cmpi_str(temp_str, TOTP_CLI_COMMAND_NOTIFICATION_METHOD_VIBRO) == 0) {
             new_method_provided = true;
             new_method |= NotificationMethodVibro;
         } else {
@@ -99,5 +99,5 @@ void totp_cli_command_notification_handle(PluginState* plugin_state, FuriString*
         }
     } while(false);
 
-    furi_string_free(temp_str);
+    furry_string_free(temp_str);
 }

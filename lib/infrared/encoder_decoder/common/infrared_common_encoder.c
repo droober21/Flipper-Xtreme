@@ -8,7 +8,7 @@
 static InfraredStatus
     infrared_common_encode_bits(InfraredCommonEncoder* encoder, uint32_t* duration, bool* level) {
     InfraredStatus status = encoder->protocol->encode(encoder, duration, level);
-    furi_assert(status == InfraredStatusOk);
+    furry_assert(status == InfraredStatusOk);
     ++encoder->timings_encoded;
     encoder->timings_sum += *duration;
     if((encoder->bits_encoded == encoder->bits_to_encode) && *level) {
@@ -36,9 +36,9 @@ InfraredStatus infrared_common_encode_manchester(
     InfraredCommonEncoder* encoder,
     uint32_t* duration,
     bool* level) {
-    furi_assert(encoder);
-    furi_assert(duration);
-    furi_assert(level);
+    furry_assert(encoder);
+    furry_assert(duration);
+    furry_assert(level);
 
     const InfraredTimings* timings = &encoder->protocol->timings;
     uint8_t index = encoder->bits_encoded / 8;
@@ -58,9 +58,9 @@ InfraredStatus infrared_common_encode_manchester(
 
 InfraredStatus
     infrared_common_encode_pdwm(InfraredCommonEncoder* encoder, uint32_t* duration, bool* level) {
-    furi_assert(encoder);
-    furi_assert(duration);
-    furi_assert(level);
+    furry_assert(encoder);
+    furry_assert(duration);
+    furry_assert(level);
 
     const InfraredTimings* timings = &encoder->protocol->timings;
     uint8_t index = encoder->bits_encoded / 8;
@@ -83,9 +83,9 @@ InfraredStatus
 
 InfraredStatus
     infrared_common_encode(InfraredCommonEncoder* encoder, uint32_t* duration, bool* level) {
-    furi_assert(encoder);
-    furi_assert(duration);
-    furi_assert(level);
+    furry_assert(encoder);
+    furry_assert(duration);
+    furry_assert(level);
     InfraredStatus status = InfraredStatusOk;
     const InfraredTimings* timings = &encoder->protocol->timings;
 
@@ -136,16 +136,16 @@ InfraredStatus
 }
 
 void* infrared_common_encoder_alloc(const InfraredCommonProtocolSpec* protocol) {
-    furi_assert(protocol);
+    furry_assert(protocol);
     if(protocol->decode == infrared_common_decode_pdwm) {
-        furi_assert(
+        furry_assert(
             (protocol->timings.bit1_mark == protocol->timings.bit0_mark) ^
             (protocol->timings.bit1_space == protocol->timings.bit0_space));
     }
 
     /* protocol->databit_len[0] has to contain biggest value of bits that can be decoded */
     for(size_t i = 1; i < COUNT_OF(protocol->databit_len); ++i) {
-        furi_assert(protocol->databit_len[i] <= protocol->databit_len[0]);
+        furry_assert(protocol->databit_len[i] <= protocol->databit_len[0]);
     }
 
     uint32_t alloc_size = sizeof(InfraredCommonDecoder) + protocol->databit_len[0] / 8 +
@@ -158,12 +158,12 @@ void* infrared_common_encoder_alloc(const InfraredCommonProtocolSpec* protocol) 
 }
 
 void infrared_common_encoder_free(InfraredCommonEncoder* encoder) {
-    furi_assert(encoder);
+    furry_assert(encoder);
     free(encoder);
 }
 
 void infrared_common_encoder_reset(InfraredCommonEncoder* encoder) {
-    furi_assert(encoder);
+    furry_assert(encoder);
     encoder->timings_encoded = 0;
     encoder->timings_sum = 0;
     encoder->bits_encoded = 0;

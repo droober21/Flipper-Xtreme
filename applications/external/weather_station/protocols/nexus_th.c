@@ -97,13 +97,13 @@ void* ws_protocol_decoder_nexus_th_alloc(SubGhzEnvironment* environment) {
 }
 
 void ws_protocol_decoder_nexus_th_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderNexus_TH* instance = context;
     free(instance);
 }
 
 void ws_protocol_decoder_nexus_th_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderNexus_TH* instance = context;
     instance->decoder.parser_step = Nexus_THDecoderStepReset;
 }
@@ -142,7 +142,7 @@ static void ws_protocol_nexus_th_remote_controller(WSBlockGeneric* instance) {
 }
 
 void ws_protocol_decoder_nexus_th_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderNexus_TH* instance = context;
 
     switch(instance->decoder.parser_step) {
@@ -210,7 +210,7 @@ void ws_protocol_decoder_nexus_th_feed(void* context, bool level, uint32_t durat
 }
 
 uint8_t ws_protocol_decoder_nexus_th_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderNexus_TH* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -220,23 +220,23 @@ SubGhzProtocolStatus ws_protocol_decoder_nexus_th_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderNexus_TH* instance = context;
     return ws_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     ws_protocol_decoder_nexus_th_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderNexus_TH* instance = context;
     return ws_block_generic_deserialize_check_count_bit(
         &instance->generic, flipper_format, ws_protocol_nexus_th_const.min_count_bit_for_found);
 }
 
-void ws_protocol_decoder_nexus_th_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void ws_protocol_decoder_nexus_th_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     WSProtocolDecoderNexus_TH* instance = context;
-    furi_string_printf(
+    furry_string_printf(
         output,
         "%s %dbit\r\n"
         "Key:0x%lX%08lX\r\n"

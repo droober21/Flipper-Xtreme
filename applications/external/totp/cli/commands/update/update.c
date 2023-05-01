@@ -11,7 +11,7 @@
 #define TOTP_CLI_COMMAND_UPDATE_ARG_SECRET_PREFIX "-s"
 
 struct TotpUpdateContext {
-    FuriString* args;
+    FurryString* args;
     Cli* cli;
     uint8_t* iv;
 };
@@ -24,12 +24,12 @@ enum TotpIteratorUpdateTokenResultsEx {
 
 static bool totp_cli_try_read_name(
     TokenInfo* token_info,
-    const FuriString* arg,
-    FuriString* args,
+    const FurryString* arg,
+    FurryString* args,
     bool* parsed) {
-    if(furi_string_cmpi_str(arg, TOTP_CLI_COMMAND_ARG_NAME_PREFIX) == 0) {
+    if(furry_string_cmpi_str(arg, TOTP_CLI_COMMAND_ARG_NAME_PREFIX) == 0) {
         if(!args_read_probably_quoted_string_and_trim(args, token_info->name) ||
-           furi_string_empty(token_info->name)) {
+           furry_string_empty(token_info->name)) {
             totp_cli_printf_missed_argument_value(TOTP_CLI_COMMAND_ARG_NAME_PREFIX);
         } else {
             *parsed = true;
@@ -41,8 +41,8 @@ static bool totp_cli_try_read_name(
     return false;
 }
 
-static bool totp_cli_try_read_change_secret_flag(const FuriString* arg, bool* parsed, bool* flag) {
-    if(furi_string_cmpi_str(arg, TOTP_CLI_COMMAND_UPDATE_ARG_SECRET_PREFIX) == 0) {
+static bool totp_cli_try_read_change_secret_flag(const FurryString* arg, bool* parsed, bool* flag) {
+    if(furry_string_cmpi_str(arg, TOTP_CLI_COMMAND_UPDATE_ARG_SECRET_PREFIX) == 0) {
         *flag = true;
         *parsed = true;
         return true;
@@ -56,7 +56,7 @@ static TotpIteratorUpdateTokenResult
     const struct TotpUpdateContext* context_t = context;
 
     // Read optional arguments
-    FuriString* temp_str = furi_string_alloc();
+    FurryString* temp_str = furry_string_alloc();
     bool mask_user_input = true;
     bool update_token_secret = false;
     PlainTokenSecretEncoding token_secret_encoding = PlainTokenSecretEncodingBase32;
@@ -75,34 +75,34 @@ static TotpIteratorUpdateTokenResult
         }
 
         if(!parsed) {
-            furi_string_free(temp_str);
+            furry_string_free(temp_str);
             return TotpIteratorUpdateTokenResultInvalidArguments;
         }
     }
 
     if(update_token_secret) {
         // Reading token secret
-        furi_string_reset(temp_str);
+        furry_string_reset(temp_str);
         TOTP_CLI_PRINTF("Enter token secret and confirm with [ENTER]\r\n");
         bool token_secret_read = totp_cli_read_line(context_t->cli, temp_str, mask_user_input);
         totp_cli_delete_last_line();
         if(!token_secret_read) {
-            furi_string_secure_free(temp_str);
+            furry_string_secure_free(temp_str);
             return TotpIteratorUpdateTokenResultCancelled;
         }
 
         if(!token_info_set_secret(
                token_info,
-               furi_string_get_cstr(temp_str),
-               furi_string_size(temp_str),
+               furry_string_get_cstr(temp_str),
+               furry_string_size(temp_str),
                token_secret_encoding,
                context_t->iv)) {
-            furi_string_secure_free(temp_str);
+            furry_string_secure_free(temp_str);
             return TotpIteratorUpdateTokenResultInvalidSecret;
         }
     }
 
-    furi_string_secure_free(temp_str);
+    furry_string_secure_free(temp_str);
 
     return TotpIteratorUpdateTokenResultSuccess;
 }
@@ -130,7 +130,7 @@ void totp_cli_command_update_docopt_options() {
         TOTP_CLI_COMMAND_UPDATE_ARG_SECRET_PREFIX) "             Update token secret\r\n");
 }
 
-void totp_cli_command_update_handle(PluginState* plugin_state, FuriString* args, Cli* cli) {
+void totp_cli_command_update_handle(PluginState* plugin_state, FurryString* args, Cli* cli) {
     if(!totp_cli_ensure_authenticated(plugin_state, cli)) {
         return;
     }
@@ -158,7 +158,7 @@ void totp_cli_command_update_handle(PluginState* plugin_state, FuriString* args,
     if(update_result == TotpIteratorUpdateTokenResultSuccess) {
         TOTP_CLI_PRINTF_SUCCESS(
             "Token \"%s\" has been successfully updated\r\n",
-            furi_string_get_cstr(
+            furry_string_get_cstr(
                 totp_token_info_iterator_get_current_token(iterator_context)->name));
     } else if(update_result == TotpIteratorUpdateTokenResultInvalidArguments) {
         totp_cli_print_invalid_arguments();

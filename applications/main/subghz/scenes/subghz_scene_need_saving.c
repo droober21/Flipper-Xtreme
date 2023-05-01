@@ -2,7 +2,7 @@
 #include "../helpers/subghz_custom_event.h"
 
 void subghz_scene_need_saving_callback(GuiButtonType result, InputType type, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhz* subghz = context;
 
     if((result == GuiButtonTypeRight) && (type == InputTypeShort)) {

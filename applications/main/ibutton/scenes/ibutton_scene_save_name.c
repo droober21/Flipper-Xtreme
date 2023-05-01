@@ -14,7 +14,7 @@ void ibutton_scene_save_name_on_enter(void* context) {
     iButton* ibutton = context;
     TextInput* text_input = ibutton->text_input;
 
-    const bool is_new_file = furi_string_empty(ibutton->file_path);
+    const bool is_new_file = furry_string_empty(ibutton->file_path);
 
     if(is_new_file) {
         set_random_name(ibutton->key_name, IBUTTON_KEY_NAME_SIZE);
@@ -43,7 +43,7 @@ bool ibutton_scene_save_name_on_event(void* context, SceneManagerEvent event) {
     if(event.type == SceneManagerEventTypeCustom) {
         consumed = true;
         if(event.event == iButtonCustomEventTextEditResult) {
-            furi_string_printf(
+            furry_string_printf(
                 ibutton->file_path,
                 "%s/%s%s",
                 IBUTTON_APP_FOLDER,

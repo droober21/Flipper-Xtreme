@@ -1,8 +1,8 @@
 #ifndef GPIO_READER_ITEM
 #define GPIO_READER_ITEM
 
-#include <furi.h>
-#include <furi_hal_resources.h>
+#include <furry.h>
+#include <furry_hal_resources.h>
 
 #define GPIO_ITEM_COUNT 8
 #define GPIO_PULL_COUNT 3

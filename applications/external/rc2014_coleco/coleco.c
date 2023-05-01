@@ -1,6 +1,6 @@
-#include <furi.h>
-#include <furi_hal_gpio.h>
-#include <furi_hal_power.h>
+#include <furry.h>
+#include <furry_hal_gpio.h>
+#include <furry_hal_power.h>
 #include <gui/gui.h>
 #include "coleco_icons.h"
 
@@ -40,16 +40,16 @@ typedef struct {
 } PluginEvent;
 
 typedef struct {
-    FuriMutex* mutex;
+    FurryMutex* mutex;
     bool dpad;
     int row;
     int column;
 } Coleco;
 
 static void render_callback(Canvas* const canvas, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Coleco* coleco = context;
-    furi_mutex_acquire(coleco->mutex, FuriWaitForever);
+    furry_mutex_acquire(coleco->mutex, FurryWaitForever);
 
     if(coleco->dpad) {
         canvas_draw_icon(canvas, 4, 16, &I_ColecoJoystick_sel_33x33);
@@ -128,42 +128,42 @@ static void render_callback(Canvas* const canvas, void* context) {
         (coleco->row == 4 && coleco->column == 2) ? &I_ColecoPound_hvr_17x17 :
                                                     &I_ColecoPound_17x17);
 
-    furi_mutex_release(coleco->mutex);
+    furry_mutex_release(coleco->mutex);
 }
 
-static void input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     PluginEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 static void coleco_write_code(uint8_t code) {
-    furi_hal_gpio_write(pin_code0, (code & 1));
-    furi_hal_gpio_write(pin_code1, (code & 2));
-    furi_hal_gpio_write(pin_code2, (code & 4));
-    furi_hal_gpio_write(pin_code3, (code & 8));
+    furry_hal_gpio_write(pin_code0, (code & 1));
+    furry_hal_gpio_write(pin_code1, (code & 2));
+    furry_hal_gpio_write(pin_code2, (code & 4));
+    furry_hal_gpio_write(pin_code3, (code & 8));
 }
 
 static void coleco_gpio_init() {
     // configure output pins
-    furi_hal_gpio_init(pin_up, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
-    furi_hal_gpio_init(pin_down, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
-    furi_hal_gpio_init(pin_right, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
-    furi_hal_gpio_init(pin_left, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
-    furi_hal_gpio_init(pin_code0, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
-    furi_hal_gpio_init(pin_code1, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
-    furi_hal_gpio_init(pin_code2, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
-    furi_hal_gpio_init(pin_code3, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
-    furi_hal_gpio_init(pin_fire, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
-    furi_hal_gpio_init(pin_alt, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
+    furry_hal_gpio_init(pin_up, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
+    furry_hal_gpio_init(pin_down, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
+    furry_hal_gpio_init(pin_right, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
+    furry_hal_gpio_init(pin_left, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
+    furry_hal_gpio_init(pin_code0, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
+    furry_hal_gpio_init(pin_code1, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
+    furry_hal_gpio_init(pin_code2, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
+    furry_hal_gpio_init(pin_code3, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
+    furry_hal_gpio_init(pin_fire, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
+    furry_hal_gpio_init(pin_alt, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
 
-    furi_hal_gpio_write(pin_up, true);
-    furi_hal_gpio_write(pin_down, true);
-    furi_hal_gpio_write(pin_right, true);
-    furi_hal_gpio_write(pin_left, true);
-    furi_hal_gpio_write(pin_fire, true);
-    furi_hal_gpio_write(pin_alt, true);
+    furry_hal_gpio_write(pin_up, true);
+    furry_hal_gpio_write(pin_down, true);
+    furry_hal_gpio_write(pin_right, true);
+    furry_hal_gpio_write(pin_left, true);
+    furry_hal_gpio_write(pin_fire, true);
+    furry_hal_gpio_write(pin_alt, true);
 
     coleco_write_code(CODE_N);
 }
@@ -179,7 +179,7 @@ static Coleco* coleco_alloc() {
 }
 
 static void coleco_free(Coleco* coleco) {
-    furi_assert(coleco);
+    furry_assert(coleco);
 
     free(coleco);
 }
@@ -187,13 +187,13 @@ static void coleco_free(Coleco* coleco) {
 int32_t coleco_app(void* p) {
     UNUSED(p);
 
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(PluginEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(PluginEvent));
 
     Coleco* coleco = coleco_alloc();
 
-    coleco->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    coleco->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!coleco->mutex) {
-        FURI_LOG_E("Coleco", "cannot create mutex\r\n");
+        FURRY_LOG_E("Coleco", "cannot create mutex\r\n");
         coleco_free(coleco);
         return 255;
     }
@@ -204,28 +204,28 @@ int32_t coleco_app(void* p) {
     view_port_input_callback_set(view_port, input_callback, event_queue);
 
     // open GUI and register view_port
-    Gui* gui = furi_record_open("gui");
+    Gui* gui = furry_record_open("gui");
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     coleco_gpio_init();
-    furi_hal_power_enable_otg();
+    furry_hal_power_enable_otg();
 
     PluginEvent event;
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 100);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 100);
 
-        furi_mutex_acquire(coleco->mutex, FuriWaitForever);
+        furry_mutex_acquire(coleco->mutex, FurryWaitForever);
 
-        if(event_status == FuriStatusOk) {
+        if(event_status == FurryStatusOk) {
             // press events
             if(event.type == EventTypeKey) {
                 switch(event.input.key) {
                 case InputKeyUp:
                     if(coleco->dpad) {
                         if(event.input.type == InputTypePress) {
-                            furi_hal_gpio_write(pin_up, false);
+                            furry_hal_gpio_write(pin_up, false);
                         } else if(event.input.type == InputTypeRelease) {
-                            furi_hal_gpio_write(pin_up, true);
+                            furry_hal_gpio_write(pin_up, true);
                         }
                     } else {
                         if(event.input.type == InputTypePress && coleco->column < 2) {
@@ -237,9 +237,9 @@ int32_t coleco_app(void* p) {
                 case InputKeyDown:
                     if(coleco->dpad) {
                         if(event.input.type == InputTypePress) {
-                            furi_hal_gpio_write(pin_down, false);
+                            furry_hal_gpio_write(pin_down, false);
                         } else if(event.input.type == InputTypeRelease) {
-                            furi_hal_gpio_write(pin_down, true);
+                            furry_hal_gpio_write(pin_down, true);
                         }
                     } else {
                         if(event.input.type == InputTypePress && coleco->column > 0) {
@@ -251,9 +251,9 @@ int32_t coleco_app(void* p) {
                 case InputKeyRight:
                     if(coleco->dpad) {
                         if(event.input.type == InputTypePress) {
-                            furi_hal_gpio_write(pin_right, false);
+                            furry_hal_gpio_write(pin_right, false);
                         } else if(event.input.type == InputTypeRelease) {
-                            furi_hal_gpio_write(pin_right, true);
+                            furry_hal_gpio_write(pin_right, true);
                         }
                     } else {
                         if(event.input.type == InputTypePress && coleco->row < 4) {
@@ -265,9 +265,9 @@ int32_t coleco_app(void* p) {
                 case InputKeyLeft:
                     if(coleco->dpad) {
                         if(event.input.type == InputTypePress) {
-                            furi_hal_gpio_write(pin_left, false);
+                            furry_hal_gpio_write(pin_left, false);
                         } else if(event.input.type == InputTypeRelease) {
-                            furi_hal_gpio_write(pin_left, true);
+                            furry_hal_gpio_write(pin_left, true);
                         }
                     } else {
                         if(event.input.type == InputTypePress && coleco->row > 0) {
@@ -279,15 +279,15 @@ int32_t coleco_app(void* p) {
                 case InputKeyOk:
                     if(coleco->dpad) {
                         if(event.input.type == InputTypePress) {
-                            furi_hal_gpio_write(pin_fire, false);
+                            furry_hal_gpio_write(pin_fire, false);
                         } else if(event.input.type == InputTypeRelease) {
-                            furi_hal_gpio_write(pin_fire, true);
+                            furry_hal_gpio_write(pin_fire, true);
                         }
                     } else {
                         if(event.input.type == InputTypePress) {
                             if(coleco->row == 0) {
                                 if(coleco->column == 2) {
-                                    furi_hal_gpio_write(pin_alt, false);
+                                    furry_hal_gpio_write(pin_alt, false);
                                 } else {
                                     coleco->dpad = true;
                                 }
@@ -326,7 +326,7 @@ int32_t coleco_app(void* p) {
                             }
                         }
                         if(event.input.type == InputTypeRelease) {
-                            furi_hal_gpio_write(pin_alt, true);
+                            furry_hal_gpio_write(pin_alt, true);
                             coleco_write_code(CODE_N);
                         }
                     }
@@ -348,17 +348,17 @@ int32_t coleco_app(void* p) {
             }
         }
 
-        furi_mutex_release(coleco->mutex);
+        furry_mutex_release(coleco->mutex);
     }
 
-    furi_hal_power_disable_otg();
+    furry_hal_power_disable_otg();
 
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close("gui");
+    furry_record_close("gui");
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_mutex_free(coleco->mutex);
+    furry_message_queue_free(event_queue);
+    furry_mutex_free(coleco->mutex);
     coleco_free(coleco);
     return 0;
 }

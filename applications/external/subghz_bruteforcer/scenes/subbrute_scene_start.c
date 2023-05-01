@@ -4,19 +4,19 @@
 #define TAG "SubBruteSceneStart"
 
 void subbrute_scene_start_callback(SubBruteCustomEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     SubBruteState* instance = (SubBruteState*)context;
-#ifdef FURI_DEBUG
-    FURI_LOG_D(TAG, "subbrute_scene_start_callback");
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(TAG, "subbrute_scene_start_callback");
 #endif
     view_dispatcher_send_custom_event(instance->view_dispatcher, event);
 }
 
 void subbrute_scene_start_on_enter(void* context) {
-    furi_assert(context);
-#ifdef FURI_DEBUG
-    FURI_LOG_I(TAG, "subbrute_scene_start_on_enter");
+    furry_assert(context);
+#ifdef FURRY_DEBUG
+    FURRY_LOG_I(TAG, "subbrute_scene_start_on_enter");
 #endif
     SubBruteState* instance = (SubBruteState*)context;
     SubBruteMainView* view = instance->view_main;
@@ -36,8 +36,8 @@ void subbrute_scene_start_on_enter(void* context) {
 
 void subbrute_scene_start_on_exit(void* context) {
     UNUSED(context);
-#ifdef FURI_DEBUG
-    FURI_LOG_I(TAG, "subbrute_scene_start_on_exit");
+#ifdef FURRY_DEBUG
+    FURRY_LOG_I(TAG, "subbrute_scene_start_on_exit");
 #endif
 }
 
@@ -46,8 +46,8 @@ bool subbrute_scene_start_on_event(void* context, SceneManagerEvent event) {
     bool consumed = false;
 
     if(event.type == SceneManagerEventTypeCustom) {
-#ifdef FURI_DEBUG
-        FURI_LOG_D(
+#ifdef FURRY_DEBUG
+        FURRY_LOG_D(
             TAG,
             "Event: %ld, SubBruteCustomEventTypeMenuSelected: %s, SubBruteCustomEventTypeLoadFile: %s",
             event.event,
@@ -66,7 +66,7 @@ bool subbrute_scene_start_on_event(void* context, SceneManagerEvent event) {
                    instance->device->current_step,
                    instance->device->protocol_info,
                    instance->device->extra_repeats))) {
-                furi_crash("Invalid attack set!");
+                furry_crash("Invalid attack set!");
             }
             scene_manager_next_scene(instance->scene_manager, SubBruteSceneSetupAttack);
 

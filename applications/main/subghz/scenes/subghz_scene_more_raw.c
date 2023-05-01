@@ -62,7 +62,7 @@ bool subghz_scene_more_raw_on_event(void* context, SceneManagerEvent event) {
             }
         } else if(event.event == SubmenuIndexEdit) {
             if(subghz_file_available(subghz)) {
-                furi_string_reset(subghz->file_path_tmp);
+                furry_string_reset(subghz->file_path_tmp);
                 scene_manager_set_scene_state(
                     subghz->scene_manager, SubGhzSceneMoreRAW, SubmenuIndexEdit);
                 scene_manager_next_scene(subghz->scene_manager, SubGhzSceneSaveName);

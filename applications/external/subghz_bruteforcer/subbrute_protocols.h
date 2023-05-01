@@ -1,7 +1,7 @@
 #pragma once
 
-#include <furi.h>
-#include <furi_hal_subghz.h>
+#include <furry.h>
+#include <furry_hal_subghz.h>
 #include <core/string.h>
 #include <toolbox/stream/stream.h>
 
@@ -75,15 +75,15 @@ typedef struct {
     uint8_t bits;
     uint32_t te;
     uint8_t repeat;
-    FuriHalSubGhzPreset preset;
+    FurryHalSubGhzPreset preset;
     SubBruteFileProtocol file;
 } SubBruteProtocol;
 
 const SubBruteProtocol* subbrute_protocol(SubBruteAttacks index);
-const char* subbrute_protocol_preset(FuriHalSubGhzPreset preset);
+const char* subbrute_protocol_preset(FurryHalSubGhzPreset preset);
 const char* subbrute_protocol_file(SubBruteFileProtocol protocol);
-FuriHalSubGhzPreset subbrute_protocol_convert_preset(FuriString* preset_name);
-SubBruteFileProtocol subbrute_protocol_file_protocol_name(FuriString* name);
+FurryHalSubGhzPreset subbrute_protocol_convert_preset(FurryString* preset_name);
+SubBruteFileProtocol subbrute_protocol_file_protocol_name(FurryString* name);
 uint8_t subbrute_protocol_repeats_count(SubBruteAttacks index);
 const char* subbrute_protocol_name(SubBruteAttacks index);
 
@@ -106,7 +106,7 @@ void subbrute_protocol_file_payload(
 void subbrute_protocol_default_generate_file(
     Stream* stream,
     uint32_t frequency,
-    FuriHalSubGhzPreset preset,
+    FurryHalSubGhzPreset preset,
     SubBruteFileProtocol file,
     uint64_t step,
     uint8_t bits,
@@ -114,7 +114,7 @@ void subbrute_protocol_default_generate_file(
 void subbrute_protocol_file_generate_file(
     Stream* stream,
     uint32_t frequency,
-    FuriHalSubGhzPreset preset,
+    FurryHalSubGhzPreset preset,
     SubBruteFileProtocol file,
     uint64_t step,
     uint8_t bits,

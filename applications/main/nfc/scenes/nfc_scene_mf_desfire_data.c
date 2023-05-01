@@ -33,18 +33,18 @@ void nfc_scene_mf_desfire_data_on_enter(void* context) {
         nfc_scene_mf_desfire_data_submenu_callback,
         nfc);
 
-    FuriString* label = furi_string_alloc();
+    FurryString* label = furry_string_alloc();
     int idx = SubmenuIndexDynamic;
     for(MifareDesfireApplication* app = data->app_head; app; app = app->next) {
-        furi_string_printf(label, "App %02x%02x%02x", app->id[0], app->id[1], app->id[2]);
+        furry_string_printf(label, "App %02x%02x%02x", app->id[0], app->id[1], app->id[2]);
         submenu_add_item(
             submenu,
-            furi_string_get_cstr(label),
+            furry_string_get_cstr(label),
             idx++,
             nfc_scene_mf_desfire_data_submenu_callback,
             nfc);
     }
-    furi_string_free(label);
+    furry_string_free(label);
 
     if(state >= MifareDesfireDataStateItem) {
         submenu_set_selected_item(
@@ -64,10 +64,10 @@ bool nfc_scene_mf_desfire_data_on_event(void* context, SceneManagerEvent event) 
 
     if(event.type == SceneManagerEventTypeCustom) {
         TextBox* text_box = nfc->text_box;
-        furi_string_reset(nfc->text_box_store);
+        furry_string_reset(nfc->text_box_store);
         if(event.event == SubmenuIndexCardInfo) {
             mf_df_cat_card_info(data, nfc->text_box_store);
-            text_box_set_text(text_box, furi_string_get_cstr(nfc->text_box_store));
+            text_box_set_text(text_box, furry_string_get_cstr(nfc->text_box_store));
             view_dispatcher_switch_to_view(nfc->view_dispatcher, NfcViewTextBox);
             scene_manager_set_scene_state(
                 nfc->scene_manager,
@@ -99,6 +99,6 @@ void nfc_scene_mf_desfire_data_on_exit(void* context) {
 
     // Clear views
     text_box_reset(nfc->text_box);
-    furi_string_reset(nfc->text_box_store);
+    furry_string_reset(nfc->text_box_store);
     submenu_reset(nfc->submenu);
 }

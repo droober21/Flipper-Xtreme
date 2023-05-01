@@ -75,7 +75,7 @@ bool dallas_common_copy_scratchpad(
     uint32_t time_elapsed;
     for(time_elapsed = 0; time_elapsed < timeout_us; time_elapsed += poll_delay) {
         if(!onewire_host_read_bit(host)) break;
-        furi_delay_us(poll_delay);
+        furry_delay_us(poll_delay);
     }
 
     return time_elapsed < timeout_us;
@@ -99,7 +99,7 @@ bool dallas_common_write_mem(
     const uint8_t* data,
     size_t data_size) {
     // Data size must be a multiple of page size
-    furi_check(data_size % page_size == 0);
+    furry_check(data_size % page_size == 0);
 
     DallasCommonAddressRegs regs;
     uint8_t* scratch = malloc(page_size);
@@ -209,13 +209,13 @@ bool dallas_common_is_valid_crc(const DallasCommonRomData* rom_data) {
 }
 
 void dallas_common_render_brief_data(
-    FuriString* result,
+    FurryString* result,
     const DallasCommonRomData* rom_data,
     const uint8_t* mem_data,
     size_t mem_size,
     const char* mem_name) {
     for(size_t i = 0; i < sizeof(rom_data->bytes); ++i) {
-        furi_string_cat_printf(result, "%02X ", rom_data->bytes[i]);
+        furry_string_cat_printf(result, "%02X ", rom_data->bytes[i]);
     }
 
     const char* size_prefix = "";
@@ -229,27 +229,27 @@ void dallas_common_render_brief_data(
         mem_size_bits /= BITS_IN_KBIT;
     }
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         result, "\nInternal %s: %zu %sbit\n", mem_name, mem_size_bits, size_prefix);
 
     for(size_t i = 0; i < DALLAS_COMMON_BRIEF_HEAD_COUNT; ++i) {
-        furi_string_cat_printf(result, "%02X ", mem_data[i]);
+        furry_string_cat_printf(result, "%02X ", mem_data[i]);
     }
 
-    furi_string_cat_printf(result, "[  . . .  ]");
+    furry_string_cat_printf(result, "[  . . .  ]");
 
     for(size_t i = mem_size - DALLAS_COMMON_BRIEF_TAIL_COUNT; i < mem_size; ++i) {
-        furi_string_cat_printf(result, " %02X", mem_data[i]);
+        furry_string_cat_printf(result, " %02X", mem_data[i]);
     }
 }
 
-void dallas_common_render_crc_error(FuriString* result, const DallasCommonRomData* rom_data) {
-    furi_string_set(result, "CRC Error\n");
+void dallas_common_render_crc_error(FurryString* result, const DallasCommonRomData* rom_data) {
+    furry_string_set(result, "CRC Error\n");
 
     const size_t data_size = sizeof(DallasCommonRomData);
 
     for(size_t i = 0; i < data_size; ++i) {
-        furi_string_cat_printf(result, (i < data_size - 1) ? "%02X " : "%02X", rom_data->bytes[i]);
+        furry_string_cat_printf(result, (i < data_size - 1) ? "%02X " : "%02X", rom_data->bytes[i]);
     }
 }
 

@@ -19,12 +19,12 @@
 #define UNITEMP_SPI
 
 #include "../unitemp.h"
-#include <furi_hal_spi.h>
+#include <furry_hal_spi.h>
 
 //Структура SPI датчика
 typedef struct SPISensor {
     //Указатель на интерфейс SPI
-    FuriHalSpiBusHandle* spi;
+    FurryHalSpiBusHandle* spi;
     //Порт подключения CS
     const GPIO* CS_pin;
 } SPISensor;

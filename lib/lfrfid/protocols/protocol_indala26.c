@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <toolbox/protocols/protocol.h>
 #include <lfrfid/tools/bit_lib.h>
 #include "lfrfid_protocols.h"
@@ -101,7 +101,7 @@ bool protocol_indala26_decoder_feed(ProtocolIndala* protocol, bool level, uint32
     if(duration > (INDALA26_US_PER_BIT / 2)) {
         if(protocol_indala26_decoder_feed_internal(level, duration, protocol->encoded_data)) {
             protocol_indala26_decoder_save(protocol->data, protocol->encoded_data);
-            FURI_LOG_D("Indala26", "Positive");
+            FURRY_LOG_D("Indala26", "Positive");
             result = true;
             return result;
         }
@@ -109,7 +109,7 @@ bool protocol_indala26_decoder_feed(ProtocolIndala* protocol, bool level, uint32
         if(protocol_indala26_decoder_feed_internal(
                !level, duration, protocol->negative_encoded_data)) {
             protocol_indala26_decoder_save(protocol->data, protocol->negative_encoded_data);
-            FURI_LOG_D("Indala26", "Negative");
+            FURRY_LOG_D("Indala26", "Negative");
             result = true;
             return result;
         }
@@ -128,7 +128,7 @@ bool protocol_indala26_decoder_feed(ProtocolIndala* protocol, bool level, uint32
         if(protocol_indala26_decoder_feed_internal(
                level, duration, protocol->corrupted_encoded_data)) {
             protocol_indala26_decoder_save(protocol->data, protocol->corrupted_encoded_data);
-            FURI_LOG_D("Indala26", "Positive Corrupted");
+            FURRY_LOG_D("Indala26", "Positive Corrupted");
 
             result = true;
             return result;
@@ -138,7 +138,7 @@ bool protocol_indala26_decoder_feed(ProtocolIndala* protocol, bool level, uint32
                !level, duration, protocol->corrupted_negative_encoded_data)) {
             protocol_indala26_decoder_save(
                 protocol->data, protocol->corrupted_negative_encoded_data);
-            FURI_LOG_D("Indala26", "Negative Corrupted");
+            FURRY_LOG_D("Indala26", "Negative Corrupted");
 
             result = true;
             return result;
@@ -238,7 +238,7 @@ static uint16_t get_cn(const uint8_t* data) {
 
 void protocol_indala26_render_data_internal(
     ProtocolIndala* protocol,
-    FuriString* result,
+    FurryString* result,
     bool brief) {
     bool wiegand_correct = true;
     bool checksum_correct = true;
@@ -287,7 +287,7 @@ void protocol_indala26_render_data_internal(
     if(odd_parity_sum % 2 != odd_parity) wiegand_correct = false;
 
     if(brief) {
-        furi_string_printf(
+        furry_string_printf(
             result,
             "FC: %u\r\nCard: %u, Parity:%s%s",
             fc,
@@ -295,7 +295,7 @@ void protocol_indala26_render_data_internal(
             (checksum_correct ? "+" : "-"),
             (wiegand_correct ? "+" : "-"));
     } else {
-        furi_string_printf(
+        furry_string_printf(
             result,
             "FC: %u\r\n"
             "Card: %u\r\n"
@@ -307,10 +307,10 @@ void protocol_indala26_render_data_internal(
             (wiegand_correct ? "+" : "-"));
     }
 }
-void protocol_indala26_render_data(ProtocolIndala* protocol, FuriString* result) {
+void protocol_indala26_render_data(ProtocolIndala* protocol, FurryString* result) {
     protocol_indala26_render_data_internal(protocol, result, false);
 }
-void protocol_indala26_render_brief_data(ProtocolIndala* protocol, FuriString* result) {
+void protocol_indala26_render_brief_data(ProtocolIndala* protocol, FurryString* result) {
     protocol_indala26_render_data_internal(protocol, result, true);
 }
 

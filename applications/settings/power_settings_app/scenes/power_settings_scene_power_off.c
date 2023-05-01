@@ -2,7 +2,7 @@
 #include <xtreme.h>
 
 void power_settings_scene_power_off_dialog_callback(DialogExResult result, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     PowerSettingsApp* app = context;
     view_dispatcher_send_custom_event(app->view_dispatcher, result);
 }

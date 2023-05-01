@@ -3,25 +3,25 @@
 
 #include <storage/storage.h>
 #include <gui/view_dispatcher.h>
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <portmacro.h>
 #include <stdint.h>
 
 static bool updater_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     Updater* updater = (Updater*)context;
     return scene_manager_handle_custom_event(updater->scene_manager, event);
 }
 
 static void updater_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Updater* app = context;
     scene_manager_handle_tick_event(app->scene_manager);
 }
 
 static bool updater_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Updater* updater = (Updater*)context;
     return scene_manager_handle_back_event(updater->scene_manager);
 }
@@ -35,16 +35,16 @@ static void
 Updater* updater_alloc(const char* arg) {
     Updater* updater = malloc(sizeof(Updater));
     if(arg && strlen(arg)) {
-        updater->startup_arg = furi_string_alloc_set(arg);
-        furi_string_replace(updater->startup_arg, ANY_PATH(""), EXT_PATH(""));
+        updater->startup_arg = furry_string_alloc_set(arg);
+        furry_string_replace(updater->startup_arg, ANY_PATH(""), EXT_PATH(""));
     } else {
-        updater->startup_arg = furi_string_alloc();
+        updater->startup_arg = furry_string_alloc();
     }
 
-    updater->storage = furi_record_open(RECORD_STORAGE);
-    updater->notification = furi_record_open(RECORD_NOTIFICATION);
+    updater->storage = furry_record_open(RECORD_STORAGE);
+    updater->notification = furry_record_open(RECORD_NOTIFICATION);
 
-    updater->gui = furi_record_open(RECORD_GUI);
+    updater->gui = furry_record_open(RECORD_GUI);
     updater->view_dispatcher = view_dispatcher_alloc();
     updater->scene_manager = scene_manager_alloc(&updater_scene_handlers, updater);
 
@@ -65,25 +65,25 @@ Updater* updater_alloc(const char* arg) {
     view_dispatcher_add_view(
         updater->view_dispatcher, UpdaterViewMain, updater_main_get_view(updater->main_view));
 
-#ifndef FURI_RAM_EXEC
+#ifndef FURRY_RAM_EXEC
     updater->widget = widget_alloc();
     view_dispatcher_add_view(
         updater->view_dispatcher, UpdaterViewWidget, widget_get_view(updater->widget));
 #endif
 
-#ifdef FURI_RAM_EXEC
+#ifdef FURRY_RAM_EXEC
     if(true) {
 #else
-    FuriHalRtcBootMode boot_mode = furi_hal_rtc_get_boot_mode();
-    if(!arg && ((boot_mode == FuriHalRtcBootModePreUpdate) ||
-                (boot_mode == FuriHalRtcBootModePostUpdate))) {
+    FurryHalRtcBootMode boot_mode = furry_hal_rtc_get_boot_mode();
+    if(!arg && ((boot_mode == FurryHalRtcBootModePreUpdate) ||
+                (boot_mode == FurryHalRtcBootModePostUpdate))) {
 #endif
         updater->update_task = update_task_alloc();
         update_task_set_progress_cb(updater->update_task, status_update_cb, updater->main_view);
 
         scene_manager_next_scene(updater->scene_manager, UpdaterSceneMain);
     } else {
-#ifndef FURI_RAM_EXEC
+#ifndef FURRY_RAM_EXEC
         scene_manager_next_scene(updater->scene_manager, UpdaterSceneLoadCfg);
 #endif
     }
@@ -92,9 +92,9 @@ Updater* updater_alloc(const char* arg) {
 }
 
 void updater_free(Updater* updater) {
-    furi_assert(updater);
+    furry_assert(updater);
 
-    furi_string_free(updater->startup_arg);
+    furry_string_free(updater->startup_arg);
     if(updater->update_task) {
         update_task_set_progress_cb(updater->update_task, NULL, NULL);
         update_task_free(updater->update_task);
@@ -103,7 +103,7 @@ void updater_free(Updater* updater) {
     view_dispatcher_remove_view(updater->view_dispatcher, UpdaterViewMain);
     updater_main_free(updater->main_view);
 
-#ifndef FURI_RAM_EXEC
+#ifndef FURRY_RAM_EXEC
     view_dispatcher_remove_view(updater->view_dispatcher, UpdaterViewWidget);
     widget_free(updater->widget);
 #endif
@@ -111,9 +111,9 @@ void updater_free(Updater* updater) {
     view_dispatcher_free(updater->view_dispatcher);
     scene_manager_free(updater->scene_manager);
 
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_STORAGE);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_NOTIFICATION);
 
     free(updater);
 }

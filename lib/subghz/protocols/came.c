@@ -96,7 +96,7 @@ void* subghz_protocol_encoder_came_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_encoder_came_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderCame* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -108,12 +108,12 @@ void subghz_protocol_encoder_came_free(void* context) {
  * @return true On success
  */
 static bool subghz_protocol_encoder_came_get_upload(SubGhzProtocolEncoderCame* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     uint32_t header_te = 0;
     size_t index = 0;
     size_t size_upload = (instance->generic.data_count_bit * 2) + 2;
     if(size_upload > instance->encoder.size_upload) {
-        FURI_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
+        FURRY_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
         return false;
     } else {
         instance->encoder.size_upload = size_upload;
@@ -165,7 +165,7 @@ static bool subghz_protocol_encoder_came_get_upload(SubGhzProtocolEncoderCame* i
 
 SubGhzProtocolStatus
     subghz_protocol_encoder_came_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderCame* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -174,7 +174,7 @@ SubGhzProtocolStatus
             break;
         }
         if((instance->generic.data_count_bit > PRASTEL_COUNT_BIT)) {
-            FURI_LOG_E(TAG, "Wrong number of bits in key");
+            FURRY_LOG_E(TAG, "Wrong number of bits in key");
             ret = SubGhzProtocolStatusErrorValueBitCount;
             break;
         }
@@ -224,19 +224,19 @@ void* subghz_protocol_decoder_came_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_came_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderCame* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_came_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderCame* instance = context;
     instance->decoder.parser_step = CameDecoderStepReset;
 }
 
 void subghz_protocol_decoder_came_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderCame* instance = context;
     switch(instance->decoder.parser_step) {
     case CameDecoderStepReset:
@@ -311,7 +311,7 @@ void subghz_protocol_decoder_came_feed(void* context, bool level, uint32_t durat
 }
 
 uint8_t subghz_protocol_decoder_came_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderCame* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -321,14 +321,14 @@ SubGhzProtocolStatus subghz_protocol_decoder_came_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderCame* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_came_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderCame* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -337,7 +337,7 @@ SubGhzProtocolStatus
             break;
         }
         if((instance->generic.data_count_bit > PRASTEL_COUNT_BIT)) {
-            FURI_LOG_E(TAG, "Wrong number of bits in key");
+            FURRY_LOG_E(TAG, "Wrong number of bits in key");
             ret = SubGhzProtocolStatusErrorValueBitCount;
             break;
         }
@@ -345,8 +345,8 @@ SubGhzProtocolStatus
     return ret;
 }
 
-void subghz_protocol_decoder_came_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_came_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderCame* instance = context;
 
     uint32_t code_found_lo = instance->generic.data & 0x00000000ffffffff;
@@ -356,7 +356,7 @@ void subghz_protocol_decoder_came_get_string(void* context, FuriString* output) 
 
     uint32_t code_found_reverse_lo = code_found_reverse & 0x00000000ffffffff;
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %dbit\r\n"
         "Key:0x%08lX\r\n"

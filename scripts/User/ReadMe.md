@@ -37,12 +37,12 @@ Image Header Format Example
 0xa4,0x01 = 0x1a4, or, 420 - the size of the compressed array, minus this header. Just count the commas ;) 
 Rest of the data is char array output from heatshrink of the original XBM char array.
 Calculated Header: 0x01,0x00,0xa4,0x01
-from furi_hal_compress.c:
+from furry_hal_compress.c:
 typedef struct {
     uint8_t is_compressed;
     uint8_t reserved;
     uint16_t compressed_buff_size;
-} FuriHalCompressHeader;
+} FurryHalCompressHeader;
 
 
 ##  

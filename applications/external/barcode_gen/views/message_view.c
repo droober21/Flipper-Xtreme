@@ -2,7 +2,7 @@
 #include "message_view.h"
 
 static void app_draw_callback(Canvas* canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
 
     MessageViewModel* message_view_model = ctx;
 
@@ -19,7 +19,7 @@ static void app_draw_callback(Canvas* canvas, void* ctx) {
 }
 
 static bool app_input_callback(InputEvent* input_event, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
 
     MessageView* message_view_object = ctx;
 
@@ -38,7 +38,7 @@ static bool app_input_callback(InputEvent* input_event, void* ctx) {
 }
 
 MessageView* message_view_allocate(BarcodeApp* barcode_app) {
-    furi_assert(barcode_app);
+    furry_assert(barcode_app);
 
     MessageView* message_view_object = malloc(sizeof(MessageView));
 
@@ -59,7 +59,7 @@ void message_view_free_model(MessageView* message_view_object) {
 }
 
 void message_view_free(MessageView* message_view_object) {
-    furi_assert(message_view_object);
+    furry_assert(message_view_object);
 
     message_view_free_model(message_view_object);
     view_free(message_view_object->view);
@@ -67,6 +67,6 @@ void message_view_free(MessageView* message_view_object) {
 }
 
 View* message_get_view(MessageView* message_view_object) {
-    furi_assert(message_view_object);
+    furry_assert(message_view_object);
     return message_view_object->view;
 }

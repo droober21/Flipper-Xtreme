@@ -1,10 +1,10 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #include "protocol_cyfral.h"
 
 #define CYFRAL_DATA_SIZE sizeof(uint16_t)
-#define CYFRAL_PERIOD (125 * furi_hal_cortex_instructions_per_microsecond())
+#define CYFRAL_PERIOD (125 * furry_hal_cortex_instructions_per_microsecond())
 #define CYFRAL_0_LOW (CYFRAL_PERIOD * 0.66f)
 #define CYFRAL_0_HI (CYFRAL_PERIOD * 0.33f)
 #define CYFRAL_1_LOW (CYFRAL_PERIOD * 0.33f)
@@ -77,7 +77,7 @@ static void protocol_cyfral_decoder_start(ProtocolCyfral* proto) {
     cyfral->index = 0;
     cyfral->nibble = 0;
     cyfral->data_valid = true;
-    cyfral->max_period = CYFRAL_MAX_PERIOD_US * furi_hal_cortex_instructions_per_microsecond();
+    cyfral->max_period = CYFRAL_MAX_PERIOD_US * furry_hal_cortex_instructions_per_microsecond();
 
     proto->data = 0;
 }
@@ -325,9 +325,9 @@ static LevelDuration protocol_cyfral_encoder_yield(ProtocolCyfral* proto) {
     return result;
 }
 
-static void protocol_cyfral_render_brief_data(ProtocolCyfral* proto, FuriString* result) {
+static void protocol_cyfral_render_brief_data(ProtocolCyfral* proto, FurryString* result) {
     for(size_t i = 0; i < CYFRAL_DATA_SIZE; ++i) {
-        furi_string_cat_printf(result, "%02X ", ((uint8_t*)&proto->data)[i]);
+        furry_string_cat_printf(result, "%02X ", ((uint8_t*)&proto->data)[i]);
     }
 }
 

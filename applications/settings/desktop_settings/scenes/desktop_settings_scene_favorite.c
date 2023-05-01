@@ -6,15 +6,15 @@
 #include <fap_loader/fap_loader_app.h>
 
 static bool favorite_fap_selector_item_callback(
-    FuriString* file_path,
+    FurryString* file_path,
     void* context,
     uint8_t** icon_ptr,
-    FuriString* item_name) {
+    FurryString* item_name) {
     UNUSED(context);
 #ifdef APP_FAP_LOADER
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     bool success = fap_loader_load_name_and_icon(file_path, storage, icon_ptr, item_name);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 #else
     UNUSED(file_path);
     UNUSED(icon_ptr);
@@ -25,9 +25,9 @@ static bool favorite_fap_selector_item_callback(
 }
 
 static bool favorite_fap_selector_file_exists(char* file_path) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     bool exists = storage_file_exists(storage, file_path);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     return exists;
 }
 
@@ -78,7 +78,7 @@ void desktop_settings_scene_favorite_on_enter(void* context) {
 bool desktop_settings_scene_favorite_on_event(void* context, SceneManagerEvent event) {
     DesktopSettingsApp* app = context;
     bool consumed = false;
-    FuriString* temp_path = furi_string_alloc_set_str(EXT_PATH("apps"));
+    FurryString* temp_path = furry_string_alloc_set_str(EXT_PATH("apps"));
 
     uint32_t primary_favorite =
         scene_manager_get_scene_state(app->scene_manager, DesktopSettingsAppSceneFavorite);
@@ -112,12 +112,12 @@ bool desktop_settings_scene_favorite_on_event(void* context, SceneManagerEvent e
             if(primary_favorite) { // Select favorite fap in file browser
                 if(favorite_fap_selector_file_exists(
                        app->settings.favorite_primary.name_or_path)) {
-                    furi_string_set_str(temp_path, app->settings.favorite_primary.name_or_path);
+                    furry_string_set_str(temp_path, app->settings.favorite_primary.name_or_path);
                 }
             } else {
                 if(favorite_fap_selector_file_exists(
                        app->settings.favorite_secondary.name_or_path)) {
-                    furi_string_set_str(temp_path, app->settings.favorite_secondary.name_or_path);
+                    furry_string_set_str(temp_path, app->settings.favorite_secondary.name_or_path);
                 }
             }
 
@@ -127,13 +127,13 @@ bool desktop_settings_scene_favorite_on_event(void* context, SceneManagerEvent e
                     app->settings.favorite_primary.is_external = true;
                     strncpy(
                         app->settings.favorite_primary.name_or_path,
-                        furi_string_get_cstr(temp_path),
+                        furry_string_get_cstr(temp_path),
                         MAX_APP_LENGTH);
                 } else {
                     app->settings.favorite_secondary.is_external = true;
                     strncpy(
                         app->settings.favorite_secondary.name_or_path,
-                        furi_string_get_cstr(temp_path),
+                        furry_string_get_cstr(temp_path),
                         MAX_APP_LENGTH);
                 }
             }
@@ -142,7 +142,7 @@ bool desktop_settings_scene_favorite_on_event(void* context, SceneManagerEvent e
         consumed = true;
     }
 
-    furi_string_free(temp_path);
+    furry_string_free(temp_path);
     return consumed;
 }
 

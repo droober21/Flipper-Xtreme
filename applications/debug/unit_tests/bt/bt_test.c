@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include "../minunit.h"
 
 #include <bt/bt_service/bt_keys_storage.h>
@@ -19,7 +19,7 @@ BtTest* bt_test = NULL;
 
 void bt_test_alloc() {
     bt_test = malloc(sizeof(BtTest));
-    bt_test->storage = furi_record_open(RECORD_STORAGE);
+    bt_test->storage = furry_record_open(RECORD_STORAGE);
     bt_test->nvm_ram_buff_dut = malloc(BT_TEST_NVM_RAM_BUFF_SIZE);
     bt_test->nvm_ram_buff_ref = malloc(BT_TEST_NVM_RAM_BUFF_SIZE);
     bt_test->bt_keys_storage = bt_keys_storage_alloc(BT_TEST_KEY_STORAGE_FILE_PATH);
@@ -28,11 +28,11 @@ void bt_test_alloc() {
 }
 
 void bt_test_free() {
-    furi_assert(bt_test);
+    furry_assert(bt_test);
     free(bt_test->nvm_ram_buff_ref);
     free(bt_test->nvm_ram_buff_dut);
     bt_keys_storage_free(bt_test->bt_keys_storage);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     free(bt_test);
     bt_test = NULL;
 }
@@ -89,7 +89,7 @@ static void bt_test_keys_remove_test_file() {
 }
 
 MU_TEST(bt_test_keys_storage_serial_profile) {
-    furi_assert(bt_test);
+    furry_assert(bt_test);
 
     bt_test_keys_remove_test_file();
     bt_test_keys_storage_profile();

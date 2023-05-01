@@ -28,9 +28,9 @@ typedef struct {
 
     CreateMode mode;
     BarcodeTypeObj* barcode_type;
-    FuriString* file_path; //the current file that is opened
-    FuriString* file_name;
-    FuriString* barcode_data;
+    FurryString* file_path; //the current file that is opened
+    FurryString* file_name;
+    FurryString* barcode_data;
 } CreateViewModel;
 
 CreateView* create_view_allocate(BarcodeApp* barcode_app);

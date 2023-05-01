@@ -15,7 +15,7 @@
 #define SUBGHZ_RAW_TRESHOLD_MIN -90.0f
 
 typedef struct {
-    FuriString* item_str;
+    FurryString* item_str;
     uint8_t type;
 } PCSGReceiverMenuItem;
 
@@ -45,16 +45,16 @@ typedef enum {
 struct PCSGReceiver {
     PCSGLock lock;
     uint8_t lock_count;
-    FuriTimer* timer;
+    FurryTimer* timer;
     View* view;
     PCSGReceiverCallback callback;
     void* context;
 };
 
 typedef struct {
-    FuriString* frequency_str;
-    FuriString* preset_str;
-    FuriString* history_stat_str;
+    FurryString* frequency_str;
+    FurryString* preset_str;
+    FurryString* history_stat_str;
     PCSGReceiverHistory* history;
     uint16_t idx;
     uint16_t list_offset;
@@ -64,7 +64,7 @@ typedef struct {
 } PCSGReceiverModel;
 
 void pcsg_receiver_rssi(PCSGReceiver* instance, float rssi) {
-    furi_assert(instance);
+    furry_assert(instance);
     with_view_model(
         instance->view,
         PCSGReceiverModel * model,
@@ -79,7 +79,7 @@ void pcsg_receiver_rssi(PCSGReceiver* instance, float rssi) {
 }
 
 void pcsg_view_receiver_set_lock(PCSGReceiver* pcsg_receiver, PCSGLock lock) {
-    furi_assert(pcsg_receiver);
+    furry_assert(pcsg_receiver);
     pcsg_receiver->lock_count = 0;
     if(lock == PCSGLockOn) {
         pcsg_receiver->lock = lock;
@@ -88,7 +88,7 @@ void pcsg_view_receiver_set_lock(PCSGReceiver* pcsg_receiver, PCSGLock lock) {
             PCSGReceiverModel * model,
             { model->bar_show = PCSGReceiverBarShowLock; },
             true);
-        furi_timer_start(pcsg_receiver->timer, pdMS_TO_TICKS(1000));
+        furry_timer_start(pcsg_receiver->timer, pdMS_TO_TICKS(1000));
     } else {
         with_view_model(
             pcsg_receiver->view,
@@ -102,14 +102,14 @@ void pcsg_view_receiver_set_callback(
     PCSGReceiver* pcsg_receiver,
     PCSGReceiverCallback callback,
     void* context) {
-    furi_assert(pcsg_receiver);
-    furi_assert(callback);
+    furry_assert(pcsg_receiver);
+    furry_assert(callback);
     pcsg_receiver->callback = callback;
     pcsg_receiver->context = context;
 }
 
 static void pcsg_view_receiver_update_offset(PCSGReceiver* pcsg_receiver) {
-    furi_assert(pcsg_receiver);
+    furry_assert(pcsg_receiver);
 
     with_view_model(
         pcsg_receiver->view,
@@ -134,14 +134,14 @@ void pcsg_view_receiver_add_item_to_menu(
     PCSGReceiver* pcsg_receiver,
     const char* name,
     uint8_t type) {
-    furi_assert(pcsg_receiver);
+    furry_assert(pcsg_receiver);
     with_view_model(
         pcsg_receiver->view,
         PCSGReceiverModel * model,
         {
             PCSGReceiverMenuItem* item_menu =
                 PCSGReceiverMenuItemArray_push_raw(model->history->data);
-            item_menu->item_str = furi_string_alloc_set(name);
+            item_menu->item_str = furry_string_alloc_set(name);
             item_menu->type = type;
             if((model->idx == model->history_item - 1)) {
                 model->history_item++;
@@ -159,14 +159,14 @@ void pcsg_view_receiver_add_data_statusbar(
     const char* frequency_str,
     const char* preset_str,
     const char* history_stat_str) {
-    furi_assert(pcsg_receiver);
+    furry_assert(pcsg_receiver);
     with_view_model(
         pcsg_receiver->view,
         PCSGReceiverModel * model,
         {
-            furi_string_set_str(model->frequency_str, frequency_str);
-            furi_string_set_str(model->preset_str, preset_str);
-            furi_string_set_str(model->history_stat_str, history_stat_str);
+            furry_string_set_str(model->frequency_str, frequency_str);
+            furry_string_set_str(model->preset_str, preset_str);
+            furry_string_set_str(model->history_stat_str, history_stat_str);
         },
         true);
 }
@@ -204,18 +204,18 @@ void pcsg_view_receiver_draw(Canvas* canvas, PCSGReceiverModel* model) {
     //canvas_draw_line(canvas, 46, 51, 125, 51);
 
     bool scrollbar = model->history_item > 4;
-    FuriString* str_buff;
-    str_buff = furi_string_alloc();
+    FurryString* str_buff;
+    str_buff = furry_string_alloc();
 
-    bool ext_module = furi_hal_subghz_get_radio_type();
+    bool ext_module = furry_hal_subghz_get_radio_type();
 
     PCSGReceiverMenuItem* item_menu;
 
     for(size_t i = 0; i < MIN(model->history_item, MENU_ITEMS); ++i) {
         size_t idx = CLAMP((uint16_t)(i + model->list_offset), model->history_item, 0);
         item_menu = PCSGReceiverMenuItemArray_get(model->history->data, idx);
-        furi_string_set(str_buff, item_menu->item_str);
-        furi_string_replace_all(str_buff, "#", "");
+        furry_string_set(str_buff, item_menu->item_str);
+        furry_string_replace_all(str_buff, "#", "");
         elements_string_fit_width(canvas, str_buff, scrollbar ? MAX_LEN_PX - 7 : MAX_LEN_PX);
         if(model->idx == idx) {
             pcsg_view_receiver_draw_frame(canvas, i, scrollbar);
@@ -223,13 +223,13 @@ void pcsg_view_receiver_draw(Canvas* canvas, PCSGReceiverModel* model) {
             canvas_set_color(canvas, ColorBlack);
         }
         canvas_draw_icon(canvas, 4, 2 + i * FRAME_HEIGHT, ReceiverItemIcons[item_menu->type]);
-        canvas_draw_str(canvas, 15, 9 + i * FRAME_HEIGHT, furi_string_get_cstr(str_buff));
-        furi_string_reset(str_buff);
+        canvas_draw_str(canvas, 15, 9 + i * FRAME_HEIGHT, furry_string_get_cstr(str_buff));
+        furry_string_reset(str_buff);
     }
     if(scrollbar) {
         elements_scrollbar_pos(canvas, 128, 0, 49, model->idx, model->history_item);
     }
-    furi_string_free(str_buff);
+    furry_string_free(str_buff);
 
     canvas_set_color(canvas, ColorBlack);
 
@@ -250,9 +250,9 @@ void pcsg_view_receiver_draw(Canvas* canvas, PCSGReceiverModel* model) {
         canvas_draw_str(canvas, 74, 62, "Locked");
         break;
     case PCSGReceiverBarShowToUnlockPress:
-        canvas_draw_str(canvas, 44, 62, furi_string_get_cstr(model->frequency_str));
-        canvas_draw_str(canvas, 79, 62, furi_string_get_cstr(model->preset_str));
-        canvas_draw_str(canvas, 96, 62, furi_string_get_cstr(model->history_stat_str));
+        canvas_draw_str(canvas, 44, 62, furry_string_get_cstr(model->frequency_str));
+        canvas_draw_str(canvas, 79, 62, furry_string_get_cstr(model->preset_str));
+        canvas_draw_str(canvas, 96, 62, furry_string_get_cstr(model->history_stat_str));
         canvas_set_font(canvas, FontSecondary);
         elements_bold_rounded_frame(canvas, 14, 8, 99, 48);
         elements_multiline_text(canvas, 65, 26, "To unlock\npress:");
@@ -267,15 +267,15 @@ void pcsg_view_receiver_draw(Canvas* canvas, PCSGReceiverModel* model) {
         canvas_draw_str(canvas, 74, 62, "Unlocked");
         break;
     default:
-        canvas_draw_str(canvas, 44, 62, furi_string_get_cstr(model->frequency_str));
-        canvas_draw_str(canvas, 79, 62, furi_string_get_cstr(model->preset_str));
-        canvas_draw_str(canvas, 96, 62, furi_string_get_cstr(model->history_stat_str));
+        canvas_draw_str(canvas, 44, 62, furry_string_get_cstr(model->frequency_str));
+        canvas_draw_str(canvas, 79, 62, furry_string_get_cstr(model->preset_str));
+        canvas_draw_str(canvas, 96, 62, furry_string_get_cstr(model->history_stat_str));
         break;
     }
 }
 
 static void pcsg_view_receiver_timer_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     PCSGReceiver* pcsg_receiver = context;
     with_view_model(
         pcsg_receiver->view,
@@ -292,7 +292,7 @@ static void pcsg_view_receiver_timer_callback(void* context) {
 }
 
 bool pcsg_view_receiver_input(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     PCSGReceiver* pcsg_receiver = context;
 
     if(pcsg_receiver->lock == PCSGLockOn) {
@@ -302,7 +302,7 @@ bool pcsg_view_receiver_input(InputEvent* event, void* context) {
             { model->bar_show = PCSGReceiverBarShowToUnlockPress; },
             true);
         if(pcsg_receiver->lock_count == 0) {
-            furi_timer_start(pcsg_receiver->timer, pdMS_TO_TICKS(1000));
+            furry_timer_start(pcsg_receiver->timer, pdMS_TO_TICKS(1000));
         }
         if(event->key == InputKeyBack && event->type == InputTypeShort) {
             pcsg_receiver->lock_count++;
@@ -315,7 +315,7 @@ bool pcsg_view_receiver_input(InputEvent* event, void* context) {
                 { model->bar_show = PCSGReceiverBarShowUnlock; },
                 true);
             pcsg_receiver->lock = PCSGLockOff;
-            furi_timer_start(pcsg_receiver->timer, pdMS_TO_TICKS(650));
+            furry_timer_start(pcsg_receiver->timer, pdMS_TO_TICKS(650));
         }
 
         return true;
@@ -363,22 +363,22 @@ bool pcsg_view_receiver_input(InputEvent* event, void* context) {
 }
 
 void pcsg_view_receiver_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 }
 
 void pcsg_view_receiver_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     PCSGReceiver* pcsg_receiver = context;
     with_view_model(
         pcsg_receiver->view,
         PCSGReceiverModel * model,
         {
-            furi_string_reset(model->frequency_str);
-            furi_string_reset(model->preset_str);
-            furi_string_reset(model->history_stat_str);
+            furry_string_reset(model->frequency_str);
+            furry_string_reset(model->preset_str);
+            furry_string_reset(model->history_stat_str);
                 for
                     M_EACH(item_menu, model->history->data, PCSGReceiverMenuItemArray_t) {
-                        furi_string_free(item_menu->item_str);
+                        furry_string_free(item_menu->item_str);
                         item_menu->type = 0;
                     }
                 PCSGReceiverMenuItemArray_reset(model->history->data);
@@ -387,7 +387,7 @@ void pcsg_view_receiver_exit(void* context) {
                 model->history_item = 0;
         },
         false);
-    furi_timer_stop(pcsg_receiver->timer);
+    furry_timer_stop(pcsg_receiver->timer);
 }
 
 PCSGReceiver* pcsg_view_receiver_alloc() {
@@ -409,50 +409,50 @@ PCSGReceiver* pcsg_view_receiver_alloc() {
         pcsg_receiver->view,
         PCSGReceiverModel * model,
         {
-            model->frequency_str = furi_string_alloc();
-            model->preset_str = furi_string_alloc();
-            model->history_stat_str = furi_string_alloc();
+            model->frequency_str = furry_string_alloc();
+            model->preset_str = furry_string_alloc();
+            model->history_stat_str = furry_string_alloc();
             model->bar_show = PCSGReceiverBarShowDefault;
             model->history = malloc(sizeof(PCSGReceiverHistory));
             PCSGReceiverMenuItemArray_init(model->history->data);
         },
         true);
     pcsg_receiver->timer =
-        furi_timer_alloc(pcsg_view_receiver_timer_callback, FuriTimerTypeOnce, pcsg_receiver);
+        furry_timer_alloc(pcsg_view_receiver_timer_callback, FurryTimerTypeOnce, pcsg_receiver);
     return pcsg_receiver;
 }
 
 void pcsg_view_receiver_free(PCSGReceiver* pcsg_receiver) {
-    furi_assert(pcsg_receiver);
+    furry_assert(pcsg_receiver);
 
     with_view_model(
         pcsg_receiver->view,
         PCSGReceiverModel * model,
         {
-            furi_string_free(model->frequency_str);
-            furi_string_free(model->preset_str);
-            furi_string_free(model->history_stat_str);
+            furry_string_free(model->frequency_str);
+            furry_string_free(model->preset_str);
+            furry_string_free(model->history_stat_str);
                 for
                     M_EACH(item_menu, model->history->data, PCSGReceiverMenuItemArray_t) {
-                        furi_string_free(item_menu->item_str);
+                        furry_string_free(item_menu->item_str);
                         item_menu->type = 0;
                     }
                 PCSGReceiverMenuItemArray_clear(model->history->data);
                 free(model->history);
         },
         false);
-    furi_timer_free(pcsg_receiver->timer);
+    furry_timer_free(pcsg_receiver->timer);
     view_free(pcsg_receiver->view);
     free(pcsg_receiver);
 }
 
 View* pcsg_view_receiver_get_view(PCSGReceiver* pcsg_receiver) {
-    furi_assert(pcsg_receiver);
+    furry_assert(pcsg_receiver);
     return pcsg_receiver->view;
 }
 
 uint16_t pcsg_view_receiver_get_idx_menu(PCSGReceiver* pcsg_receiver) {
-    furi_assert(pcsg_receiver);
+    furry_assert(pcsg_receiver);
     uint32_t idx = 0;
     with_view_model(
         pcsg_receiver->view, PCSGReceiverModel * model, { idx = model->idx; }, false);
@@ -460,7 +460,7 @@ uint16_t pcsg_view_receiver_get_idx_menu(PCSGReceiver* pcsg_receiver) {
 }
 
 void pcsg_view_receiver_set_idx_menu(PCSGReceiver* pcsg_receiver, uint16_t idx) {
-    furi_assert(pcsg_receiver);
+    furry_assert(pcsg_receiver);
     with_view_model(
         pcsg_receiver->view,
         PCSGReceiverModel * model,

@@ -1,7 +1,7 @@
 #include "display_test.h"
 
-#include <furi_hal.h>
-#include <furi.h>
+#include <furry_hal.h>
+#include <furry.h>
 
 // Need access to u8g2
 #include <gui/gui_i.h>
@@ -80,7 +80,7 @@ static uint32_t display_test_exit_callback(void* context) {
 }
 
 static void display_test_reload_config(DisplayTest* instance) {
-    FURI_LOG_I(
+    FURRY_LOG_I(
         TAG,
         "contrast: %d, regulation_ratio: %d, bias: %d",
         instance->config_contrast,
@@ -112,11 +112,11 @@ static void display_config_set_regulation_ratio(VariableItem* item) {
 static void display_config_set_contrast(VariableItem* item) {
     DisplayTest* instance = variable_item_get_context(item);
     uint8_t index = variable_item_get_current_value_index(item);
-    FuriString* temp;
-    temp = furi_string_alloc();
-    furi_string_cat_printf(temp, "%d", index);
-    variable_item_set_current_value_text(item, furi_string_get_cstr(temp));
-    furi_string_free(temp);
+    FurryString* temp;
+    temp = furry_string_alloc();
+    furry_string_cat_printf(temp, "%d", index);
+    variable_item_set_current_value_text(item, furry_string_get_cstr(temp));
+    furry_string_free(temp);
     instance->config_contrast = index;
     display_test_reload_config(instance);
 }
@@ -126,7 +126,7 @@ DisplayTest* display_test_alloc() {
 
     View* view = NULL;
 
-    instance->gui = furi_record_open(RECORD_GUI);
+    instance->gui = furry_record_open(RECORD_GUI);
     instance->view_dispatcher = view_dispatcher_alloc();
     view_dispatcher_enable_queue(instance->view_dispatcher);
     view_dispatcher_attach_to_gui(
@@ -205,7 +205,7 @@ void display_test_free(DisplayTest* instance) {
     view_display_test_free(instance->view_display_test);
 
     view_dispatcher_free(instance->view_dispatcher);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
     free(instance);
 }

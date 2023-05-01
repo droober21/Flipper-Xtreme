@@ -3,13 +3,13 @@
 // https://github.com/nmrr
 
 #include <stdio.h>
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <notification/notification_messages.h>
-#include <furi_hal_random.h>
-#include <furi_hal_pwm.h>
-#include <furi_hal_power.h>
+#include <furry_hal_random.h>
+#include <furry_hal_pwm.h>
+#include <furry_hal_power.h>
 
 #define SCREEN_SIZE_X 128
 #define SCREEN_SIZE_Y 64
@@ -29,7 +29,7 @@ typedef struct {
 } EventApp;
 
 typedef struct {
-    FuriMutex* mutex;
+    FurryMutex* mutex;
     uint32_t cps, cpm;
     uint32_t line[SCREEN_SIZE_X / 2];
     float coef;
@@ -37,13 +37,13 @@ typedef struct {
 } mutexStruct;
 
 static void draw_callback(Canvas* canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
 
     mutexStruct displayStruct;
     mutexStruct* geigerMutex = ctx;
-    furi_mutex_acquire(geigerMutex->mutex, FuriWaitForever);
+    furry_mutex_acquire(geigerMutex->mutex, FurryWaitForever);
     memcpy(&displayStruct, geigerMutex, sizeof(mutexStruct));
-    furi_mutex_release(geigerMutex->mutex);
+    furry_mutex_release(geigerMutex->mutex);
 
     char buffer[32];
     if(displayStruct.data == 0)
@@ -76,40 +76,40 @@ static void draw_callback(Canvas* canvas, void* ctx) {
 }
 
 static void input_callback(InputEvent* input_event, void* ctx) {
-    furi_assert(ctx);
-    FuriMessageQueue* event_queue = ctx;
+    furry_assert(ctx);
+    FurryMessageQueue* event_queue = ctx;
     EventApp event = {.type = EventTypeInput, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 static void clock_tick(void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
 
-    uint32_t randomNumber = furi_hal_random_get();
+    uint32_t randomNumber = furry_hal_random_get();
     randomNumber &= 0xFFF;
     if(randomNumber == 0) randomNumber = 1;
 
-    furi_hal_pwm_start(FuriHalPwmOutputIdLptim2PA4, randomNumber, 50);
+    furry_hal_pwm_start(FurryHalPwmOutputIdLptim2PA4, randomNumber, 50);
 
-    FuriMessageQueue* queue = ctx;
+    FurryMessageQueue* queue = ctx;
     EventApp event = {.type = ClockEventTypeTick};
-    furi_message_queue_put(queue, &event, 0);
+    furry_message_queue_put(queue, &event, 0);
 }
 
 static void gpiocallback(void* ctx) {
-    furi_assert(ctx);
-    FuriMessageQueue* queue = ctx;
+    furry_assert(ctx);
+    FurryMessageQueue* queue = ctx;
     EventApp event = {.type = EventGPIO};
-    furi_message_queue_put(queue, &event, 0);
+    furry_message_queue_put(queue, &event, 0);
 }
 
 int32_t flipper_geiger_app(void* p) {
     UNUSED(p);
     EventApp event;
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(EventApp));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(EventApp));
 
-    furi_hal_gpio_init(&gpio_ext_pa7, GpioModeInterruptFall, GpioPullUp, GpioSpeedVeryHigh);
-    furi_hal_pwm_start(FuriHalPwmOutputIdLptim2PA4, 5, 50);
+    furry_hal_gpio_init(&gpio_ext_pa7, GpioModeInterruptFall, GpioPullUp, GpioSpeedVeryHigh);
+    furry_hal_pwm_start(FurryHalPwmOutputIdLptim2PA4, 5, 50);
 
     mutexStruct mutexVal;
     mutexVal.cps = 0;
@@ -120,9 +120,9 @@ int32_t flipper_geiger_app(void* p) {
 
     uint32_t counter = 0;
 
-    mutexVal.mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    mutexVal.mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!mutexVal.mutex) {
-        furi_message_queue_free(event_queue);
+        furry_message_queue_free(event_queue);
         return 255;
     }
 
@@ -130,39 +130,39 @@ int32_t flipper_geiger_app(void* p) {
     view_port_draw_callback_set(view_port, draw_callback, &mutexVal);
     view_port_input_callback_set(view_port, input_callback, event_queue);
 
-    furi_hal_gpio_add_int_callback(&gpio_ext_pa7, gpiocallback, event_queue);
+    furry_hal_gpio_add_int_callback(&gpio_ext_pa7, gpiocallback, event_queue);
 
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
-    FuriTimer* timer = furi_timer_alloc(clock_tick, FuriTimerTypePeriodic, event_queue);
-    furi_timer_start(timer, 1000);
+    FurryTimer* timer = furry_timer_alloc(clock_tick, FurryTimerTypePeriodic, event_queue);
+    furry_timer_start(timer, 1000);
 
     // ENABLE 5V pin
-    furi_hal_power_enable_otg();
+    furry_hal_power_enable_otg();
 
     while(1) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, FuriWaitForever);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, FurryWaitForever);
 
         uint8_t screenRefresh = 0;
 
-        if(event_status == FuriStatusOk) {
+        if(event_status == FurryStatusOk) {
             if(event.type == EventTypeInput) {
                 if(event.input.key == InputKeyBack) {
                     break;
                 } else if(event.input.key == InputKeyOk && event.input.type == InputTypeShort) {
                     counter = 0;
-                    furi_mutex_acquire(mutexVal.mutex, FuriWaitForever);
+                    furry_mutex_acquire(mutexVal.mutex, FurryWaitForever);
 
                     mutexVal.cps = 0;
                     mutexVal.cpm = 0;
                     for(int i = 0; i < SCREEN_SIZE_X / 2; i++) mutexVal.line[i] = 0;
 
                     screenRefresh = 1;
-                    furi_mutex_release(mutexVal.mutex);
+                    furry_mutex_release(mutexVal.mutex);
                 } else if((event.input.key == InputKeyLeft &&
                            event.input.type == InputTypeShort)) {
-                    furi_mutex_acquire(mutexVal.mutex, FuriWaitForever);
+                    furry_mutex_acquire(mutexVal.mutex, FurryWaitForever);
 
                     if(mutexVal.data != 0)
                         mutexVal.data--;
@@ -170,10 +170,10 @@ int32_t flipper_geiger_app(void* p) {
                         mutexVal.data = 2;
 
                     screenRefresh = 1;
-                    furi_mutex_release(mutexVal.mutex);
+                    furry_mutex_release(mutexVal.mutex);
                 } else if((event.input.key == InputKeyRight &&
                            event.input.type == InputTypeShort)) {
-                    furi_mutex_acquire(mutexVal.mutex, FuriWaitForever);
+                    furry_mutex_acquire(mutexVal.mutex, FurryWaitForever);
 
                     if(mutexVal.data != 2)
                         mutexVal.data++;
@@ -181,10 +181,10 @@ int32_t flipper_geiger_app(void* p) {
                         mutexVal.data = 0;
 
                     screenRefresh = 1;
-                    furi_mutex_release(mutexVal.mutex);
+                    furry_mutex_release(mutexVal.mutex);
                 }
             } else if(event.type == ClockEventTypeTick) {
-                furi_mutex_acquire(mutexVal.mutex, FuriWaitForever);
+                furry_mutex_acquire(mutexVal.mutex, FurryWaitForever);
 
                 for(int i = 0; i < SCREEN_SIZE_X / 2 - 1; i++)
                     mutexVal.line[SCREEN_SIZE_X / 2 - 1 - i] =
@@ -207,7 +207,7 @@ int32_t flipper_geiger_app(void* p) {
                     mutexVal.coef = 1;
 
                 screenRefresh = 1;
-                furi_mutex_release(mutexVal.mutex);
+                furry_mutex_release(mutexVal.mutex);
             } else if(event.type == EventGPIO) {
                 counter++;
             }
@@ -216,18 +216,18 @@ int32_t flipper_geiger_app(void* p) {
         if(screenRefresh == 1) view_port_update(view_port);
     }
 
-    furi_hal_power_disable_otg();
+    furry_hal_power_disable_otg();
 
-    furi_hal_gpio_disable_int_callback(&gpio_ext_pa7);
-    furi_hal_gpio_remove_int_callback(&gpio_ext_pa7);
-    furi_hal_pwm_stop(FuriHalPwmOutputIdLptim2PA4);
+    furry_hal_gpio_disable_int_callback(&gpio_ext_pa7);
+    furry_hal_gpio_remove_int_callback(&gpio_ext_pa7);
+    furry_hal_pwm_stop(FurryHalPwmOutputIdLptim2PA4);
 
-    furi_message_queue_free(event_queue);
-    furi_mutex_free(mutexVal.mutex);
+    furry_message_queue_free(event_queue);
+    furry_mutex_free(mutexVal.mutex);
     gui_remove_view_port(gui, view_port);
     view_port_free(view_port);
-    furi_timer_free(timer);
-    furi_record_close(RECORD_GUI);
+    furry_timer_free(timer);
+    furry_record_close(RECORD_GUI);
 
     return 0;
 }

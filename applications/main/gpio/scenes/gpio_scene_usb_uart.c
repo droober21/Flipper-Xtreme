@@ -9,7 +9,7 @@ typedef struct {
 static SceneUsbUartBridge* scene_usb_uart;
 
 void gpio_scene_usb_uart_callback(GpioCustomEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     GpioApp* app = context;
     view_dispatcher_send_custom_event(app->view_dispatcher, event);
 }

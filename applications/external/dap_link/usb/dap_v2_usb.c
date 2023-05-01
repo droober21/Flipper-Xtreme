@@ -1,9 +1,9 @@
-#include <furi.h>
+#include <furry.h>
 #include <usb.h>
 #include <usb_std.h>
 #include <usb_hid.h>
 #include <usb_cdc.h>
-#include <furi_hal_console.h>
+#include <furry_hal_console.h>
 
 #include "dap_v2_usb.h"
 
@@ -440,9 +440,9 @@ const usb_msos_descriptor_set_t usb_msos_descriptor_set = {
 };
 
 typedef struct {
-    FuriSemaphore* semaphore_v1;
-    FuriSemaphore* semaphore_v2;
-    FuriSemaphore* semaphore_cdc;
+    FurrySemaphore* semaphore_v1;
+    FurrySemaphore* semaphore_v2;
+    FurrySemaphore* semaphore_cdc;
     bool connected;
     usbd_device* usb_dev;
     DapStateCallback state_callback;
@@ -475,30 +475,30 @@ static struct usb_cdc_line_coding cdc_config = {0};
 static uint8_t cdc_ctrl_line_state = 0;
 
 #ifdef DAP_USB_LOG
-void furi_console_log_printf(const char* format, ...) _ATTRIBUTE((__format__(__printf__, 1, 2)));
+void furry_console_log_printf(const char* format, ...) _ATTRIBUTE((__format__(__printf__, 1, 2)));
 
-void furi_console_log_printf(const char* format, ...) {
+void furry_console_log_printf(const char* format, ...) {
     char buffer[256];
     va_list args;
     va_start(args, format);
     vsnprintf(buffer, sizeof(buffer), format, args);
     va_end(args);
-    furi_hal_console_puts(buffer);
-    furi_hal_console_puts("\r\n");
+    furry_hal_console_puts(buffer);
+    furry_hal_console_puts("\r\n");
     UNUSED(format);
 }
 #else
-#define furi_console_log_printf(...)
+#define furry_console_log_printf(...)
 #endif
 
 int32_t dap_v1_usb_tx(uint8_t* buffer, uint8_t size) {
     if((dap_state.semaphore_v1 == NULL) || (dap_state.connected == false)) return 0;
 
-    furi_check(furi_semaphore_acquire(dap_state.semaphore_v1, FuriWaitForever) == FuriStatusOk);
+    furry_check(furry_semaphore_acquire(dap_state.semaphore_v1, FurryWaitForever) == FurryStatusOk);
 
     if(dap_state.connected) {
         int32_t len = usbd_ep_write(dap_state.usb_dev, DAP_HID_EP_IN, buffer, size);
-        furi_console_log_printf("v1 tx %ld", len);
+        furry_console_log_printf("v1 tx %ld", len);
         return len;
     } else {
         return 0;
@@ -508,11 +508,11 @@ int32_t dap_v1_usb_tx(uint8_t* buffer, uint8_t size) {
 int32_t dap_v2_usb_tx(uint8_t* buffer, uint8_t size) {
     if((dap_state.semaphore_v2 == NULL) || (dap_state.connected == false)) return 0;
 
-    furi_check(furi_semaphore_acquire(dap_state.semaphore_v2, FuriWaitForever) == FuriStatusOk);
+    furry_check(furry_semaphore_acquire(dap_state.semaphore_v2, FurryWaitForever) == FurryStatusOk);
 
     if(dap_state.connected) {
         int32_t len = usbd_ep_write(dap_state.usb_dev, DAP_HID_EP_BULK_IN, buffer, size);
-        furi_console_log_printf("v2 tx %ld", len);
+        furry_console_log_printf("v2 tx %ld", len);
         return len;
     } else {
         return 0;
@@ -522,11 +522,11 @@ int32_t dap_v2_usb_tx(uint8_t* buffer, uint8_t size) {
 int32_t dap_cdc_usb_tx(uint8_t* buffer, uint8_t size) {
     if((dap_state.semaphore_cdc == NULL) || (dap_state.connected == false)) return 0;
 
-    furi_check(furi_semaphore_acquire(dap_state.semaphore_cdc, FuriWaitForever) == FuriStatusOk);
+    furry_check(furry_semaphore_acquire(dap_state.semaphore_cdc, FurryWaitForever) == FurryStatusOk);
 
     if(dap_state.connected) {
         int32_t len = usbd_ep_write(dap_state.usb_dev, HID_EP_IN | DAP_CDC_EP_SEND, buffer, size);
-        furi_console_log_printf("cdc tx %ld", len);
+        furry_console_log_printf("cdc tx %ld", len);
         return len;
     } else {
         return 0;
@@ -566,7 +566,7 @@ void dap_common_usb_set_state_callback(DapStateCallback callback) {
 }
 
 static void* dap_usb_alloc_string_descr(const char* str) {
-    furi_assert(str);
+    furry_assert(str);
 
     size_t len = strlen(str);
     size_t wlen = (len + 1) * sizeof(uint16_t);
@@ -588,7 +588,7 @@ void dap_common_usb_free_name() {
     free(dev_serial_descr);
 }
 
-static void hid_init(usbd_device* dev, FuriHalUsbInterface* intf, void* ctx);
+static void hid_init(usbd_device* dev, FurryHalUsbInterface* intf, void* ctx);
 static void hid_deinit(usbd_device* dev);
 static void hid_on_wakeup(usbd_device* dev);
 static void hid_on_suspend(usbd_device* dev);
@@ -596,7 +596,7 @@ static void hid_on_suspend(usbd_device* dev);
 static usbd_respond hid_ep_config(usbd_device* dev, uint8_t cfg);
 static usbd_respond hid_control(usbd_device* dev, usbd_ctlreq* req, usbd_rqc_callback* callback);
 
-FuriHalUsbInterface dap_v2_usb_hid = {
+FurryHalUsbInterface dap_v2_usb_hid = {
     .init = hid_init,
     .deinit = hid_deinit,
     .wakeup = hid_on_wakeup,
@@ -605,7 +605,7 @@ FuriHalUsbInterface dap_v2_usb_hid = {
     .cfg_descr = (void*)&hid_cfg_desc,
 };
 
-static void hid_init(usbd_device* dev, FuriHalUsbInterface* intf, void* ctx) {
+static void hid_init(usbd_device* dev, FurryHalUsbInterface* intf, void* ctx) {
     UNUSED(intf);
     UNUSED(ctx);
 
@@ -614,9 +614,9 @@ static void hid_init(usbd_device* dev, FuriHalUsbInterface* intf, void* ctx) {
     dap_v2_usb_hid.str_serial_descr = (void*)dev_serial_descr;
 
     dap_state.usb_dev = dev;
-    if(dap_state.semaphore_v1 == NULL) dap_state.semaphore_v1 = furi_semaphore_alloc(1, 1);
-    if(dap_state.semaphore_v2 == NULL) dap_state.semaphore_v2 = furi_semaphore_alloc(1, 1);
-    if(dap_state.semaphore_cdc == NULL) dap_state.semaphore_cdc = furi_semaphore_alloc(1, 1);
+    if(dap_state.semaphore_v1 == NULL) dap_state.semaphore_v1 = furry_semaphore_alloc(1, 1);
+    if(dap_state.semaphore_v2 == NULL) dap_state.semaphore_v2 = furry_semaphore_alloc(1, 1);
+    if(dap_state.semaphore_cdc == NULL) dap_state.semaphore_cdc = furry_semaphore_alloc(1, 1);
 
     usbd_reg_config(dev, hid_ep_config);
     usbd_reg_control(dev, hid_control);
@@ -627,9 +627,9 @@ static void hid_init(usbd_device* dev, FuriHalUsbInterface* intf, void* ctx) {
 static void hid_deinit(usbd_device* dev) {
     dap_state.usb_dev = NULL;
 
-    furi_semaphore_free(dap_state.semaphore_v1);
-    furi_semaphore_free(dap_state.semaphore_v2);
-    furi_semaphore_free(dap_state.semaphore_cdc);
+    furry_semaphore_free(dap_state.semaphore_v1);
+    furry_semaphore_free(dap_state.semaphore_v2);
+    furry_semaphore_free(dap_state.semaphore_cdc);
     dap_state.semaphore_v1 = NULL;
     dap_state.semaphore_v2 = NULL;
     dap_state.semaphore_cdc = NULL;
@@ -694,8 +694,8 @@ static void hid_txrx_ep_callback(usbd_device* dev, uint8_t event, uint8_t ep) {
 
     switch(event) {
     case usbd_evt_eptx:
-        furi_semaphore_release(dap_state.semaphore_v1);
-        furi_console_log_printf("hid tx complete");
+        furry_semaphore_release(dap_state.semaphore_v1);
+        furry_console_log_printf("hid tx complete");
         break;
     case usbd_evt_eprx:
         if(dap_state.rx_callback_v1 != NULL) {
@@ -703,7 +703,7 @@ static void hid_txrx_ep_callback(usbd_device* dev, uint8_t event, uint8_t ep) {
         }
         break;
     default:
-        furi_console_log_printf("hid %d, %d", event, ep);
+        furry_console_log_printf("hid %d, %d", event, ep);
         break;
     }
 }
@@ -714,8 +714,8 @@ static void hid_txrx_ep_bulk_callback(usbd_device* dev, uint8_t event, uint8_t e
 
     switch(event) {
     case usbd_evt_eptx:
-        furi_semaphore_release(dap_state.semaphore_v2);
-        furi_console_log_printf("bulk tx complete");
+        furry_semaphore_release(dap_state.semaphore_v2);
+        furry_console_log_printf("bulk tx complete");
         break;
     case usbd_evt_eprx:
         if(dap_state.rx_callback_v2 != NULL) {
@@ -723,7 +723,7 @@ static void hid_txrx_ep_bulk_callback(usbd_device* dev, uint8_t event, uint8_t e
         }
         break;
     default:
-        furi_console_log_printf("bulk %d, %d", event, ep);
+        furry_console_log_printf("bulk %d, %d", event, ep);
         break;
     }
 }
@@ -734,8 +734,8 @@ static void cdc_txrx_ep_callback(usbd_device* dev, uint8_t event, uint8_t ep) {
 
     switch(event) {
     case usbd_evt_eptx:
-        furi_semaphore_release(dap_state.semaphore_cdc);
-        furi_console_log_printf("cdc tx complete");
+        furry_semaphore_release(dap_state.semaphore_cdc);
+        furry_console_log_printf("cdc tx complete");
         break;
     case usbd_evt_eprx:
         if(dap_state.rx_callback_cdc != NULL) {
@@ -743,7 +743,7 @@ static void cdc_txrx_ep_callback(usbd_device* dev, uint8_t event, uint8_t ep) {
         }
         break;
     default:
-        furi_console_log_printf("cdc %d, %d", event, ep);
+        furry_console_log_printf("cdc %d, %d", event, ep);
         break;
     }
 }
@@ -792,41 +792,41 @@ static usbd_respond hid_ep_config(usbd_device* dev, uint8_t cfg) {
 static void dump_request_type(uint8_t type) {
     switch(type & USB_REQ_DIRECTION) {
     case USB_REQ_HOSTTODEV:
-        furi_hal_console_puts("host to dev, ");
+        furry_hal_console_puts("host to dev, ");
         break;
     case USB_REQ_DEVTOHOST:
-        furi_hal_console_puts("dev to host, ");
+        furry_hal_console_puts("dev to host, ");
         break;
     }
 
     switch(type & USB_REQ_TYPE) {
     case USB_REQ_STANDARD:
-        furi_hal_console_puts("standard, ");
+        furry_hal_console_puts("standard, ");
         break;
     case USB_REQ_CLASS:
-        furi_hal_console_puts("class, ");
+        furry_hal_console_puts("class, ");
         break;
     case USB_REQ_VENDOR:
-        furi_hal_console_puts("vendor, ");
+        furry_hal_console_puts("vendor, ");
         break;
     }
 
     switch(type & USB_REQ_RECIPIENT) {
     case USB_REQ_DEVICE:
-        furi_hal_console_puts("device");
+        furry_hal_console_puts("device");
         break;
     case USB_REQ_INTERFACE:
-        furi_hal_console_puts("interface");
+        furry_hal_console_puts("interface");
         break;
     case USB_REQ_ENDPOINT:
-        furi_hal_console_puts("endpoint");
+        furry_hal_console_puts("endpoint");
         break;
     case USB_REQ_OTHER:
-        furi_hal_console_puts("other");
+        furry_hal_console_puts("other");
         break;
     }
 
-    furi_hal_console_puts("\r\n");
+    furry_hal_console_puts("\r\n");
 }
 #else
 #define dump_request_type(...)
@@ -836,7 +836,7 @@ static usbd_respond hid_control(usbd_device* dev, usbd_ctlreq* req, usbd_rqc_cal
     UNUSED(callback);
 
     dump_request_type(req->bmRequestType);
-    furi_console_log_printf(
+    furry_console_log_printf(
         "control: RT %02x, R %02x, V %04x, I %04x, L %04x",
         req->bmRequestType,
         req->bRequest,
@@ -847,11 +847,11 @@ static usbd_respond hid_control(usbd_device* dev, usbd_ctlreq* req, usbd_rqc_cal
     if(((USB_REQ_RECIPIENT | USB_REQ_TYPE | USB_REQ_DIRECTION) & req->bmRequestType) ==
        (USB_REQ_STANDARD | USB_REQ_VENDOR | USB_REQ_DEVTOHOST)) {
         // vendor request, device to host
-        furi_console_log_printf("vendor request");
+        furry_console_log_printf("vendor request");
         if(USB_WINUSB_VENDOR_CODE == req->bRequest) {
             // WINUSB request
             if(USB_WINUSB_DESCRIPTOR_INDEX == req->wIndex) {
-                furi_console_log_printf("WINUSB descriptor");
+                furry_console_log_printf("WINUSB descriptor");
                 uint16_t length = req->wLength;
                 if(length > sizeof(usb_msos_descriptor_set_t)) {
                     length = sizeof(usb_msos_descriptor_set_t);
@@ -873,23 +873,23 @@ static usbd_respond hid_control(usbd_device* dev, usbd_ctlreq* req, usbd_rqc_cal
             // get string descriptor
             if(USB_DTYPE_STRING == dtype) {
                 if(dnumber == USB_STR_CMSIS_DAP_V1) {
-                    furi_console_log_printf("str CMSIS-DAP v1");
+                    furry_console_log_printf("str CMSIS-DAP v1");
                     dev->status.data_ptr = (uint8_t*)&dev_dap_v1_descr;
                     dev->status.data_count = dev_dap_v1_descr.bLength;
                     return usbd_ack;
                 } else if(dnumber == USB_STR_CMSIS_DAP_V2) {
-                    furi_console_log_printf("str CMSIS-DAP v2");
+                    furry_console_log_printf("str CMSIS-DAP v2");
                     dev->status.data_ptr = (uint8_t*)&dev_dap_v2_descr;
                     dev->status.data_count = dev_dap_v2_descr.bLength;
                     return usbd_ack;
                 } else if(dnumber == USB_STR_COM_PORT) {
-                    furi_console_log_printf("str COM port");
+                    furry_console_log_printf("str COM port");
                     dev->status.data_ptr = (uint8_t*)&dev_com_descr;
                     dev->status.data_count = dev_com_descr.bLength;
                     return usbd_ack;
                 }
             } else if(USB_DTYPE_BINARY_OBJECT_STORE == dtype) {
-                furi_console_log_printf("BOS descriptor");
+                furry_console_log_printf("BOS descriptor");
                 uint16_t length = req->wLength;
                 if(length > sizeof(usb_bos_hierarchy_t)) {
                     length = sizeof(usb_bos_hierarchy_t);
@@ -908,11 +908,11 @@ static usbd_respond hid_control(usbd_device* dev, usbd_ctlreq* req, usbd_rqc_cal
         switch(req->bRequest) {
         // get hid descriptor
         case USB_HID_GETREPORT:
-            furi_console_log_printf("get report");
+            furry_console_log_printf("get report");
             return usbd_fail;
         // set hid idle
         case USB_HID_SETIDLE:
-            furi_console_log_printf("set idle");
+            furry_console_log_printf("set idle");
             return usbd_ack;
         default:
             break;
@@ -926,7 +926,7 @@ static usbd_respond hid_control(usbd_device* dev, usbd_ctlreq* req, usbd_rqc_cal
         switch(req->bRequest) {
         // control line state
         case USB_CDC_SET_CONTROL_LINE_STATE:
-            furi_console_log_printf("set control line state");
+            furry_console_log_printf("set control line state");
             cdc_ctrl_line_state = req->wValue;
             if(dap_state.control_line_callback_cdc != NULL) {
                 dap_state.control_line_callback_cdc(cdc_ctrl_line_state, dap_state.context_cdc);
@@ -934,7 +934,7 @@ static usbd_respond hid_control(usbd_device* dev, usbd_ctlreq* req, usbd_rqc_cal
             return usbd_ack;
         // set cdc line coding
         case USB_CDC_SET_LINE_CODING:
-            furi_console_log_printf("set line coding");
+            furry_console_log_printf("set line coding");
             memcpy(&cdc_config, req->data, sizeof(cdc_config));
             if(dap_state.config_callback_cdc != NULL) {
                 dap_state.config_callback_cdc(&cdc_config, dap_state.context_cdc);
@@ -942,7 +942,7 @@ static usbd_respond hid_control(usbd_device* dev, usbd_ctlreq* req, usbd_rqc_cal
             return usbd_ack;
         // get cdc line coding
         case USB_CDC_GET_LINE_CODING:
-            furi_console_log_printf("get line coding");
+            furry_console_log_printf("get line coding");
             dev->status.data_ptr = &cdc_config;
             dev->status.data_count = sizeof(cdc_config);
             return usbd_ack;
@@ -958,13 +958,13 @@ static usbd_respond hid_control(usbd_device* dev, usbd_ctlreq* req, usbd_rqc_cal
         switch(req->wValue >> 8) {
         // get hid descriptor
         case USB_DTYPE_HID:
-            furi_console_log_printf("get hid descriptor");
+            furry_console_log_printf("get hid descriptor");
             dev->status.data_ptr = (uint8_t*)&(hid_cfg_desc.hid);
             dev->status.data_count = sizeof(hid_cfg_desc.hid);
             return usbd_ack;
         // get hid report descriptor
         case USB_DTYPE_HID_REPORT:
-            furi_console_log_printf("get hid report descriptor");
+            furry_console_log_printf("get hid report descriptor");
             dev->status.data_ptr = (uint8_t*)hid_report_desc;
             dev->status.data_count = sizeof(hid_report_desc);
             return usbd_ack;

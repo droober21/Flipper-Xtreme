@@ -9,7 +9,7 @@
 #include "../../common_command_arguments.h"
 
 struct TotpAddContext {
-    FuriString* args;
+    FurryString* args;
     Cli* cli;
     uint8_t* iv;
 };
@@ -29,7 +29,7 @@ static TotpIteratorUpdateTokenResult
         return TotpIteratorUpdateTokenResultInvalidArguments;
     }
 
-    FuriString* temp_str = furi_string_alloc();
+    FurryString* temp_str = furry_string_alloc();
 
     // Read optional arguments
     bool mask_user_input = true;
@@ -47,17 +47,17 @@ static TotpIteratorUpdateTokenResult
         }
 
         if(!parsed) {
-            furi_string_free(temp_str);
+            furry_string_free(temp_str);
             return TotpIteratorUpdateTokenResultInvalidArguments;
         }
     }
 
     // Reading token secret
-    furi_string_reset(temp_str);
+    furry_string_reset(temp_str);
     TOTP_CLI_PRINTF("Enter token secret and confirm with [ENTER]\r\n");
     if(!totp_cli_read_line(context_t->cli, temp_str, mask_user_input)) {
         totp_cli_delete_last_line();
-        furi_string_secure_free(temp_str);
+        furry_string_secure_free(temp_str);
         return TotpIteratorUpdateTokenResultCancelled;
     }
 
@@ -65,12 +65,12 @@ static TotpIteratorUpdateTokenResult
 
     bool secret_set = token_info_set_secret(
         token_info,
-        furi_string_get_cstr(temp_str),
-        furi_string_size(temp_str),
+        furry_string_get_cstr(temp_str),
+        furry_string_size(temp_str),
         token_secret_encoding,
         context_t->iv);
 
-    furi_string_secure_free(temp_str);
+    furry_string_secure_free(temp_str);
 
     if(!secret_set) {
         return TotpIteratorUpdateTokenResultInvalidSecret;
@@ -144,7 +144,7 @@ void totp_cli_command_add_docopt_options() {
                     " - Type slower\r\n");
 }
 
-void totp_cli_command_add_handle(PluginState* plugin_state, FuriString* args, Cli* cli) {
+void totp_cli_command_add_handle(PluginState* plugin_state, FurryString* args, Cli* cli) {
     if(!totp_cli_ensure_authenticated(plugin_state, cli)) {
         return;
     }
@@ -161,7 +161,7 @@ void totp_cli_command_add_handle(PluginState* plugin_state, FuriString* args, Cl
     if(add_result == TotpIteratorUpdateTokenResultSuccess) {
         TOTP_CLI_PRINTF_SUCCESS(
             "Token \"%s\" has been successfully added\r\n",
-            furi_string_get_cstr(
+            furry_string_get_cstr(
                 totp_token_info_iterator_get_current_token(iterator_context)->name));
     } else if(add_result == TotpIteratorUpdateTokenResultCancelled) {
         TOTP_CLI_PRINTF_INFO("Cancelled by user\r\n");

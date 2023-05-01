@@ -1,14 +1,14 @@
 #include "../avr_isp_app_i.h"
 
 void avr_isp_scene_start_submenu_callback(void* context, uint32_t index) {
-    furi_assert(context);
+    furry_assert(context);
     AvrIspApp* app = context;
 
     view_dispatcher_send_custom_event(app->view_dispatcher, index);
 }
 
 void avr_isp_scene_start_on_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspApp* app = context;
     Submenu* submenu = app->submenu;
@@ -34,7 +34,7 @@ void avr_isp_scene_start_on_enter(void* context) {
 }
 
 bool avr_isp_scene_start_on_event(void* context, SceneManagerEvent event) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspApp* app = context;
     bool consumed = false;
@@ -68,7 +68,7 @@ bool avr_isp_scene_start_on_event(void* context, SceneManagerEvent event) {
 }
 
 void avr_isp_scene_start_on_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspApp* app = context;
     submenu_reset(app->submenu);

@@ -4,7 +4,7 @@
  */
 
 #pragma once
-#include <furi.h>
+#include <furry.h>
 #include <gui/view.h>
 #include <input/input.h>
 #include "widget_element.h"
@@ -26,7 +26,7 @@ struct WidgetElement {
 
     // generic model holder
     void* model;
-    FuriMutex* model_mutex;
+    FurryMutex* model_mutex;
 
     // pointer to widget that hold our element
     Widget* parent;

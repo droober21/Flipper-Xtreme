@@ -106,4 +106,4 @@ SubGhzProtocolStatus
  * @param context Pointer to a SubGhzProtocolDecoderNiceFlo instance
  * @param output Resulting text
  */
-void subghz_protocol_decoder_nice_flo_get_string(void* context, FuriString* output);
+void subghz_protocol_decoder_nice_flo_get_string(void* context, FurryString* output);

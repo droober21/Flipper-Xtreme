@@ -8,11 +8,11 @@
 // However, on this occasion I think it's a good choice (to make adding controllers LESS bug-prone)
 //
 
-//if (furi_message_queue_get_count(queue) > 18)  WARN("queue high %d", furi_message_queue_get_count(queue));
+//if (furry_message_queue_get_count(queue) > 18)  WARN("queue high %d", furry_message_queue_get_count(queue));
 #define MSGQ(lbl)                               \
     do {                                        \
         msg.wiiEc.in = lbl;                     \
-        furi_message_queue_put(queue, &msg, 0); \
+        furry_message_queue_put(queue, &msg, 0); \
     } while(0)
 
 // A 'standard' "button" is an independent SPST switch

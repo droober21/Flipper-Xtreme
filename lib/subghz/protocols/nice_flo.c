@@ -83,7 +83,7 @@ void* subghz_protocol_encoder_nice_flo_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_encoder_nice_flo_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderNiceFlo* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -95,11 +95,11 @@ void subghz_protocol_encoder_nice_flo_free(void* context) {
  * @return true On success
  */
 static bool subghz_protocol_encoder_nice_flo_get_upload(SubGhzProtocolEncoderNiceFlo* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     size_t index = 0;
     size_t size_upload = (instance->generic.data_count_bit * 2) + 2;
     if(size_upload > instance->encoder.size_upload) {
-        FURI_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
+        FURRY_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
         return false;
     } else {
         instance->encoder.size_upload = size_upload;
@@ -131,7 +131,7 @@ static bool subghz_protocol_encoder_nice_flo_get_upload(SubGhzProtocolEncoderNic
 
 SubGhzProtocolStatus
     subghz_protocol_encoder_nice_flo_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderNiceFlo* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -143,7 +143,7 @@ SubGhzProtocolStatus
             subghz_protocol_nice_flo_const.min_count_bit_for_found) ||
            (instance->generic.data_count_bit >
             2 * subghz_protocol_nice_flo_const.min_count_bit_for_found)) {
-            FURI_LOG_E(TAG, "Wrong number of bits in key");
+            FURRY_LOG_E(TAG, "Wrong number of bits in key");
             ret = SubGhzProtocolStatusErrorValueBitCount;
             break;
         }
@@ -193,19 +193,19 @@ void* subghz_protocol_decoder_nice_flo_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_nice_flo_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderNiceFlo* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_nice_flo_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderNiceFlo* instance = context;
     instance->decoder.parser_step = NiceFloDecoderStepReset;
 }
 
 void subghz_protocol_decoder_nice_flo_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderNiceFlo* instance = context;
 
     switch(instance->decoder.parser_step) {
@@ -277,7 +277,7 @@ void subghz_protocol_decoder_nice_flo_feed(void* context, bool level, uint32_t d
 }
 
 uint8_t subghz_protocol_decoder_nice_flo_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderNiceFlo* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -287,14 +287,14 @@ SubGhzProtocolStatus subghz_protocol_decoder_nice_flo_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderNiceFlo* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_nice_flo_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderNiceFlo* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -306,7 +306,7 @@ SubGhzProtocolStatus
             subghz_protocol_nice_flo_const.min_count_bit_for_found) ||
            (instance->generic.data_count_bit >
             2 * subghz_protocol_nice_flo_const.min_count_bit_for_found)) {
-            FURI_LOG_E(TAG, "Wrong number of bits in key");
+            FURRY_LOG_E(TAG, "Wrong number of bits in key");
             ret = SubGhzProtocolStatusErrorValueBitCount;
             break;
         }
@@ -314,8 +314,8 @@ SubGhzProtocolStatus
     return ret;
 }
 
-void subghz_protocol_decoder_nice_flo_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_nice_flo_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderNiceFlo* instance = context;
 
     uint32_t code_found_lo = instance->generic.data & 0x00000000ffffffff;
@@ -323,7 +323,7 @@ void subghz_protocol_decoder_nice_flo_get_string(void* context, FuriString* outp
         instance->generic.data, instance->generic.data_count_bit);
     uint32_t code_found_reverse_lo = code_found_reverse & 0x00000000ffffffff;
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %dbit\r\n"
         "Key:0x%08lX\r\n"

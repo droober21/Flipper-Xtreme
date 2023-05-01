@@ -1,6 +1,6 @@
 #include <string.h>
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include "version.h"
@@ -46,38 +46,38 @@ static void usb_hid_autofire_render_callback(Canvas* canvas, void* ctx) {
 }
 
 static void usb_hid_autofire_input_callback(InputEvent* input_event, void* ctx) {
-    FuriMessageQueue* event_queue = ctx;
+    FurryMessageQueue* event_queue = ctx;
 
     UsbMouseEvent event;
     event.type = EventTypeInput;
     event.input = *input_event;
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 int32_t usb_hid_autofire_app(void* p) {
     UNUSED(p);
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(UsbMouseEvent));
-    furi_check(event_queue);
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(UsbMouseEvent));
+    furry_check(event_queue);
     ViewPort* view_port = view_port_alloc();
 
-    FuriHalUsbInterface* usb_mode_prev = furi_hal_usb_get_config();
+    FurryHalUsbInterface* usb_mode_prev = furry_hal_usb_get_config();
 #ifndef USB_HID_AUTOFIRE_SCREENSHOT
-    furi_hal_usb_unlock();
-    furi_check(furi_hal_usb_set_config(&usb_hid, NULL) == true);
+    furry_hal_usb_unlock();
+    furry_check(furry_hal_usb_set_config(&usb_hid, NULL) == true);
 #endif
 
     view_port_draw_callback_set(view_port, usb_hid_autofire_render_callback, NULL);
     view_port_input_callback_set(view_port, usb_hid_autofire_input_callback, event_queue);
 
     // Open GUI and register view_port
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     UsbMouseEvent event;
     while(1) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 50);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 50);
 
-        if(event_status == FuriStatusOk) {
+        if(event_status == FurryStatusOk) {
             if(event.type == EventTypeInput) {
                 if(event.input.key == InputKeyBack) {
                     break;
@@ -106,22 +106,22 @@ int32_t usb_hid_autofire_app(void* p) {
         }
 
         if(btn_left_autofire) {
-            furi_hal_hid_mouse_press(HID_MOUSE_BTN_LEFT);
-            // TODO: Don't wait, but use the timer directly to just don't send the release event (see furi_hal_cortex_delay_us)
-            furi_delay_us(autofire_delay * 500);
-            furi_hal_hid_mouse_release(HID_MOUSE_BTN_LEFT);
-            furi_delay_us(autofire_delay * 500);
+            furry_hal_hid_mouse_press(HID_MOUSE_BTN_LEFT);
+            // TODO: Don't wait, but use the timer directly to just don't send the release event (see furry_hal_cortex_delay_us)
+            furry_delay_us(autofire_delay * 500);
+            furry_hal_hid_mouse_release(HID_MOUSE_BTN_LEFT);
+            furry_delay_us(autofire_delay * 500);
         }
 
         view_port_update(view_port);
     }
 
-    furi_hal_usb_set_config(usb_mode_prev, NULL);
+    furry_hal_usb_set_config(usb_mode_prev, NULL);
 
     // remove & free all stuff created by app
     gui_remove_view_port(gui, view_port);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
+    furry_message_queue_free(event_queue);
 
     return 0;
 }

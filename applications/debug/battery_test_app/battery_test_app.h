@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <power/power_service/power.h>
 #include <gui/gui.h>
 #include <gui/view.h>

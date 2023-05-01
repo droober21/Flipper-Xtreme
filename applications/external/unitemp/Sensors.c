@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 #include "Sensors.h"
-#include <furi_hal_power.h>
+#include <furry_hal_power.h>
 
 //Порты ввода/вывода, которые не были обозначены в общем списке
 const GpioPin SWC_10 = {.pin = LL_GPIO_PIN_14, .port = GPIOA};
@@ -284,21 +284,21 @@ bool unitemp_sensors_load(void) {
     app->file_stream = file_stream_alloc(app->storage);
 
     //Переменная пути к файлу
-    FuriString* filepath = furi_string_alloc();
+    FurryString* filepath = furry_string_alloc();
     //Составление пути к файлу
-    furi_string_printf(filepath, "%s/%s", APP_PATH_FOLDER, APP_FILENAME_SENSORS);
+    furry_string_printf(filepath, "%s/%s", APP_PATH_FOLDER, APP_FILENAME_SENSORS);
 
     //Открытие потока к файлу с датчиками
     if(!file_stream_open(
-           app->file_stream, furi_string_get_cstr(filepath), FSAM_READ_WRITE, FSOM_OPEN_EXISTING)) {
+           app->file_stream, furry_string_get_cstr(filepath), FSAM_READ_WRITE, FSOM_OPEN_EXISTING)) {
         if(file_stream_get_error(app->file_stream) == FSE_NOT_EXIST) {
-            FURI_LOG_W(APP_NAME, "Missing sensors file");
+            FURRY_LOG_W(APP_NAME, "Missing sensors file");
             //Закрытие потока и освобождение памяти
             file_stream_close(app->file_stream);
             stream_free(app->file_stream);
             return false;
         } else {
-            FURI_LOG_E(
+            FURRY_LOG_E(
                 APP_NAME,
                 "An error occurred while loading the sensors file: %d",
                 file_stream_get_error(app->file_stream));
@@ -313,7 +313,7 @@ bool unitemp_sensors_load(void) {
     uint16_t file_size = stream_size(app->file_stream);
     //Если файл пустой, то:
     if(file_size == (uint8_t)0) {
-        FURI_LOG_W(APP_NAME, "Sensors file is empty");
+        FURRY_LOG_W(APP_NAME, "Sensors file is empty");
         //Закрытие потока и освобождение памяти
         file_stream_close(app->file_stream);
         stream_free(app->file_stream);
@@ -326,7 +326,7 @@ bool unitemp_sensors_load(void) {
     //Загрузка файла
     if(stream_read(app->file_stream, file_buf, file_size) != file_size) {
         //Выход при ошибке чтения
-        FURI_LOG_E(APP_NAME, "Error reading sensors file");
+        FURRY_LOG_E(APP_NAME, "Error reading sensors file");
         //Закрытие потока и освобождение памяти
         file_stream_close(app->file_stream);
         stream_free(app->file_stream);
@@ -335,7 +335,7 @@ bool unitemp_sensors_load(void) {
     }
 
     //Указатель на начало строки
-    FuriString* file = furi_string_alloc_set_str((char*)file_buf);
+    FurryString* file = furry_string_alloc_set_str((char*)file_buf);
     //Сколько байт до конца строки
     size_t line_end = 0;
 
@@ -369,20 +369,20 @@ bool unitemp_sensors_load(void) {
                 sensor->temp_offset = temp_offset;
                 unitemp_sensors_add(sensor);
             } else {
-                FURI_LOG_E(APP_NAME, "Failed sensor (%s:%s) mem allocation", name, type);
+                FURRY_LOG_E(APP_NAME, "Failed sensor (%s:%s) mem allocation", name, type);
             }
         } else {
-            FURI_LOG_E(APP_NAME, "Unsupported sensor name (%s) or sensor type (%s)", name, type);
+            FURRY_LOG_E(APP_NAME, "Unsupported sensor name (%s) or sensor type (%s)", name, type);
         }
         //Вычисление конца строки
-        line_end = furi_string_search_char(file, '\n', line_end + 1);
+        line_end = furry_string_search_char(file, '\n', line_end + 1);
     }
 
     free(file_buf);
     file_stream_close(app->file_stream);
     stream_free(app->file_stream);
 
-    FURI_LOG_I(APP_NAME, "Sensors have been successfully loaded");
+    FURRY_LOG_I(APP_NAME, "Sensors have been successfully loaded");
     return true;
 }
 
@@ -393,15 +393,15 @@ bool unitemp_sensors_save(void) {
     app->file_stream = file_stream_alloc(app->storage);
 
     //Переменная пути к файлу
-    FuriString* filepath = furi_string_alloc();
+    FurryString* filepath = furry_string_alloc();
     //Составление пути к файлу
-    furi_string_printf(filepath, "%s/%s", APP_PATH_FOLDER, APP_FILENAME_SENSORS);
+    furry_string_printf(filepath, "%s/%s", APP_PATH_FOLDER, APP_FILENAME_SENSORS);
     //Создание папки плагина
     storage_common_mkdir(app->storage, APP_PATH_FOLDER);
     //Открытие потока
     if(!file_stream_open(
-           app->file_stream, furi_string_get_cstr(filepath), FSAM_READ_WRITE, FSOM_CREATE_ALWAYS)) {
-        FURI_LOG_E(
+           app->file_stream, furry_string_get_cstr(filepath), FSAM_READ_WRITE, FSOM_CREATE_ALWAYS)) {
+        FURRY_LOG_E(
             APP_NAME,
             "An error occurred while saving the sensors file: %d",
             file_stream_get_error(app->file_stream));
@@ -459,7 +459,7 @@ bool unitemp_sensors_save(void) {
     file_stream_close(app->file_stream);
     stream_free(app->file_stream);
 
-    FURI_LOG_I(APP_NAME, "Sensors have been successfully saved");
+    FURRY_LOG_I(APP_NAME, "Sensors have been successfully saved");
     return true;
 }
 void unitemp_sensors_reload(void) {
@@ -483,14 +483,14 @@ Sensor* unitemp_sensor_alloc(char* name, const SensorType* type, char* args) {
     //Выделение памяти под датчик
     Sensor* sensor = malloc(sizeof(Sensor));
     if(sensor == NULL) {
-        FURI_LOG_E(APP_NAME, "Sensor %s allocation error", name);
+        FURRY_LOG_E(APP_NAME, "Sensor %s allocation error", name);
         return false;
     }
 
     //Выделение памяти под имя
     sensor->name = malloc(11);
     if(sensor->name == NULL) {
-        FURI_LOG_E(APP_NAME, "Sensor %s name allocation error", name);
+        FURRY_LOG_E(APP_NAME, "Sensor %s name allocation error", name);
         return false;
     }
     //Запись имени датчка
@@ -501,7 +501,7 @@ Sensor* unitemp_sensor_alloc(char* name, const SensorType* type, char* args) {
     sensor->status = UT_SENSORSTATUS_ERROR;
     //Время последнего опроса
     sensor->lastPollingTime =
-        furi_get_tick() - 10000; //чтобы первый опрос произошёл как можно раньше
+        furry_get_tick() - 10000; //чтобы первый опрос произошёл как можно раньше
 
     sensor->temp = -128.0f;
     sensor->hum = -128.0f;
@@ -518,21 +518,21 @@ Sensor* unitemp_sensor_alloc(char* name, const SensorType* type, char* args) {
     //Выход с очисткой если память для датчика не была выделена
     free(sensor->name);
     free(sensor);
-    FURI_LOG_E(APP_NAME, "Sensor %s(%s) allocation error", name, type->typename);
+    FURRY_LOG_E(APP_NAME, "Sensor %s(%s) allocation error", name, type->typename);
     return NULL;
 }
 
 void unitemp_sensor_free(Sensor* sensor) {
     if(sensor == NULL) {
-        FURI_LOG_E(APP_NAME, "Null pointer sensor releasing");
+        FURRY_LOG_E(APP_NAME, "Null pointer sensor releasing");
         return;
     }
     if(sensor->type == NULL) {
-        FURI_LOG_E(APP_NAME, "Sensor type is null");
+        FURRY_LOG_E(APP_NAME, "Sensor type is null");
         return;
     }
     if(sensor->type->mem_releaser == NULL) {
-        FURI_LOG_E(APP_NAME, "Sensor releaser is null");
+        FURRY_LOG_E(APP_NAME, "Sensor releaser is null");
         return;
     }
     bool status = false;
@@ -542,7 +542,7 @@ void unitemp_sensor_free(Sensor* sensor) {
     if(status) {
         UNITEMP_DEBUG("Sensor %s memory successfully released", sensor->name);
     } else {
-        FURI_LOG_E(APP_NAME, "Sensor %s memory is not released", sensor->name);
+        FURRY_LOG_E(APP_NAME, "Sensor %s memory is not released", sensor->name);
     }
     free(sensor->name);
 }
@@ -561,18 +561,18 @@ bool unitemp_sensors_init(void) {
     for(uint8_t i = 0; i < unitemp_sensors_getCount(); i++) {
         //Включение 5V если на порту 1 FZ его нет
         //Может пропасть при отключении USB
-        if(furi_hal_power_is_otg_enabled() != true) {
-            furi_hal_power_enable_otg();
+        if(furry_hal_power_is_otg_enabled() != true) {
+            furry_hal_power_enable_otg();
             UNITEMP_DEBUG("OTG enabled");
         }
         if(!(*app->sensors[i]->type->initializer)(app->sensors[i])) {
-            FURI_LOG_E(
+            FURRY_LOG_E(
                 APP_NAME,
                 "An error occurred during sensor initialization %s",
                 app->sensors[i]->name);
             result = false;
         }
-        FURI_LOG_I(APP_NAME, "Sensor %s successfully initialized", app->sensors[i]->name);
+        FURRY_LOG_I(APP_NAME, "Sensor %s successfully initialized", app->sensors[i]->name);
     }
     app->sensors_ready = true;
     return result;
@@ -582,14 +582,14 @@ bool unitemp_sensors_deInit(void) {
     bool result = true;
     //Выключение 5 В если до этого оно не было включено
     if(app->settings.lastOTGState != true) {
-        furi_hal_power_disable_otg();
+        furry_hal_power_disable_otg();
         UNITEMP_DEBUG("OTG disabled");
     }
 
     //Перебор датчиков из списка
     for(uint8_t i = 0; i < unitemp_sensors_getCount(); i++) {
         if(!(*app->sensors[i]->type->deinitializer)(app->sensors[i])) {
-            FURI_LOG_E(
+            FURRY_LOG_E(
                 APP_NAME,
                 "An error occurred during sensor deinitialization %s",
                 app->sensors[i]->name);
@@ -603,7 +603,7 @@ UnitempStatus unitemp_sensor_updateData(Sensor* sensor) {
     if(sensor == NULL) return UT_SENSORSTATUS_ERROR;
 
     //Проверка на допустимость опроса датчика
-    if(furi_get_tick() - sensor->lastPollingTime < sensor->type->pollingInterval) {
+    if(furry_get_tick() - sensor->lastPollingTime < sensor->type->pollingInterval) {
         //Возврат ошибки если последний опрос датчика был неудачным
         if(sensor->status == UT_SENSORSTATUS_TIMEOUT) {
             return UT_SENSORSTATUS_TIMEOUT;
@@ -611,10 +611,10 @@ UnitempStatus unitemp_sensor_updateData(Sensor* sensor) {
         return UT_SENSORSTATUS_EARLYPOOL;
     }
 
-    sensor->lastPollingTime = furi_get_tick();
+    sensor->lastPollingTime = furry_get_tick();
 
-    if(!furi_hal_power_is_otg_enabled()) {
-        furi_hal_power_enable_otg();
+    if(!furry_hal_power_is_otg_enabled()) {
+        furry_hal_power_enable_otg();
     }
 
     sensor->status = sensor->type->interface->updater(sensor);

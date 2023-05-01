@@ -3,20 +3,20 @@
 DTMFDolphinAudio* current_player;
 
 static void dtmf_dolphin_audio_dma_isr(void* ctx) {
-    FuriMessageQueue* event_queue = ctx;
+    FurryMessageQueue* event_queue = ctx;
 
     if(LL_DMA_IsActiveFlag_HT1(DMA1)) {
         LL_DMA_ClearFlag_HT1(DMA1);
 
         DTMFDolphinCustomEvent event = {.type = DTMFDolphinEventDMAHalfTransfer};
-        furi_message_queue_put(event_queue, &event, 0);
+        furry_message_queue_put(event_queue, &event, 0);
     }
 
     if(LL_DMA_IsActiveFlag_TC1(DMA1)) {
         LL_DMA_ClearFlag_TC1(DMA1);
 
         DTMFDolphinCustomEvent event = {.type = DTMFDolphinEventDMAFullTransfer};
-        furi_message_queue_put(event_queue, &event, 0);
+        furry_message_queue_put(event_queue, &event, 0);
     }
 }
 
@@ -52,7 +52,7 @@ DTMFDolphinAudio* dtmf_dolphin_audio_alloc() {
     player->osc1 = dtmf_dolphin_osc_alloc();
     player->osc2 = dtmf_dolphin_osc_alloc();
     player->volume = 1.0f;
-    player->queue = furi_message_queue_alloc(10, sizeof(DTMFDolphinCustomEvent));
+    player->queue = furry_message_queue_alloc(10, sizeof(DTMFDolphinCustomEvent));
     player->filter = dtmf_dolphin_pulse_filter_alloc();
     player->playing = false;
     dtmf_dolphin_audio_clear_samples(player);
@@ -158,7 +158,7 @@ void dtmf_dolphin_filter_free(DTMFDolphinPulseFilter* pf) {
 }
 
 void dtmf_dolphin_audio_free(DTMFDolphinAudio* player) {
-    furi_message_queue_free(player->queue);
+    furry_message_queue_free(player->queue);
     dtmf_dolphin_osc_free(player->osc1);
     dtmf_dolphin_osc_free(player->osc2);
     dtmf_dolphin_filter_free(player->filter);
@@ -217,9 +217,9 @@ bool dtmf_dolphin_audio_play_tones(
     dtmf_dolphin_speaker_init();
     dtmf_dolphin_dma_init((uint32_t)current_player->sample_buffer, current_player->buffer_length);
 
-    furi_hal_interrupt_set_isr(
-        FuriHalInterruptIdDma1Ch1, dtmf_dolphin_audio_dma_isr, current_player->queue);
-    if(furi_hal_speaker_acquire(1000)) {
+    furry_hal_interrupt_set_isr(
+        FurryHalInterruptIdDma1Ch1, dtmf_dolphin_audio_dma_isr, current_player->queue);
+    if(furry_hal_speaker_acquire(1000)) {
         dtmf_dolphin_dma_start();
         dtmf_dolphin_speaker_start();
         current_player->playing = true;
@@ -242,9 +242,9 @@ bool dtmf_dolphin_audio_stop_tones() {
     }
     dtmf_dolphin_speaker_stop();
     dtmf_dolphin_dma_stop();
-    furi_hal_speaker_release();
+    furry_hal_speaker_release();
 
-    furi_hal_interrupt_set_isr(FuriHalInterruptIdDma1Ch1, NULL, NULL);
+    furry_hal_interrupt_set_isr(FurryHalInterruptIdDma1Ch1, NULL, NULL);
 
     dtmf_dolphin_audio_free(current_player);
 
@@ -256,7 +256,7 @@ bool dtmf_dolphin_audio_handle_tick() {
 
     if(current_player) {
         DTMFDolphinCustomEvent event;
-        if(furi_message_queue_get(current_player->queue, &event, 250) == FuriStatusOk) {
+        if(furry_message_queue_get(current_player->queue, &event, 250) == FurryStatusOk) {
             if(event.type == DTMFDolphinEventDMAHalfTransfer) {
                 generate_waveform(current_player, 0);
                 handled = true;

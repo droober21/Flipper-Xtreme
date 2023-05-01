@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 
 /**
  * Timings based on Application Note 126:
@@ -75,26 +75,26 @@ bool onewire_host_reset(OneWireHost* host) {
     const OneWireHostTimings* timings = host->timings;
 
     // wait until the gpio is high
-    furi_hal_gpio_write(host->gpio_pin, true);
+    furry_hal_gpio_write(host->gpio_pin, true);
     do {
         if(--retries == 0) return 0;
-        furi_delay_us(2);
-    } while(!furi_hal_gpio_read(host->gpio_pin));
+        furry_delay_us(2);
+    } while(!furry_hal_gpio_read(host->gpio_pin));
 
     // pre delay
-    furi_delay_us(timings->g);
+    furry_delay_us(timings->g);
 
     // drive low
-    furi_hal_gpio_write(host->gpio_pin, false);
-    furi_delay_us(timings->h);
+    furry_hal_gpio_write(host->gpio_pin, false);
+    furry_delay_us(timings->h);
 
     // release
-    furi_hal_gpio_write(host->gpio_pin, true);
-    furi_delay_us(timings->i);
+    furry_hal_gpio_write(host->gpio_pin, true);
+    furry_delay_us(timings->i);
 
     // read and post delay
-    r = !furi_hal_gpio_read(host->gpio_pin);
-    furi_delay_us(timings->j);
+    r = !furry_hal_gpio_read(host->gpio_pin);
+    furry_delay_us(timings->j);
 
     return r;
 }
@@ -105,16 +105,16 @@ bool onewire_host_read_bit(OneWireHost* host) {
     const OneWireHostTimings* timings = host->timings;
 
     // drive low
-    furi_hal_gpio_write(host->gpio_pin, false);
-    furi_delay_us(timings->a);
+    furry_hal_gpio_write(host->gpio_pin, false);
+    furry_delay_us(timings->a);
 
     // release
-    furi_hal_gpio_write(host->gpio_pin, true);
-    furi_delay_us(timings->e);
+    furry_hal_gpio_write(host->gpio_pin, true);
+    furry_delay_us(timings->e);
 
     // read and post delay
-    result = furi_hal_gpio_read(host->gpio_pin);
-    furi_delay_us(timings->f);
+    result = furry_hal_gpio_read(host->gpio_pin);
+    furry_delay_us(timings->f);
 
     return result;
 }
@@ -142,20 +142,20 @@ void onewire_host_write_bit(OneWireHost* host, bool value) {
 
     if(value) {
         // drive low
-        furi_hal_gpio_write(host->gpio_pin, false);
-        furi_delay_us(timings->a);
+        furry_hal_gpio_write(host->gpio_pin, false);
+        furry_delay_us(timings->a);
 
         // release
-        furi_hal_gpio_write(host->gpio_pin, true);
-        furi_delay_us(timings->b);
+        furry_hal_gpio_write(host->gpio_pin, true);
+        furry_delay_us(timings->b);
     } else {
         // drive low
-        furi_hal_gpio_write(host->gpio_pin, false);
-        furi_delay_us(timings->c);
+        furry_hal_gpio_write(host->gpio_pin, false);
+        furry_delay_us(timings->c);
 
         // release
-        furi_hal_gpio_write(host->gpio_pin, true);
-        furi_delay_us(timings->d);
+        furry_hal_gpio_write(host->gpio_pin, true);
+        furry_delay_us(timings->d);
     }
 }
 
@@ -174,13 +174,13 @@ void onewire_host_write_bytes(OneWireHost* host, const uint8_t* buffer, uint16_t
 }
 
 void onewire_host_start(OneWireHost* host) {
-    furi_hal_gpio_write(host->gpio_pin, true);
-    furi_hal_gpio_init(host->gpio_pin, GpioModeOutputOpenDrain, GpioPullNo, GpioSpeedLow);
+    furry_hal_gpio_write(host->gpio_pin, true);
+    furry_hal_gpio_init(host->gpio_pin, GpioModeOutputOpenDrain, GpioPullNo, GpioSpeedLow);
 }
 
 void onewire_host_stop(OneWireHost* host) {
-    furi_hal_gpio_write(host->gpio_pin, true);
-    furi_hal_gpio_init(host->gpio_pin, GpioModeAnalog, GpioPullNo, GpioSpeedLow);
+    furry_hal_gpio_write(host->gpio_pin, true);
+    furry_hal_gpio_init(host->gpio_pin, GpioModeAnalog, GpioPullNo, GpioSpeedLow);
 }
 
 void onewire_host_reset_search(OneWireHost* host) {

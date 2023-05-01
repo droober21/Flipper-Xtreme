@@ -16,7 +16,7 @@
 
 #define UART_TERMINAL_TEXT_BOX_STORE_SIZE (4096)
 #define UART_TERMINAL_TEXT_INPUT_STORE_SIZE (512)
-#define UART_CH (FuriHalUartIdUSART1)
+#define UART_CH (FurryHalUartIdUSART1)
 
 struct UART_TerminalApp {
     Gui* gui;
@@ -24,7 +24,7 @@ struct UART_TerminalApp {
     SceneManager* scene_manager;
 
     char text_input_store[UART_TERMINAL_TEXT_INPUT_STORE_SIZE + 1];
-    FuriString* text_box_store;
+    FurryString* text_box_store;
     size_t text_box_store_strlen;
     TextBox* text_box;
     UART_TextInput* text_input;

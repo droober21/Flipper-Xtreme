@@ -30,7 +30,7 @@ bool _wifi_marauder_is_save_pcaps_enabled(WifiMarauderApp* app) {
 }
 
 void wifi_marauder_console_output_handle_rx_data_cb(uint8_t* buf, size_t len, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WifiMarauderApp* app = context;
 
     if(app->is_writing_log) {
@@ -41,18 +41,18 @@ void wifi_marauder_console_output_handle_rx_data_cb(uint8_t* buf, size_t len, vo
     // If text box store gets too big, then truncate it
     app->text_box_store_strlen += len;
     if(app->text_box_store_strlen >= WIFI_MARAUDER_TEXT_BOX_STORE_SIZE - 1) {
-        furi_string_right(app->text_box_store, app->text_box_store_strlen / 2);
-        app->text_box_store_strlen = furi_string_size(app->text_box_store) + len;
+        furry_string_right(app->text_box_store, app->text_box_store_strlen / 2);
+        app->text_box_store_strlen = furry_string_size(app->text_box_store) + len;
     }
 
     // Null-terminate buf and append to text box store
     buf[len] = '\0';
-    furi_string_cat_printf(app->text_box_store, "%s", buf);
+    furry_string_cat_printf(app->text_box_store, "%s", buf);
     view_dispatcher_send_custom_event(app->view_dispatcher, WifiMarauderEventRefreshConsoleOutput);
 }
 
 void wifi_marauder_console_output_handle_rx_packets_cb(uint8_t* buf, size_t len, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WifiMarauderApp* app = context;
 
     if(app->is_writing_pcap) {
@@ -77,24 +77,24 @@ void wifi_marauder_scene_console_output_on_enter(void* context) {
 
     // Set command-related messages
     if(app->is_command) {
-        furi_string_reset(app->text_box_store);
+        furry_string_reset(app->text_box_store);
         app->text_box_store_strlen = 0;
         // Help message
         if(0 == strncmp("help", app->selected_tx_string, strlen("help"))) {
             const char* help_msg = "Marauder companion " WIFI_MARAUDER_APP_VERSION "\n";
-            furi_string_cat_str(app->text_box_store, help_msg);
+            furry_string_cat_str(app->text_box_store, help_msg);
             app->text_box_store_strlen += strlen(help_msg);
         }
         // Stopscan message
         if(app->show_stopscan_tip) {
             const char* help_msg = "Press BACK to send stopscan\n";
-            furi_string_cat_str(app->text_box_store, help_msg);
+            furry_string_cat_str(app->text_box_store, help_msg);
             app->text_box_store_strlen += strlen(help_msg);
         }
     }
 
     // Set starting text
-    text_box_set_text(app->text_box, furi_string_get_cstr(app->text_box_store));
+    text_box_set_text(app->text_box, furry_string_get_cstr(app->text_box_store));
 
     // Set scene state and switch view
     scene_manager_set_scene_state(app->scene_manager, WifiMarauderSceneConsoleOutput, 0);
@@ -165,7 +165,7 @@ bool wifi_marauder_scene_console_output_on_event(void* context, SceneManagerEven
     bool consumed = false;
 
     if(event.type == SceneManagerEventTypeCustom) {
-        text_box_set_text(app->text_box, furi_string_get_cstr(app->text_box_store));
+        text_box_set_text(app->text_box, furry_string_get_cstr(app->text_box_store));
         consumed = true;
     } else if(event.type == SceneManagerEventTypeTick) {
         consumed = true;
@@ -180,7 +180,7 @@ void wifi_marauder_scene_console_output_on_exit(void* context) {
     // Automatically stop the scan when exiting view
     if(app->is_command) {
         wifi_marauder_uart_tx((uint8_t*)("stopscan\n"), strlen("stopscan\n"));
-        furi_delay_ms(50);
+        furry_delay_ms(50);
     }
 
     // Unregister rx callback

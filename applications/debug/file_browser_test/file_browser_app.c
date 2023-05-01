@@ -4,23 +4,23 @@
 #include <gui/modules/file_browser.h>
 #include <storage/storage.h>
 #include <lib/toolbox/path.h>
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 static bool file_browser_app_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     FileBrowserApp* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool file_browser_app_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     FileBrowserApp* app = context;
     return scene_manager_handle_back_event(app->scene_manager);
 }
 
 static void file_browser_app_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     FileBrowserApp* app = context;
     scene_manager_handle_tick_event(app->scene_manager);
 }
@@ -29,8 +29,8 @@ FileBrowserApp* file_browser_app_alloc(char* arg) {
     UNUSED(arg);
     FileBrowserApp* app = malloc(sizeof(FileBrowserApp));
 
-    app->gui = furi_record_open(RECORD_GUI);
-    app->dialogs = furi_record_open(RECORD_DIALOGS);
+    app->gui = furry_record_open(RECORD_GUI);
+    app->dialogs = furry_record_open(RECORD_DIALOGS);
 
     app->view_dispatcher = view_dispatcher_alloc();
     view_dispatcher_enable_queue(app->view_dispatcher);
@@ -47,7 +47,7 @@ FileBrowserApp* file_browser_app_alloc(char* arg) {
 
     app->widget = widget_alloc();
 
-    app->file_path = furi_string_alloc();
+    app->file_path = furry_string_alloc();
     app->file_browser = file_browser_alloc(app->file_path);
     file_browser_configure(app->file_browser, "*", NULL, true, false, &I_badkb_10px, true);
 
@@ -66,7 +66,7 @@ FileBrowserApp* file_browser_app_alloc(char* arg) {
 }
 
 void file_browser_app_free(FileBrowserApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // Views
     view_dispatcher_remove_view(app->view_dispatcher, FileBrowserAppViewStart);
@@ -80,11 +80,11 @@ void file_browser_app_free(FileBrowserApp* app) {
     scene_manager_free(app->scene_manager);
 
     // Close records
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_record_close(RECORD_DIALOGS);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_DIALOGS);
 
-    furi_string_free(app->file_path);
+    furry_string_free(app->file_path);
 
     free(app);
 }

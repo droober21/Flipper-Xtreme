@@ -9,25 +9,25 @@
 
 void spi_mem_scene_about_on_enter(void* context) {
     SPIMemApp* app = context;
-    FuriString* tmp_string = furi_string_alloc();
+    FurryString* tmp_string = furry_string_alloc();
 
     widget_add_text_box_element(
         app->widget, 0, 0, 128, 14, AlignCenter, AlignBottom, SPI_MEM_BLANK_INV, false);
     widget_add_text_box_element(
         app->widget, 0, 2, 128, 14, AlignCenter, AlignBottom, SPI_MEM_NAME, false);
-    furi_string_printf(tmp_string, "\e#%s\n", "Information");
-    furi_string_cat_printf(tmp_string, "Version: %s\n", SPI_MEM_VERSION_APP);
-    furi_string_cat_printf(tmp_string, "Developed by: %s\n", SPI_MEM_DEVELOPER);
-    furi_string_cat_printf(tmp_string, "Github: %s\n\n", SPI_MEM_GITHUB);
-    furi_string_cat_printf(tmp_string, "\e#%s\n", "Description");
-    furi_string_cat_printf(
+    furry_string_printf(tmp_string, "\e#%s\n", "Information");
+    furry_string_cat_printf(tmp_string, "Version: %s\n", SPI_MEM_VERSION_APP);
+    furry_string_cat_printf(tmp_string, "Developed by: %s\n", SPI_MEM_DEVELOPER);
+    furry_string_cat_printf(tmp_string, "Github: %s\n\n", SPI_MEM_GITHUB);
+    furry_string_cat_printf(tmp_string, "\e#%s\n", "Description");
+    furry_string_cat_printf(
         tmp_string,
         "SPI memory dumper\n"
         "Originally written by Hedger, ghettorce and x893 at\n"
         "Flipper Hackathon 2021\n\n");
-    widget_add_text_scroll_element(app->widget, 0, 16, 128, 50, furi_string_get_cstr(tmp_string));
+    widget_add_text_scroll_element(app->widget, 0, 16, 128, 50, furry_string_get_cstr(tmp_string));
 
-    furi_string_free(tmp_string);
+    furry_string_free(tmp_string);
     view_dispatcher_switch_to_view(app->view_dispatcher, SPIMemViewWidget);
 }
 

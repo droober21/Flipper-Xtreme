@@ -1,5 +1,5 @@
 #include "hid_keyboard.h"
-#include <furi.h>
+#include <furry.h>
 #include <gui/elements.h>
 #include <gui/icon_i.h>
 #include "../hid.h"
@@ -218,7 +218,7 @@ static void hid_keyboard_draw_key(
 }
 
 static void hid_keyboard_draw_callback(Canvas* canvas, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     HidKeyboardModel* model = context;
 
     // Header
@@ -358,7 +358,7 @@ static void hid_keyboard_process(HidKeyboard* hid_keyboard, InputEvent* event) {
 }
 
 static bool hid_keyboard_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     HidKeyboard* hid_keyboard = context;
     bool consumed = false;
 
@@ -394,18 +394,18 @@ HidKeyboard* hid_keyboard_alloc(Hid* bt_hid) {
 }
 
 void hid_keyboard_free(HidKeyboard* hid_keyboard) {
-    furi_assert(hid_keyboard);
+    furry_assert(hid_keyboard);
     view_free(hid_keyboard->view);
     free(hid_keyboard);
 }
 
 View* hid_keyboard_get_view(HidKeyboard* hid_keyboard) {
-    furi_assert(hid_keyboard);
+    furry_assert(hid_keyboard);
     return hid_keyboard->view;
 }
 
 void hid_keyboard_set_connected_status(HidKeyboard* hid_keyboard, bool connected) {
-    furi_assert(hid_keyboard);
+    furry_assert(hid_keyboard);
     with_view_model(
         hid_keyboard->view, HidKeyboardModel * model, { model->connected = connected; }, true);
 }

@@ -92,7 +92,7 @@ void* subghz_protocol_encoder_power_smart_alloc(SubGhzEnvironment* environment) 
 }
 
 void subghz_protocol_encoder_power_smart_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderPowerSmart* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -120,7 +120,7 @@ static LevelDuration
         break;
 
     default:
-        furi_crash("SubGhz: ManchesterEncoderResult is incorrect.");
+        furry_crash("SubGhz: ManchesterEncoderResult is incorrect.");
         break;
     }
     return level_duration_make(data.level, data.duration);
@@ -132,7 +132,7 @@ static LevelDuration
  */
 static void
     subghz_protocol_encoder_power_smart_get_upload(SubGhzProtocolEncoderPowerSmart* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     size_t index = 0;
 
     ManchesterEncoderState enc_state;
@@ -194,7 +194,7 @@ static void subghz_protocol_power_smart_remote_controller(SubGhzBlockGeneric* in
 
 SubGhzProtocolStatus
     subghz_protocol_encoder_power_smart_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderPowerSmart* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -249,13 +249,13 @@ void* subghz_protocol_decoder_power_smart_alloc(SubGhzEnvironment* environment) 
 }
 
 void subghz_protocol_decoder_power_smart_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderPowerSmart* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_power_smart_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderPowerSmart* instance = context;
     manchester_advance(
         instance->manchester_saved_state,
@@ -276,7 +276,7 @@ void subghz_protocol_decoder_power_smart_feed(
     void* context,
     bool level,
     volatile uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderPowerSmart* instance = context;
     ManchesterEvent event = ManchesterEventReset;
     if(!level) {
@@ -336,7 +336,7 @@ static const char* subghz_protocol_power_smart_get_name_button(uint8_t btn) {
 }
 
 uint8_t subghz_protocol_decoder_power_smart_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderPowerSmart* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -346,14 +346,14 @@ SubGhzProtocolStatus subghz_protocol_decoder_power_smart_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderPowerSmart* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_power_smart_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderPowerSmart* instance = context;
     return subghz_block_generic_deserialize_check_count_bit(
         &instance->generic,
@@ -361,12 +361,12 @@ SubGhzProtocolStatus
         subghz_protocol_power_smart_const.min_count_bit_for_found);
 }
 
-void subghz_protocol_decoder_power_smart_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_power_smart_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderPowerSmart* instance = context;
     subghz_protocol_power_smart_remote_controller(&instance->generic);
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %db\r\n"
         "Key:0x%lX%08lX\r\n"

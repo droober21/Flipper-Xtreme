@@ -19,7 +19,7 @@ typedef enum {
 
 typedef struct {
     ResourceManifestEntryType type;
-    FuriString* name;
+    FurryString* name;
     uint32_t size;
     uint8_t hash[16];
 } ResourceManifestEntry;

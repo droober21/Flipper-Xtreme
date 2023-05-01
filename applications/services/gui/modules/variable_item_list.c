@@ -1,7 +1,7 @@
 #include "variable_item_list.h"
 #include <gui/elements.h>
 #include <gui/canvas.h>
-#include <furi.h>
+#include <furry.h>
 #include <assets_icons.h>
 #include <m-array.h>
 #include <stdint.h>
@@ -9,11 +9,11 @@
 struct VariableItem {
     const char* label;
     uint8_t current_value_index;
-    FuriString* current_value_text;
+    FurryString* current_value_text;
     uint8_t values_count;
     VariableItemChangeCallback change_callback;
     bool locked;
-    FuriString* locked_message;
+    FurryString* locked_message;
     void* context;
 };
 
@@ -23,8 +23,8 @@ struct VariableItemList {
     View* view;
     VariableItemListEnterCallback callback;
     void* context;
-    FuriTimer* scroll_timer;
-    FuriTimer* locked_timer;
+    FurryTimer* scroll_timer;
+    FurryTimer* locked_timer;
 };
 
 typedef struct {
@@ -79,7 +79,7 @@ static void variable_item_list_draw_callback(Canvas* canvas, void* _model) {
                 canvas_set_color(canvas, ColorBlack);
             }
 
-            if(item->current_value_index == 0 && furi_string_empty(item->current_value_text)) {
+            if(item->current_value_index == 0 && furry_string_empty(item->current_value_text)) {
                 // Only left text, no right text
                 canvas_draw_str(canvas, 6, item_text_y, item->label);
             } else {
@@ -128,7 +128,7 @@ static void variable_item_list_draw_callback(Canvas* canvas, void* _model) {
             32,
             AlignCenter,
             AlignCenter,
-            furi_string_get_cstr(
+            furry_string_get_cstr(
                 VariableItemArray_get(model->items, model->position)->locked_message));
     }
 }
@@ -170,7 +170,7 @@ uint8_t variable_item_list_get_selected_item_index(VariableItemList* variable_it
 
 static bool variable_item_list_input_callback(InputEvent* event, void* context) {
     VariableItemList* variable_item_list = context;
-    furi_assert(variable_item_list);
+    furry_assert(variable_item_list);
     bool consumed = false;
 
     bool locked_message_visible = false;
@@ -298,7 +298,7 @@ VariableItem* variable_item_list_get_selected_item(VariableItemListModel* model)
 
     item = VariableItemArray_ref(it);
 
-    furi_assert(item);
+    furry_assert(item);
     return item;
 }
 
@@ -310,8 +310,8 @@ void variable_item_list_process_left(VariableItemList* variable_item_list) {
             VariableItem* item = variable_item_list_get_selected_item(model);
             if(item->locked) {
                 model->locked_message_visible = true;
-                furi_timer_start(
-                    variable_item_list->locked_timer, furi_kernel_get_tick_frequency() * 3);
+                furry_timer_start(
+                    variable_item_list->locked_timer, furry_kernel_get_tick_frequency() * 3);
             } else if(item->current_value_index > 0) {
                 item->current_value_index--;
                 model->scroll_counter = 0;
@@ -331,8 +331,8 @@ void variable_item_list_process_right(VariableItemList* variable_item_list) {
             VariableItem* item = variable_item_list_get_selected_item(model);
             if(item->locked) {
                 model->locked_message_visible = true;
-                furi_timer_start(
-                    variable_item_list->locked_timer, furi_kernel_get_tick_frequency() * 3);
+                furry_timer_start(
+                    variable_item_list->locked_timer, furry_kernel_get_tick_frequency() * 3);
             } else if(item->current_value_index < (item->values_count - 1)) {
                 item->current_value_index++;
                 model->scroll_counter = 0;
@@ -352,8 +352,8 @@ void variable_item_list_process_ok(VariableItemList* variable_item_list) {
             VariableItem* item = variable_item_list_get_selected_item(model);
             if(item->locked) {
                 model->locked_message_visible = true;
-                furi_timer_start(
-                    variable_item_list->locked_timer, furi_kernel_get_tick_frequency() * 3);
+                furry_timer_start(
+                    variable_item_list->locked_timer, furry_kernel_get_tick_frequency() * 3);
             } else if(variable_item_list->callback) {
                 variable_item_list->callback(variable_item_list->context, model->position);
             }
@@ -371,7 +371,7 @@ static void variable_item_list_scroll_timer_callback(void* context) {
 }
 
 void variable_item_list_locked_timer_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     VariableItemList* variable_item_list = context;
 
     with_view_model(
@@ -390,8 +390,8 @@ VariableItemList* variable_item_list_alloc() {
     view_set_draw_callback(variable_item_list->view, variable_item_list_draw_callback);
     view_set_input_callback(variable_item_list->view, variable_item_list_input_callback);
 
-    variable_item_list->locked_timer = furi_timer_alloc(
-        variable_item_list_locked_timer_callback, FuriTimerTypeOnce, variable_item_list);
+    variable_item_list->locked_timer = furry_timer_alloc(
+        variable_item_list_locked_timer_callback, FurryTimerTypeOnce, variable_item_list);
 
     with_view_model(
         variable_item_list->view,
@@ -403,15 +403,15 @@ VariableItemList* variable_item_list_alloc() {
             model->scroll_counter = 0;
         },
         true);
-    variable_item_list->scroll_timer = furi_timer_alloc(
-        variable_item_list_scroll_timer_callback, FuriTimerTypePeriodic, variable_item_list);
-    furi_timer_start(variable_item_list->scroll_timer, 333);
+    variable_item_list->scroll_timer = furry_timer_alloc(
+        variable_item_list_scroll_timer_callback, FurryTimerTypePeriodic, variable_item_list);
+    furry_timer_start(variable_item_list->scroll_timer, 333);
 
     return variable_item_list;
 }
 
 void variable_item_list_free(VariableItemList* variable_item_list) {
-    furi_assert(variable_item_list);
+    furry_assert(variable_item_list);
 
     with_view_model(
         variable_item_list->view,
@@ -420,22 +420,22 @@ void variable_item_list_free(VariableItemList* variable_item_list) {
             VariableItemArray_it_t it;
             for(VariableItemArray_it(it, model->items); !VariableItemArray_end_p(it);
                 VariableItemArray_next(it)) {
-                furi_string_free(VariableItemArray_ref(it)->current_value_text);
-                furi_string_free(VariableItemArray_ref(it)->locked_message);
+                furry_string_free(VariableItemArray_ref(it)->current_value_text);
+                furry_string_free(VariableItemArray_ref(it)->locked_message);
             }
             VariableItemArray_clear(model->items);
         },
         false);
-    furi_timer_stop(variable_item_list->scroll_timer);
-    furi_timer_free(variable_item_list->scroll_timer);
-    furi_timer_stop(variable_item_list->locked_timer);
-    furi_timer_free(variable_item_list->locked_timer);
+    furry_timer_stop(variable_item_list->scroll_timer);
+    furry_timer_free(variable_item_list->scroll_timer);
+    furry_timer_stop(variable_item_list->locked_timer);
+    furry_timer_free(variable_item_list->locked_timer);
     view_free(variable_item_list->view);
     free(variable_item_list);
 }
 
 void variable_item_list_reset(VariableItemList* variable_item_list) {
-    furi_assert(variable_item_list);
+    furry_assert(variable_item_list);
 
     with_view_model(
         variable_item_list->view,
@@ -444,8 +444,8 @@ void variable_item_list_reset(VariableItemList* variable_item_list) {
             VariableItemArray_it_t it;
             for(VariableItemArray_it(it, model->items); !VariableItemArray_end_p(it);
                 VariableItemArray_next(it)) {
-                furi_string_free(VariableItemArray_ref(it)->current_value_text);
-                furi_string_free(VariableItemArray_ref(it)->locked_message);
+                furry_string_free(VariableItemArray_ref(it)->current_value_text);
+                furry_string_free(VariableItemArray_ref(it)->locked_message);
             }
             VariableItemArray_reset(model->items);
         },
@@ -453,7 +453,7 @@ void variable_item_list_reset(VariableItemList* variable_item_list) {
 }
 
 View* variable_item_list_get_view(VariableItemList* variable_item_list) {
-    furi_assert(variable_item_list);
+    furry_assert(variable_item_list);
     return variable_item_list->view;
 }
 
@@ -464,8 +464,8 @@ VariableItem* variable_item_list_add(
     VariableItemChangeCallback change_callback,
     void* context) {
     VariableItem* item = NULL;
-    furi_assert(label);
-    furi_assert(variable_item_list);
+    furry_assert(label);
+    furry_assert(variable_item_list);
 
     with_view_model(
         variable_item_list->view,
@@ -477,9 +477,9 @@ VariableItem* variable_item_list_add(
             item->change_callback = change_callback;
             item->context = context;
             item->current_value_index = 0;
-            item->current_value_text = furi_string_alloc();
+            item->current_value_text = furry_string_alloc();
             item->locked = false;
-            item->locked_message = furi_string_alloc();
+            item->locked_message = furry_string_alloc();
         },
         true);
 
@@ -490,7 +490,7 @@ void variable_item_list_set_enter_callback(
     VariableItemList* variable_item_list,
     VariableItemListEnterCallback callback,
     void* context) {
-    furi_assert(callback);
+    furry_assert(callback);
     with_view_model(
         variable_item_list->view,
         VariableItemListModel * model,
@@ -511,14 +511,14 @@ void variable_item_set_values_count(VariableItem* item, uint8_t values_count) {
 }
 
 void variable_item_set_current_value_text(VariableItem* item, const char* current_value_text) {
-    furi_string_set(item->current_value_text, current_value_text);
+    furry_string_set(item->current_value_text, current_value_text);
 }
 
 void variable_item_set_locked(VariableItem* item, bool locked, const char* locked_message) {
     item->locked = locked;
     if(locked) {
-        furi_assert(locked_message);
-        furi_string_set(item->locked_message, locked_message);
+        furry_assert(locked_message);
+        furry_string_set(item->locked_message, locked_message);
     }
 }
 

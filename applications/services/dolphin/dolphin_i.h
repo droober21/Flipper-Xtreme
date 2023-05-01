@@ -1,8 +1,8 @@
 #pragma once
 
 #include <core/pubsub.h>
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #include "dolphin.h"
 #include "helpers/dolphin_state.h"
@@ -17,7 +17,7 @@ typedef enum {
 
 typedef struct {
     DolphinEventType type;
-    FuriEventFlag* flag;
+    FurryEventFlag* flag;
     union {
         DolphinDeed deed;
         DolphinStats* stats;
@@ -28,8 +28,8 @@ struct Dolphin {
     // State
     DolphinState* state;
     // Queue
-    FuriMessageQueue* event_queue;
-    FuriPubSub* pubsub;
+    FurryMessageQueue* event_queue;
+    FurryPubSub* pubsub;
     TimerHandle_t butthurt_timer;
     TimerHandle_t flush_timer;
     TimerHandle_t clear_limits_timer;

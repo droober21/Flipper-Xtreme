@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi_hal_nfc.h>
+#include <furry_hal_nfc.h>
 
 #define RFAL_PICOPASS_UID_LEN 8
 #define RFAL_PICOPASS_MAX_BLOCK_LEN 8
@@ -38,11 +38,11 @@ typedef struct {
     uint8_t crc[2];
 } rfalPicoPassReadBlockRes;
 
-FuriHalNfcReturn rfalPicoPassPollerInitialize(void);
-FuriHalNfcReturn rfalPicoPassPollerCheckPresence(void);
-FuriHalNfcReturn rfalPicoPassPollerIdentify(rfalPicoPassIdentifyRes* idRes);
-FuriHalNfcReturn rfalPicoPassPollerSelect(uint8_t* csn, rfalPicoPassSelectRes* selRes);
-FuriHalNfcReturn rfalPicoPassPollerReadCheck(rfalPicoPassReadCheckRes* rcRes);
-FuriHalNfcReturn rfalPicoPassPollerCheck(uint8_t* mac, rfalPicoPassCheckRes* chkRes);
-FuriHalNfcReturn rfalPicoPassPollerReadBlock(uint8_t blockNum, rfalPicoPassReadBlockRes* readRes);
-FuriHalNfcReturn rfalPicoPassPollerWriteBlock(uint8_t blockNum, uint8_t data[8], uint8_t mac[4]);
+FurryHalNfcReturn rfalPicoPassPollerInitialize(void);
+FurryHalNfcReturn rfalPicoPassPollerCheckPresence(void);
+FurryHalNfcReturn rfalPicoPassPollerIdentify(rfalPicoPassIdentifyRes* idRes);
+FurryHalNfcReturn rfalPicoPassPollerSelect(uint8_t* csn, rfalPicoPassSelectRes* selRes);
+FurryHalNfcReturn rfalPicoPassPollerReadCheck(rfalPicoPassReadCheckRes* rcRes);
+FurryHalNfcReturn rfalPicoPassPollerCheck(uint8_t* mac, rfalPicoPassCheckRes* chkRes);
+FurryHalNfcReturn rfalPicoPassPollerReadBlock(uint8_t blockNum, rfalPicoPassReadBlockRes* readRes);
+FurryHalNfcReturn rfalPicoPassPollerWriteBlock(uint8_t blockNum, uint8_t data[8], uint8_t mac[4]);

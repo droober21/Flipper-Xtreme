@@ -36,8 +36,8 @@ extern "C" {
 /* We're confident in the parameters we pass to LL functions, so we can skip asserts
  * since they introduce significant bloat to debug builds */
 
-#ifdef FURI_LL_DEBUG
-#define assert_param furi_assert
+#ifdef FURRY_LL_DEBUG
+#define assert_param furry_assert
 #else
 #define assert_param(__e) \
     do {                  \

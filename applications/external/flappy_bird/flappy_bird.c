@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
 #include <FlappyBird_icons.h>
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <gui/icon_animation_i.h>
 #include <input/input.h>
@@ -59,7 +59,7 @@ typedef struct {
     PILAR pilars[FLAPPY_PILAR_MAX];
     bool debug;
     State state;
-    FuriMutex* mutex;
+    FurryMutex* mutex;
 } GameState;
 
 typedef struct {
@@ -175,9 +175,9 @@ static void flappy_game_flap(GameState* const game_state) {
 }
 
 static void flappy_game_render_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     const GameState* game_state = ctx;
-    furi_mutex_acquire(game_state->mutex, FuriWaitForever);
+    furry_mutex_acquire(game_state->mutex, FurryWaitForever);
 
     canvas_draw_frame(canvas, 0, 0, 128, 64);
 
@@ -261,35 +261,35 @@ static void flappy_game_render_callback(Canvas* const canvas, void* ctx) {
         canvas_draw_str_aligned(canvas, 64, 41, AlignCenter, AlignBottom, buffer);
     }
 
-    furi_mutex_release(game_state->mutex);
+    furry_mutex_release(game_state->mutex);
 }
 
-static void flappy_game_input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void flappy_game_input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     GameEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
-static void flappy_game_update_timer_callback(FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void flappy_game_update_timer_callback(FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     GameEvent event = {.type = EventTypeTick};
-    furi_message_queue_put(event_queue, &event, 0);
+    furry_message_queue_put(event_queue, &event, 0);
 }
 
 int32_t flappy_game_app(void* p) {
     UNUSED(p);
     int32_t return_code = 0;
 
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(GameEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(GameEvent));
 
     GameState* game_state = malloc(sizeof(GameState));
     flappy_game_state_init(game_state);
 
-    game_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    game_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!game_state->mutex) {
-        FURI_LOG_E(TAG, "cannot create mutex\r\n");
+        FURRY_LOG_E(TAG, "cannot create mutex\r\n");
         return_code = 255;
         goto free_and_exit;
     }
@@ -299,20 +299,20 @@ int32_t flappy_game_app(void* p) {
     view_port_draw_callback_set(view_port, flappy_game_render_callback, game_state);
     view_port_input_callback_set(view_port, flappy_game_input_callback, event_queue);
 
-    FuriTimer* timer =
-        furi_timer_alloc(flappy_game_update_timer_callback, FuriTimerTypePeriodic, event_queue);
-    furi_timer_start(timer, furi_kernel_get_tick_frequency() / 25);
+    FurryTimer* timer =
+        furry_timer_alloc(flappy_game_update_timer_callback, FurryTimerTypePeriodic, event_queue);
+    furry_timer_start(timer, furry_kernel_get_tick_frequency() / 25);
 
     // Open GUI and register view_port
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     GameEvent event;
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 100);
-        furi_mutex_acquire(game_state->mutex, FuriWaitForever);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 100);
+        furry_mutex_acquire(game_state->mutex, FurryWaitForever);
 
-        if(event_status == FuriStatusOk) {
+        if(event_status == FurryStatusOk) {
             // press events
             if(event.type == EventTypeKey) {
                 if(event.input.type == InputTypePress) {
@@ -352,19 +352,19 @@ int32_t flappy_game_app(void* p) {
         }
 
         view_port_update(view_port);
-        furi_mutex_release(game_state->mutex);
+        furry_mutex_release(game_state->mutex);
     }
 
-    furi_timer_free(timer);
+    furry_timer_free(timer);
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(view_port);
-    furi_mutex_free(game_state->mutex);
+    furry_mutex_free(game_state->mutex);
 
 free_and_exit:
     flappy_game_state_free(game_state);
-    furi_message_queue_free(event_queue);
+    furry_message_queue_free(event_queue);
 
     return return_code;
 }

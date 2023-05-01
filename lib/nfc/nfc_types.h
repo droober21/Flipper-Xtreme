@@ -2,7 +2,7 @@
 
 #include "nfc_device.h"
 
-const char* nfc_get_dev_type(FuriHalNfcType type);
+const char* nfc_get_dev_type(FurryHalNfcType type);
 
 const char* nfc_guess_protocol(NfcProtocol protocol);
 

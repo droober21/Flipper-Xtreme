@@ -1,5 +1,5 @@
 #pragma once
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <gui/view.h>
 #include <gui/view_dispatcher.h>
@@ -35,7 +35,7 @@ typedef struct {
     DialogEx* dialog_ex;
 
     // text
-    FuriString* text_string;
+    FurryString* text_string;
 } StorageSettings;
 
 typedef enum {

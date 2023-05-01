@@ -5,8 +5,8 @@ static void rpc_debug_app_scene_start_format_hex(
     size_t data_size,
     char* buf,
     size_t buf_size) {
-    furi_assert(data);
-    furi_assert(buf);
+    furry_assert(data);
+    furry_assert(buf);
 
     const size_t byte_width = 3;
     const size_t line_width = 7;

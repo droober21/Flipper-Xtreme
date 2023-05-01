@@ -13,12 +13,12 @@ static void spi_mem_scene_delete_confirm_widget_callback(
 
 void spi_mem_scene_delete_confirm_on_enter(void* context) {
     SPIMemApp* app = context;
-    FuriString* file_name = furi_string_alloc();
-    FuriString* message = furi_string_alloc();
+    FurryString* file_name = furry_string_alloc();
+    FurryString* message = furry_string_alloc();
     path_extract_filename(app->file_path, file_name, true);
-    furi_string_printf(message, "\e#Delete %s?\e#", furi_string_get_cstr(file_name));
+    furry_string_printf(message, "\e#Delete %s?\e#", furry_string_get_cstr(file_name));
     widget_add_text_box_element(
-        app->widget, 0, 0, 128, 27, AlignCenter, AlignCenter, furi_string_get_cstr(message), true);
+        app->widget, 0, 0, 128, 27, AlignCenter, AlignCenter, furry_string_get_cstr(message), true);
     widget_add_button_element(
         app->widget,
         GuiButtonTypeLeft,
@@ -32,8 +32,8 @@ void spi_mem_scene_delete_confirm_on_enter(void* context) {
         spi_mem_scene_delete_confirm_widget_callback,
         app);
     view_dispatcher_switch_to_view(app->view_dispatcher, SPIMemViewWidget);
-    furi_string_free(file_name);
-    furi_string_free(message);
+    furry_string_free(file_name);
+    furry_string_free(message);
 }
 
 bool spi_mem_scene_delete_confirm_on_event(void* context, SceneManagerEvent event) {

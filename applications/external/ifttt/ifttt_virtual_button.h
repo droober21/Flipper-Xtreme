@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi.h>
+#include <furry.h>
 #include <power/power_service/power.h>
 #include <gui/gui.h>
 #include <gui/view.h>
@@ -13,7 +13,7 @@
 #include <flipper_format/flipper_format.h>
 #include <flipper_format/flipper_format_i.h>
 #include <storage/storage.h>
-#include <furi_hal_uart.h>
+#include <furry_hal_uart.h>
 #include "scenes/virtual_button_scene.h"
 
 #define APP_NAME "[ESP8266] IFTTT Virtual Button"

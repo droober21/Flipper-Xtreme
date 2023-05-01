@@ -1,7 +1,7 @@
 #include "i2csniffer.h"
 
 void clear_sniffer_buffers(i2cSniffer* i2c_sniffer) {
-    furi_assert(i2c_sniffer);
+    furry_assert(i2c_sniffer);
     for(uint8_t i = 0; i < MAX_RECORDS; i++) {
         for(uint8_t j = 0; j < MAX_MESSAGE_SIZE; j++) {
             i2c_sniffer->frames[i].ack[j] = false;
@@ -16,21 +16,21 @@ void clear_sniffer_buffers(i2cSniffer* i2c_sniffer) {
 }
 
 void start_interrupts(i2cSniffer* i2c_sniffer) {
-    furi_assert(i2c_sniffer);
-    furi_hal_gpio_init(pinSCL, GpioModeInterruptRise, GpioPullNo, GpioSpeedHigh);
-    furi_hal_gpio_add_int_callback(pinSCL, SCLcallback, i2c_sniffer);
+    furry_assert(i2c_sniffer);
+    furry_hal_gpio_init(pinSCL, GpioModeInterruptRise, GpioPullNo, GpioSpeedHigh);
+    furry_hal_gpio_add_int_callback(pinSCL, SCLcallback, i2c_sniffer);
 
     // Add Rise and Fall Interrupt on SDA pin
-    furi_hal_gpio_init(pinSDA, GpioModeInterruptRiseFall, GpioPullNo, GpioSpeedHigh);
-    furi_hal_gpio_add_int_callback(pinSDA, SDAcallback, i2c_sniffer);
+    furry_hal_gpio_init(pinSDA, GpioModeInterruptRiseFall, GpioPullNo, GpioSpeedHigh);
+    furry_hal_gpio_add_int_callback(pinSDA, SDAcallback, i2c_sniffer);
 }
 
 void stop_interrupts() {
-    furi_hal_gpio_remove_int_callback(pinSCL);
-    furi_hal_gpio_remove_int_callback(pinSDA);
+    furry_hal_gpio_remove_int_callback(pinSCL);
+    furry_hal_gpio_remove_int_callback(pinSDA);
     // Reset GPIO pins to default state
-    furi_hal_gpio_init(pinSCL, GpioModeAnalog, GpioPullNo, GpioSpeedLow);
-    furi_hal_gpio_init(pinSDA, GpioModeAnalog, GpioPullNo, GpioSpeedLow);
+    furry_hal_gpio_init(pinSCL, GpioModeAnalog, GpioPullNo, GpioSpeedLow);
+    furry_hal_gpio_init(pinSDA, GpioModeAnalog, GpioPullNo, GpioSpeedLow);
 }
 
 // Called on Fallin/Rising SDA
@@ -38,17 +38,17 @@ void stop_interrupts() {
 void SDAcallback(void* _i2c_sniffer) {
     i2cSniffer* i2c_sniffer = _i2c_sniffer;
     // SCL is low maybe cclock strecching
-    if(furi_hal_gpio_read(pinSCL) == false) {
+    if(furry_hal_gpio_read(pinSCL) == false) {
         return;
     }
     // Check for stop condition: SDA rising while SCL is High
     if(i2c_sniffer->state == I2C_BUS_STARTED) {
-        if(furi_hal_gpio_read(pinSDA) == true) {
+        if(furry_hal_gpio_read(pinSDA) == true) {
             i2c_sniffer->state = I2C_BUS_FREE;
         }
     }
     // Check for start condition: SDA falling while SCL is high
-    else if(furi_hal_gpio_read(pinSDA) == false) {
+    else if(furry_hal_gpio_read(pinSDA) == false) {
         i2c_sniffer->state = I2C_BUS_STARTED;
         if(i2c_sniffer->first) {
             i2c_sniffer->first = false;
@@ -74,10 +74,10 @@ void SCLcallback(void* _i2c_sniffer) {
     uint8_t data_idx = i2c_sniffer->frames[frame].data_index;
     if(bit < 8) {
         i2c_sniffer->frames[frame].data[data_idx] <<= 1;
-        i2c_sniffer->frames[frame].data[data_idx] |= (int)furi_hal_gpio_read(pinSDA);
+        i2c_sniffer->frames[frame].data[data_idx] |= (int)furry_hal_gpio_read(pinSDA);
         i2c_sniffer->frames[frame].bit_index++;
     } else {
-        i2c_sniffer->frames[frame].ack[data_idx] = !furi_hal_gpio_read(pinSDA);
+        i2c_sniffer->frames[frame].ack[data_idx] = !furry_hal_gpio_read(pinSDA);
         i2c_sniffer->frames[frame].data_index++;
         i2c_sniffer->frames[frame].bit_index = 0;
     }
@@ -93,7 +93,7 @@ i2cSniffer* i2c_sniffer_alloc() {
 }
 
 void i2c_sniffer_free(i2cSniffer* i2c_sniffer) {
-    furi_assert(i2c_sniffer);
+    furry_assert(i2c_sniffer);
     if(i2c_sniffer->started) {
         stop_interrupts();
     }

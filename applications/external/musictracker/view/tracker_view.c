@@ -1,6 +1,6 @@
 #include "tracker_view.h"
 #include <gui/elements.h>
-#include <furi.h>
+#include <furry.h>
 
 typedef struct {
     const Song* song;
@@ -50,7 +50,7 @@ static uint8_t get_first_row_id(uint8_t row) {
 }
 
 static void
-    draw_row(Canvas* canvas, uint8_t i, Channel* channel, uint8_t row, FuriString* buffer) {
+    draw_row(Canvas* canvas, uint8_t i, Channel* channel, uint8_t row, FurryString* buffer) {
     uint8_t x = 12 * (i + 1);
     uint8_t first_row_id = get_first_row_id(row);
     uint8_t current_row_id = first_row_id + i;
@@ -72,13 +72,13 @@ static void
         canvas_set_color(canvas, ColorWhite);
     }
 
-    furi_string_printf(buffer, "%02X", current_row_id);
-    canvas_draw_str(canvas, x, 61, furi_string_get_cstr(buffer));
+    furry_string_printf(buffer, "%02X", current_row_id);
+    canvas_draw_str(canvas, x, 61, furry_string_get_cstr(buffer));
 
     if(note > 0 && note < NOTE_OFF) {
-        furi_string_printf(
+        furry_string_printf(
             buffer, "%s%d", get_note_from_id(note - 1), get_octave_from_id(note - 1));
-        canvas_draw_str(canvas, x, 44, furi_string_get_cstr(buffer));
+        canvas_draw_str(canvas, x, 44, furry_string_get_cstr(buffer));
     } else if(note == NOTE_OFF) {
         canvas_draw_str(canvas, x, 44, "OFF");
     } else {
@@ -89,17 +89,17 @@ static void
         canvas_draw_str(canvas, x, 21, "-");
         canvas_draw_str(canvas, x, 12, "--");
     } else {
-        furi_string_printf(buffer, "%X", effect);
-        canvas_draw_str(canvas, x, 21, furi_string_get_cstr(buffer));
+        furry_string_printf(buffer, "%X", effect);
+        canvas_draw_str(canvas, x, 21, furry_string_get_cstr(buffer));
 
         if(effect == EffectArpeggio || effect == EffectVibrato) {
             uint8_t data_x = EFFECT_DATA_GET_X(data);
             uint8_t data_y = EFFECT_DATA_GET_Y(data);
-            furi_string_printf(buffer, "%d%d", data_x, data_y);
-            canvas_draw_str(canvas, x, 12, furi_string_get_cstr(buffer));
+            furry_string_printf(buffer, "%d%d", data_x, data_y);
+            canvas_draw_str(canvas, x, 12, furry_string_get_cstr(buffer));
         } else {
-            furi_string_printf(buffer, "%02X", data);
-            canvas_draw_str(canvas, x, 12, furi_string_get_cstr(buffer));
+            furry_string_printf(buffer, "%02X", data);
+            canvas_draw_str(canvas, x, 12, furry_string_get_cstr(buffer));
         }
     }
 
@@ -118,12 +118,12 @@ static void tracker_view_draw_callback(Canvas* canvas, void* _model) {
     canvas_set_font(canvas, FontKeyboard);
 
     Channel* channel = get_current_channel(model);
-    FuriString* buffer = furi_string_alloc();
+    FurryString* buffer = furry_string_alloc();
 
     for(uint8_t i = 0; i < 10; i++) {
         draw_row(canvas, i, channel, model->row, buffer);
     }
-    furi_string_free(buffer);
+    furry_string_free(buffer);
 }
 
 static bool tracker_view_input_callback(InputEvent* event, void* context) {

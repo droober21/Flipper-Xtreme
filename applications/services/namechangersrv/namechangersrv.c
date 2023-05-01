@@ -4,19 +4,19 @@
 #include <flipper_format/flipper_format.h>
 
 void namechanger_on_system_start() {
-    if(!furi_hal_is_normal_boot()) {
-        FURI_LOG_W(TAG, "NameChangerSRV load skipped. Device is in special startup mode.");
+    if(!furry_hal_is_normal_boot()) {
+        FURRY_LOG_W(TAG, "NameChangerSRV load skipped. Device is in special startup mode.");
     } else {
-        Storage* storage = furi_record_open(RECORD_STORAGE);
+        Storage* storage = furry_record_open(RECORD_STORAGE);
         FlipperFormat* file = flipper_format_file_alloc(storage);
 
-        FuriString* NAMEHEADER;
-        NAMEHEADER = furi_string_alloc_set("Flipper Name File");
+        FurryString* NAMEHEADER;
+        NAMEHEADER = furry_string_alloc_set("Flipper Name File");
 
         bool result = false;
 
-        FuriString* data;
-        data = furi_string_alloc();
+        FurryString* data;
+        data = furry_string_alloc();
 
         do {
             if(!flipper_format_file_open_existing(file, NAMECHANGER_PATH)) {
@@ -30,7 +30,7 @@ void namechanger_on_system_start() {
                 break;
             }
 
-            if(furi_string_cmp_str(data, furi_string_get_cstr(NAMEHEADER)) != 0) {
+            if(furry_string_cmp_str(data, furry_string_get_cstr(NAMEHEADER)) != 0) {
                 break;
             }
 
@@ -61,7 +61,7 @@ void namechanger_on_system_start() {
                 }
 
                 // Write header
-                if(!flipper_format_write_header_cstr(file, furi_string_get_cstr(NAMEHEADER), 1)) {
+                if(!flipper_format_write_header_cstr(file, furry_string_get_cstr(NAMEHEADER), 1)) {
                     break;
                 }
 
@@ -85,7 +85,7 @@ void namechanger_on_system_start() {
 
                 //Write name
                 if(!flipper_format_write_string_cstr(
-                       file, "Name", furi_hal_version_get_name_ptr())) {
+                       file, "Name", furry_hal_version_get_name_ptr())) {
                     break;
                 }
 
@@ -95,10 +95,10 @@ void namechanger_on_system_start() {
             flipper_format_free(file);
 
             if(!res) {
-                FURI_LOG_E(TAG, "Save failed.");
+                FURRY_LOG_E(TAG, "Save failed.");
             }
         } else {
-            if(!furi_string_size(data)) {
+            if(!furry_string_size(data)) {
                 //Empty file - get default name and write to file.
                 FlipperFormat* file = flipper_format_file_alloc(storage);
 
@@ -112,7 +112,7 @@ void namechanger_on_system_start() {
 
                     // Write header
                     if(!flipper_format_write_header_cstr(
-                           file, furi_string_get_cstr(NAMEHEADER), 1)) {
+                           file, furry_string_get_cstr(NAMEHEADER), 1)) {
                         break;
                     }
 
@@ -136,7 +136,7 @@ void namechanger_on_system_start() {
 
                     //Write name
                     if(!flipper_format_write_string_cstr(
-                           file, "Name", furi_hal_version_get_name_ptr())) {
+                           file, "Name", furry_hal_version_get_name_ptr())) {
                         break;
                     }
 
@@ -146,18 +146,18 @@ void namechanger_on_system_start() {
                 flipper_format_free(file);
 
                 if(!res) {
-                    FURI_LOG_E(TAG, "Save failed.");
+                    FURRY_LOG_E(TAG, "Save failed.");
                 }
             } else {
                 char newdata[9];
-                snprintf(newdata, 9, "%s", furi_string_get_cstr(data));
+                snprintf(newdata, 9, "%s", furry_string_get_cstr(data));
                 //set name from file
-                furi_hal_version_set_custom_name(newdata);
+                furry_hal_version_set_custom_name(newdata);
             }
         }
 
-        furi_string_free(data);
+        furry_string_free(data);
 
-        furi_record_close(RECORD_STORAGE);
+        furry_record_close(RECORD_STORAGE);
     }
 }

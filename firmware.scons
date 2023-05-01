@@ -31,9 +31,9 @@ env = ENV.Clone(
         "${LIB_DIST_DIR}",
     ],
     CPPPATH=[
-        "#/furi",
+        "#/furry",
         *(f"#/{app_dir[0]}" for app_dir in ENV["APPDIRS"] if app_dir[1]),
-        "#/firmware/targets/furi_hal_include",
+        "#/firmware/targets/furry_hal_include",
     ],
     # Specific flags for building libraries - always do optimized builds
     FW_LIB_OPTS={
@@ -43,19 +43,19 @@ env = ENV.Clone(
             ],
             "CPPDEFINES": [
                 "NDEBUG",
-                "FURI_DEBUG" if ENV["LIB_DEBUG"] else "FURI_NDEBUG",
+                "FURRY_DEBUG" if ENV["LIB_DEBUG"] else "FURRY_NDEBUG",
             ],
             # You can add other entries named after libraries
             # If they are present, they have precedence over Default
         },
-        # for furi_check to respect build type
-        "furi": {
+        # for furry_check to respect build type
+        "furry": {
             "CCFLAGS": [
                 "-Os",
             ],
             "CPPDEFINES": [
                 "NDEBUG",
-                "FURI_DEBUG" if ENV["DEBUG"] else "FURI_NDEBUG",
+                "FURRY_DEBUG" if ENV["DEBUG"] else "FURRY_NDEBUG",
             ],
         },
         "flipper_application": {
@@ -64,7 +64,7 @@ env = ENV.Clone(
             ],
             "CPPDEFINES": [
                 "NDEBUG",
-                "FURI_DEBUG" if ENV["DEBUG"] else "FURI_NDEBUG",
+                "FURRY_DEBUG" if ENV["DEBUG"] else "FURRY_NDEBUG",
             ],
         },
     },
@@ -82,7 +82,7 @@ else:
         FIRMWARE_BUILD_CFG="updater",
         RAM_EXEC=True,
         CPPDEFINES=[
-            "FURI_RAM_EXEC",
+            "FURRY_RAM_EXEC",
         ],
     )
 
@@ -96,7 +96,7 @@ lib_targets = env.BuildModules(
         "lib",
         "assets",
         "firmware",
-        "furi",
+        "furry",
     ],
 )
 

@@ -8,18 +8,18 @@
 
 struct WSReceiverInfo {
     View* view;
-    FuriTimer* timer;
+    FurryTimer* timer;
 };
 
 typedef struct {
     uint32_t curr_ts;
-    FuriString* protocol_name;
+    FurryString* protocol_name;
     WSBlockGeneric* generic;
 } WSReceiverInfoModel;
 
 void ws_view_receiver_info_update(WSReceiverInfo* ws_receiver_info, FlipperFormat* fff) {
-    furi_assert(ws_receiver_info);
-    furi_assert(fff);
+    furry_assert(ws_receiver_info);
+    furry_assert(fff);
 
     with_view_model(
         ws_receiver_info->view,
@@ -30,9 +30,9 @@ void ws_view_receiver_info_update(WSReceiverInfo* ws_receiver_info, FlipperForma
 
             ws_block_generic_deserialize(model->generic, fff);
 
-            FuriHalRtcDateTime curr_dt;
-            furi_hal_rtc_get_datetime(&curr_dt);
-            model->curr_ts = furi_hal_rtc_datetime_to_timestamp(&curr_dt);
+            FurryHalRtcDateTime curr_dt;
+            furry_hal_rtc_get_datetime(&curr_dt);
+            model->curr_ts = furry_hal_rtc_datetime_to_timestamp(&curr_dt);
         },
         true);
 }
@@ -47,7 +47,7 @@ void ws_view_receiver_info_draw(Canvas* canvas, WSReceiverInfoModel* model) {
         buffer,
         sizeof(buffer),
         "%s %db",
-        furi_string_get_cstr(model->protocol_name),
+        furry_string_get_cstr(model->protocol_name),
         model->generic->data_count_bit);
     canvas_draw_str(canvas, 0, 8, buffer);
 
@@ -83,7 +83,7 @@ void ws_view_receiver_info_draw(Canvas* canvas, WSReceiverInfoModel* model) {
 
         uint8_t temp_x1 = 0;
         uint8_t temp_x2 = 0;
-        if(furi_hal_rtc_get_locale_units() == FuriHalRtcLocaleUnitsMetric) {
+        if(furry_hal_rtc_get_locale_units() == FurryHalRtcLocaleUnitsMetric) {
             snprintf(buffer, sizeof(buffer), "%3.1f C", (double)model->generic->temp);
             if(model->generic->temp < -9.0f) {
                 temp_x1 = 49;
@@ -149,7 +149,7 @@ void ws_view_receiver_info_draw(Canvas* canvas, WSReceiverInfoModel* model) {
 }
 
 bool ws_view_receiver_info_input(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     //WSReceiverInfo* ws_receiver_info = context;
 
     if(event->key == InputKeyBack) {
@@ -160,22 +160,22 @@ bool ws_view_receiver_info_input(InputEvent* event, void* context) {
 }
 
 static void ws_view_receiver_info_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSReceiverInfo* ws_receiver_info = context;
 
-    furi_timer_start(ws_receiver_info->timer, 1000);
+    furry_timer_start(ws_receiver_info->timer, 1000);
 }
 
 static void ws_view_receiver_info_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSReceiverInfo* ws_receiver_info = context;
 
-    furi_timer_stop(ws_receiver_info->timer);
+    furry_timer_stop(ws_receiver_info->timer);
 
     with_view_model(
         ws_receiver_info->view,
         WSReceiverInfoModel * model,
-        { furi_string_reset(model->protocol_name); },
+        { furry_string_reset(model->protocol_name); },
         false);
 }
 
@@ -186,9 +186,9 @@ static void ws_view_receiver_info_timer(void* context) {
         ws_receiver_info->view,
         WSReceiverInfoModel * model,
         {
-            FuriHalRtcDateTime curr_dt;
-            furi_hal_rtc_get_datetime(&curr_dt);
-            model->curr_ts = furi_hal_rtc_datetime_to_timestamp(&curr_dt);
+            FurryHalRtcDateTime curr_dt;
+            furry_hal_rtc_get_datetime(&curr_dt);
+            model->curr_ts = furry_hal_rtc_datetime_to_timestamp(&curr_dt);
         },
         true);
 }
@@ -211,26 +211,26 @@ WSReceiverInfo* ws_view_receiver_info_alloc() {
         WSReceiverInfoModel * model,
         {
             model->generic = malloc(sizeof(WSBlockGeneric));
-            model->protocol_name = furi_string_alloc();
+            model->protocol_name = furry_string_alloc();
         },
         true);
 
     ws_receiver_info->timer =
-        furi_timer_alloc(ws_view_receiver_info_timer, FuriTimerTypePeriodic, ws_receiver_info);
+        furry_timer_alloc(ws_view_receiver_info_timer, FurryTimerTypePeriodic, ws_receiver_info);
 
     return ws_receiver_info;
 }
 
 void ws_view_receiver_info_free(WSReceiverInfo* ws_receiver_info) {
-    furi_assert(ws_receiver_info);
+    furry_assert(ws_receiver_info);
 
-    furi_timer_free(ws_receiver_info->timer);
+    furry_timer_free(ws_receiver_info->timer);
 
     with_view_model(
         ws_receiver_info->view,
         WSReceiverInfoModel * model,
         {
-            furi_string_free(model->protocol_name);
+            furry_string_free(model->protocol_name);
             free(model->generic);
         },
         false);
@@ -240,6 +240,6 @@ void ws_view_receiver_info_free(WSReceiverInfo* ws_receiver_info) {
 }
 
 View* ws_view_receiver_info_get_view(WSReceiverInfo* ws_receiver_info) {
-    furi_assert(ws_receiver_info);
+    furry_assert(ws_receiver_info);
     return ws_receiver_info->view;
 }

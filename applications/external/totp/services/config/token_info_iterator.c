@@ -46,7 +46,7 @@ static bool
 }
 
 static bool seek_to_token(size_t token_index, TokenInfoIteratorContext* context) {
-    furi_check(context != NULL && context->config_file != NULL);
+    furry_check(context != NULL && context->config_file != NULL);
     if(token_index >= context->total_count) {
         return false;
     }
@@ -85,7 +85,7 @@ static bool seek_to_token(size_t token_index, TokenInfoIteratorContext* context)
 
         if((i_inc > 0 && i < token_index_diff) || (i_inc < 0 && i > token_index_diff)) {
             context->last_seek_offset = 0;
-            FURI_LOG_D(LOGGING_TAG, "Was not able to move");
+            FURRY_LOG_D(LOGGING_TAG, "Was not able to move");
             return false;
         }
 
@@ -251,7 +251,7 @@ TokenInfoIteratorContext*
     }
 
     TokenInfoIteratorContext* context = malloc(sizeof(TokenInfoIteratorContext));
-    furi_check(context != NULL);
+    furry_check(context != NULL);
 
     context->total_count = tokens_count;
     context->current_token = token_info_alloc();
@@ -416,7 +416,7 @@ TotpIteratorUpdateTokenResult totp_token_info_iterator_add_new_token(
 }
 
 bool totp_token_info_iterator_go_to(TokenInfoIteratorContext* context, size_t token_index) {
-    furi_check(context != NULL);
+    furry_check(context != NULL);
     context->current_index = token_index;
     if(!seek_to_token(context->current_index, context)) {
         return false;
@@ -444,40 +444,40 @@ bool totp_token_info_iterator_go_to(TokenInfoIteratorContext* context, size_t to
     }
 
     if(secret_bytes_count == 1) { // Plain secret key
-        FuriString* temp_str = furi_string_alloc();
+        FurryString* temp_str = furry_string_alloc();
 
         if(flipper_format_read_string(
                context->config_file, TOTP_CONFIG_KEY_TOKEN_SECRET, temp_str)) {
             if(token_info_set_secret(
                    tokenInfo,
-                   furi_string_get_cstr(temp_str),
-                   furi_string_size(temp_str),
+                   furry_string_get_cstr(temp_str),
+                   furry_string_size(temp_str),
                    PlainTokenSecretEncodingBase32,
                    context->iv)) {
-                FURI_LOG_W(
+                FURRY_LOG_W(
                     LOGGING_TAG,
                     "Token \"%s\" has plain secret",
-                    furi_string_get_cstr(tokenInfo->name));
+                    furry_string_get_cstr(tokenInfo->name));
                 token_update_needed = true;
             } else {
                 tokenInfo->token = NULL;
                 tokenInfo->token_length = 0;
-                FURI_LOG_W(
+                FURRY_LOG_W(
                     LOGGING_TAG,
                     "Token \"%s\" has invalid secret",
-                    furi_string_get_cstr(tokenInfo->name));
+                    furry_string_get_cstr(tokenInfo->name));
             }
         } else {
             tokenInfo->token = NULL;
             tokenInfo->token_length = 0;
         }
 
-        furi_string_free(temp_str);
+        furry_string_free(temp_str);
     } else { // encrypted
         tokenInfo->token_length = secret_bytes_count;
         if(secret_bytes_count > 0) {
             tokenInfo->token = malloc(tokenInfo->token_length);
-            furi_check(tokenInfo->token != NULL);
+            furry_check(tokenInfo->token != NULL);
             if(!flipper_format_read_hex(
                    context->config_file,
                    TOTP_CONFIG_KEY_TOKEN_SECRET,

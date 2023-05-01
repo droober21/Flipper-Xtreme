@@ -1,14 +1,14 @@
 #include "../avr_isp_app_i.h"
 
 void avr_isp_scene_chip_detect_callback(AvrIspCustomEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspApp* app = context;
     view_dispatcher_send_custom_event(app->view_dispatcher, event);
 }
 
 void avr_isp_scene_chip_detect_on_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspApp* app = context;
     switch(app->error) {
@@ -36,7 +36,7 @@ void avr_isp_scene_chip_detect_on_enter(void* context) {
 }
 
 bool avr_isp_scene_chip_detect_on_event(void* context, SceneManagerEvent event) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspApp* app = context;
     bool consumed = false;

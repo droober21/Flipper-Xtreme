@@ -7,19 +7,19 @@
 void dap_scene_about_on_enter(void* context) {
     DapGuiApp* app = context;
 
-    FuriString* temp_str;
-    temp_str = furi_string_alloc();
-    furi_string_printf(temp_str, "\e#%s\n", "Information");
+    FurryString* temp_str;
+    temp_str = furry_string_alloc();
+    furry_string_printf(temp_str, "\e#%s\n", "Information");
 
-    furi_string_cat_printf(temp_str, "Version: %s\n", DAP_VERSION_APP);
-    furi_string_cat_printf(temp_str, "Developed by: %s\n", DAP_DEVELOPED);
-    furi_string_cat_printf(temp_str, "Github: %s\n\n", DAP_GITHUB);
+    furry_string_cat_printf(temp_str, "Version: %s\n", DAP_VERSION_APP);
+    furry_string_cat_printf(temp_str, "Developed by: %s\n", DAP_DEVELOPED);
+    furry_string_cat_printf(temp_str, "Github: %s\n\n", DAP_GITHUB);
 
-    furi_string_cat_printf(temp_str, "\e#%s\n", "Description");
-    furi_string_cat_printf(
+    furry_string_cat_printf(temp_str, "\e#%s\n", "Description");
+    furry_string_cat_printf(
         temp_str, "CMSIS-DAP debugger\nbased on Free-DAP\nThanks to Alex Taradov\n\n");
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         temp_str,
         "Supported protocols:\n"
         "SWD, JTAG, UART\n"
@@ -45,8 +45,8 @@ void dap_scene_about_on_enter(void* context) {
         AlignBottom,
         "\e#\e!              DAP Link              \e!\n",
         false);
-    widget_add_text_scroll_element(app->widget, 0, 16, 128, 50, furi_string_get_cstr(temp_str));
-    furi_string_free(temp_str);
+    widget_add_text_scroll_element(app->widget, 0, 16, 128, 50, furry_string_get_cstr(temp_str));
+    furry_string_free(temp_str);
 
     view_dispatcher_switch_to_view(app->view_dispatcher, DapGuiAppViewWidget);
 }

@@ -27,7 +27,7 @@ typedef struct {
     uint8_t* buffer_buffer;
     uint16_t* sample_buffer;
     float volume;
-    FuriMessageQueue* queue;
+    FurryMessageQueue* queue;
     DTMFDolphinOsc* osc1;
     DTMFDolphinOsc* osc2;
     DTMFDolphinPulseFilter* filter;

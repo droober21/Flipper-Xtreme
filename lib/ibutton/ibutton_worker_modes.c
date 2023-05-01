@@ -2,8 +2,8 @@
 
 #include <core/check.h>
 
-#include <furi_hal_rfid.h>
-#include <furi_hal_power.h>
+#include <furry_hal_rfid.h>
+#include <furry_hal_power.h>
 
 #include "ibutton_protocols.h"
 
@@ -26,7 +26,7 @@ static void ibutton_worker_mode_write_common_stop(iButtonWorker* worker);
 
 const iButtonWorkerModeType ibutton_worker_modes[] = {
     {
-        .quant = FuriWaitForever,
+        .quant = FurryWaitForever,
         .start = ibutton_worker_mode_idle_start,
         .tick = ibutton_worker_mode_idle_tick,
         .stop = ibutton_worker_mode_idle_stop,
@@ -75,7 +75,7 @@ void ibutton_worker_mode_idle_stop(iButtonWorker* worker) {
 
 void ibutton_worker_mode_read_start(iButtonWorker* worker) {
     UNUSED(worker);
-    furi_hal_power_enable_otg();
+    furry_hal_power_enable_otg();
 }
 
 void ibutton_worker_mode_read_tick(iButtonWorker* worker) {
@@ -90,16 +90,16 @@ void ibutton_worker_mode_read_tick(iButtonWorker* worker) {
 
 void ibutton_worker_mode_read_stop(iButtonWorker* worker) {
     UNUSED(worker);
-    furi_hal_power_disable_otg();
+    furry_hal_power_disable_otg();
 }
 
 /*********************** EMULATE ***********************/
 
 void ibutton_worker_mode_emulate_start(iButtonWorker* worker) {
-    furi_assert(worker->key);
+    furry_assert(worker->key);
 
-    furi_hal_rfid_pins_reset();
-    furi_hal_rfid_pin_pull_pulldown();
+    furry_hal_rfid_pins_reset();
+    furry_hal_rfid_pin_pull_pulldown();
 
     ibutton_protocols_emulate_start(worker->protocols, worker->key);
 }
@@ -109,22 +109,22 @@ void ibutton_worker_mode_emulate_tick(iButtonWorker* worker) {
 }
 
 void ibutton_worker_mode_emulate_stop(iButtonWorker* worker) {
-    furi_assert(worker->key);
+    furry_assert(worker->key);
 
     ibutton_protocols_emulate_stop(worker->protocols, worker->key);
 
-    furi_hal_rfid_pins_reset();
+    furry_hal_rfid_pins_reset();
 }
 
 /*********************** WRITE ***********************/
 
 void ibutton_worker_mode_write_common_start(iButtonWorker* worker) { //-V524
     UNUSED(worker);
-    furi_hal_power_enable_otg();
+    furry_hal_power_enable_otg();
 }
 
 void ibutton_worker_mode_write_blank_tick(iButtonWorker* worker) {
-    furi_assert(worker->key);
+    furry_assert(worker->key);
 
     const bool success = ibutton_protocols_write_blank(worker->protocols, worker->key);
     // TODO: pass a proper result to the callback
@@ -136,7 +136,7 @@ void ibutton_worker_mode_write_blank_tick(iButtonWorker* worker) {
 }
 
 void ibutton_worker_mode_write_copy_tick(iButtonWorker* worker) {
-    furi_assert(worker->key);
+    furry_assert(worker->key);
 
     const bool success = ibutton_protocols_write_copy(worker->protocols, worker->key);
     // TODO: pass a proper result to the callback
@@ -149,5 +149,5 @@ void ibutton_worker_mode_write_copy_tick(iButtonWorker* worker) {
 
 void ibutton_worker_mode_write_common_stop(iButtonWorker* worker) { //-V524
     UNUSED(worker);
-    furi_hal_power_disable_otg();
+    furry_hal_power_disable_otg();
 }

@@ -1,7 +1,7 @@
 #include "loader.h"
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <core/pubsub.h>
 #include <cli/cli.h>
 #include <lib/toolbox/args.h>
@@ -15,10 +15,10 @@
 #include <assets_icons.h>
 
 struct Loader {
-    FuriThreadId loader_thread;
+    FurryThreadId loader_thread;
 
     const FlipperApplication* application;
-    FuriThread* application_thread;
+    FurryThread* application_thread;
     char* application_arguments;
 
     Cli* cli;
@@ -30,7 +30,7 @@ struct Loader {
 
     volatile uint8_t lock_count;
 
-    FuriPubSub* pubsub;
+    FurryPubSub* pubsub;
 };
 
 typedef enum {

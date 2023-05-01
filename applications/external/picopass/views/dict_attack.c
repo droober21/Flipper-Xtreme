@@ -16,7 +16,7 @@ struct DictAttack {
 typedef struct {
     DictAttackState state;
     MfClassicType type;
-    FuriString* header;
+    FurryString* header;
     uint8_t sectors_total;
     uint8_t sectors_read;
     uint8_t sector_current;
@@ -40,7 +40,7 @@ static void dict_attack_draw_callback(Canvas* canvas, void* model) {
         char draw_str[32] = {};
         canvas_set_font(canvas, FontSecondary);
         canvas_draw_str_aligned(
-            canvas, 64, 0, AlignCenter, AlignTop, furi_string_get_cstr(m->header));
+            canvas, 64, 0, AlignCenter, AlignTop, furry_string_get_cstr(m->header));
         if(m->is_key_attack) {
             snprintf(
                 draw_str,
@@ -100,24 +100,24 @@ DictAttack* dict_attack_alloc() {
     with_view_model(
         dict_attack->view,
         DictAttackViewModel * model,
-        { model->header = furi_string_alloc(); },
+        { model->header = furry_string_alloc(); },
         false);
     return dict_attack;
 }
 
 void dict_attack_free(DictAttack* dict_attack) {
-    furi_assert(dict_attack);
+    furry_assert(dict_attack);
     with_view_model(
         dict_attack->view,
         DictAttackViewModel * model,
-        { furi_string_free(model->header); },
+        { furry_string_free(model->header); },
         false);
     view_free(dict_attack->view);
     free(dict_attack);
 }
 
 void dict_attack_reset(DictAttack* dict_attack) {
-    furi_assert(dict_attack);
+    furry_assert(dict_attack);
     with_view_model(
         dict_attack->view,
         DictAttackViewModel * model,
@@ -132,36 +132,36 @@ void dict_attack_reset(DictAttack* dict_attack) {
             model->dict_keys_total = 0;
             model->dict_keys_current = 0;
             model->is_key_attack = false;
-            furi_string_reset(model->header);
+            furry_string_reset(model->header);
         },
         false);
 }
 
 View* dict_attack_get_view(DictAttack* dict_attack) {
-    furi_assert(dict_attack);
+    furry_assert(dict_attack);
     return dict_attack->view;
 }
 
 void dict_attack_set_callback(DictAttack* dict_attack, DictAttackCallback callback, void* context) {
-    furi_assert(dict_attack);
-    furi_assert(callback);
+    furry_assert(dict_attack);
+    furry_assert(callback);
     dict_attack->callback = callback;
     dict_attack->context = context;
 }
 
 void dict_attack_set_header(DictAttack* dict_attack, const char* header) {
-    furi_assert(dict_attack);
-    furi_assert(header);
+    furry_assert(dict_attack);
+    furry_assert(header);
 
     with_view_model(
         dict_attack->view,
         DictAttackViewModel * model,
-        { furi_string_set(model->header, header); },
+        { furry_string_set(model->header, header); },
         true);
 }
 
 void dict_attack_set_card_detected(DictAttack* dict_attack) {
-    furi_assert(dict_attack);
+    furry_assert(dict_attack);
     with_view_model(
         dict_attack->view,
         DictAttackViewModel * model,
@@ -174,7 +174,7 @@ void dict_attack_set_card_detected(DictAttack* dict_attack) {
 }
 
 void dict_attack_set_card_removed(DictAttack* dict_attack) {
-    furi_assert(dict_attack);
+    furry_assert(dict_attack);
     with_view_model(
         dict_attack->view,
         DictAttackViewModel * model,
@@ -183,19 +183,19 @@ void dict_attack_set_card_removed(DictAttack* dict_attack) {
 }
 
 void dict_attack_set_sector_read(DictAttack* dict_attack, uint8_t sec_read) {
-    furi_assert(dict_attack);
+    furry_assert(dict_attack);
     with_view_model(
         dict_attack->view, DictAttackViewModel * model, { model->sectors_read = sec_read; }, true);
 }
 
 void dict_attack_set_keys_found(DictAttack* dict_attack, uint8_t keys_found) {
-    furi_assert(dict_attack);
+    furry_assert(dict_attack);
     with_view_model(
         dict_attack->view, DictAttackViewModel * model, { model->keys_found = keys_found; }, true);
 }
 
 void dict_attack_set_current_sector(DictAttack* dict_attack, uint8_t curr_sec) {
-    furi_assert(dict_attack);
+    furry_assert(dict_attack);
     with_view_model(
         dict_attack->view,
         DictAttackViewModel * model,
@@ -207,7 +207,7 @@ void dict_attack_set_current_sector(DictAttack* dict_attack, uint8_t curr_sec) {
 }
 
 void dict_attack_inc_current_sector(DictAttack* dict_attack) {
-    furi_assert(dict_attack);
+    furry_assert(dict_attack);
     with_view_model(
         dict_attack->view,
         DictAttackViewModel * model,
@@ -221,7 +221,7 @@ void dict_attack_inc_current_sector(DictAttack* dict_attack) {
 }
 
 void dict_attack_inc_keys_found(DictAttack* dict_attack) {
-    furi_assert(dict_attack);
+    furry_assert(dict_attack);
     with_view_model(
         dict_attack->view,
         DictAttackViewModel * model,
@@ -234,7 +234,7 @@ void dict_attack_inc_keys_found(DictAttack* dict_attack) {
 }
 
 void dict_attack_set_total_dict_keys(DictAttack* dict_attack, uint16_t dict_keys_total) {
-    furi_assert(dict_attack);
+    furry_assert(dict_attack);
     with_view_model(
         dict_attack->view,
         DictAttackViewModel * model,
@@ -243,7 +243,7 @@ void dict_attack_set_total_dict_keys(DictAttack* dict_attack, uint16_t dict_keys
 }
 
 void dict_attack_inc_current_dict_key(DictAttack* dict_attack, uint16_t keys_tried) {
-    furi_assert(dict_attack);
+    furry_assert(dict_attack);
     with_view_model(
         dict_attack->view,
         DictAttackViewModel * model,
@@ -256,7 +256,7 @@ void dict_attack_inc_current_dict_key(DictAttack* dict_attack, uint16_t keys_tri
 }
 
 void dict_attack_set_key_attack(DictAttack* dict_attack, bool is_key_attack, uint8_t sector) {
-    furi_assert(dict_attack);
+    furry_assert(dict_attack);
     with_view_model(
         dict_attack->view,
         DictAttackViewModel * model,
@@ -268,7 +268,7 @@ void dict_attack_set_key_attack(DictAttack* dict_attack, bool is_key_attack, uin
 }
 
 void dict_attack_inc_key_attack_current_sector(DictAttack* dict_attack) {
-    furi_assert(dict_attack);
+    furry_assert(dict_attack);
     with_view_model(
         dict_attack->view,
         DictAttackViewModel * model,

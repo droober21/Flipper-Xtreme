@@ -17,8 +17,8 @@ struct SPIMemWorker {
     SPIMemWorkerMode mode_index;
     SPIMemWorkerCallback callback;
     void* cb_ctx;
-    FuriThread* thread;
-    FuriString* file_name;
+    FurryThread* thread;
+    FurryString* file_name;
 };
 
 extern const SPIMemWorkerModeType spi_mem_worker_modes[];

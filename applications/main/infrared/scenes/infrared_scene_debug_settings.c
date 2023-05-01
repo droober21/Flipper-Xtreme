@@ -1,5 +1,5 @@
 #include "../infrared_i.h"
-#include <furi_hal_infrared.h>
+#include <furry_hal_infrared.h>
 
 uint8_t value_index_ir;
 
@@ -16,18 +16,18 @@ static void infrared_scene_debug_settings_changed(VariableItem* item) {
 
     variable_item_set_current_value_text(item, infrared_debug_cfg_variables_text[value_index_ir]);
 
-    furi_hal_infrared_set_debug_out(value_index_ir);
+    furry_hal_infrared_set_debug_out(value_index_ir);
 }
 
 static void infrared_scene_debug_settings_power_changed(VariableItem* item) {
     bool value = variable_item_get_current_value_index(item);
     if(value) {
-        for(int i = 0; i < 5 && !furi_hal_power_is_otg_enabled(); i++) {
-            furi_hal_power_enable_otg();
-            furi_delay_ms(10);
+        for(int i = 0; i < 5 && !furry_hal_power_is_otg_enabled(); i++) {
+            furry_hal_power_enable_otg();
+            furry_delay_ms(10);
         }
     } else {
-        furi_hal_power_disable_otg();
+        furry_hal_power_disable_otg();
     }
     variable_item_set_current_value_text(item, value ? "ON" : "OFF");
 }
@@ -42,7 +42,7 @@ void infrared_scene_debug_settings_on_enter(void* context) {
 
     VariableItemList* variable_item_list = infrared->variable_item_list;
 
-    value_index_ir = furi_hal_infrared_get_debug_out_status();
+    value_index_ir = furry_hal_infrared_get_debug_out_status();
     VariableItem* item = variable_item_list_add(
         variable_item_list,
         "Send signal to",
@@ -62,7 +62,7 @@ void infrared_scene_debug_settings_on_enter(void* context) {
         2,
         infrared_scene_debug_settings_power_changed,
         infrared);
-    bool enabled = furi_hal_power_is_otg_enabled();
+    bool enabled = furry_hal_power_is_otg_enabled();
     variable_item_set_current_value_index(item, enabled);
     variable_item_set_current_value_text(item, enabled ? "ON" : "OFF");
 

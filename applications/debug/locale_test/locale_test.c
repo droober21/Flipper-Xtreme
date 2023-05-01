@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <gui/elements.h>
 #include <gui/view_dispatcher.h>
@@ -18,28 +18,28 @@ static void locale_test_view_draw_callback(Canvas* canvas, void* _model) {
     canvas_set_color(canvas, ColorBlack);
     canvas_set_font(canvas, FontSecondary);
 
-    FuriString* tmp_string = furi_string_alloc();
+    FurryString* tmp_string = furry_string_alloc();
 
     float temp = 25.3f;
     LocaleMeasurementUnits units = locale_get_measurement_unit();
     if(units == LocaleMeasurementUnitsMetric) {
-        furi_string_printf(tmp_string, "Temp: %5.1fC", (double)temp);
+        furry_string_printf(tmp_string, "Temp: %5.1fC", (double)temp);
     } else {
         temp = locale_celsius_to_fahrenheit(temp);
-        furi_string_printf(tmp_string, "Temp: %5.1fF", (double)temp);
+        furry_string_printf(tmp_string, "Temp: %5.1fF", (double)temp);
     }
-    canvas_draw_str(canvas, 0, 10, furi_string_get_cstr(tmp_string));
+    canvas_draw_str(canvas, 0, 10, furry_string_get_cstr(tmp_string));
 
-    FuriHalRtcDateTime datetime;
-    furi_hal_rtc_get_datetime(&datetime);
+    FurryHalRtcDateTime datetime;
+    furry_hal_rtc_get_datetime(&datetime);
 
     locale_format_time(tmp_string, &datetime, locale_get_time_format(), false);
-    canvas_draw_str(canvas, 0, 25, furi_string_get_cstr(tmp_string));
+    canvas_draw_str(canvas, 0, 25, furry_string_get_cstr(tmp_string));
 
     locale_format_date(tmp_string, &datetime, locale_get_date_format(), "/");
-    canvas_draw_str(canvas, 0, 40, furi_string_get_cstr(tmp_string));
+    canvas_draw_str(canvas, 0, 40, furry_string_get_cstr(tmp_string));
 
-    furi_string_free(tmp_string);
+    furry_string_free(tmp_string);
 }
 
 static bool locale_test_view_input_callback(InputEvent* event, void* context) {
@@ -57,7 +57,7 @@ static LocaleTestApp* locale_test_alloc() {
     LocaleTestApp* app = malloc(sizeof(LocaleTestApp));
 
     // Gui
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
 
     // View dispatcher
     app->view_dispatcher = view_dispatcher_alloc();
@@ -77,7 +77,7 @@ static LocaleTestApp* locale_test_alloc() {
 }
 
 static void locale_test_free(LocaleTestApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // Free views
     view_dispatcher_remove_view(app->view_dispatcher, 0);
@@ -86,7 +86,7 @@ static void locale_test_free(LocaleTestApp* app) {
     view_dispatcher_free(app->view_dispatcher);
 
     // Close gui record
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     app->gui = NULL;
 
     // Free rest

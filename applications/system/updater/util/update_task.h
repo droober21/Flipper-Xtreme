@@ -58,7 +58,7 @@ typedef enum {
 typedef struct {
     UpdateTaskStage stage;
     uint8_t overall_progress, stage_progress;
-    FuriString* status;
+    FurryString* status;
     UpdateTaskStageGroup groups;
     uint32_t total_progress_points;
     uint32_t completed_stages_points;

@@ -1,13 +1,13 @@
 #include "nfc_types.h"
 
-const char* nfc_get_dev_type(FuriHalNfcType type) {
-    if(type == FuriHalNfcTypeA) {
+const char* nfc_get_dev_type(FurryHalNfcType type) {
+    if(type == FurryHalNfcTypeA) {
         return "NFC-A";
-    } else if(type == FuriHalNfcTypeB) {
+    } else if(type == FurryHalNfcTypeB) {
         return "NFC-B";
-    } else if(type == FuriHalNfcTypeF) {
+    } else if(type == FurryHalNfcTypeF) {
         return "NFC-F";
-    } else if(type == FuriHalNfcTypeV) {
+    } else if(type == FurryHalNfcTypeV) {
         return "NFC-V";
     } else {
         return "Unknown";

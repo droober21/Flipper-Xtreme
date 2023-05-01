@@ -9,13 +9,13 @@
 
 struct NfcDebugLog {
     Stream* file_stream;
-    FuriString* data_str;
+    FurryString* data_str;
 };
 
 NfcDebugLog* nfc_debug_log_alloc() {
     NfcDebugLog* instance = malloc(sizeof(NfcDebugLog));
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     instance->file_stream = buffered_file_stream_alloc(storage);
 
     if(!buffered_file_stream_open(
@@ -29,21 +29,21 @@ NfcDebugLog* nfc_debug_log_alloc() {
         free(instance);
         instance = NULL;
     } else {
-        instance->data_str = furi_string_alloc();
+        instance->data_str = furry_string_alloc();
     }
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return instance;
 }
 
 void nfc_debug_log_free(NfcDebugLog* instance) {
-    furi_assert(instance);
-    furi_assert(instance->file_stream);
-    furi_assert(instance->data_str);
+    furry_assert(instance);
+    furry_assert(instance->file_stream);
+    furry_assert(instance->data_str);
 
     buffered_file_stream_close(instance->file_stream);
     stream_free(instance->file_stream);
-    furi_string_free(instance->data_str);
+    furry_string_free(instance->data_str);
 
     free(instance);
 }
@@ -54,18 +54,18 @@ void nfc_debug_log_process_data(
     uint16_t len,
     bool reader_to_tag,
     bool crc_dropped) {
-    furi_assert(instance);
-    furi_assert(instance->file_stream);
-    furi_assert(instance->data_str);
-    furi_assert(data);
+    furry_assert(instance);
+    furry_assert(instance->file_stream);
+    furry_assert(instance->data_str);
+    furry_assert(data);
     UNUSED(crc_dropped);
 
-    furi_string_printf(instance->data_str, "%lu %c:", furi_get_tick(), reader_to_tag ? 'R' : 'T');
+    furry_string_printf(instance->data_str, "%lu %c:", furry_get_tick(), reader_to_tag ? 'R' : 'T');
     uint16_t data_len = len;
     for(size_t i = 0; i < data_len; i++) {
-        furi_string_cat_printf(instance->data_str, " %02x", data[i]);
+        furry_string_cat_printf(instance->data_str, " %02x", data[i]);
     }
-    furi_string_push_back(instance->data_str, '\n');
+    furry_string_push_back(instance->data_str, '\n');
 
     stream_write_string(instance->file_stream, instance->data_str);
 }

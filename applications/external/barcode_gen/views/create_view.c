@@ -63,7 +63,7 @@ void draw_button(Canvas* const canvas, const char* text, int y, bool selected) {
 }
 
 static void app_draw_callback(Canvas* canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
 
     CreateViewModel* create_view_model = ctx;
 
@@ -112,9 +112,9 @@ static void app_draw_callback(Canvas* canvas, void* ctx) {
     draw_menu_item(
         canvas,
         "Name",
-        furi_string_empty(create_view_model->file_name) ?
+        furry_string_empty(create_view_model->file_name) ?
             "--" :
-            furi_string_get_cstr(create_view_model->file_name),
+            furry_string_get_cstr(create_view_model->file_name),
         FileNameMenuItem * LINE_HEIGHT + startY,
         false,
         false,
@@ -123,9 +123,9 @@ static void app_draw_callback(Canvas* canvas, void* ctx) {
     draw_menu_item(
         canvas,
         "Data",
-        furi_string_empty(create_view_model->barcode_data) ?
+        furry_string_empty(create_view_model->barcode_data) ?
             "--" :
-            furi_string_get_cstr(create_view_model->barcode_data),
+            furry_string_get_cstr(create_view_model->barcode_data),
         BarcodeDataMenuItem * LINE_HEIGHT + startY,
         false,
         false,
@@ -154,10 +154,10 @@ void text_input_callback(void* ctx) {
         CreateViewModel * model,
         {
             if(create_view_object->setter == FileNameSetter) {
-                furi_string_set_str(model->file_name, create_view_object->input);
+                furry_string_set_str(model->file_name, create_view_object->input);
             }
             if(create_view_object->setter == BarcodeDataSetter) {
-                furi_string_set_str(model->barcode_data, create_view_object->input);
+                furry_string_set_str(model->barcode_data, create_view_object->input);
             }
         },
         true);
@@ -167,7 +167,7 @@ void text_input_callback(void* ctx) {
 }
 
 static bool app_input_callback(InputEvent* input_event, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
 
     if(input_event->key == InputKeyBack) {
         return false;
@@ -178,8 +178,8 @@ static bool app_input_callback(InputEvent* input_event, void* ctx) {
     //get the currently selected menu item from the model
     int selected_menu_item = 0;
     BarcodeTypeObj* barcode_type = NULL;
-    FuriString* file_name;
-    FuriString* barcode_data;
+    FurryString* file_name;
+    FurryString* barcode_data;
     CreateMode mode;
 
     with_view_model(
@@ -221,7 +221,7 @@ static bool app_input_callback(InputEvent* input_event, void* ctx) {
                     create_view_object->input,
                     sizeof(create_view_object->input),
                     "%s",
-                    furi_string_get_cstr(file_name));
+                    furry_string_get_cstr(file_name));
 
                 text_input_set_result_callback(
                     create_view_object->barcode_app->text_input,
@@ -244,7 +244,7 @@ static bool app_input_callback(InputEvent* input_event, void* ctx) {
                     create_view_object->input,
                     sizeof(create_view_object->input),
                     "%s",
-                    furi_string_get_cstr(barcode_data));
+                    furry_string_get_cstr(barcode_data));
 
                 text_input_set_result_callback(
                     create_view_object->barcode_app->text_input,
@@ -288,7 +288,7 @@ static bool app_input_callback(InputEvent* input_event, void* ctx) {
 }
 
 CreateView* create_view_allocate(BarcodeApp* barcode_app) {
-    furi_assert(barcode_app);
+    furry_assert(barcode_app);
 
     CreateView* create_view_object = malloc(sizeof(CreateView));
 
@@ -309,20 +309,20 @@ void create_view_free_model(CreateView* create_view_object) {
         CreateViewModel * model,
         {
             if(model->file_path != NULL) {
-                furi_string_free(model->file_path);
+                furry_string_free(model->file_path);
             }
             if(model->file_name != NULL) {
-                furi_string_free(model->file_name);
+                furry_string_free(model->file_name);
             }
             if(model->barcode_data != NULL) {
-                furi_string_free(model->barcode_data);
+                furry_string_free(model->barcode_data);
             }
         },
         true);
 }
 
 void remove_barcode(CreateView* create_view_object) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     bool success = false;
 
@@ -330,26 +330,26 @@ void remove_barcode(CreateView* create_view_object) {
         create_view_object->view,
         CreateViewModel * model,
         {
-            FURI_LOG_I(TAG, "Attempting to remove file");
+            FURRY_LOG_I(TAG, "Attempting to remove file");
             if(model->file_path != NULL) {
-                FURI_LOG_I(TAG, "Removing File: %s", furi_string_get_cstr(model->file_path));
-                if(storage_simply_remove(storage, furi_string_get_cstr(model->file_path))) {
-                    FURI_LOG_I(
+                FURRY_LOG_I(TAG, "Removing File: %s", furry_string_get_cstr(model->file_path));
+                if(storage_simply_remove(storage, furry_string_get_cstr(model->file_path))) {
+                    FURRY_LOG_I(
                         TAG,
                         "File: \"%s\" was successfully removed",
-                        furi_string_get_cstr(model->file_path));
+                        furry_string_get_cstr(model->file_path));
                     success = true;
                 } else {
-                    FURI_LOG_E(TAG, "Unable to remove file!");
+                    FURRY_LOG_E(TAG, "Unable to remove file!");
                     success = false;
                 }
             } else {
-                FURI_LOG_E(TAG, "Could not remove barcode file");
+                FURRY_LOG_E(TAG, "Could not remove barcode file");
                 success = false;
             }
         },
         true);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     with_view_model(
         create_view_object->barcode_app->message_view->view,
@@ -369,9 +369,9 @@ void remove_barcode(CreateView* create_view_object) {
 
 void save_barcode(CreateView* create_view_object) {
     BarcodeTypeObj* barcode_type = NULL;
-    FuriString* file_path; //this may be empty
-    FuriString* file_name;
-    FuriString* barcode_data;
+    FurryString* file_path; //this may be empty
+    FurryString* file_name;
+    FurryString* barcode_data;
     CreateMode mode;
 
     with_view_model(
@@ -386,39 +386,39 @@ void save_barcode(CreateView* create_view_object) {
         },
         true);
 
-    if(file_name == NULL || furi_string_empty(file_name)) {
-        FURI_LOG_E(TAG, "File Name cannot be empty");
+    if(file_name == NULL || furry_string_empty(file_name)) {
+        FURRY_LOG_E(TAG, "File Name cannot be empty");
         return;
     }
-    if(barcode_data == NULL || furi_string_empty(barcode_data)) {
-        FURI_LOG_E(TAG, "Barcode Data cannot be empty");
+    if(barcode_data == NULL || furry_string_empty(barcode_data)) {
+        FURRY_LOG_E(TAG, "Barcode Data cannot be empty");
         return;
     }
     if(barcode_type == NULL) {
-        FURI_LOG_E(TAG, "Type not defined");
+        FURRY_LOG_E(TAG, "Type not defined");
         return;
     }
 
     bool success = false;
 
-    FuriString* full_file_path = furi_string_alloc_set(DEFAULT_USER_BARCODES);
-    furi_string_push_back(full_file_path, '/');
-    furi_string_cat(full_file_path, file_name);
-    furi_string_cat_str(full_file_path, BARCODE_EXTENSION);
+    FurryString* full_file_path = furry_string_alloc_set(DEFAULT_USER_BARCODES);
+    furry_string_push_back(full_file_path, '/');
+    furry_string_cat(full_file_path, file_name);
+    furry_string_cat_str(full_file_path, BARCODE_EXTENSION);
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     if(mode == EditMode) {
-        if(!furi_string_empty(file_path)) {
-            if(!furi_string_equal(file_path, full_file_path)) {
+        if(!furry_string_empty(file_path)) {
+            if(!furry_string_equal(file_path, full_file_path)) {
                 FS_Error error = storage_common_rename(
                     storage,
-                    furi_string_get_cstr(file_path),
-                    furi_string_get_cstr(full_file_path));
+                    furry_string_get_cstr(file_path),
+                    furry_string_get_cstr(full_file_path));
                 if(error != FSE_OK) {
-                    FURI_LOG_E(TAG, "Rename error: %s", storage_error_get_desc(error));
+                    FURRY_LOG_E(TAG, "Rename error: %s", storage_error_get_desc(error));
                 } else {
-                    FURI_LOG_I(TAG, "Rename Success");
+                    FURRY_LOG_I(TAG, "Rename Success");
                 }
             }
         }
@@ -426,15 +426,15 @@ void save_barcode(CreateView* create_view_object) {
 
     FlipperFormat* ff = flipper_format_file_alloc(storage);
 
-    FURI_LOG_I(TAG, "Saving Barcode to: %s", furi_string_get_cstr(full_file_path));
+    FURRY_LOG_I(TAG, "Saving Barcode to: %s", furry_string_get_cstr(full_file_path));
 
     bool file_opened_status = false;
     if(mode == NewMode) {
         file_opened_status =
-            flipper_format_file_open_new(ff, furi_string_get_cstr(full_file_path));
+            flipper_format_file_open_new(ff, furry_string_get_cstr(full_file_path));
     } else if(mode == EditMode) {
         file_opened_status =
-            flipper_format_file_open_always(ff, furi_string_get_cstr(full_file_path));
+            flipper_format_file_open_always(ff, furry_string_get_cstr(full_file_path));
     }
 
     if(file_opened_status) {
@@ -452,16 +452,16 @@ void save_barcode(CreateView* create_view_object) {
 
         flipper_format_write_string_cstr(ff, "Type", barcode_type->name);
 
-        flipper_format_write_string_cstr(ff, "Data", furi_string_get_cstr(barcode_data));
+        flipper_format_write_string_cstr(ff, "Data", furry_string_get_cstr(barcode_data));
 
         success = true;
     } else {
-        FURI_LOG_E(TAG, "Save error");
+        FURRY_LOG_E(TAG, "Save error");
         success = false;
     }
-    furi_string_free(full_file_path);
+    furry_string_free(full_file_path);
     flipper_format_free(ff);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     with_view_model(
         create_view_object->barcode_app->message_view->view,
@@ -480,7 +480,7 @@ void save_barcode(CreateView* create_view_object) {
 }
 
 void create_view_free(CreateView* create_view_object) {
-    furi_assert(create_view_object);
+    furry_assert(create_view_object);
 
     create_view_free_model(create_view_object);
     view_free(create_view_object->view);
@@ -488,6 +488,6 @@ void create_view_free(CreateView* create_view_object) {
 }
 
 View* create_get_view(CreateView* create_view_object) {
-    furi_assert(create_view_object);
+    furry_assert(create_view_object);
     return create_view_object->view;
 }

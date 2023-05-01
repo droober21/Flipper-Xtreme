@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <gui/gui.h>
 #include <input/input.h>
 
@@ -13,7 +13,7 @@
 
 // App datas
 typedef struct {
-    FuriMutex* mutex;
+    FurryMutex* mutex;
     ViewPort* view_port;
     i2cMainView* main_view;
 

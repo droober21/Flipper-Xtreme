@@ -5,8 +5,8 @@
 #include <interface/patterns/ble_thread/shci/shci.h>
 #include "gap.h"
 
-#include <furi_hal.h>
-#include <furi.h>
+#include <furry_hal.h>
+#include <furry.h>
 
 #define TAG "Bt"
 
@@ -22,9 +22,9 @@ _Static_assert(
     "Ble stack config structure size mismatch");
 
 typedef struct {
-    FuriMutex* hci_mtx;
-    FuriSemaphore* hci_sem;
-    FuriThread* thread;
+    FurryMutex* hci_mtx;
+    FurrySemaphore* hci_sem;
+    FurryThread* thread;
 } BleApp;
 
 static BleApp* ble_app = NULL;
@@ -37,11 +37,11 @@ bool ble_app_init() {
     SHCI_CmdStatus_t status;
     ble_app = malloc(sizeof(BleApp));
     // Allocate semafore and mutex for ble command buffer access
-    ble_app->hci_mtx = furi_mutex_alloc(FuriMutexTypeNormal);
-    ble_app->hci_sem = furi_semaphore_alloc(1, 0);
+    ble_app->hci_mtx = furry_mutex_alloc(FurryMutexTypeNormal);
+    ble_app->hci_sem = furry_semaphore_alloc(1, 0);
     // HCI transport layer thread to handle user asynch events
-    ble_app->thread = furi_thread_alloc_ex("BleHciDriver", 1024, ble_app_hci_thread, ble_app);
-    furi_thread_start(ble_app->thread);
+    ble_app->thread = furry_thread_alloc_ex("BleHciDriver", 1024, ble_app_hci_thread, ble_app);
+    furry_thread_start(ble_app->thread);
 
     // Initialize Ble Transport Layer
     HCI_TL_HciInitConf_t hci_tl_config = {
@@ -59,7 +59,7 @@ bool ble_app_init() {
     };
     status = SHCI_C2_Config(&config_param);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to configure 2nd core: %d", status);
+        FURRY_LOG_E(TAG, "Failed to configure 2nd core: %d", status);
     }
 
     // Start ble stack on 2nd core
@@ -91,7 +91,7 @@ bool ble_app_init() {
         }};
     status = SHCI_C2_BLE_Init(&ble_init_cmd_packet);
     if(status) {
-        FURI_LOG_E(TAG, "Failed to start ble stack: %d", status);
+        FURRY_LOG_E(TAG, "Failed to start ble stack: %d", status);
     }
     return status == SHCI_Success;
 }
@@ -103,14 +103,14 @@ void ble_app_get_key_storage_buff(uint8_t** addr, uint16_t* size) {
 
 void ble_app_thread_stop() {
     if(ble_app) {
-        FuriThreadId thread_id = furi_thread_get_id(ble_app->thread);
-        furi_assert(thread_id);
-        furi_thread_flags_set(thread_id, BLE_APP_FLAG_KILL_THREAD);
-        furi_thread_join(ble_app->thread);
-        furi_thread_free(ble_app->thread);
+        FurryThreadId thread_id = furry_thread_get_id(ble_app->thread);
+        furry_assert(thread_id);
+        furry_thread_flags_set(thread_id, BLE_APP_FLAG_KILL_THREAD);
+        furry_thread_join(ble_app->thread);
+        furry_thread_free(ble_app->thread);
         // Free resources
-        furi_mutex_free(ble_app->hci_mtx);
-        furi_semaphore_free(ble_app->hci_sem);
+        furry_mutex_free(ble_app->hci_mtx);
+        furry_semaphore_free(ble_app->hci_sem);
         free(ble_app);
         ble_app = NULL;
         memset(&ble_app_cmd_buffer, 0, sizeof(ble_app_cmd_buffer));
@@ -122,7 +122,7 @@ static int32_t ble_app_hci_thread(void* arg) {
     uint32_t flags = 0;
 
     while(1) {
-        flags = furi_thread_flags_wait(BLE_APP_FLAG_ALL, FuriFlagWaitAny, FuriWaitForever);
+        flags = furry_thread_flags_wait(BLE_APP_FLAG_ALL, FurryFlagWaitAny, FurryWaitForever);
         if(flags & BLE_APP_FLAG_KILL_THREAD) {
             break;
         }
@@ -137,28 +137,28 @@ static int32_t ble_app_hci_thread(void* arg) {
 // Called by WPAN lib
 void hci_notify_asynch_evt(void* pdata) {
     UNUSED(pdata);
-    furi_check(ble_app);
-    FuriThreadId thread_id = furi_thread_get_id(ble_app->thread);
-    furi_assert(thread_id);
-    furi_thread_flags_set(thread_id, BLE_APP_FLAG_HCI_EVENT);
+    furry_check(ble_app);
+    FurryThreadId thread_id = furry_thread_get_id(ble_app->thread);
+    furry_assert(thread_id);
+    furry_thread_flags_set(thread_id, BLE_APP_FLAG_HCI_EVENT);
 }
 
 void hci_cmd_resp_release(uint32_t flag) {
     UNUSED(flag);
-    furi_check(ble_app);
-    furi_check(furi_semaphore_release(ble_app->hci_sem) == FuriStatusOk);
+    furry_check(ble_app);
+    furry_check(furry_semaphore_release(ble_app->hci_sem) == FurryStatusOk);
 }
 
 void hci_cmd_resp_wait(uint32_t timeout) {
-    furi_check(ble_app);
-    furi_check(furi_semaphore_acquire(ble_app->hci_sem, timeout) == FuriStatusOk);
+    furry_check(ble_app);
+    furry_check(furry_semaphore_acquire(ble_app->hci_sem, timeout) == FurryStatusOk);
 }
 
 static void ble_app_hci_event_handler(void* pPayload) {
     SVCCTL_UserEvtFlowStatus_t svctl_return_status;
     tHCI_UserEvtRxParam* pParam = (tHCI_UserEvtRxParam*)pPayload;
 
-    furi_check(ble_app);
+    furry_check(ble_app);
     svctl_return_status = SVCCTL_UserEvtRx((void*)&(pParam->pckt->evtserial));
     if(svctl_return_status != SVCCTL_UserEvtFlowDisable) {
         pParam->status = HCI_TL_UserEventFlow_Enable;
@@ -169,9 +169,9 @@ static void ble_app_hci_event_handler(void* pPayload) {
 
 static void ble_app_hci_status_not_handler(HCI_TL_CmdStatus_t status) {
     if(status == HCI_TL_CmdBusy) {
-        furi_mutex_acquire(ble_app->hci_mtx, FuriWaitForever);
+        furry_mutex_acquire(ble_app->hci_mtx, FurryWaitForever);
     } else if(status == HCI_TL_CmdAvailable) {
-        furi_mutex_release(ble_app->hci_mtx);
+        furry_mutex_release(ble_app->hci_mtx);
     }
 }
 

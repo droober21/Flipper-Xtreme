@@ -7,7 +7,7 @@ typedef unsigned char byte;
 #include "brainfuck.h"
 #include "worker.h"
 
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <gui/view_dispatcher.h>
 #include <gui/scene_manager.h>
@@ -69,8 +69,8 @@ struct BFApp {
     Popup* popup;
     TextInput* text_input;
     TextBox* text_box;
-    FuriString* text_box_store;
-    FuriString* BF_file_path;
+    FurryString* text_box_store;
+    FurryString* BF_file_path;
     BFDevEnv* BF_dev_env;
     int dataSize;
     char dataBuffer[BF_INST_BUFFER_SIZE];

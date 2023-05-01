@@ -2,19 +2,19 @@
 #include <dolphin/dolphin.h>
 
 bool nfc_magic_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     NfcMagic* nfc_magic = context;
     return scene_manager_handle_custom_event(nfc_magic->scene_manager, event);
 }
 
 bool nfc_magic_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     NfcMagic* nfc_magic = context;
     return scene_manager_handle_back_event(nfc_magic->scene_manager);
 }
 
 void nfc_magic_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     NfcMagic* nfc_magic = context;
     scene_manager_handle_tick_event(nfc_magic->scene_manager);
 }
@@ -50,15 +50,15 @@ NfcMagic* nfc_magic_alloc() {
 
     // Nfc device
     nfc_magic->nfc_dev = nfc_device_alloc();
-    furi_string_set(nfc_magic->nfc_dev->folder, NFC_APP_FOLDER);
+    furry_string_set(nfc_magic->nfc_dev->folder, NFC_APP_FOLDER);
 
     // Open GUI record
-    nfc_magic->gui = furi_record_open(RECORD_GUI);
+    nfc_magic->gui = furry_record_open(RECORD_GUI);
     view_dispatcher_attach_to_gui(
         nfc_magic->view_dispatcher, nfc_magic->gui, ViewDispatcherTypeFullscreen);
 
     // Open Notification record
-    nfc_magic->notifications = furi_record_open(RECORD_NOTIFICATION);
+    nfc_magic->notifications = furry_record_open(RECORD_NOTIFICATION);
 
     // Submenu
     nfc_magic->submenu = submenu_alloc();
@@ -91,7 +91,7 @@ NfcMagic* nfc_magic_alloc() {
 }
 
 void nfc_magic_free(NfcMagic* nfc_magic) {
-    furi_assert(nfc_magic);
+    furry_assert(nfc_magic);
 
     // Nfc device
     nfc_device_free(nfc_magic->nfc_dev);
@@ -127,11 +127,11 @@ void nfc_magic_free(NfcMagic* nfc_magic) {
     scene_manager_free(nfc_magic->scene_manager);
 
     // GUI
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     nfc_magic->gui = NULL;
 
     // Notifications
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
     nfc_magic->notifications = NULL;
 
     free(nfc_magic);

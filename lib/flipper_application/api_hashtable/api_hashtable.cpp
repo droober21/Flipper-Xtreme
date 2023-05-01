@@ -1,6 +1,6 @@
 #include "api_hashtable.h"
 
-#include <furi.h>
+#include <furry.h>
 #include <algorithm>
 
 #define TAG "hashtable_api"
@@ -22,7 +22,7 @@ bool elf_resolve_from_hashtable(
     auto find_res =
         std::lower_bound(hashtable_interface->table_cbegin, hashtable_interface->table_cend, key);
     if((find_res == hashtable_interface->table_cend || (find_res->hash != gnu_sym_hash))) {
-        FURI_LOG_W(
+        FURRY_LOG_W(
             TAG,
             "Can't find symbol '%s' (hash %lx) @ %p!",
             name,

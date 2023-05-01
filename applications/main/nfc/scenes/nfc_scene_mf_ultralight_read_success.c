@@ -15,7 +15,7 @@ void nfc_scene_mf_ultralight_read_success_on_enter(void* context) {
     Nfc* nfc = context;
 
     // Setup widget view
-    FuriHalNfcDevData* data = &nfc->dev->dev_data.nfc_data;
+    FurryHalNfcDevData* data = &nfc->dev->dev_data.nfc_data;
     MfUltralightData* mf_ul_data = &nfc->dev->dev_data.mf_ul_data;
     Widget* widget = nfc->widget;
     widget_add_button_element(
@@ -31,23 +31,23 @@ void nfc_scene_mf_ultralight_read_success_on_enter(void* context) {
         nfc_scene_mf_ultralight_read_success_widget_callback,
         nfc);
 
-    FuriString* temp_str = NULL;
-    if(furi_string_size(nfc->dev->dev_data.parsed_data)) {
-        temp_str = furi_string_alloc_set(nfc->dev->dev_data.parsed_data);
+    FurryString* temp_str = NULL;
+    if(furry_string_size(nfc->dev->dev_data.parsed_data)) {
+        temp_str = furry_string_alloc_set(nfc->dev->dev_data.parsed_data);
     } else {
-        temp_str = furi_string_alloc_printf("\e#%s\n", nfc_mf_ul_type(mf_ul_data->type, true));
-        furi_string_cat_printf(temp_str, "UID:");
+        temp_str = furry_string_alloc_printf("\e#%s\n", nfc_mf_ul_type(mf_ul_data->type, true));
+        furry_string_cat_printf(temp_str, "UID:");
         for(size_t i = 0; i < data->uid_len; i++) {
-            furi_string_cat_printf(temp_str, " %02X", data->uid[i]);
+            furry_string_cat_printf(temp_str, " %02X", data->uid[i]);
         }
-        furi_string_cat_printf(
+        furry_string_cat_printf(
             temp_str, "\nPages Read: %d/%d", mf_ul_data->data_read / 4, mf_ul_data->data_size / 4);
         if(mf_ul_data->data_read != mf_ul_data->data_size) {
-            furi_string_cat_printf(temp_str, "\nPassword-protected pages!");
+            furry_string_cat_printf(temp_str, "\nPassword-protected pages!");
         }
     }
-    widget_add_text_scroll_element(widget, 0, 0, 128, 52, furi_string_get_cstr(temp_str));
-    furi_string_free(temp_str);
+    widget_add_text_scroll_element(widget, 0, 0, 128, 52, furry_string_get_cstr(temp_str));
+    furry_string_free(temp_str);
 
     notification_message_block(nfc->notifications, &sequence_set_green_255);
 

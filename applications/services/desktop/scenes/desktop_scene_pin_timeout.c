@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <FreeRTOS.h>
 #include <portmacro.h>
 #include <timer.h>

@@ -42,7 +42,7 @@ bool manchester_encoder_advance(
         break;
     default:
         printf("DO CRASH HERE\r\n");
-        // furi_crash
+        // furry_crash
         break;
     }
     return advance;

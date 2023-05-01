@@ -18,34 +18,34 @@
 #define TOTP_CLI_COMMAND_ARG_SECRET_ENCODING_PREFIX "-e"
 #define TOTP_CLI_COMMAND_ARG_SECRET_ENCODING "encoding"
 
-void totp_cli_printf_unknown_argument(const FuriString* arg);
+void totp_cli_printf_unknown_argument(const FurryString* arg);
 
 void totp_cli_printf_missed_argument_value(char* arg);
 
-bool totp_cli_try_read_algo(TokenInfo* token_info, FuriString* arg, FuriString* args, bool* parsed);
+bool totp_cli_try_read_algo(TokenInfo* token_info, FurryString* arg, FurryString* args, bool* parsed);
 
 bool totp_cli_try_read_digits(
     TokenInfo* token_info,
-    const FuriString* arg,
-    FuriString* args,
+    const FurryString* arg,
+    FurryString* args,
     bool* parsed);
 
 bool totp_cli_try_read_duration(
     TokenInfo* token_info,
-    const FuriString* arg,
-    FuriString* args,
+    const FurryString* arg,
+    FurryString* args,
     bool* parsed);
 
 bool totp_cli_try_read_automation_features(
     TokenInfo* token_info,
-    FuriString* arg,
-    FuriString* args,
+    FurryString* arg,
+    FurryString* args,
     bool* parsed);
 
-bool totp_cli_try_read_unsecure_flag(const FuriString* arg, bool* parsed, bool* unsecure_flag);
+bool totp_cli_try_read_unsecure_flag(const FurryString* arg, bool* parsed, bool* unsecure_flag);
 
 bool totp_cli_try_read_plain_token_secret_encoding(
-    FuriString* arg,
-    FuriString* args,
+    FurryString* arg,
+    FurryString* args,
     bool* parsed,
     PlainTokenSecretEncoding* secret_encoding);

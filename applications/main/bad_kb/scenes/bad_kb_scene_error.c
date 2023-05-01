@@ -3,7 +3,7 @@
 
 static void
     bad_kb_scene_error_event_callback(GuiButtonType result, InputType type, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     BadKbApp* app = context;
 
     if((result == GuiButtonTypeLeft) && (type == InputTypeShort)) {

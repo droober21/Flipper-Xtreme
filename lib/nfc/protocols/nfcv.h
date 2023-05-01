@@ -6,7 +6,7 @@
 #include <lib/digital_signal/digital_signal.h>
 #include <lib/pulse_reader/pulse_reader.h>
 #include "nfc_util.h"
-#include <furi_hal_nfc.h>
+#include <furry_hal_nfc.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -150,12 +150,12 @@ typedef struct {
 } NfcVEmuAir;
 
 typedef void (*NfcVEmuProtocolHandler)(
-    FuriHalNfcTxRxContext* tx_rx,
-    FuriHalNfcDevData* nfc_data,
+    FurryHalNfcTxRxContext* tx_rx,
+    FurryHalNfcDevData* nfc_data,
     void* nfcv_data);
 typedef bool (*NfcVEmuProtocolFilter)(
-    FuriHalNfcTxRxContext* tx_rx,
-    FuriHalNfcDevData* nfc_data,
+    FurryHalNfcTxRxContext* tx_rx,
+    FurryHalNfcDevData* nfc_data,
     void* nfcv_data);
 
 /* the default ISO15693 handler context */
@@ -217,19 +217,19 @@ typedef struct {
 } NfcVReader;
 
 ReturnCode nfcv_read_blocks(NfcVReader* reader, NfcVData* data);
-ReturnCode nfcv_read_sysinfo(FuriHalNfcDevData* nfc_data, NfcVData* data);
+ReturnCode nfcv_read_sysinfo(FurryHalNfcDevData* nfc_data, NfcVData* data);
 ReturnCode nfcv_inventory(uint8_t* uid);
-bool nfcv_read_card(NfcVReader* reader, FuriHalNfcDevData* nfc_data, NfcVData* data);
+bool nfcv_read_card(NfcVReader* reader, FurryHalNfcDevData* nfc_data, NfcVData* data);
 
-void nfcv_emu_init(FuriHalNfcDevData* nfc_data, NfcVData* nfcv_data);
+void nfcv_emu_init(FurryHalNfcDevData* nfc_data, NfcVData* nfcv_data);
 void nfcv_emu_deinit(NfcVData* nfcv_data);
 bool nfcv_emu_loop(
-    FuriHalNfcTxRxContext* tx_rx,
-    FuriHalNfcDevData* nfc_data,
+    FurryHalNfcTxRxContext* tx_rx,
+    FurryHalNfcDevData* nfc_data,
     NfcVData* nfcv_data,
     uint32_t timeout_ms);
 void nfcv_emu_send(
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     NfcVData* nfcv,
     uint8_t* data,
     uint8_t length,

@@ -262,8 +262,8 @@ static inline bool key_post(const eventMsg_t* const msg, state_t* const state) {
 // Handle a key press event
 //
 bool evKey(const eventMsg_t* const msg, state_t* const state) {
-    furi_assert(msg);
-    furi_assert(state);
+    furry_assert(msg);
+    furry_assert(state);
 
     bool used = key_pre(msg, state);
 

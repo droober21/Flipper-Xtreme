@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <furi.h> // Core API
+#include <furry.h> // Core API
 
 #include "wii_anal.h"
 #include "wii_i2c.h"
@@ -45,7 +45,7 @@ void nunchuck_decode(wiiEC_t* const pec) {
 //+============================================================================ ========================================
 // Give each button a unique character identifier
 //
-void nunchuck_msg(wiiEC_t* const pec, FuriMessageQueue* const queue) {
+void nunchuck_msg(wiiEC_t* const pec, FurryMessageQueue* const queue) {
     ecDecNunchuck_t* new = &pec->dec[pec->decN].nunchuck;
     ecDecNunchuck_t* old = &pec->dec[!pec->decN].nunchuck;
 

@@ -1,7 +1,7 @@
 #include "spi_mem_app_i.h"
 
 bool spi_mem_file_delete(SPIMemApp* app) {
-    return (storage_simply_remove(app->storage, furi_string_get_cstr(app->file_path)));
+    return (storage_simply_remove(app->storage, furry_string_get_cstr(app->file_path)));
 }
 
 bool spi_mem_file_select(SPIMemApp* app) {
@@ -17,14 +17,14 @@ bool spi_mem_file_create_open(SPIMemApp* app) {
     bool success = false;
     app->file = storage_file_alloc(app->storage);
     do {
-        if(furi_string_end_with(app->file_path, SPI_MEM_FILE_EXTENSION)) {
+        if(furry_string_end_with(app->file_path, SPI_MEM_FILE_EXTENSION)) {
             if(!spi_mem_file_delete(app)) break;
-            size_t filename_start = furi_string_search_rchar(app->file_path, '/');
-            furi_string_left(app->file_path, filename_start);
+            size_t filename_start = furry_string_search_rchar(app->file_path, '/');
+            furry_string_left(app->file_path, filename_start);
         }
-        furi_string_cat_printf(app->file_path, "/%s%s", app->text_buffer, SPI_MEM_FILE_EXTENSION);
+        furry_string_cat_printf(app->file_path, "/%s%s", app->text_buffer, SPI_MEM_FILE_EXTENSION);
         if(!storage_file_open(
-               app->file, furi_string_get_cstr(app->file_path), FSAM_WRITE, FSOM_CREATE_NEW))
+               app->file, furry_string_get_cstr(app->file_path), FSAM_WRITE, FSOM_CREATE_NEW))
             break;
         success = true;
     } while(0);
@@ -37,7 +37,7 @@ bool spi_mem_file_create_open(SPIMemApp* app) {
 bool spi_mem_file_open(SPIMemApp* app) {
     app->file = storage_file_alloc(app->storage);
     if(!storage_file_open(
-           app->file, furi_string_get_cstr(app->file_path), FSAM_READ_WRITE, FSOM_OPEN_EXISTING)) {
+           app->file, furry_string_get_cstr(app->file_path), FSAM_READ_WRITE, FSOM_OPEN_EXISTING)) {
         dialog_message_show_storage_error(app->dialogs, "Cannot save\nfile");
         return false;
     }
@@ -61,7 +61,7 @@ void spi_mem_file_close(SPIMemApp* app) {
 
 size_t spi_mem_file_get_size(SPIMemApp* app) {
     FileInfo file_info;
-    if(storage_common_stat(app->storage, furi_string_get_cstr(app->file_path), &file_info) !=
+    if(storage_common_stat(app->storage, furry_string_get_cstr(app->file_path), &file_info) !=
        FSE_OK)
         return 0;
     return file_info.size;

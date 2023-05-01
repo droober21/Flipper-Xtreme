@@ -4,7 +4,7 @@
 #define TAG "SubBruteSceneSetupAttack"
 
 static void subbrute_scene_setup_attack_callback(SubBruteCustomEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     SubBruteState* instance = (SubBruteState*)context;
     view_dispatcher_send_custom_event(instance->view_dispatcher, event);
@@ -12,7 +12,7 @@ static void subbrute_scene_setup_attack_callback(SubBruteCustomEvent event, void
 
 static void
     subbrute_scene_setup_attack_device_state_changed(void* context, SubBruteWorkerState state) {
-    furi_assert(context);
+    furry_assert(context);
 
     SubBruteState* instance = (SubBruteState*)context;
 
@@ -23,14 +23,14 @@ static void
 }
 
 void subbrute_scene_setup_attack_on_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubBruteState* instance = (SubBruteState*)context;
     SubBruteAttackView* view = instance->view_attack;
 
     notification_message(instance->notifications, &sequence_reset_vibro);
 
-#ifdef FURI_DEBUG
-    FURI_LOG_D(TAG, "Enter Attack: %s", subbrute_protocol_name(instance->device->attack));
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(TAG, "Enter Attack: %s", subbrute_protocol_name(instance->device->attack));
 #endif
 
     subbrute_worker_set_callback(
@@ -54,9 +54,9 @@ void subbrute_scene_setup_attack_on_enter(void* context) {
 }
 
 void subbrute_scene_setup_attack_on_exit(void* context) {
-    furi_assert(context);
-#ifdef FURI_DEBUG
-    FURI_LOG_D(TAG, "subbrute_scene_setup_attack_on_exit");
+    furry_assert(context);
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(TAG, "subbrute_scene_setup_attack_on_exit");
 #endif
     SubBruteState* instance = (SubBruteState*)context;
     subbrute_worker_stop(instance->worker);

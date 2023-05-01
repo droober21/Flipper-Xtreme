@@ -1,5 +1,5 @@
 #include "gpio_i2c_sfp_control.h"
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include <string.h>
 
 // This is map mapping the connector type to the appropriate name. (see SFF-8024 Rev. 4.9, Table 4-3)
@@ -280,19 +280,19 @@ void print_part(uint8_t *data, char *ptype, char *prefix, int start, int len){
 */
 
 void gpio_i2c_sfp_run_once(I2CSfpState* i2c_sfp_state) {
-    furi_hal_i2c_acquire(&furi_hal_i2c_handle_external);
+    furry_hal_i2c_acquire(&furry_hal_i2c_handle_external);
     // Allocate buffer for SFP Data
     uint8_t sfp_data[255];
-    uint32_t response_timeout_ticks = furi_ms_to_ticks(5.f);
+    uint32_t response_timeout_ticks = furry_ms_to_ticks(5.f);
 
     // Check for SFP Module on I2C Bus
-    if(furi_hal_i2c_is_device_ready(
-           &furi_hal_i2c_handle_external, SFP_I2C_ADDRESS << 1, response_timeout_ticks)) {
+    if(furry_hal_i2c_is_device_ready(
+           &furry_hal_i2c_handle_external, SFP_I2C_ADDRESS << 1, response_timeout_ticks)) {
         for(uint8_t i = 0; i <= 254; i++) {
             uint8_t data = 0;
             // Read data from register
-            furi_hal_i2c_read_reg_8(
-                &furi_hal_i2c_handle_external,
+            furry_hal_i2c_read_reg_8(
+                &furry_hal_i2c_handle_external,
                 SFP_I2C_ADDRESS << 1,
                 i,
                 &data,
@@ -330,5 +330,5 @@ void gpio_i2c_sfp_run_once(I2CSfpState* i2c_sfp_state) {
         i2c_sfp_state->sm_reach = sfp_data[14];
         i2c_sfp_state->mm_reach_om3 = sfp_data[19] * 10;
     }
-    furi_hal_i2c_release(&furi_hal_i2c_handle_external);
+    furry_hal_i2c_release(&furry_hal_i2c_handle_external);
 }

@@ -1,5 +1,5 @@
 #include <gui/canvas.h>
-#include <furi.h>
+#include <furry.h>
 #include <gui/view.h>
 #include <gui/elements.h>
 #include <assets_icons.h>
@@ -40,8 +40,8 @@ typedef struct {
 } DesktopViewPinInputModel;
 
 static bool desktop_view_pin_input_input(InputEvent* event, void* context) {
-    furi_assert(event);
-    furi_assert(context);
+    furry_assert(event);
+    furry_assert(context);
 
     DesktopViewPinInput* pin_input = context;
     DesktopViewPinInputModel* model = view_get_model(pin_input->view);
@@ -78,7 +78,7 @@ static bool desktop_view_pin_input_input(InputEvent* event, void* context) {
             }
             break;
         default:
-            furi_assert(0);
+            furry_assert(0);
             break;
         }
     }
@@ -96,8 +96,8 @@ static bool desktop_view_pin_input_input(InputEvent* event, void* context) {
 }
 
 static void desktop_view_pin_input_draw_cells(Canvas* canvas, DesktopViewPinInputModel* model) {
-    furi_assert(canvas);
-    furi_assert(model);
+    furry_assert(canvas);
+    furry_assert(model);
 
     uint8_t draw_pin_size = MAX(4, model->pin.length + 1);
     if(model->locked_input || (model->pin.length == MAX_PIN_SIZE)) {
@@ -129,7 +129,7 @@ static void desktop_view_pin_input_draw_cells(Canvas* canvas, DesktopViewPinInpu
                     canvas_draw_icon_ex(canvas, x + 2, y + 3, &I_Pin_arrow_up_7x9, IconRotation90);
                     break;
                 default:
-                    furi_assert(0);
+                    furry_assert(0);
                     break;
                 }
             }
@@ -141,8 +141,8 @@ static void desktop_view_pin_input_draw_cells(Canvas* canvas, DesktopViewPinInpu
 }
 
 static void desktop_view_pin_input_draw(Canvas* canvas, void* context) {
-    furi_assert(canvas);
-    furi_assert(context);
+    furry_assert(canvas);
+    furry_assert(context);
 
     canvas_set_font(canvas, FontSecondary);
     DesktopViewPinInputModel* model = context;
@@ -214,11 +214,11 @@ DesktopViewPinInput* desktop_view_pin_input_alloc(void) {
 }
 
 void desktop_view_pin_input_free(DesktopViewPinInput* pin_input) {
-    furi_assert(pin_input);
+    furry_assert(pin_input);
 
     xTimerStop(pin_input->timer, portMAX_DELAY);
     while(xTimerIsTimerActive(pin_input->timer)) {
-        furi_delay_tick(1);
+        furry_delay_tick(1);
     }
     xTimerDelete(pin_input->timer, portMAX_DELAY);
 
@@ -227,7 +227,7 @@ void desktop_view_pin_input_free(DesktopViewPinInput* pin_input) {
 }
 
 void desktop_view_pin_input_lock_input(DesktopViewPinInput* pin_input) {
-    furi_assert(pin_input);
+    furry_assert(pin_input);
 
     DesktopViewPinInputModel* model = view_get_model(pin_input->view);
     model->locked_input = true;
@@ -235,7 +235,7 @@ void desktop_view_pin_input_lock_input(DesktopViewPinInput* pin_input) {
 }
 
 void desktop_view_pin_input_unlock_input(DesktopViewPinInput* pin_input) {
-    furi_assert(pin_input);
+    furry_assert(pin_input);
 
     DesktopViewPinInputModel* model = view_get_model(pin_input->view);
     model->locked_input = false;
@@ -243,8 +243,8 @@ void desktop_view_pin_input_unlock_input(DesktopViewPinInput* pin_input) {
 }
 
 void desktop_view_pin_input_set_pin(DesktopViewPinInput* pin_input, const PinCode* pin) {
-    furi_assert(pin_input);
-    furi_assert(pin);
+    furry_assert(pin_input);
+    furry_assert(pin);
 
     DesktopViewPinInputModel* model = view_get_model(pin_input->view);
     model->pin = *pin;
@@ -252,7 +252,7 @@ void desktop_view_pin_input_set_pin(DesktopViewPinInput* pin_input, const PinCod
 }
 
 void desktop_view_pin_input_reset_pin(DesktopViewPinInput* pin_input) {
-    furi_assert(pin_input);
+    furry_assert(pin_input);
 
     DesktopViewPinInputModel* model = view_get_model(pin_input->view);
     model->pin.length = 0;
@@ -260,7 +260,7 @@ void desktop_view_pin_input_reset_pin(DesktopViewPinInput* pin_input) {
 }
 
 void desktop_view_pin_input_hide_pin(DesktopViewPinInput* pin_input, bool pin_hidden) {
-    furi_assert(pin_input);
+    furry_assert(pin_input);
 
     DesktopViewPinInputModel* model = view_get_model(pin_input->view);
     model->pin_hidden = pin_hidden;
@@ -268,7 +268,7 @@ void desktop_view_pin_input_hide_pin(DesktopViewPinInput* pin_input, bool pin_hi
 }
 
 void desktop_view_pin_input_set_label_button(DesktopViewPinInput* pin_input, const char* label) {
-    furi_assert(pin_input);
+    furry_assert(pin_input);
 
     DesktopViewPinInputModel* model = view_get_model(pin_input->view);
     model->button_label = label;
@@ -280,7 +280,7 @@ void desktop_view_pin_input_set_label_primary(
     uint8_t x,
     uint8_t y,
     const char* label) {
-    furi_assert(pin_input);
+    furry_assert(pin_input);
 
     DesktopViewPinInputModel* model = view_get_model(pin_input->view);
     model->primary_str = label;
@@ -294,7 +294,7 @@ void desktop_view_pin_input_set_label_secondary(
     uint8_t x,
     uint8_t y,
     const char* label) {
-    furi_assert(pin_input);
+    furry_assert(pin_input);
 
     DesktopViewPinInputModel* model = view_get_model(pin_input->view);
     model->secondary_str = label;
@@ -304,7 +304,7 @@ void desktop_view_pin_input_set_label_secondary(
 }
 
 void desktop_view_pin_input_set_pin_position(DesktopViewPinInput* pin_input, uint8_t x, uint8_t y) {
-    furi_assert(pin_input);
+    furry_assert(pin_input);
 
     DesktopViewPinInputModel* model = view_get_model(pin_input->view);
     model->pin_x = x;
@@ -313,32 +313,32 @@ void desktop_view_pin_input_set_pin_position(DesktopViewPinInput* pin_input, uin
 }
 
 void desktop_view_pin_input_set_context(DesktopViewPinInput* pin_input, void* context) {
-    furi_assert(pin_input);
+    furry_assert(pin_input);
     pin_input->context = context;
 }
 
 void desktop_view_pin_input_set_timeout_callback(
     DesktopViewPinInput* pin_input,
     DesktopViewPinInputCallback callback) {
-    furi_assert(pin_input);
+    furry_assert(pin_input);
     pin_input->timeout_callback = callback;
 }
 
 void desktop_view_pin_input_set_back_callback(
     DesktopViewPinInput* pin_input,
     DesktopViewPinInputCallback callback) {
-    furi_assert(pin_input);
+    furry_assert(pin_input);
     pin_input->back_callback = callback;
 }
 
 void desktop_view_pin_input_set_done_callback(
     DesktopViewPinInput* pin_input,
     DesktopViewPinInputDoneCallback callback) {
-    furi_assert(pin_input);
+    furry_assert(pin_input);
     pin_input->done_callback = callback;
 }
 
 View* desktop_view_pin_input_get_view(DesktopViewPinInput* pin_input) {
-    furi_assert(pin_input);
+    furry_assert(pin_input);
     return pin_input->view;
 }

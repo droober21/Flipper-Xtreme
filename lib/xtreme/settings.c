@@ -1,6 +1,6 @@
 #include "xtreme.h"
 #include "private.h"
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include <flipper_format/flipper_format.h>
 
 #define TAG "XtremeSettings"
@@ -32,14 +32,14 @@ XtremeSettings xtreme_settings = {
 
 void XTREME_SETTINGS_LOAD() {
     XtremeSettings* x = &xtreme_settings;
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* file = flipper_format_file_alloc(storage);
     if(flipper_format_file_open_existing(file, XTREME_SETTINGS_PATH)) {
-        FuriString* string = furi_string_alloc();
+        FurryString* string = furry_string_alloc();
         if(flipper_format_read_string(file, "asset_pack", string)) {
-            strlcpy(x->asset_pack, furi_string_get_cstr(string), XTREME_ASSETS_PACK_NAME_LEN);
+            strlcpy(x->asset_pack, furry_string_get_cstr(string), XTREME_ASSETS_PACK_NAME_LEN);
         }
-        furi_string_free(string);
+        furry_string_free(string);
         flipper_format_rewind(file);
         flipper_format_read_uint32(file, "anim_speed", &x->anim_speed, 1);
         flipper_format_rewind(file);
@@ -84,14 +84,14 @@ void XTREME_SETTINGS_LOAD() {
         flipper_format_read_bool(file, "rgb_backlight", &x->rgb_backlight, 1);
     }
     flipper_format_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 void XTREME_SETTINGS_SAVE() {
-    if(!furi_hal_is_normal_boot()) return;
+    if(!furry_hal_is_normal_boot()) return;
 
     XtremeSettings* x = &xtreme_settings;
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* file = flipper_format_file_alloc(storage);
     if(flipper_format_file_open_always(file, XTREME_SETTINGS_PATH)) {
         flipper_format_write_string_cstr(file, "asset_pack", x->asset_pack);
@@ -118,7 +118,7 @@ void XTREME_SETTINGS_SAVE() {
         flipper_format_write_bool(file, "rgb_backlight", &x->rgb_backlight, 1);
     }
     flipper_format_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 XtremeSettings* XTREME_SETTINGS() {

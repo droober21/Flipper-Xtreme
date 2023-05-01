@@ -106,4 +106,4 @@ SubGhzProtocolStatus
  * @param context Pointer to a SubGhzProtocolDecoderPhoenix_V2 instance
  * @param output Resulting text
  */
-void subghz_protocol_decoder_phoenix_v2_get_string(void* context, FuriString* output);
+void subghz_protocol_decoder_phoenix_v2_get_string(void* context, FurryString* output);

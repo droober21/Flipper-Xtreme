@@ -49,12 +49,12 @@ static bool decode(uint8_t* bits, uint32_t numbytes, uint32_t numbits, ProtoView
     if(gap_len < 3 || gap_len > 7) return false;
 
     off += gap_len;
-    FURI_LOG_E(TAG, "Keeloq preamble+sync found");
+    FURRY_LOG_E(TAG, "Keeloq preamble+sync found");
 
     uint8_t raw[9] = {0};
     uint32_t decoded = convert_from_line_code(
         raw, sizeof(raw), bits, numbytes, off, "110", "100"); /* Pulse width modulation. */
-    FURI_LOG_E(TAG, "Keeloq decoded bits: %lu", decoded);
+    FURRY_LOG_E(TAG, "Keeloq decoded bits: %lu", decoded);
     if(decoded < 66) return false; /* Require the full 66 bits. */
 
     info->pulses_count = (off + 66 * 3) - info->start_off;

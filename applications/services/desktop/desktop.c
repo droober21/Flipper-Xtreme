@@ -4,8 +4,8 @@
 #include <gui/view_stack.h>
 #include <notification/notification.h>
 #include <notification/notification_messages.h>
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #include "animations/animation_manager.h"
 #include "desktop/scenes/desktop_scene.h"
@@ -24,7 +24,7 @@ static void desktop_auto_lock_inhibit(Desktop*);
 static void desktop_start_auto_lock_timer(Desktop*);
 
 static void desktop_loader_callback(const void* message, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Desktop* desktop = context;
     const LoaderEvent* event = message;
 
@@ -36,18 +36,18 @@ static void desktop_loader_callback(const void* message, void* context) {
 }
 static void desktop_lock_icon_draw_callback(Canvas* canvas, void* context) {
     UNUSED(context);
-    furi_assert(canvas);
+    furry_assert(canvas);
     canvas_draw_icon(canvas, 0, 0, &I_Lock_7x8);
 }
 
 static void desktop_stealth_mode_icon_draw_callback(Canvas* canvas, void* context) {
     UNUSED(context);
-    furi_assert(canvas);
+    furry_assert(canvas);
     canvas_draw_icon(canvas, 0, 0, &I_Muted_8x8);
 }
 
 static bool desktop_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     Desktop* desktop = (Desktop*)context;
 
     switch(event) {
@@ -76,20 +76,20 @@ static bool desktop_custom_event_callback(void* context, uint32_t event) {
 }
 
 static bool desktop_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Desktop* desktop = (Desktop*)context;
     return scene_manager_handle_back_event(desktop->scene_manager);
 }
 
 static void desktop_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Desktop* app = context;
     scene_manager_handle_tick_event(app->scene_manager);
 }
 
 static void desktop_input_event_callback(const void* value, void* context) {
-    furi_assert(value);
-    furi_assert(context);
+    furry_assert(value);
+    furry_assert(context);
     const InputEvent* event = value;
     Desktop* desktop = context;
     if(event->type == InputTypePress) {
@@ -98,23 +98,23 @@ static void desktop_input_event_callback(const void* value, void* context) {
 }
 
 static void desktop_auto_lock_timer_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Desktop* desktop = context;
     view_dispatcher_send_custom_event(desktop->view_dispatcher, DesktopGlobalAutoLock);
 }
 
 static void desktop_start_auto_lock_timer(Desktop* desktop) {
-    furi_timer_start(
-        desktop->auto_lock_timer, furi_ms_to_ticks(desktop->settings.auto_lock_delay_ms));
+    furry_timer_start(
+        desktop->auto_lock_timer, furry_ms_to_ticks(desktop->settings.auto_lock_delay_ms));
 }
 
 static void desktop_stop_auto_lock_timer(Desktop* desktop) {
-    furi_timer_stop(desktop->auto_lock_timer);
+    furry_timer_stop(desktop->auto_lock_timer);
 }
 
 static void desktop_auto_lock_arm(Desktop* desktop) {
     if(desktop->settings.auto_lock_delay_ms) {
-        desktop->input_events_subscription = furi_pubsub_subscribe(
+        desktop->input_events_subscription = furry_pubsub_subscribe(
             desktop->input_events_pubsub, desktop_input_event_callback, desktop);
         desktop_start_auto_lock_timer(desktop);
     }
@@ -123,7 +123,7 @@ static void desktop_auto_lock_arm(Desktop* desktop) {
 static void desktop_auto_lock_inhibit(Desktop* desktop) {
     desktop_stop_auto_lock_timer(desktop);
     if(desktop->input_events_subscription) {
-        furi_pubsub_unsubscribe(desktop->input_events_pubsub, desktop->input_events_subscription);
+        furry_pubsub_unsubscribe(desktop->input_events_pubsub, desktop->input_events_subscription);
         desktop->input_events_subscription = NULL;
     }
 }
@@ -138,9 +138,9 @@ void desktop_lock(Desktop* desktop) {
 
 void desktop_unlock(Desktop* desktop) {
     view_port_enabled_set(desktop->lock_icon_viewport, false);
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_set_lockdown(gui, false);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     desktop_view_locked_unlock(desktop->locked_view);
     scene_manager_search_and_switch_to_previous_scene(desktop->scene_manager, DesktopSceneMain);
     desktop_auto_lock_arm(desktop);
@@ -149,9 +149,9 @@ void desktop_unlock(Desktop* desktop) {
 void desktop_set_stealth_mode_state(Desktop* desktop, bool enabled) {
     desktop->in_transition = true;
     if(enabled) {
-        furi_hal_rtc_set_flag(FuriHalRtcFlagStealthMode);
+        furry_hal_rtc_set_flag(FurryHalRtcFlagStealthMode);
     } else {
-        furi_hal_rtc_reset_flag(FuriHalRtcFlagStealthMode);
+        furry_hal_rtc_reset_flag(FurryHalRtcFlagStealthMode);
     }
     desktop_lock_menu_set_stealth_mode_state(desktop->lock_menu, enabled);
     view_port_enabled_set(desktop->stealth_mode_icon_viewport, enabled);
@@ -162,8 +162,8 @@ Desktop* desktop_alloc() {
     Desktop* desktop = malloc(sizeof(Desktop));
 
     desktop->animation_manager = animation_manager_alloc();
-    desktop->gui = furi_record_open(RECORD_GUI);
-    desktop->scene_thread = furi_thread_alloc();
+    desktop->gui = furry_record_open(RECORD_GUI);
+    desktop->scene_thread = furry_thread_alloc();
     desktop->view_dispatcher = view_dispatcher_alloc();
     desktop->scene_manager = scene_manager_alloc(&desktop_scene_handlers, desktop);
 
@@ -246,7 +246,7 @@ Desktop* desktop_alloc() {
     view_port_set_width(desktop->stealth_mode_icon_viewport, icon_get_width(&I_Muted_8x8));
     view_port_draw_callback_set(
         desktop->stealth_mode_icon_viewport, desktop_stealth_mode_icon_draw_callback, desktop);
-    if(furi_hal_rtc_is_flag_set(FuriHalRtcFlagStealthMode)) {
+    if(furry_hal_rtc_is_flag_set(FurryHalRtcFlagStealthMode)) {
         view_port_enabled_set(desktop->stealth_mode_icon_viewport, true);
     } else {
         view_port_enabled_set(desktop->stealth_mode_icon_viewport, false);
@@ -254,41 +254,41 @@ Desktop* desktop_alloc() {
     gui_add_view_port(desktop->gui, desktop->stealth_mode_icon_viewport, GuiLayerStatusBarLeft);
 
     // Special case: autostart application is already running
-    desktop->loader = furi_record_open(RECORD_LOADER);
+    desktop->loader = furry_record_open(RECORD_LOADER);
     if(loader_is_locked(desktop->loader) &&
        animation_manager_is_animation_loaded(desktop->animation_manager)) {
         animation_manager_unload_and_stall_animation(desktop->animation_manager);
     }
 
-    desktop->notification = furi_record_open(RECORD_NOTIFICATION);
-    desktop->app_start_stop_subscription = furi_pubsub_subscribe(
+    desktop->notification = furry_record_open(RECORD_NOTIFICATION);
+    desktop->app_start_stop_subscription = furry_pubsub_subscribe(
         loader_get_pubsub(desktop->loader), desktop_loader_callback, desktop);
 
-    desktop->input_events_pubsub = furi_record_open(RECORD_INPUT_EVENTS);
+    desktop->input_events_pubsub = furry_record_open(RECORD_INPUT_EVENTS);
     desktop->input_events_subscription = NULL;
 
     desktop->auto_lock_timer =
-        furi_timer_alloc(desktop_auto_lock_timer_callback, FuriTimerTypeOnce, desktop);
+        furry_timer_alloc(desktop_auto_lock_timer_callback, FurryTimerTypeOnce, desktop);
 
     return desktop;
 }
 
 void desktop_free(Desktop* desktop) {
-    furi_assert(desktop);
+    furry_assert(desktop);
 
-    furi_pubsub_unsubscribe(
+    furry_pubsub_unsubscribe(
         loader_get_pubsub(desktop->loader), desktop->app_start_stop_subscription);
 
     if(desktop->input_events_subscription) {
-        furi_pubsub_unsubscribe(desktop->input_events_pubsub, desktop->input_events_subscription);
+        furry_pubsub_unsubscribe(desktop->input_events_pubsub, desktop->input_events_subscription);
         desktop->input_events_subscription = NULL;
     }
 
     desktop->loader = NULL;
     desktop->input_events_pubsub = NULL;
-    furi_record_close(RECORD_LOADER);
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_record_close(RECORD_INPUT_EVENTS);
+    furry_record_close(RECORD_LOADER);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_INPUT_EVENTS);
 
     view_dispatcher_remove_view(desktop->view_dispatcher, DesktopViewIdMain);
     view_dispatcher_remove_view(desktop->view_dispatcher, DesktopViewIdLockMenu);
@@ -312,22 +312,22 @@ void desktop_free(Desktop* desktop) {
     popup_free(desktop->hw_mismatch_popup);
     desktop_view_pin_timeout_free(desktop->pin_timeout_view);
 
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     desktop->gui = NULL;
 
-    furi_thread_free(desktop->scene_thread);
+    furry_thread_free(desktop->scene_thread);
 
-    furi_record_close("menu");
+    furry_record_close("menu");
 
-    furi_timer_free(desktop->auto_lock_timer);
+    furry_timer_free(desktop->auto_lock_timer);
 
     free(desktop);
 }
 
 static bool desktop_check_file_flag(const char* flag_path) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     bool exists = storage_common_stat(storage, flag_path, NULL) == FSE_OK;
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return exists;
 }
@@ -335,17 +335,17 @@ static bool desktop_check_file_flag(const char* flag_path) {
 int32_t desktop_srv(void* p) {
     UNUSED(p);
 
-    if(!furi_hal_is_normal_boot()) {
-        FURI_LOG_W(TAG, "Skipping start in special boot mode");
+    if(!furry_hal_is_normal_boot()) {
+        FURRY_LOG_W(TAG, "Skipping start in special boot mode");
         return 0;
     }
 
-    if(furi_hal_rtc_is_flag_set(FuriHalRtcFlagResetPin)) {
-        Storage* storage = furi_record_open(RECORD_STORAGE);
+    if(furry_hal_rtc_is_flag_set(FurryHalRtcFlagResetPin)) {
+        Storage* storage = furry_record_open(RECORD_STORAGE);
         storage_common_remove(storage, DESKTOP_SETTINGS_PATH);
         storage_common_remove(storage, DESKTOP_SETTINGS_OLD_PATH);
-        furi_record_close(RECORD_STORAGE);
-        furi_hal_rtc_reset_flag(FuriHalRtcFlagResetPin);
+        furry_record_close(RECORD_STORAGE);
+        furry_hal_rtc_reset_flag(FurryHalRtcFlagResetPin);
     }
 
     XTREME_SETTINGS_LOAD();
@@ -375,11 +375,11 @@ int32_t desktop_srv(void* p) {
         scene_manager_next_scene(desktop->scene_manager, DesktopSceneSlideshow);
     }
 
-    if(!furi_hal_version_do_i_belong_here()) {
+    if(!furry_hal_version_do_i_belong_here()) {
         scene_manager_next_scene(desktop->scene_manager, DesktopSceneHwMismatch);
     }
 
-    if(furi_hal_rtc_get_fault_data()) {
+    if(furry_hal_rtc_get_fault_data()) {
         scene_manager_next_scene(desktop->scene_manager, DesktopSceneFault);
     }
 

@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <stdlib.h>
@@ -45,7 +45,7 @@ typedef enum {
 typedef enum { FieldEmpty, FieldMine } Field;
 
 typedef struct {
-    FuriMutex* mutex;
+    FurryMutex* mutex;
     DialogsApp* dialogs;
     NotificationApp* notifications;
     Field minefield[PLAYFIELD_WIDTH][PLAYFIELD_HEIGHT];
@@ -59,37 +59,37 @@ typedef struct {
     uint32_t game_started_tick;
 } Minesweeper;
 
-static void input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     PluginEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 static void render_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     const Minesweeper* minesweeper_state = ctx;
-    furi_mutex_acquire(minesweeper_state->mutex, FuriWaitForever);
+    furry_mutex_acquire(minesweeper_state->mutex, FurryWaitForever);
 
-    FuriString* mineStr;
-    FuriString* timeStr;
-    mineStr = furi_string_alloc();
-    timeStr = furi_string_alloc();
+    FurryString* mineStr;
+    FurryString* timeStr;
+    mineStr = furry_string_alloc();
+    timeStr = furry_string_alloc();
 
-    furi_string_printf(mineStr, "Mines: %d", MINECOUNT - minesweeper_state->flags_set);
+    furry_string_printf(mineStr, "Mines: %d", MINECOUNT - minesweeper_state->flags_set);
     canvas_set_font(canvas, FontSecondary);
-    canvas_draw_str_aligned(canvas, 0, 0, AlignLeft, AlignTop, furi_string_get_cstr(mineStr));
+    canvas_draw_str_aligned(canvas, 0, 0, AlignLeft, AlignTop, furry_string_get_cstr(mineStr));
 
     int seconds = 0;
     int minutes = 0;
     if(minesweeper_state->game_started) {
-        uint32_t ticks_elapsed = furi_get_tick() - minesweeper_state->game_started_tick;
-        seconds = (int)ticks_elapsed / furi_kernel_get_tick_frequency();
+        uint32_t ticks_elapsed = furry_get_tick() - minesweeper_state->game_started_tick;
+        seconds = (int)ticks_elapsed / furry_kernel_get_tick_frequency();
         minutes = (int)seconds / 60;
         seconds = seconds % 60;
     }
-    furi_string_printf(timeStr, "%01d:%02d", minutes, seconds);
-    canvas_draw_str_aligned(canvas, 128, 0, AlignRight, AlignTop, furi_string_get_cstr(timeStr));
+    furry_string_printf(timeStr, "%01d:%02d", minutes, seconds);
+    canvas_draw_str_aligned(canvas, 128, 0, AlignRight, AlignTop, furry_string_get_cstr(timeStr));
 
     uint8_t* tile_to_draw;
 
@@ -153,9 +153,9 @@ static void render_callback(Canvas* const canvas, void* ctx) {
         }
     }
 
-    furi_string_free(mineStr);
-    furi_string_free(timeStr);
-    furi_mutex_release(minesweeper_state->mutex);
+    furry_string_free(mineStr);
+    furry_string_free(timeStr);
+    furry_mutex_release(minesweeper_state->mutex);
 }
 
 static void setup_playfield(Minesweeper* minesweeper_state) {
@@ -179,7 +179,7 @@ static void setup_playfield(Minesweeper* minesweeper_state) {
     minesweeper_state->mines_left = MINECOUNT;
     minesweeper_state->fields_cleared = 0;
     minesweeper_state->flags_set = 0;
-    minesweeper_state->game_started_tick = furi_get_tick();
+    minesweeper_state->game_started_tick = furry_get_tick();
     minesweeper_state->game_started = false;
 }
 
@@ -219,27 +219,27 @@ static bool game_lost(Minesweeper* minesweeper_state) {
 }
 
 static bool game_won(Minesweeper* minesweeper_state) {
-    FuriString* tempStr;
-    tempStr = furi_string_alloc();
+    FurryString* tempStr;
+    tempStr = furry_string_alloc();
 
     int seconds = 0;
     int minutes = 0;
-    uint32_t ticks_elapsed = furi_get_tick() - minesweeper_state->game_started_tick;
-    seconds = (int)ticks_elapsed / furi_kernel_get_tick_frequency();
+    uint32_t ticks_elapsed = furry_get_tick() - minesweeper_state->game_started_tick;
+    seconds = (int)ticks_elapsed / furry_kernel_get_tick_frequency();
     minutes = (int)seconds / 60;
     seconds = seconds % 60;
 
     DialogMessage* message = dialog_message_alloc();
     const char* header_text = "Game won!";
-    furi_string_cat_printf(tempStr, "Minefield cleared in %01d:%02d", minutes, seconds);
+    furry_string_cat_printf(tempStr, "Minefield cleared in %01d:%02d", minutes, seconds);
     dialog_message_set_header(message, header_text, 64, 3, AlignCenter, AlignTop);
     dialog_message_set_text(
-        message, furi_string_get_cstr(tempStr), 64, 32, AlignCenter, AlignCenter);
+        message, furry_string_get_cstr(tempStr), 64, 32, AlignCenter, AlignCenter);
     dialog_message_set_buttons(message, NULL, "Play again", NULL);
 
     DialogMessageButton choice = dialog_message_show(minesweeper_state->dialogs, message);
     dialog_message_free(message);
-    furi_string_free(tempStr);
+    furry_string_free(tempStr);
     return choice == DialogMessageButtonCenter;
 }
 
@@ -317,7 +317,7 @@ static bool play_move(Minesweeper* minesweeper_state, int cursor_x, int cursor_y
     // 〜(￣▽￣〜) don't judge me (〜￣▽￣)〜
     minesweeper_state->playfield[cursor_x][cursor_y] = hint;
     minesweeper_state->fields_cleared++;
-    FURI_LOG_D("Minesweeper", "Setting %d,%d to %d", cursor_x, cursor_y, hint);
+    FURRY_LOG_D("Minesweeper", "Setting %d,%d to %d", cursor_x, cursor_y, hint);
     if(hint == 0) {
         // the field is "empty"
         // auto open surrounding fields.
@@ -350,22 +350,22 @@ static void minesweeper_state_init(Minesweeper* const minesweeper_state) {
 
 int32_t minesweeper_app(void* p) {
     UNUSED(p);
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(PluginEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(PluginEvent));
 
     Minesweeper* minesweeper_state = malloc(sizeof(Minesweeper));
     // setup
     minesweeper_state_init(minesweeper_state);
 
-    minesweeper_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    minesweeper_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!minesweeper_state->mutex) {
-        FURI_LOG_E("Minesweeper", "cannot create mutex\r\n");
+        FURRY_LOG_E("Minesweeper", "cannot create mutex\r\n");
         free(minesweeper_state);
         return 255;
     }
     // BEGIN IMPLEMENTATION
 
-    minesweeper_state->dialogs = furi_record_open(RECORD_DIALOGS);
-    minesweeper_state->notifications = furi_record_open(RECORD_NOTIFICATION);
+    minesweeper_state->dialogs = furry_record_open(RECORD_DIALOGS);
+    minesweeper_state->notifications = furry_record_open(RECORD_NOTIFICATION);
 
     DialogMessage* message = dialog_message_alloc();
 
@@ -388,48 +388,48 @@ int32_t minesweeper_app(void* p) {
     view_port_input_callback_set(view_port, input_callback, event_queue);
 
     // Open GUI and register view_port
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     PluginEvent event;
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 100);
-        if(event_status == FuriStatusOk) {
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 100);
+        if(event_status == FurryStatusOk) {
             // press events
             if(event.type == EventTypeKey) {
                 if(event.input.type == InputTypeShort) {
                     switch(event.input.key) {
                     case InputKeyUp:
-                        furi_mutex_acquire(minesweeper_state->mutex, FuriWaitForever);
+                        furry_mutex_acquire(minesweeper_state->mutex, FurryWaitForever);
                         minesweeper_state->cursor_y--;
                         if(minesweeper_state->cursor_y < 0) {
                             minesweeper_state->cursor_y = PLAYFIELD_HEIGHT - 1;
                         }
-                        furi_mutex_release(minesweeper_state->mutex);
+                        furry_mutex_release(minesweeper_state->mutex);
                         break;
                     case InputKeyDown:
-                        furi_mutex_acquire(minesweeper_state->mutex, FuriWaitForever);
+                        furry_mutex_acquire(minesweeper_state->mutex, FurryWaitForever);
                         minesweeper_state->cursor_y++;
                         if(minesweeper_state->cursor_y >= PLAYFIELD_HEIGHT) {
                             minesweeper_state->cursor_y = 0;
                         }
-                        furi_mutex_release(minesweeper_state->mutex);
+                        furry_mutex_release(minesweeper_state->mutex);
                         break;
                     case InputKeyRight:
-                        furi_mutex_acquire(minesweeper_state->mutex, FuriWaitForever);
+                        furry_mutex_acquire(minesweeper_state->mutex, FurryWaitForever);
                         minesweeper_state->cursor_x++;
                         if(minesweeper_state->cursor_x >= PLAYFIELD_WIDTH) {
                             minesweeper_state->cursor_x = 0;
                         }
-                        furi_mutex_release(minesweeper_state->mutex);
+                        furry_mutex_release(minesweeper_state->mutex);
                         break;
                     case InputKeyLeft:
-                        furi_mutex_acquire(minesweeper_state->mutex, FuriWaitForever);
+                        furry_mutex_acquire(minesweeper_state->mutex, FurryWaitForever);
                         minesweeper_state->cursor_x--;
                         if(minesweeper_state->cursor_x < 0) {
                             minesweeper_state->cursor_x = PLAYFIELD_WIDTH - 1;
                         }
-                        furi_mutex_release(minesweeper_state->mutex);
+                        furry_mutex_release(minesweeper_state->mutex);
                         break;
                     case InputKeyOk:
                         if(!minesweeper_state->game_started) {
@@ -470,7 +470,7 @@ int32_t minesweeper_app(void* p) {
                     }
                 } else if(event.input.type == InputTypeLong) {
                     // hold events
-                    FURI_LOG_D("Minesweeper", "Got a long press!");
+                    FURRY_LOG_D("Minesweeper", "Got a long press!");
                     switch(event.input.key) {
                     case InputKeyUp:
                     case InputKeyDown:
@@ -478,10 +478,10 @@ int32_t minesweeper_app(void* p) {
                     case InputKeyLeft:
                         break;
                     case InputKeyOk:
-                        FURI_LOG_D("Minesweeper", "Toggling flag");
-                        furi_mutex_acquire(minesweeper_state->mutex, FuriWaitForever);
+                        FURRY_LOG_D("Minesweeper", "Toggling flag");
+                        furry_mutex_acquire(minesweeper_state->mutex, FurryWaitForever);
                         place_flag(minesweeper_state);
-                        furi_mutex_release(minesweeper_state->mutex);
+                        furry_mutex_release(minesweeper_state->mutex);
                         break;
                     case InputKeyBack:
                         processing = false;
@@ -496,12 +496,12 @@ int32_t minesweeper_app(void* p) {
     }
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_DIALOGS);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_DIALOGS);
+    furry_record_close(RECORD_NOTIFICATION);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_mutex_free(minesweeper_state->mutex);
+    furry_message_queue_free(event_queue);
+    furry_mutex_free(minesweeper_state->mutex);
     free(minesweeper_state);
 
     return 0;

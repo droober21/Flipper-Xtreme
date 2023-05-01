@@ -1,7 +1,7 @@
 
 #include <stdint.h>
 #include <flipper_format/flipper_format.h>
-#include <furi.h>
+#include <furry.h>
 #include <core/dangerous_defines.h>
 #include <storage/storage.h>
 #include <gui/icon_i.h>
@@ -32,45 +32,45 @@ static BubbleAnimation* animation_storage_load_animation(const char* name);
 
 void animation_handler_select_manifest(bool force_stock) {
     XtremeSettings* xtreme_settings = XTREME_SETTINGS();
-    FuriString* anim_dir = furi_string_alloc();
-    FuriString* manifest = furi_string_alloc();
+    FurryString* anim_dir = furry_string_alloc();
+    FurryString* manifest = furry_string_alloc();
     bool use_asset_pack = !force_stock && xtreme_settings->asset_pack[0] != '\0';
     if(use_asset_pack) {
-        furi_string_printf(
+        furry_string_printf(
             anim_dir, "%s/%s/Anims", XTREME_ASSETS_PATH, xtreme_settings->asset_pack);
-        furi_string_printf(manifest, "%s/manifest.txt", furi_string_get_cstr(anim_dir));
-        Storage* storage = furi_record_open(RECORD_STORAGE);
-        if(storage_common_stat(storage, furi_string_get_cstr(manifest), NULL) == FSE_OK) {
-            FURI_LOG_I(TAG, "Custom manifest selected");
+        furry_string_printf(manifest, "%s/manifest.txt", furry_string_get_cstr(anim_dir));
+        Storage* storage = furry_record_open(RECORD_STORAGE);
+        if(storage_common_stat(storage, furry_string_get_cstr(manifest), NULL) == FSE_OK) {
+            FURRY_LOG_I(TAG, "Custom manifest selected");
         } else {
             use_asset_pack = false;
         }
-        furi_record_close(RECORD_STORAGE);
+        furry_record_close(RECORD_STORAGE);
     }
     if(!use_asset_pack) {
-        furi_string_set(anim_dir, BASE_ANIMATION_DIR);
-        furi_string_printf(manifest, "%s/manifest.txt", furi_string_get_cstr(anim_dir));
-        FURI_LOG_I(TAG, "Base manifest selected");
+        furry_string_set(anim_dir, BASE_ANIMATION_DIR);
+        furry_string_printf(manifest, "%s/manifest.txt", furry_string_get_cstr(anim_dir));
+        FURRY_LOG_I(TAG, "Base manifest selected");
     }
-    strlcpy(ANIMATION_DIR, furi_string_get_cstr(anim_dir), sizeof(ANIMATION_DIR));
+    strlcpy(ANIMATION_DIR, furry_string_get_cstr(anim_dir), sizeof(ANIMATION_DIR));
     strlcpy(
-        ANIMATION_MANIFEST_FILE, furi_string_get_cstr(manifest), sizeof(ANIMATION_MANIFEST_FILE));
-    furi_string_free(manifest);
-    furi_string_free(anim_dir);
+        ANIMATION_MANIFEST_FILE, furry_string_get_cstr(manifest), sizeof(ANIMATION_MANIFEST_FILE));
+    furry_string_free(manifest);
+    furry_string_free(anim_dir);
 }
 
 static bool animation_storage_load_single_manifest_info(
     StorageAnimationManifestInfo* manifest_info,
     const char* name,
     bool force_stock) {
-    furi_assert(manifest_info);
+    furry_assert(manifest_info);
     animation_handler_select_manifest(force_stock);
     bool result = false;
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* file = flipper_format_file_alloc(storage);
     flipper_format_set_strict_mode(file, true);
-    FuriString* read_string;
-    read_string = furi_string_alloc();
+    FurryString* read_string;
+    read_string = furry_string_alloc();
 
     do {
         uint32_t u32value;
@@ -78,20 +78,20 @@ static bool animation_storage_load_single_manifest_info(
         if(!flipper_format_file_open_existing(file, ANIMATION_MANIFEST_FILE)) break;
 
         if(!flipper_format_read_header(file, read_string, &u32value)) break;
-        if(furi_string_cmp_str(read_string, "Flipper Animation Manifest")) break;
+        if(furry_string_cmp_str(read_string, "Flipper Animation Manifest")) break;
 
         manifest_info->name = NULL;
 
         /* skip other animation names */
         flipper_format_set_strict_mode(file, false);
         while(flipper_format_read_string(file, "Name", read_string) &&
-              furi_string_cmp_str(read_string, name))
+              furry_string_cmp_str(read_string, name))
             ;
-        if(furi_string_cmp_str(read_string, name)) break;
+        if(furry_string_cmp_str(read_string, name)) break;
         flipper_format_set_strict_mode(file, true);
 
-        manifest_info->name = malloc(furi_string_size(read_string) + 1);
-        strcpy((char*)manifest_info->name, furi_string_get_cstr(read_string));
+        manifest_info->name = malloc(furry_string_size(read_string) + 1);
+        strcpy((char*)manifest_info->name, furry_string_get_cstr(read_string));
 
         if(!flipper_format_read_uint32(file, "Min butthurt", &u32value, 1)) break;
         manifest_info->min_butthurt = u32value;
@@ -109,25 +109,25 @@ static bool animation_storage_load_single_manifest_info(
     if(!result && manifest_info->name) {
         free((void*)manifest_info->name);
     }
-    furi_string_free(read_string);
+    furry_string_free(read_string);
     flipper_format_free(file);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return result;
 }
 
 void animation_storage_fill_animation_list(StorageAnimationList_t* animation_list) {
-    furi_assert(sizeof(StorageAnimationList_t) == sizeof(void*));
-    furi_assert(!StorageAnimationList_size(*animation_list));
+    furry_assert(sizeof(StorageAnimationList_t) == sizeof(void*));
+    furry_assert(!StorageAnimationList_size(*animation_list));
     animation_handler_select_manifest(false);
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* file = flipper_format_file_alloc(storage);
     /* Forbid skipping fields */
     flipper_format_set_strict_mode(file, true);
-    FuriString* read_string;
-    read_string = furi_string_alloc();
+    FurryString* read_string;
+    read_string = furry_string_alloc();
 
     do {
         uint32_t u32value;
@@ -136,7 +136,7 @@ void animation_storage_fill_animation_list(StorageAnimationList_t* animation_lis
         if(FSE_OK != storage_sd_status(storage)) break;
         if(!flipper_format_file_open_existing(file, ANIMATION_MANIFEST_FILE)) break;
         if(!flipper_format_read_header(file, read_string, &u32value)) break;
-        if(furi_string_cmp_str(read_string, "Flipper Animation Manifest")) break;
+        if(furry_string_cmp_str(read_string, "Flipper Animation Manifest")) break;
         do {
             storage_animation = malloc(sizeof(StorageAnimation));
             storage_animation->external = true;
@@ -144,9 +144,9 @@ void animation_storage_fill_animation_list(StorageAnimationList_t* animation_lis
             storage_animation->manifest_info.name = NULL;
 
             if(!flipper_format_read_string(file, "Name", read_string)) break;
-            storage_animation->manifest_info.name = malloc(furi_string_size(read_string) + 1);
+            storage_animation->manifest_info.name = malloc(furry_string_size(read_string) + 1);
             strcpy(
-                (char*)storage_animation->manifest_info.name, furi_string_get_cstr(read_string));
+                (char*)storage_animation->manifest_info.name, furry_string_get_cstr(read_string));
 
             if(!flipper_format_read_uint32(file, "Min butthurt", &u32value, 1)) break;
             storage_animation->manifest_info.min_butthurt = u32value;
@@ -165,7 +165,7 @@ void animation_storage_fill_animation_list(StorageAnimationList_t* animation_lis
         animation_storage_free_storage_animation(&storage_animation);
     } while(0);
 
-    furi_string_free(read_string);
+    furry_string_free(read_string);
     flipper_format_free(file);
 
     // add hard-coded animations
@@ -173,12 +173,12 @@ void animation_storage_fill_animation_list(StorageAnimationList_t* animation_lis
         StorageAnimationList_push_back(*animation_list, (StorageAnimation*)&dolphin_internal[i]);
     }
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 StorageAnimation* animation_storage_find_animation(const char* name, bool force_stock) {
-    furi_assert(name);
-    furi_assert(strlen(name));
+    furry_assert(name);
+    furry_assert(strlen(name));
     StorageAnimation* storage_animation = NULL;
 
     for(size_t i = 0; i < dolphin_blocking_size; ++i) {
@@ -218,19 +218,19 @@ StorageAnimation* animation_storage_find_animation(const char* name, bool force_
 }
 
 StorageAnimationManifestInfo* animation_storage_get_meta(StorageAnimation* storage_animation) {
-    furi_assert(storage_animation);
+    furry_assert(storage_animation);
     return &storage_animation->manifest_info;
 }
 
 const BubbleAnimation*
     animation_storage_get_bubble_animation(StorageAnimation* storage_animation) {
-    furi_assert(storage_animation);
+    furry_assert(storage_animation);
     animation_storage_cache_animation(storage_animation);
     return storage_animation->animation;
 }
 
 void animation_storage_cache_animation(StorageAnimation* storage_animation) {
-    furi_assert(storage_animation);
+    furry_assert(storage_animation);
 
     if(storage_animation->external) {
         if(!storage_animation->animation) {
@@ -241,7 +241,7 @@ void animation_storage_cache_animation(StorageAnimation* storage_animation) {
 }
 
 static void animation_storage_free_animation(BubbleAnimation** animation) {
-    furi_assert(animation);
+    furry_assert(animation);
 
     if(*animation) {
         animation_storage_free_bubbles(*animation);
@@ -255,8 +255,8 @@ static void animation_storage_free_animation(BubbleAnimation** animation) {
 }
 
 void animation_storage_free_storage_animation(StorageAnimation** storage_animation) {
-    furi_assert(storage_animation);
-    furi_assert(*storage_animation);
+    furry_assert(storage_animation);
+    furry_assert(*storage_animation);
 
     if((*storage_animation)->external) {
         animation_storage_free_animation((BubbleAnimation**)&(*storage_animation)->animation);
@@ -270,16 +270,16 @@ void animation_storage_free_storage_animation(StorageAnimation** storage_animati
     *storage_animation = NULL;
 }
 
-static bool animation_storage_cast_align(FuriString* align_str, Align* align) {
-    if(!furi_string_cmp(align_str, "Bottom")) {
+static bool animation_storage_cast_align(FurryString* align_str, Align* align) {
+    if(!furry_string_cmp(align_str, "Bottom")) {
         *align = AlignBottom;
-    } else if(!furi_string_cmp(align_str, "Top")) {
+    } else if(!furry_string_cmp(align_str, "Top")) {
         *align = AlignTop;
-    } else if(!furi_string_cmp(align_str, "Left")) {
+    } else if(!furry_string_cmp(align_str, "Left")) {
         *align = AlignLeft;
-    } else if(!furi_string_cmp(align_str, "Right")) {
+    } else if(!furry_string_cmp(align_str, "Right")) {
         *align = AlignRight;
-    } else if(!furi_string_cmp(align_str, "Center")) {
+    } else if(!furry_string_cmp(align_str, "Center")) {
         *align = AlignCenter;
     } else {
         return false;
@@ -289,7 +289,7 @@ static bool animation_storage_cast_align(FuriString* align_str, Align* align) {
 }
 
 static void animation_storage_free_frames(BubbleAnimation* animation) {
-    furi_assert(animation);
+    furry_assert(animation);
 
     const Icon* icon = &animation->icon_animation;
     for(int i = 0; i < icon->frame_count; ++i) {
@@ -321,27 +321,27 @@ static bool animation_storage_load_frames(
     }
 
     Icon* icon = (Icon*)&animation->icon_animation;
-    FURI_CONST_ASSIGN(icon->frame_count, max_frame_count + 1);
-    FURI_CONST_ASSIGN(icon->frame_rate, 0);
-    FURI_CONST_ASSIGN(icon->height, height);
-    FURI_CONST_ASSIGN(icon->width, width);
+    FURRY_CONST_ASSIGN(icon->frame_count, max_frame_count + 1);
+    FURRY_CONST_ASSIGN(icon->frame_rate, 0);
+    FURRY_CONST_ASSIGN(icon->height, height);
+    FURRY_CONST_ASSIGN(icon->width, width);
     icon->frames = malloc(sizeof(const uint8_t*) * icon->frame_count);
 
     bool frames_ok = false;
     File* file = storage_file_alloc(storage);
     FileInfo file_info;
-    FuriString* filename;
-    filename = furi_string_alloc();
+    FurryString* filename;
+    filename = furry_string_alloc();
     size_t max_filesize = ROUND_UP_TO(width, 8) * height + 2;
 
     for(int i = 0; i < icon->frame_count; ++i) {
         frames_ok = false;
-        furi_string_printf(filename, "%s/%s/frame_%d.bm", ANIMATION_DIR, name, i);
+        furry_string_printf(filename, "%s/%s/frame_%d.bm", ANIMATION_DIR, name, i);
 
-        if(storage_common_stat(storage, furi_string_get_cstr(filename), &file_info) != FSE_OK)
+        if(storage_common_stat(storage, furry_string_get_cstr(filename), &file_info) != FSE_OK)
             break;
         if(file_info.size > max_filesize) {
-            FURI_LOG_E(
+            FURRY_LOG_E(
                 TAG,
                 "Filesize %lld, max: %d (width %d, height %d)",
                 file_info.size,
@@ -351,14 +351,14 @@ static bool animation_storage_load_frames(
             break;
         }
         if(!storage_file_open(
-               file, furi_string_get_cstr(filename), FSAM_READ, FSOM_OPEN_EXISTING)) {
-            FURI_LOG_E(TAG, "Can't open file \'%s\'", furi_string_get_cstr(filename));
+               file, furry_string_get_cstr(filename), FSAM_READ, FSOM_OPEN_EXISTING)) {
+            FURRY_LOG_E(TAG, "Can't open file \'%s\'", furry_string_get_cstr(filename));
             break;
         }
 
-        FURI_CONST_ASSIGN_PTR(icon->frames[i], malloc(file_info.size));
+        FURRY_CONST_ASSIGN_PTR(icon->frames[i], malloc(file_info.size));
         if(storage_file_read(file, (void*)icon->frames[i], file_info.size) != file_info.size) {
-            FURI_LOG_E(TAG, "Read failed: \'%s\'", furi_string_get_cstr(filename));
+            FURRY_LOG_E(TAG, "Read failed: \'%s\'", furry_string_get_cstr(filename));
             break;
         }
         storage_file_close(file);
@@ -366,33 +366,33 @@ static bool animation_storage_load_frames(
     }
 
     if(!frames_ok) {
-        FURI_LOG_E(
+        FURRY_LOG_E(
             TAG,
             "Load \'%s\' failed, %dx%d, size: %lld",
-            furi_string_get_cstr(filename),
+            furry_string_get_cstr(filename),
             width,
             height,
             file_info.size);
         animation_storage_free_frames(animation);
     } else {
-        furi_check(animation->icon_animation.frames);
+        furry_check(animation->icon_animation.frames);
         for(int i = 0; i < animation->icon_animation.frame_count; ++i) {
-            furi_check(animation->icon_animation.frames[i]);
+            furry_check(animation->icon_animation.frames[i]);
         }
     }
 
     storage_file_free(file);
-    furi_string_free(filename);
+    furry_string_free(filename);
 
     return frames_ok;
 }
 
 static bool animation_storage_load_bubbles(BubbleAnimation* animation, FlipperFormat* ff) {
     uint32_t u32value;
-    FuriString* str;
-    str = furi_string_alloc();
+    FurryString* str;
+    str = furry_string_alloc();
     bool success = false;
-    furi_assert(!animation->frame_bubble_sequences);
+    furry_assert(!animation->frame_bubble_sequences);
 
     do {
         if(!flipper_format_read_uint32(ff, "Bubble slots", &u32value, 1)) break;
@@ -407,7 +407,7 @@ static bool animation_storage_load_bubbles(BubbleAnimation* animation, FlipperFo
 
         int32_t current_slot = 0;
         for(int i = 0; i < animation->frame_bubble_sequences_count; ++i) {
-            FURI_CONST_ASSIGN_PTR(
+            FURRY_CONST_ASSIGN_PTR(
                 animation->frame_bubble_sequences[i], malloc(sizeof(FrameBubble)));
         }
 
@@ -418,7 +418,7 @@ static bool animation_storage_load_bubbles(BubbleAnimation* animation, FlipperFo
             if((current_slot != 0) && (index == -1)) break;
 
             if(current_slot == index) {
-                FURI_CONST_ASSIGN_PTR(bubble->next_bubble, malloc(sizeof(FrameBubble)));
+                FURRY_CONST_ASSIGN_PTR(bubble->next_bubble, malloc(sizeof(FrameBubble)));
                 bubble = bubble->next_bubble;
             } else if(current_slot == index + 1) {
                 ++index;
@@ -431,17 +431,17 @@ static bool animation_storage_load_bubbles(BubbleAnimation* animation, FlipperFo
             if(index >= animation->frame_bubble_sequences_count) break;
 
             if(!flipper_format_read_uint32(ff, "X", &u32value, 1)) break;
-            FURI_CONST_ASSIGN(bubble->bubble.x, u32value);
+            FURRY_CONST_ASSIGN(bubble->bubble.x, u32value);
             if(!flipper_format_read_uint32(ff, "Y", &u32value, 1)) break;
-            FURI_CONST_ASSIGN(bubble->bubble.y, u32value);
+            FURRY_CONST_ASSIGN(bubble->bubble.y, u32value);
 
             if(!flipper_format_read_string(ff, "Text", str)) break;
-            if(furi_string_size(str) > 100) break;
+            if(furry_string_size(str) > 100) break;
 
-            furi_string_replace_all(str, "\\n", "\n");
+            furry_string_replace_all(str, "\\n", "\n");
 
-            FURI_CONST_ASSIGN_PTR(bubble->bubble.text, malloc(furi_string_size(str) + 1));
-            strcpy((char*)bubble->bubble.text, furi_string_get_cstr(str));
+            FURRY_CONST_ASSIGN_PTR(bubble->bubble.text, malloc(furry_string_size(str) + 1));
+            strcpy((char*)bubble->bubble.text, furry_string_get_cstr(str));
 
             if(!flipper_format_read_string(ff, "AlignH", str)) break;
             if(!animation_storage_cast_align(str, (Align*)&bubble->bubble.align_h)) break;
@@ -449,37 +449,37 @@ static bool animation_storage_load_bubbles(BubbleAnimation* animation, FlipperFo
             if(!animation_storage_cast_align(str, (Align*)&bubble->bubble.align_v)) break;
 
             if(!flipper_format_read_uint32(ff, "StartFrame", &u32value, 1)) break;
-            FURI_CONST_ASSIGN(bubble->start_frame, u32value);
+            FURRY_CONST_ASSIGN(bubble->start_frame, u32value);
             if(!flipper_format_read_uint32(ff, "EndFrame", &u32value, 1)) break;
-            FURI_CONST_ASSIGN(bubble->end_frame, u32value);
+            FURRY_CONST_ASSIGN(bubble->end_frame, u32value);
         }
         success = (index + 1) == animation->frame_bubble_sequences_count;
     } while(0);
 
     if(!success) {
         if(animation->frame_bubble_sequences) {
-            FURI_LOG_E(TAG, "Failed to load animation bubbles");
+            FURRY_LOG_E(TAG, "Failed to load animation bubbles");
             animation_storage_free_bubbles(animation);
         }
     }
 
-    furi_string_free(str);
+    furry_string_free(str);
     return success;
 }
 
 static BubbleAnimation* animation_storage_load_animation(const char* name) {
-    furi_assert(name);
+    furry_assert(name);
     BubbleAnimation* animation = malloc(sizeof(BubbleAnimation));
 
     uint32_t height = 0;
     uint32_t width = 0;
     uint32_t* u32array = NULL;
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* ff = flipper_format_file_alloc(storage);
     /* Forbid skipping fields */
     flipper_format_set_strict_mode(ff, true);
-    FuriString* str;
-    str = furi_string_alloc();
+    FurryString* str;
+    str = furry_string_alloc();
     animation->frame_bubble_sequences = NULL;
 
     bool success = false;
@@ -488,10 +488,10 @@ static BubbleAnimation* animation_storage_load_animation(const char* name) {
 
         if(FSE_OK != storage_sd_status(storage)) break;
 
-        furi_string_printf(str, "%s/%s/" ANIMATION_META_FILE, ANIMATION_DIR, name);
-        if(!flipper_format_file_open_existing(ff, furi_string_get_cstr(str))) break;
+        furry_string_printf(str, "%s/%s/" ANIMATION_META_FILE, ANIMATION_DIR, name);
+        if(!flipper_format_file_open_existing(ff, furry_string_get_cstr(str))) break;
         if(!flipper_format_read_header(ff, str, &u32value)) break;
-        if(furi_string_cmp_str(str, "Flipper Animation")) break;
+        if(furry_string_cmp_str(str, "Flipper Animation")) break;
 
         if(!flipper_format_read_uint32(ff, "Width", &width, 1)) break;
         if(!flipper_format_read_uint32(ff, "Height", &height, 1)) break;
@@ -505,14 +505,14 @@ static BubbleAnimation* animation_storage_load_animation(const char* name) {
         uint32_t count = 0;
         if(!flipper_format_get_value_count(ff, "Frames order", &count)) break;
         if(count != frames) {
-            FURI_LOG_E(TAG, "Error loading animation: frames order");
+            FURRY_LOG_E(TAG, "Error loading animation: frames order");
             break;
         }
         u32array = malloc(sizeof(uint32_t) * frames);
         if(!flipper_format_read_uint32(ff, "Frames order", u32array, frames)) break;
         animation->frame_order = malloc(sizeof(uint8_t) * frames);
         for(int i = 0; i < frames; ++i) {
-            FURI_CONST_ASSIGN(animation->frame_order[i], u32array[i]);
+            FURRY_CONST_ASSIGN(animation->frame_order[i], u32array[i]);
         }
 
         /* passive and active frames must be loaded up to this point */
@@ -524,7 +524,7 @@ static BubbleAnimation* animation_storage_load_animation(const char* name) {
         if(!flipper_format_read_uint32(ff, "Frame rate", &u32value, 1)) break;
         uint16_t anim_speed = XTREME_SETTINGS()->anim_speed;
         u32value = (u32value * anim_speed) / 100;
-        FURI_CONST_ASSIGN(animation->icon_animation.frame_rate, u32value < 1 ? 1 : u32value);
+        FURRY_CONST_ASSIGN(animation->icon_animation.frame_rate, u32value < 1 ? 1 : u32value);
         if(!flipper_format_read_uint32(ff, "Duration", &u32value, 1)) break;
         animation->duration = u32value;
         if(!flipper_format_read_uint32(ff, "Active cooldown", &u32value, 1)) break;
@@ -534,7 +534,7 @@ static BubbleAnimation* animation_storage_load_animation(const char* name) {
         success = true;
     } while(0);
 
-    furi_string_free(str);
+    furry_string_free(str);
     flipper_format_free(ff);
     if(u32array) {
         free(u32array);
@@ -570,7 +570,7 @@ static void animation_storage_free_bubbles(BubbleAnimation* animation) {
             ++i;
         }
         free((void*)*bubble);
-        FURI_CONST_ASSIGN_PTR(*bubble, NULL);
+        FURRY_CONST_ASSIGN_PTR(*bubble, NULL);
     }
     free((void*)animation->frame_bubble_sequences);
     animation->frame_bubble_sequences = NULL;

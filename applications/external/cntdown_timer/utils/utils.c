@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include "utils.h"
 
 static const NotificationSequence sequence_beep = {
@@ -11,16 +11,16 @@ static const NotificationSequence sequence_beep = {
 };
 
 void notification_beep_once() {
-    notification_message(furi_record_open(RECORD_NOTIFICATION), &sequence_beep);
+    notification_message(furry_record_open(RECORD_NOTIFICATION), &sequence_beep);
     notification_off();
 }
 
 void notification_off() {
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
 }
 
 void notification_timeup() {
-    notification_message(furi_record_open(RECORD_NOTIFICATION), &sequence_audiovisual_alert);
+    notification_message(furry_record_open(RECORD_NOTIFICATION), &sequence_audiovisual_alert);
 }
 
 void parse_sec_to_time_str(char* buffer, size_t len, int32_t sec) {

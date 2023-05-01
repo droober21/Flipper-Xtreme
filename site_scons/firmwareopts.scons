@@ -4,7 +4,7 @@ Import("ENV")
 if ENV["DEBUG"]:
     ENV.Append(
         CPPDEFINES=[
-            "FURI_DEBUG",
+            "FURRY_DEBUG",
             "NDEBUG",
         ],
         CCFLAGS=[
@@ -14,7 +14,7 @@ if ENV["DEBUG"]:
 elif ENV["COMPACT"]:
     ENV.Append(
         CPPDEFINES=[
-            "FURI_NDEBUG",
+            "FURRY_NDEBUG",
             "NDEBUG",
         ],
         CCFLAGS=[
@@ -24,7 +24,7 @@ elif ENV["COMPACT"]:
 else:
     ENV.Append(
         CPPDEFINES=[
-            "FURI_NDEBUG",
+            "FURRY_NDEBUG",
             "NDEBUG",
         ],
         CCFLAGS=[

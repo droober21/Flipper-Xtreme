@@ -1,6 +1,6 @@
-#include <furi_hal.h>
-#include <furi_hal_bt_hid.h>
-#include <furi_hal_usb_hid.h>
+#include <furry_hal.h>
+#include <furry_hal_bt_hid.h>
+#include <furry_hal_usb_hid.h>
 #include "ducky_script.h"
 #include "ducky_script_i.h"
 
@@ -49,13 +49,13 @@ static int32_t ducky_fnc_strdelay(BadKbScript* bad_kb, const char* line, int32_t
 
 static int32_t ducky_fnc_string(BadKbScript* bad_kb, const char* line, int32_t param) {
     line = &line[ducky_get_command_len(line) + 1];
-    furi_string_set_str(bad_kb->string_print, line);
+    furry_string_set_str(bad_kb->string_print, line);
     if(param == 1) {
-        furi_string_cat(bad_kb->string_print, "\n");
+        furry_string_cat(bad_kb->string_print, "\n");
     }
 
     if(bad_kb->stringdelay == 0) { // stringdelay not set - run command immidiately
-        bool state = ducky_string(bad_kb, furi_string_get_cstr(bad_kb->string_print));
+        bool state = ducky_string(bad_kb, furry_string_get_cstr(bad_kb->string_print));
         if(!state) {
             return ducky_error(bad_kb, "Invalid string %s", line);
         }
@@ -83,15 +83,15 @@ static int32_t ducky_fnc_sysrq(BadKbScript* bad_kb, const char* line, int32_t pa
     line = &line[ducky_get_command_len(line) + 1];
     uint16_t key = ducky_get_keycode(bad_kb, line, true);
     if(bad_kb->bt) {
-        furi_hal_bt_hid_kb_press(KEY_MOD_LEFT_ALT | HID_KEYBOARD_PRINT_SCREEN);
-        furi_hal_bt_hid_kb_press(key);
-        furi_delay_ms(bt_timeout);
-        furi_hal_bt_hid_kb_release(key);
-        furi_hal_bt_hid_kb_release(KEY_MOD_LEFT_ALT | HID_KEYBOARD_PRINT_SCREEN);
+        furry_hal_bt_hid_kb_press(KEY_MOD_LEFT_ALT | HID_KEYBOARD_PRINT_SCREEN);
+        furry_hal_bt_hid_kb_press(key);
+        furry_delay_ms(bt_timeout);
+        furry_hal_bt_hid_kb_release(key);
+        furry_hal_bt_hid_kb_release(KEY_MOD_LEFT_ALT | HID_KEYBOARD_PRINT_SCREEN);
     } else {
-        furi_hal_hid_kb_press(KEY_MOD_LEFT_ALT | HID_KEYBOARD_PRINT_SCREEN);
-        furi_hal_hid_kb_press(key);
-        furi_hal_hid_kb_release_all();
+        furry_hal_hid_kb_press(KEY_MOD_LEFT_ALT | HID_KEYBOARD_PRINT_SCREEN);
+        furry_hal_hid_kb_press(key);
+        furry_hal_hid_kb_release_all();
     }
     return 0;
 }
@@ -133,9 +133,9 @@ static int32_t ducky_fnc_hold(BadKbScript* bad_kb, const char* line, int32_t par
         return ducky_error(bad_kb, "Too many keys are hold");
     }
     if(bad_kb->bt) {
-        furi_hal_bt_hid_kb_press(key);
+        furry_hal_bt_hid_kb_press(key);
     } else {
-        furi_hal_hid_kb_press(key);
+        furry_hal_hid_kb_press(key);
     }
     return 0;
 }
@@ -153,9 +153,9 @@ static int32_t ducky_fnc_release(BadKbScript* bad_kb, const char* line, int32_t 
     }
     bad_kb->key_hold_nb--;
     if(bad_kb->bt) {
-        furi_hal_bt_hid_kb_release(key);
+        furry_hal_bt_hid_kb_release(key);
     } else {
-        furi_hal_hid_kb_release(key);
+        furry_hal_hid_kb_release(key);
     }
     return 0;
 }

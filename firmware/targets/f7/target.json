@@ -2,12 +2,12 @@
     "include_paths": [
         "ble_glue",
         "fatfs",
-        "furi_hal",
+        "furry_hal",
         "inc"
     ],
     "sdk_header_paths": [
-        "../furi_hal_include",
-        "furi_hal",
+        "../furry_hal_include",
+        "furry_hal",
         "platform_specific"
     ],
     "startup_script": "startup_stm32wb55xx_cm4.s",
@@ -18,7 +18,7 @@
     "linker_dependencies": [
         "print",
         "flipper7",
-        "furi",
+        "furry",
         "freertos",
         "stm32cubewb",
         "hwdrivers",

@@ -6,7 +6,7 @@
 #define MAX_TEXT_INPUT_LEN 22
 
 void archive_scene_delete_widget_callback(GuiButtonType result, InputType type, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     ArchiveApp* app = (ArchiveApp*)context;
     if(type == InputTypeShort) {
         view_dispatcher_send_custom_event(app->view_dispatcher, result);
@@ -14,7 +14,7 @@ void archive_scene_delete_widget_callback(GuiButtonType result, InputType type, 
 }
 
 void archive_scene_delete_on_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     ArchiveApp* app = (ArchiveApp*)context;
 
     widget_add_button_element(
@@ -22,24 +22,24 @@ void archive_scene_delete_on_enter(void* context) {
     widget_add_button_element(
         app->widget, GuiButtonTypeRight, "Delete", archive_scene_delete_widget_callback, app);
 
-    FuriString* filename;
-    filename = furi_string_alloc();
+    FurryString* filename;
+    filename = furry_string_alloc();
 
     ArchiveFile_t* current = archive_get_current_file(app->browser);
     path_extract_filename(current->path, filename, false);
 
     char delete_str[64];
-    snprintf(delete_str, sizeof(delete_str), "\e#Delete %s?\e#", furi_string_get_cstr(filename));
+    snprintf(delete_str, sizeof(delete_str), "\e#Delete %s?\e#", furry_string_get_cstr(filename));
     widget_add_text_box_element(
         app->widget, 0, 0, 128, 23, AlignCenter, AlignCenter, delete_str, false);
 
-    furi_string_free(filename);
+    furry_string_free(filename);
 
     view_dispatcher_switch_to_view(app->view_dispatcher, ArchiveViewWidget);
 }
 
 bool archive_scene_delete_on_event(void* context, SceneManagerEvent event) {
-    furi_assert(context);
+    furry_assert(context);
     ArchiveApp* app = (ArchiveApp*)context;
 
     ArchiveBrowserView* browser = app->browser;
@@ -68,7 +68,7 @@ bool archive_scene_delete_on_event(void* context, SceneManagerEvent event) {
 }
 
 void archive_scene_delete_on_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     ArchiveApp* app = (ArchiveApp*)context;
 
     widget_reset(app->widget);

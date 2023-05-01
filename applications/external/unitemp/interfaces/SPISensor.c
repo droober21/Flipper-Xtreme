@@ -16,8 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include "SPISensor.h"
 
 static uint8_t sensors_count = 0;
@@ -28,7 +28,7 @@ bool unitemp_spi_sensor_alloc(Sensor* sensor, char* args) {
     //Создание инстанса датчика SPI
     SPISensor* instance = malloc(sizeof(SPISensor));
     if(instance == NULL) {
-        FURI_LOG_E(APP_NAME, "Sensor %s instance allocation error", sensor->name);
+        FURRY_LOG_E(APP_NAME, "Sensor %s instance allocation error", sensor->name);
         return false;
     }
     sensor->instance = instance;
@@ -38,13 +38,13 @@ bool unitemp_spi_sensor_alloc(Sensor* sensor, char* args) {
     sscanf(args, "%d", &gpio);
     instance->CS_pin = unitemp_gpio_getFromInt(gpio);
     if(instance->CS_pin == NULL) {
-        FURI_LOG_E(APP_NAME, "Sensor %s GPIO setting error", sensor->name);
+        FURRY_LOG_E(APP_NAME, "Sensor %s GPIO setting error", sensor->name);
         free(instance);
         return false;
     }
 
-    instance->spi = malloc(sizeof(FuriHalSpiBusHandle));
-    memcpy(instance->spi, &furi_hal_spi_bus_handle_external, sizeof(FuriHalSpiBusHandle));
+    instance->spi = malloc(sizeof(FurryHalSpiBusHandle));
+    memcpy(instance->spi, &furry_hal_spi_bus_handle_external, sizeof(FurryHalSpiBusHandle));
 
     instance->spi->cs = instance->CS_pin->pin;
 

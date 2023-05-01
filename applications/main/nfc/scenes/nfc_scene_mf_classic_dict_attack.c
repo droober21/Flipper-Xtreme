@@ -10,14 +10,14 @@ typedef enum {
 } DictAttackState;
 
 bool nfc_dict_attack_worker_callback(NfcWorkerEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Nfc* nfc = context;
     view_dispatcher_send_custom_event(nfc->view_dispatcher, event);
     return true;
 }
 
 void nfc_dict_attack_dict_attack_result_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Nfc* nfc = context;
     view_dispatcher_send_custom_event(nfc->view_dispatcher, NfcCustomEventDictAttackSkip);
 }
@@ -58,7 +58,7 @@ static void nfc_scene_mf_classic_dict_attack_prepare_view(Nfc* nfc, DictAttackSt
 
         // If failed to load user dictionary - try the system dictionary
         if(!dict) {
-            FURI_LOG_E(TAG, "User dictionary not found");
+            FURRY_LOG_E(TAG, "User dictionary not found");
             state = DictAttackStateFlipperDictInProgress;
         }
     }
@@ -67,7 +67,7 @@ static void nfc_scene_mf_classic_dict_attack_prepare_view(Nfc* nfc, DictAttackSt
         dict_attack_set_header(nfc->dict_attack, "MF Classic System Dictionary");
         dict = mf_classic_dict_alloc(MfClassicDictTypeSystem);
         if(!dict) {
-            FURI_LOG_E(TAG, "Flipper dictionary not found");
+            FURRY_LOG_E(TAG, "Flipper dictionary not found");
             // Pass through to let the worker handle the failure
         }
     }

@@ -1,6 +1,6 @@
 
 #include "one_shot_animation_view.h"
-#include <furi.h>
+#include <furry.h>
 #include <portmacro.h>
 #include <gui/canvas.h>
 #include <gui/view.h>
@@ -37,11 +37,11 @@ static void one_shot_view_update_timer_callback(TimerHandle_t xTimer) {
 }
 
 static void one_shot_view_draw(Canvas* canvas, void* model_) {
-    furi_assert(canvas);
-    furi_assert(model_);
+    furry_assert(canvas);
+    furry_assert(model_);
 
     OneShotViewModel* model = model_;
-    furi_check(model->index < model->icon->frame_count);
+    furry_check(model->index < model->icon->frame_count);
     uint8_t y_offset = canvas_height(canvas) - model->icon->height;
     canvas_draw_bitmap(
         canvas,
@@ -53,8 +53,8 @@ static void one_shot_view_draw(Canvas* canvas, void* model_) {
 }
 
 static bool one_shot_view_input(InputEvent* event, void* context) {
-    furi_assert(context);
-    furi_assert(event);
+    furry_assert(context);
+    furry_assert(event);
 
     OneShotView* view = context;
     bool consumed = false;
@@ -72,9 +72,9 @@ static bool one_shot_view_input(InputEvent* event, void* context) {
                     view->interact_callback(view->interact_callback_context);
                 }
             } else if(event->type == InputTypeLong) {
-                Loader* loader = furi_record_open(RECORD_LOADER);
+                Loader* loader = furry_record_open(RECORD_LOADER);
                 loader_start(loader, "About", "batt");
-                furi_record_close(RECORD_LOADER);
+                furry_record_close(RECORD_LOADER);
             }
         }
     }
@@ -97,7 +97,7 @@ OneShotView* one_shot_view_alloc(void) {
 }
 
 void one_shot_view_free(OneShotView* view) {
-    furi_assert(view);
+    furry_assert(view);
 
     xTimerDelete(view->update_timer, portMAX_DELAY);
     view_free(view->view);
@@ -109,16 +109,16 @@ void one_shot_view_set_interact_callback(
     OneShotView* view,
     OneShotInteractCallback callback,
     void* context) {
-    furi_assert(view);
+    furry_assert(view);
 
     view->interact_callback_context = context;
     view->interact_callback = callback;
 }
 
 void one_shot_view_start_animation(OneShotView* view, const Icon* icon) {
-    furi_assert(view);
-    furi_assert(icon);
-    furi_check(icon->frame_count >= 2);
+    furry_assert(view);
+    furry_assert(icon);
+    furry_check(icon->frame_count >= 2);
 
     OneShotViewModel* model = view_get_model(view->view);
     model->index = 0;
@@ -129,7 +129,7 @@ void one_shot_view_start_animation(OneShotView* view, const Icon* icon) {
 }
 
 View* one_shot_view_get_view(OneShotView* view) {
-    furi_assert(view);
+    furry_assert(view);
 
     return view->view;
 }

@@ -4,7 +4,7 @@
 #include <gui/modules/widget.h>
 #include <nfc_worker_i.h>
 
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 static const MfClassicAuthContext two_cities_keys_4k[] = {
     {.sector = 0, .key_a = 0xffffffffffff, .key_b = 0xffffffffffff},
@@ -49,8 +49,8 @@ static const MfClassicAuthContext two_cities_keys_4k[] = {
     {.sector = 39, .key_a = 0x7259fa0197c6, .key_b = 0x5583698df085},
 };
 
-bool two_cities_parser_verify(NfcWorker* nfc_worker, FuriHalNfcTxRxContext* tx_rx) {
-    furi_assert(nfc_worker);
+bool two_cities_parser_verify(NfcWorker* nfc_worker, FurryHalNfcTxRxContext* tx_rx) {
+    furry_assert(nfc_worker);
     UNUSED(nfc_worker);
 
     if(nfc_worker->dev_data->mf_classic_data.type != MfClassicType4k) {
@@ -59,19 +59,19 @@ bool two_cities_parser_verify(NfcWorker* nfc_worker, FuriHalNfcTxRxContext* tx_r
 
     uint8_t sector = 4;
     uint8_t block = mf_classic_get_sector_trailer_block_num_by_sector(sector);
-    FURI_LOG_D("2cities", "Verifying sector %d", sector);
+    FURRY_LOG_D("2cities", "Verifying sector %d", sector);
     if(mf_classic_authenticate(tx_rx, block, 0xe56ac127dd45, MfClassicKeyA)) {
-        FURI_LOG_D("2cities", "Sector %d verified", sector);
+        FURRY_LOG_D("2cities", "Sector %d verified", sector);
         return true;
     }
     return false;
 }
 
-bool two_cities_parser_read(NfcWorker* nfc_worker, FuriHalNfcTxRxContext* tx_rx) {
-    furi_assert(nfc_worker);
+bool two_cities_parser_read(NfcWorker* nfc_worker, FurryHalNfcTxRxContext* tx_rx) {
+    furry_assert(nfc_worker);
 
     MfClassicReader reader = {};
-    FuriHalNfcADevData* nfc_a_data = &nfc_worker->dev_data->nfc_data.a_data;
+    FurryHalNfcADevData* nfc_a_data = &nfc_worker->dev_data->nfc_data.a_data;
     reader.type = mf_classic_get_classic_type(nfc_a_data);
     for(size_t i = 0; i < COUNT_OF(two_cities_keys_4k); i++) {
         mf_classic_reader_add_sector(
@@ -79,7 +79,7 @@ bool two_cities_parser_read(NfcWorker* nfc_worker, FuriHalNfcTxRxContext* tx_rx)
             two_cities_keys_4k[i].sector,
             two_cities_keys_4k[i].key_a,
             two_cities_keys_4k[i].key_b);
-        FURI_LOG_T("2cities", "Added sector %d", two_cities_keys_4k[i].sector);
+        FURRY_LOG_T("2cities", "Added sector %d", two_cities_keys_4k[i].sector);
     }
 
     return mf_classic_read_card(tx_rx, &reader, &nfc_worker->dev_data->mf_classic_data) == 40;
@@ -134,7 +134,7 @@ bool two_cities_parser_parse(NfcDeviceData* dev_data) {
     }
     troika_number >>= 4;
 
-    furi_string_printf(
+    furry_string_printf(
         dev_data->parsed_data,
         "\e#Troika+Plantain\nPN: %llu-\nPB: %lu rur.\nTN: %lu\nTB: %u rur.\n",
         card_number,

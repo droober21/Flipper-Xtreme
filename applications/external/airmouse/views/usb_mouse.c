@@ -1,15 +1,15 @@
 #include "usb_mouse.h"
 #include "../tracking/main_loop.h"
 
-#include <furi.h>
-#include <furi_hal_usb.h>
-#include <furi_hal_usb_hid.h>
+#include <furry.h>
+#include <furry_hal_usb.h>
+#include <furry_hal_usb_hid.h>
 #include <gui/elements.h>
 
 struct UsbMouse {
     View* view;
     ViewDispatcher* view_dispatcher;
-    FuriHalUsbInterface* usb_mode_prev;
+    FurryHalUsbInterface* usb_mode_prev;
 };
 
 static void usb_mouse_draw_callback(Canvas* canvas, void* context) {
@@ -31,29 +31,29 @@ static void usb_mouse_process(UsbMouse* usb_mouse, InputEvent* event) {
             UNUSED(model);
             if(event->key == InputKeyUp) {
                 if(event->type == InputTypePress) {
-                    furi_hal_hid_mouse_press(HID_MOUSE_BTN_LEFT);
+                    furry_hal_hid_mouse_press(HID_MOUSE_BTN_LEFT);
                 } else if(event->type == InputTypeRelease) {
-                    furi_hal_hid_mouse_release(HID_MOUSE_BTN_LEFT);
+                    furry_hal_hid_mouse_release(HID_MOUSE_BTN_LEFT);
                 }
             } else if(event->key == InputKeyDown) {
                 if(event->type == InputTypePress) {
-                    furi_hal_hid_mouse_press(HID_MOUSE_BTN_RIGHT);
+                    furry_hal_hid_mouse_press(HID_MOUSE_BTN_RIGHT);
                 } else if(event->type == InputTypeRelease) {
-                    furi_hal_hid_mouse_release(HID_MOUSE_BTN_RIGHT);
+                    furry_hal_hid_mouse_release(HID_MOUSE_BTN_RIGHT);
                 }
             } else if(event->key == InputKeyOk) {
                 if(event->type == InputTypePress) {
-                    furi_hal_hid_mouse_press(HID_MOUSE_BTN_WHEEL);
+                    furry_hal_hid_mouse_press(HID_MOUSE_BTN_WHEEL);
                 } else if(event->type == InputTypeRelease) {
-                    furi_hal_hid_mouse_release(HID_MOUSE_BTN_WHEEL);
+                    furry_hal_hid_mouse_release(HID_MOUSE_BTN_WHEEL);
                 }
             } else if(event->key == InputKeyRight) {
                 if(event->type == InputTypePress || event->type == InputTypeRepeat) {
-                    furi_hal_hid_mouse_scroll(MOUSE_SCROLL);
+                    furry_hal_hid_mouse_scroll(MOUSE_SCROLL);
                 }
             } else if(event->key == InputKeyLeft) {
                 if(event->type == InputTypePress || event->type == InputTypeRepeat) {
-                    furi_hal_hid_mouse_scroll(-MOUSE_SCROLL);
+                    furry_hal_hid_mouse_scroll(-MOUSE_SCROLL);
                 }
             }
         },
@@ -61,12 +61,12 @@ static void usb_mouse_process(UsbMouse* usb_mouse, InputEvent* event) {
 }
 
 static bool usb_mouse_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     UsbMouse* usb_mouse = context;
     bool consumed = false;
 
     if(event->type == InputTypeLong && event->key == InputKeyBack) {
-        // furi_hal_hid_mouse_release_all();
+        // furry_hal_hid_mouse_release_all();
     } else {
         usb_mouse_process(usb_mouse, event);
         consumed = true;
@@ -76,12 +76,12 @@ static bool usb_mouse_input_callback(InputEvent* event, void* context) {
 }
 
 void usb_mouse_enter_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     UsbMouse* usb_mouse = context;
 
-    usb_mouse->usb_mode_prev = furi_hal_usb_get_config();
-    furi_hal_usb_unlock();
-    furi_check(furi_hal_usb_set_config(&usb_hid, NULL) == true);
+    usb_mouse->usb_mode_prev = furry_hal_usb_get_config();
+    furry_hal_usb_unlock();
+    furry_check(furry_hal_usb_set_config(&usb_hid, NULL) == true);
 
     tracking_begin();
 
@@ -90,28 +90,28 @@ void usb_mouse_enter_callback(void* context) {
 
 bool usb_mouse_move(int8_t dx, int8_t dy, void* context) {
     UNUSED(context);
-    return furi_hal_hid_mouse_move(dx, dy);
+    return furry_hal_hid_mouse_move(dx, dy);
 }
 
 bool usb_mouse_custom_callback(uint32_t event, void* context) {
     UNUSED(event);
-    furi_assert(context);
+    furry_assert(context);
     UsbMouse* usb_mouse = context;
 
     tracking_step(usb_mouse_move, context);
-    furi_delay_ms(3); // Magic! Removing this will break the buttons
+    furry_delay_ms(3); // Magic! Removing this will break the buttons
 
     view_dispatcher_send_custom_event(usb_mouse->view_dispatcher, 0);
     return true;
 }
 
 void usb_mouse_exit_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     UsbMouse* usb_mouse = context;
 
     tracking_end();
 
-    furi_hal_usb_set_config(usb_mouse->usb_mode_prev, NULL);
+    furry_hal_usb_set_config(usb_mouse->usb_mode_prev, NULL);
 }
 
 UsbMouse* usb_mouse_alloc(ViewDispatcher* view_dispatcher) {
@@ -128,12 +128,12 @@ UsbMouse* usb_mouse_alloc(ViewDispatcher* view_dispatcher) {
 }
 
 void usb_mouse_free(UsbMouse* usb_mouse) {
-    furi_assert(usb_mouse);
+    furry_assert(usb_mouse);
     view_free(usb_mouse->view);
     free(usb_mouse);
 }
 
 View* usb_mouse_get_view(UsbMouse* usb_mouse) {
-    furi_assert(usb_mouse);
+    furry_assert(usb_mouse);
     return usb_mouse->view;
 }

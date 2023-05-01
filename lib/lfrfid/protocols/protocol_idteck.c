@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <toolbox/protocols/protocol.h>
 #include <lfrfid/tools/bit_lib.h>
 #include "lfrfid_protocols.h"
@@ -99,7 +99,7 @@ bool protocol_idteck_decoder_feed(ProtocolIdteck* protocol, bool level, uint32_t
     if(duration > (IDTECK_US_PER_BIT / 2)) {
         if(protocol_idteck_decoder_feed_internal(level, duration, protocol->encoded_data)) {
             protocol_idteck_decoder_save(protocol->data, protocol->encoded_data);
-            FURI_LOG_D("Idteck", "Positive");
+            FURRY_LOG_D("Idteck", "Positive");
             result = true;
             return result;
         }
@@ -107,7 +107,7 @@ bool protocol_idteck_decoder_feed(ProtocolIdteck* protocol, bool level, uint32_t
         if(protocol_idteck_decoder_feed_internal(
                !level, duration, protocol->negative_encoded_data)) {
             protocol_idteck_decoder_save(protocol->data, protocol->negative_encoded_data);
-            FURI_LOG_D("Idteck", "Negative");
+            FURRY_LOG_D("Idteck", "Negative");
             result = true;
             return result;
         }
@@ -126,7 +126,7 @@ bool protocol_idteck_decoder_feed(ProtocolIdteck* protocol, bool level, uint32_t
         if(protocol_idteck_decoder_feed_internal(
                level, duration, protocol->corrupted_encoded_data)) {
             protocol_idteck_decoder_save(protocol->data, protocol->corrupted_encoded_data);
-            FURI_LOG_D("Idteck", "Positive Corrupted");
+            FURRY_LOG_D("Idteck", "Positive Corrupted");
 
             result = true;
             return result;
@@ -136,7 +136,7 @@ bool protocol_idteck_decoder_feed(ProtocolIdteck* protocol, bool level, uint32_t
                !level, duration, protocol->corrupted_negative_encoded_data)) {
             protocol_idteck_decoder_save(
                 protocol->data, protocol->corrupted_negative_encoded_data);
-            FURI_LOG_D("Idteck", "Negative Corrupted");
+            FURRY_LOG_D("Idteck", "Negative Corrupted");
 
             result = true;
             return result;
@@ -205,14 +205,14 @@ static uint32_t get_card(const uint8_t* data) {
     return cn;
 }
 
-void protocol_idteck_render_data_internal(ProtocolIdteck* protocol, FuriString* result, bool brief) {
+void protocol_idteck_render_data_internal(ProtocolIdteck* protocol, FurryString* result, bool brief) {
     const uint32_t fc = get_fc(protocol->data);
     const uint32_t card = get_card(protocol->data);
 
     if(brief) {
-        furi_string_printf(result, "FC: %08lX\r\nCard: %08lX", fc, card);
+        furry_string_printf(result, "FC: %08lX\r\nCard: %08lX", fc, card);
     } else {
-        furi_string_printf(
+        furry_string_printf(
             result,
             "FC: %08lX\r\n"
             "Card: %08lX\r\n",
@@ -220,10 +220,10 @@ void protocol_idteck_render_data_internal(ProtocolIdteck* protocol, FuriString* 
             card);
     }
 }
-void protocol_idteck_render_data(ProtocolIdteck* protocol, FuriString* result) {
+void protocol_idteck_render_data(ProtocolIdteck* protocol, FurryString* result) {
     protocol_idteck_render_data_internal(protocol, result, false);
 }
-void protocol_idteck_render_brief_data(ProtocolIdteck* protocol, FuriString* result) {
+void protocol_idteck_render_brief_data(ProtocolIdteck* protocol, FurryString* result) {
     protocol_idteck_render_data_internal(protocol, result, true);
 }
 

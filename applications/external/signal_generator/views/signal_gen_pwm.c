@@ -1,5 +1,5 @@
 #include "../signal_gen_app_i.h"
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include <gui/elements.h>
 #include <Signal_Generator_icons.h>
 
@@ -40,7 +40,7 @@ typedef struct {
 #define FREQ_DIGITS_NB 7
 
 static void pwm_set_config(SignalGenPwm* pwm) {
-    FuriHalPwmOutputId channel;
+    FurryHalPwmOutputId channel;
     uint32_t freq;
     uint8_t duty;
 
@@ -54,7 +54,7 @@ static void pwm_set_config(SignalGenPwm* pwm) {
         },
         false);
 
-    furi_assert(pwm->callback);
+    furry_assert(pwm->callback);
     pwm->callback(channel, freq, duty, pwm->context);
 }
 
@@ -185,7 +185,7 @@ static void signal_gen_pwm_draw_callback(Canvas* canvas, void* _model) {
 }
 
 static bool signal_gen_pwm_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SignalGenPwm* pwm = context;
     bool consumed = false;
     bool need_update = false;
@@ -266,13 +266,13 @@ SignalGenPwm* signal_gen_pwm_alloc() {
 }
 
 void signal_gen_pwm_free(SignalGenPwm* pwm) {
-    furi_assert(pwm);
+    furry_assert(pwm);
     view_free(pwm->view);
     free(pwm);
 }
 
 View* signal_gen_pwm_get_view(SignalGenPwm* pwm) {
-    furi_assert(pwm);
+    furry_assert(pwm);
     return pwm->view;
 }
 
@@ -280,8 +280,8 @@ void signal_gen_pwm_set_callback(
     SignalGenPwm* pwm,
     SignalGenPwmViewCallback callback,
     void* context) {
-    furi_assert(pwm);
-    furi_assert(callback);
+    furry_assert(pwm);
+    furry_assert(callback);
 
     with_view_model(
         pwm->view,
@@ -305,6 +305,6 @@ void signal_gen_pwm_set_params(SignalGenPwm* pwm, uint8_t channel_id, uint32_t f
         },
         true);
 
-    furi_assert(pwm->callback);
+    furry_assert(pwm->callback);
     pwm->callback(channel_id, freq, duty, pwm->context);
 }

@@ -4,8 +4,8 @@
 extern "C" {
 #endif
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include "ducky_script.h"
 
 #define SCRIPT_STATE_ERROR (-1)

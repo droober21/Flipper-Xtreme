@@ -1,7 +1,7 @@
 #pragma once
 
 #include <m-array.h>
-#include <furi.h>
+#include <furry.h>
 #include <m-algo.h>
 #include <storage/storage.h>
 #include "toolbox/path.h"
@@ -25,27 +25,27 @@ typedef enum {
 } ArchiveFileTypeEnum;
 
 typedef struct {
-    FuriString* path;
+    FurryString* path;
     ArchiveFileTypeEnum type;
     uint8_t* custom_icon_data;
-    FuriString* custom_name;
+    FurryString* custom_name;
     bool fav;
     bool is_app;
     bool is_text_file;
 } ArchiveFile_t;
 
 static void ArchiveFile_t_init(ArchiveFile_t* obj) {
-    obj->path = furi_string_alloc();
+    obj->path = furry_string_alloc();
     obj->type = ArchiveFileTypeUnknown;
     obj->custom_icon_data = NULL;
-    obj->custom_name = furi_string_alloc();
+    obj->custom_name = furry_string_alloc();
     obj->fav = false;
     obj->is_app = false;
     obj->is_text_file = false;
 }
 
 static void ArchiveFile_t_init_set(ArchiveFile_t* obj, const ArchiveFile_t* src) {
-    obj->path = furi_string_alloc_set(src->path);
+    obj->path = furry_string_alloc_set(src->path);
     obj->type = src->type;
     if(src->custom_icon_data) {
         obj->custom_icon_data = malloc(FAP_MANIFEST_MAX_ICON_SIZE);
@@ -53,14 +53,14 @@ static void ArchiveFile_t_init_set(ArchiveFile_t* obj, const ArchiveFile_t* src)
     } else {
         obj->custom_icon_data = NULL;
     }
-    obj->custom_name = furi_string_alloc_set(src->custom_name);
+    obj->custom_name = furry_string_alloc_set(src->custom_name);
     obj->fav = src->fav;
     obj->is_app = src->is_app;
     obj->is_text_file = src->is_text_file;
 }
 
 static void ArchiveFile_t_set(ArchiveFile_t* obj, const ArchiveFile_t* src) {
-    furi_string_set(obj->path, src->path);
+    furry_string_set(obj->path, src->path);
     obj->type = src->type;
     if(src->custom_icon_data) {
         obj->custom_icon_data = malloc(FAP_MANIFEST_MAX_ICON_SIZE);
@@ -68,19 +68,19 @@ static void ArchiveFile_t_set(ArchiveFile_t* obj, const ArchiveFile_t* src) {
     } else {
         obj->custom_icon_data = NULL;
     }
-    furi_string_set(obj->custom_name, src->custom_name);
+    furry_string_set(obj->custom_name, src->custom_name);
     obj->fav = src->fav;
     obj->is_app = src->is_app;
     obj->is_text_file = src->is_text_file;
 }
 
 static void ArchiveFile_t_clear(ArchiveFile_t* obj) {
-    furi_string_free(obj->path);
+    furry_string_free(obj->path);
     if(obj->custom_icon_data) {
         free(obj->custom_icon_data);
         obj->custom_icon_data = NULL;
     }
-    furi_string_free(obj->custom_name);
+    furry_string_free(obj->custom_name);
 }
 
 static int ArchiveFile_t_cmp(const ArchiveFile_t* a, const ArchiveFile_t* b) {
@@ -93,9 +93,9 @@ static int ArchiveFile_t_cmp(const ArchiveFile_t* a, const ArchiveFile_t* b) {
         }
     }
 
-    return furi_string_cmpi(
-        furi_string_empty(a->custom_name) ? a->path : a->custom_name,
-        furi_string_empty(b->custom_name) ? b->path : b->custom_name);
+    return furry_string_cmpi(
+        furry_string_empty(a->custom_name) ? a->path : a->custom_name,
+        furry_string_empty(b->custom_name) ? b->path : b->custom_name);
 }
 
 #define M_OPL_ArchiveFile_t()                 \

@@ -35,14 +35,14 @@ bool lfrfid_scene_rpc_on_event(void* context, SceneManagerEvent event) {
             const char* arg = rpc_system_app_get_data(app->rpc_ctx);
             bool result = false;
             if(arg && (app->rpc_state == LfRfidRpcStateIdle)) {
-                furi_string_set(app->file_path, arg);
+                furry_string_set(app->file_path, arg);
                 if(lfrfid_load_key_data(app, app->file_path, false)) {
                     lfrfid_worker_start_thread(app->lfworker);
                     lfrfid_worker_emulate_start(app->lfworker, (LFRFIDProtocol)app->protocol_id);
                     app->rpc_state = LfRfidRpcStateEmulating;
 
                     lfrfid_text_store_set(
-                        app, "emulating\n%s", furi_string_get_cstr(app->file_name));
+                        app, "emulating\n%s", furry_string_get_cstr(app->file_name));
                     popup_set_text(popup, app->text_store, 89, 44, AlignCenter, AlignTop);
 
                     notification_message(app->notifications, &sequence_blink_start_magenta);

@@ -1,8 +1,8 @@
 #pragma once
 #include <gui/view.h>
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <cli/cli.h>
 #include <gui/gui.h>
 #include <stm32wbxx_ll_dma.h>

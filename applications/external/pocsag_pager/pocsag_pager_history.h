@@ -2,8 +2,8 @@
 #pragma once
 
 #include <math.h>
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <lib/flipper_format/flipper_format.h>
 #include <lib/subghz/types.h>
 
@@ -80,18 +80,18 @@ const char* pcsg_history_get_protocol_name(PCSGHistory* instance, uint16_t idx);
 /** Get string item menu to history[idx]
  * 
  * @param instance  - PCSGHistory instance
- * @param output    - FuriString* output
+ * @param output    - FurryString* output
  * @param idx       - record index
  */
-void pcsg_history_get_text_item_menu(PCSGHistory* instance, FuriString* output, uint16_t idx);
+void pcsg_history_get_text_item_menu(PCSGHistory* instance, FurryString* output, uint16_t idx);
 
 /** Get string the remaining number of records to history
  * 
  * @param instance  - PCSGHistory instance
- * @param output    - FuriString* output
+ * @param output    - FurryString* output
  * @return bool - is FUUL
  */
-bool pcsg_history_get_text_space_left(PCSGHistory* instance, FuriString* output);
+bool pcsg_history_get_text_space_left(PCSGHistory* instance, FurryString* output);
 
 /** Add protocol to history
  * 

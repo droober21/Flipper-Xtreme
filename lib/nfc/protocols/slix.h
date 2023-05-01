@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "nfc_util.h"
-#include <furi_hal_nfc.h>
+#include <furry_hal_nfc.h>
 
 #define ISO15693_MANUFACTURER_NXP 0x04
 
@@ -32,10 +32,10 @@
 #define SLIX_PASS_ALL \
     (SLIX_PASS_READ | SLIX_PASS_WRITE | SLIX_PASS_PRIVACY | SLIX_PASS_DESTROY | SLIX_PASS_EASAFI)
 
-bool slix_check_card_type(FuriHalNfcDevData* nfc_data);
-bool slix2_check_card_type(FuriHalNfcDevData* nfc_data);
-bool slix_s_check_card_type(FuriHalNfcDevData* nfc_data);
-bool slix_l_check_card_type(FuriHalNfcDevData* nfc_data);
+bool slix_check_card_type(FurryHalNfcDevData* nfc_data);
+bool slix2_check_card_type(FurryHalNfcDevData* nfc_data);
+bool slix_s_check_card_type(FurryHalNfcDevData* nfc_data);
+bool slix_l_check_card_type(FurryHalNfcDevData* nfc_data);
 
 ReturnCode slix_get_random(NfcVData* data);
 ReturnCode slix_unlock(NfcVData* data, uint32_t password_id);

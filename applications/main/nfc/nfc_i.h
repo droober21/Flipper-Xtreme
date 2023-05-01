@@ -2,8 +2,8 @@
 
 #include "nfc.h"
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #include <gui/gui.h>
 #include <gui/view.h>
@@ -69,10 +69,10 @@ struct Nfc {
     NotificationApp* notifications;
     SceneManager* scene_manager;
     NfcDevice* dev;
-    FuriHalNfcDevData dev_edit_data;
+    FurryHalNfcDevData dev_edit_data;
 
     char text_store[NFC_TEXT_STORE_SIZE + 1];
-    FuriString* text_box_store;
+    FurryString* text_box_store;
     uint8_t byte_input_store[6];
     MfClassicUserKeys_t mfc_key_strs; // Used in MFC key listing
     FelicaSelectState felica_select;

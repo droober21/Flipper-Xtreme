@@ -3,7 +3,7 @@
 void nfc_scene_field_on_enter(void* context) {
     Nfc* nfc = context;
 
-    furi_hal_nfc_field_on();
+    furry_hal_nfc_field_on();
 
     Popup* popup = nfc->popup;
     popup_set_header(
@@ -27,7 +27,7 @@ bool nfc_scene_field_on_event(void* context, SceneManagerEvent event) {
 void nfc_scene_field_on_exit(void* context) {
     Nfc* nfc = context;
 
-    furi_hal_nfc_field_off();
+    furry_hal_nfc_field_off();
     notification_internal_message(nfc->notifications, &sequence_reset_blue);
     popup_reset(nfc->popup);
 }

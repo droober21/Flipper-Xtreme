@@ -1,8 +1,8 @@
 #include "rfal_picopass.h"
 
 #define RFAL_PICOPASS_TXRX_FLAGS                                                    \
-    (FURI_HAL_NFC_LL_TXRX_FLAGS_CRC_TX_MANUAL | FURI_HAL_NFC_LL_TXRX_FLAGS_AGC_ON | \
-     FURI_HAL_NFC_LL_TXRX_FLAGS_PAR_RX_REMV | FURI_HAL_NFC_LL_TXRX_FLAGS_CRC_RX_KEEP)
+    (FURRY_HAL_NFC_LL_TXRX_FLAGS_CRC_TX_MANUAL | FURRY_HAL_NFC_LL_TXRX_FLAGS_AGC_ON | \
+     FURRY_HAL_NFC_LL_TXRX_FLAGS_PAR_RX_REMV | FURRY_HAL_NFC_LL_TXRX_FLAGS_CRC_RX_KEEP)
 
 #define TAG "RFAL_PICOPASS"
 
@@ -41,44 +41,44 @@ static uint16_t
     return crc;
 }
 
-FuriHalNfcReturn rfalPicoPassPollerInitialize(void) {
-    FuriHalNfcReturn ret;
+FurryHalNfcReturn rfalPicoPassPollerInitialize(void) {
+    FurryHalNfcReturn ret;
 
-    ret = furi_hal_nfc_ll_set_mode(
-        FuriHalNfcModePollPicopass, FuriHalNfcBitrate26p48, FuriHalNfcBitrate26p48);
-    if(ret != FuriHalNfcReturnOk) {
+    ret = furry_hal_nfc_ll_set_mode(
+        FurryHalNfcModePollPicopass, FurryHalNfcBitrate26p48, FurryHalNfcBitrate26p48);
+    if(ret != FurryHalNfcReturnOk) {
         return ret;
     };
 
-    furi_hal_nfc_ll_set_error_handling(FuriHalNfcErrorHandlingNfc);
-    furi_hal_nfc_ll_set_guard_time(FURI_HAL_NFC_LL_GT_PICOPASS);
-    furi_hal_nfc_ll_set_fdt_listen(FURI_HAL_NFC_LL_FDT_LISTEN_PICOPASS_POLLER);
-    furi_hal_nfc_ll_set_fdt_poll(FURI_HAL_NFC_LL_FDT_POLL_PICOPASS_POLLER);
+    furry_hal_nfc_ll_set_error_handling(FurryHalNfcErrorHandlingNfc);
+    furry_hal_nfc_ll_set_guard_time(FURRY_HAL_NFC_LL_GT_PICOPASS);
+    furry_hal_nfc_ll_set_fdt_listen(FURRY_HAL_NFC_LL_FDT_LISTEN_PICOPASS_POLLER);
+    furry_hal_nfc_ll_set_fdt_poll(FURRY_HAL_NFC_LL_FDT_POLL_PICOPASS_POLLER);
 
-    return FuriHalNfcReturnOk;
+    return FurryHalNfcReturnOk;
 }
 
-FuriHalNfcReturn rfalPicoPassPollerCheckPresence(void) {
-    FuriHalNfcReturn ret;
+FurryHalNfcReturn rfalPicoPassPollerCheckPresence(void) {
+    FurryHalNfcReturn ret;
     uint8_t txBuf[1] = {RFAL_PICOPASS_CMD_ACTALL};
     uint8_t rxBuf[32] = {0};
     uint16_t recvLen = 0;
     uint32_t flags = RFAL_PICOPASS_TXRX_FLAGS;
-    uint32_t fwt = furi_hal_nfc_ll_ms2fc(20);
+    uint32_t fwt = furry_hal_nfc_ll_ms2fc(20);
 
-    ret = furi_hal_nfc_ll_txrx(txBuf, 1, rxBuf, 32, &recvLen, flags, fwt);
+    ret = furry_hal_nfc_ll_txrx(txBuf, 1, rxBuf, 32, &recvLen, flags, fwt);
     return ret;
 }
 
-FuriHalNfcReturn rfalPicoPassPollerIdentify(rfalPicoPassIdentifyRes* idRes) {
-    FuriHalNfcReturn ret;
+FurryHalNfcReturn rfalPicoPassPollerIdentify(rfalPicoPassIdentifyRes* idRes) {
+    FurryHalNfcReturn ret;
 
     uint8_t txBuf[1] = {RFAL_PICOPASS_CMD_IDENTIFY};
     uint16_t recvLen = 0;
     uint32_t flags = RFAL_PICOPASS_TXRX_FLAGS;
-    uint32_t fwt = furi_hal_nfc_ll_ms2fc(20);
+    uint32_t fwt = furry_hal_nfc_ll_ms2fc(20);
 
-    ret = furi_hal_nfc_ll_txrx(
+    ret = furry_hal_nfc_ll_txrx(
         txBuf,
         sizeof(txBuf),
         (uint8_t*)idRes,
@@ -91,17 +91,17 @@ FuriHalNfcReturn rfalPicoPassPollerIdentify(rfalPicoPassIdentifyRes* idRes) {
     return ret;
 }
 
-FuriHalNfcReturn rfalPicoPassPollerSelect(uint8_t* csn, rfalPicoPassSelectRes* selRes) {
-    FuriHalNfcReturn ret;
+FurryHalNfcReturn rfalPicoPassPollerSelect(uint8_t* csn, rfalPicoPassSelectRes* selRes) {
+    FurryHalNfcReturn ret;
 
     rfalPicoPassSelectReq selReq;
     selReq.CMD = RFAL_PICOPASS_CMD_SELECT;
     memcpy(selReq.CSN, csn, RFAL_PICOPASS_UID_LEN);
     uint16_t recvLen = 0;
     uint32_t flags = RFAL_PICOPASS_TXRX_FLAGS;
-    uint32_t fwt = furi_hal_nfc_ll_ms2fc(20);
+    uint32_t fwt = furry_hal_nfc_ll_ms2fc(20);
 
-    ret = furi_hal_nfc_ll_txrx(
+    ret = furry_hal_nfc_ll_txrx(
         (uint8_t*)&selReq,
         sizeof(rfalPicoPassSelectReq),
         (uint8_t*)selRes,
@@ -110,21 +110,21 @@ FuriHalNfcReturn rfalPicoPassPollerSelect(uint8_t* csn, rfalPicoPassSelectRes* s
         flags,
         fwt);
     // printf("select rx: %d %s\n", recvLen, hex2Str(selRes->CSN, RFAL_PICOPASS_UID_LEN));
-    if(ret == FuriHalNfcReturnTimeout) {
-        return FuriHalNfcReturnOk;
+    if(ret == FurryHalNfcReturnTimeout) {
+        return FurryHalNfcReturnOk;
     }
 
     return ret;
 }
 
-FuriHalNfcReturn rfalPicoPassPollerReadCheck(rfalPicoPassReadCheckRes* rcRes) {
-    FuriHalNfcReturn ret;
+FurryHalNfcReturn rfalPicoPassPollerReadCheck(rfalPicoPassReadCheckRes* rcRes) {
+    FurryHalNfcReturn ret;
     uint8_t txBuf[2] = {RFAL_PICOPASS_CMD_READCHECK, 0x02};
     uint16_t recvLen = 0;
     uint32_t flags = RFAL_PICOPASS_TXRX_FLAGS;
-    uint32_t fwt = furi_hal_nfc_ll_ms2fc(20);
+    uint32_t fwt = furry_hal_nfc_ll_ms2fc(20);
 
-    ret = furi_hal_nfc_ll_txrx(
+    ret = furry_hal_nfc_ll_txrx(
         txBuf,
         sizeof(txBuf),
         (uint8_t*)rcRes,
@@ -134,25 +134,25 @@ FuriHalNfcReturn rfalPicoPassPollerReadCheck(rfalPicoPassReadCheckRes* rcRes) {
         fwt);
     // printf("readcheck rx: %d %s\n", recvLen, hex2Str(rcRes->CCNR, 8));
 
-    if(ret == FuriHalNfcReturnCrc) {
-        return FuriHalNfcReturnOk;
+    if(ret == FurryHalNfcReturnCrc) {
+        return FurryHalNfcReturnOk;
     }
 
     return ret;
 }
 
-FuriHalNfcReturn rfalPicoPassPollerCheck(uint8_t* mac, rfalPicoPassCheckRes* chkRes) {
-    FuriHalNfcReturn ret;
+FurryHalNfcReturn rfalPicoPassPollerCheck(uint8_t* mac, rfalPicoPassCheckRes* chkRes) {
+    FurryHalNfcReturn ret;
     rfalPicoPassCheckReq chkReq;
     chkReq.CMD = RFAL_PICOPASS_CMD_CHECK;
     memcpy(chkReq.mac, mac, 4);
     memset(chkReq.null, 0, 4);
     uint16_t recvLen = 0;
     uint32_t flags = RFAL_PICOPASS_TXRX_FLAGS;
-    uint32_t fwt = furi_hal_nfc_ll_ms2fc(20);
+    uint32_t fwt = furry_hal_nfc_ll_ms2fc(20);
 
     // printf("check tx: %s\n", hex2Str((uint8_t *)&chkReq, sizeof(rfalPicoPassCheckReq)));
-    ret = furi_hal_nfc_ll_txrx(
+    ret = furry_hal_nfc_ll_txrx(
         (uint8_t*)&chkReq,
         sizeof(rfalPicoPassCheckReq),
         (uint8_t*)chkRes,
@@ -161,15 +161,15 @@ FuriHalNfcReturn rfalPicoPassPollerCheck(uint8_t* mac, rfalPicoPassCheckRes* chk
         flags,
         fwt);
     // printf("check rx: %d %s\n", recvLen, hex2Str(chkRes->mac, 4));
-    if(ret == FuriHalNfcReturnCrc) {
-        return FuriHalNfcReturnOk;
+    if(ret == FurryHalNfcReturnCrc) {
+        return FurryHalNfcReturnOk;
     }
 
     return ret;
 }
 
-FuriHalNfcReturn rfalPicoPassPollerReadBlock(uint8_t blockNum, rfalPicoPassReadBlockRes* readRes) {
-    FuriHalNfcReturn ret;
+FurryHalNfcReturn rfalPicoPassPollerReadBlock(uint8_t blockNum, rfalPicoPassReadBlockRes* readRes) {
+    FurryHalNfcReturn ret;
 
     uint8_t txBuf[4] = {RFAL_PICOPASS_CMD_READ, 0, 0, 0};
     txBuf[1] = blockNum;
@@ -178,9 +178,9 @@ FuriHalNfcReturn rfalPicoPassPollerReadBlock(uint8_t blockNum, rfalPicoPassReadB
 
     uint16_t recvLen = 0;
     uint32_t flags = RFAL_PICOPASS_TXRX_FLAGS;
-    uint32_t fwt = furi_hal_nfc_ll_ms2fc(20);
+    uint32_t fwt = furry_hal_nfc_ll_ms2fc(20);
 
-    ret = furi_hal_nfc_ll_txrx(
+    ret = furry_hal_nfc_ll_txrx(
         txBuf,
         sizeof(txBuf),
         (uint8_t*)readRes,
@@ -191,8 +191,8 @@ FuriHalNfcReturn rfalPicoPassPollerReadBlock(uint8_t blockNum, rfalPicoPassReadB
     return ret;
 }
 
-FuriHalNfcReturn rfalPicoPassPollerWriteBlock(uint8_t blockNum, uint8_t data[8], uint8_t mac[4]) {
-    FuriHalNfcReturn ret;
+FurryHalNfcReturn rfalPicoPassPollerWriteBlock(uint8_t blockNum, uint8_t data[8], uint8_t mac[4]) {
+    FurryHalNfcReturn ret;
 
     uint8_t txBuf[14] = {RFAL_PICOPASS_CMD_WRITE, blockNum, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     memcpy(txBuf + 2, data, RFAL_PICOPASS_MAX_BLOCK_LEN);
@@ -200,13 +200,13 @@ FuriHalNfcReturn rfalPicoPassPollerWriteBlock(uint8_t blockNum, uint8_t data[8],
 
     uint16_t recvLen = 0;
     uint32_t flags = RFAL_PICOPASS_TXRX_FLAGS;
-    uint32_t fwt = furi_hal_nfc_ll_ms2fc(20);
+    uint32_t fwt = furry_hal_nfc_ll_ms2fc(20);
     rfalPicoPassReadBlockRes block;
 
-    ret = furi_hal_nfc_ll_txrx(
+    ret = furry_hal_nfc_ll_txrx(
         txBuf, sizeof(txBuf), (uint8_t*)&block, sizeof(block), &recvLen, flags, fwt);
 
-    if(ret == FuriHalNfcReturnOk) {
+    if(ret == FurryHalNfcReturnOk) {
         // TODO: compare response
     }
 

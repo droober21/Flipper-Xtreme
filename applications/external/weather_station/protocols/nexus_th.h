@@ -77,4 +77,4 @@ SubGhzProtocolStatus
  * @param context Pointer to a WSProtocolDecoderNexus_TH instance
  * @param output Resulting text
  */
-void ws_protocol_decoder_nexus_th_get_string(void* context, FuriString* output);
+void ws_protocol_decoder_nexus_th_get_string(void* context, FurryString* output);

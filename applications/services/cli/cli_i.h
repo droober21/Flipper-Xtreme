@@ -2,8 +2,8 @@
 
 #include "cli.h"
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #include <m-dict.h>
 #include <m-bptree.h>
@@ -36,8 +36,8 @@ struct CliSession {
 BPTREE_DEF2(
     CliCommandTree,
     CLI_COMMANDS_TREE_RANK,
-    FuriString*,
-    FURI_STRING_OPLIST,
+    FurryString*,
+    FURRY_STRING_OPLIST,
     CliCommand,
     M_POD_OPLIST)
 
@@ -45,10 +45,10 @@ BPTREE_DEF2(
 
 struct Cli {
     CliCommandTree_t commands;
-    FuriMutex* mutex;
-    FuriSemaphore* idle_sem;
-    FuriString* last_line;
-    FuriString* line;
+    FurryMutex* mutex;
+    FurrySemaphore* idle_sem;
+    FurryString* last_line;
+    FurryString* line;
     CliSession* session;
 
     size_t cursor_position;

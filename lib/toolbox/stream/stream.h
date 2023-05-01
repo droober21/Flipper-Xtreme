@@ -119,7 +119,7 @@ bool stream_delete_and_insert(
  * @return true if line length is not zero
  * @return false otherwise
  */
-bool stream_read_line(Stream* stream, FuriString* str_result);
+bool stream_read_line(Stream* stream, FurryString* str_result);
 
 /**
  * Moves the RW pointer to the start
@@ -141,7 +141,7 @@ size_t stream_write_char(Stream* stream, char c);
  * @param string string value
  * @return size_t how many bytes was written
  */
-size_t stream_write_string(Stream* stream, FuriString* string);
+size_t stream_write_string(Stream* stream, FurryString* string);
 
 /**
  * Write const char* to the stream
@@ -197,7 +197,7 @@ bool stream_insert_char(Stream* stream, char c);
  * @return true if the operation was successful
  * @return false on error
  */
-bool stream_insert_string(Stream* stream, FuriString* string);
+bool stream_insert_string(Stream* stream, FurryString* string);
 
 /**
  * Insert const char* to the stream
@@ -247,7 +247,7 @@ bool stream_delete_and_insert_char(Stream* stream, size_t delete_size, char c);
  * @return true if the operation was successful
  * @return false on error
  */
-bool stream_delete_and_insert_string(Stream* stream, size_t delete_size, FuriString* string);
+bool stream_delete_and_insert_string(Stream* stream, size_t delete_size, FurryString* string);
 
 /**
  * Delete N chars from the stream and insert const char* to the stream

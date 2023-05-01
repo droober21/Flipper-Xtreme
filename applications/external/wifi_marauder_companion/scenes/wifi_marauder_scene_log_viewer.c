@@ -14,14 +14,14 @@ static void _read_log_page_into_text_store(WifiMarauderApp* app) {
     char temp[64 + 1];
     storage_file_seek(
         app->log_file, WIFI_MARAUDER_TEXT_BOX_STORE_SIZE * (app->open_log_file_page - 1), true);
-    furi_string_reset(app->text_box_store);
+    furry_string_reset(app->text_box_store);
     for(uint16_t i = 0; i < (WIFI_MARAUDER_TEXT_BOX_STORE_SIZE / (sizeof(temp) - 1)); i++) {
         uint16_t num_bytes = storage_file_read(app->log_file, temp, sizeof(temp) - 1);
         if(num_bytes == 0) {
             break;
         }
         temp[num_bytes] = '\0';
-        furi_string_cat_str(app->text_box_store, temp);
+        furry_string_cat_str(app->text_box_store, temp);
     }
 }
 
@@ -47,7 +47,7 @@ void wifi_marauder_scene_log_viewer_setup_widget(WifiMarauderApp* app, bool call
 
     widget_reset(widget);
 
-    if(furi_string_empty(app->text_box_store)) {
+    if(furry_string_empty(app->text_box_store)) {
         char help_msg[256];
         snprintf(
             help_msg,
@@ -55,11 +55,11 @@ void wifi_marauder_scene_log_viewer_setup_widget(WifiMarauderApp* app, bool call
             "The log is empty! :(\nTry sending a command?\n\nSaving pcaps to flipper sdcard: %s\nSaving logs to flipper sdcard: %s",
             app->ok_to_save_pcaps ? "ON" : "OFF",
             app->ok_to_save_logs ? "ON" : "OFF");
-        furi_string_set_str(app->text_box_store, help_msg);
+        furry_string_set_str(app->text_box_store, help_msg);
     }
 
     widget_add_text_scroll_element(
-        widget, 0, 0, 128, 53, furi_string_get_cstr(app->text_box_store));
+        widget, 0, 0, 128, 53, furry_string_get_cstr(app->text_box_store));
 
     if(1 < app->open_log_file_page && app->open_log_file_page < app->open_log_file_num_pages) {
         // hide "Browse" text for middle pages
@@ -112,7 +112,7 @@ void wifi_marauder_scene_log_viewer_on_enter(void* context) {
     app->open_log_file_page = 0;
     app->open_log_file_num_pages = 0;
     bool saved_logs_exist = false;
-    if(!app->has_saved_logs_this_session && furi_string_empty(app->text_box_store)) {
+    if(!app->has_saved_logs_this_session && furry_string_empty(app->text_box_store)) {
         // no commands sent yet this session, find last saved log
         if(storage_dir_open(app->log_file, MARAUDER_APP_FOLDER_LOGS)) {
             char name[70];
@@ -146,23 +146,23 @@ bool wifi_marauder_scene_log_viewer_on_event(void* context, SceneManagerEvent ev
     if(event.type == SceneManagerEventTypeCustom) {
         if(event.event == GuiButtonTypeCenter) {
             // Browse
-            FuriString* predefined_filepath = furi_string_alloc_set_str(MARAUDER_APP_FOLDER_LOGS);
-            FuriString* selected_filepath = furi_string_alloc();
+            FurryString* predefined_filepath = furry_string_alloc_set_str(MARAUDER_APP_FOLDER_LOGS);
+            FurryString* selected_filepath = furry_string_alloc();
             DialogsFileBrowserOptions browser_options;
             dialog_file_browser_set_basic_options(&browser_options, ".log", &I_Text_10x10);
             if(dialog_file_browser_show(
                    app->dialogs, selected_filepath, predefined_filepath, &browser_options)) {
                 strncpy(
                     app->log_file_path,
-                    furi_string_get_cstr(selected_filepath),
+                    furry_string_get_cstr(selected_filepath),
                     sizeof(app->log_file_path));
                 if(storage_file_is_open(app->log_file)) {
                     storage_file_close(app->log_file);
                 }
                 wifi_marauder_scene_log_viewer_setup_widget(app, true);
             }
-            furi_string_free(selected_filepath);
-            furi_string_free(predefined_filepath);
+            furry_string_free(selected_filepath);
+            furry_string_free(predefined_filepath);
             consumed = true;
         } else if(event.event == GuiButtonTypeRight) {
             // Advance page

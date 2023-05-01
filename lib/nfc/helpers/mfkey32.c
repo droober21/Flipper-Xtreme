@@ -1,6 +1,6 @@
 #include "mfkey32.h"
 
-#include <furi/furi.h>
+#include <furry/furry.h>
 #include <storage/storage.h>
 #include <stream/stream.h>
 #include <stream/buffered_file_stream.h>
@@ -56,7 +56,7 @@ Mfkey32* mfkey32_alloc(uint32_t cuid) {
     Mfkey32* instance = malloc(sizeof(Mfkey32));
     instance->cuid = cuid;
     instance->state = Mfkey32StateIdle;
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     instance->file_stream = buffered_file_stream_alloc(storage);
     if(!buffered_file_stream_open(
            instance->file_stream, MFKEY32_LOGS_PATH, FSAM_WRITE, FSOM_OPEN_APPEND)) {
@@ -68,13 +68,13 @@ Mfkey32* mfkey32_alloc(uint32_t cuid) {
         Mfkey32Params_init(instance->params_arr);
     }
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return instance;
 }
 
 void mfkey32_free(Mfkey32* instance) {
-    furi_assert(instance != NULL);
+    furry_assert(instance != NULL);
 
     Mfkey32Params_clear(instance->params_arr);
     buffered_file_stream_close(instance->file_stream);
@@ -83,15 +83,15 @@ void mfkey32_free(Mfkey32* instance) {
 }
 
 void mfkey32_set_callback(Mfkey32* instance, Mfkey32ParseDataCallback callback, void* context) {
-    furi_assert(instance);
-    furi_assert(callback);
+    furry_assert(instance);
+    furry_assert(callback);
 
     instance->callback = callback;
     instance->context = context;
 }
 
 static bool mfkey32_write_params(Mfkey32* instance, Mfkey32Params* params) {
-    FuriString* str = furi_string_alloc_printf(
+    FurryString* str = furry_string_alloc_printf(
         "Sec %d key %c cuid %08lx nt0 %08lx nr0 %08lx ar0 %08lx nt1 %08lx nr1 %08lx ar1 %08lx\n",
         params->sector,
         params->key == MfClassicKeyA ? 'A' : 'B',
@@ -103,7 +103,7 @@ static bool mfkey32_write_params(Mfkey32* instance, Mfkey32Params* params) {
         params->nr1,
         params->ar1);
     bool write_success = stream_write_string(instance->file_stream, str);
-    furi_string_free(str);
+    furry_string_free(str);
     return write_success;
 }
 
@@ -121,7 +121,7 @@ static void mfkey32_add_params(Mfkey32* instance) {
                 params->nr1 = nonce->nr;
                 params->ar1 = nonce->ar;
                 nonce_added = true;
-                FURI_LOG_I(
+                FURRY_LOG_I(
                     TAG,
                     "Params for sector %d key %c collected",
                     params->sector,
@@ -155,8 +155,8 @@ void mfkey32_process_data(
     uint16_t len,
     bool reader_to_tag,
     bool crc_dropped) {
-    furi_assert(instance);
-    furi_assert(data);
+    furry_assert(instance);
+    furry_assert(data);
 
     Mfkey32Nonce* nonce = &instance->nonce;
     uint16_t data_len = len;
@@ -197,14 +197,14 @@ void mfkey32_process_data(
     }
 }
 
-uint16_t mfkey32_get_auth_sectors(FuriString* data_str) {
-    furi_assert(data_str);
+uint16_t mfkey32_get_auth_sectors(FurryString* data_str) {
+    furry_assert(data_str);
 
     uint16_t nonces_num = 0;
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     Stream* file_stream = buffered_file_stream_alloc(storage);
-    FuriString* temp_str;
-    temp_str = furi_string_alloc();
+    FurryString* temp_str;
+    temp_str = furry_string_alloc();
 
     do {
         if(!buffered_file_stream_open(
@@ -212,17 +212,17 @@ uint16_t mfkey32_get_auth_sectors(FuriString* data_str) {
             break;
         while(true) {
             if(!stream_read_line(file_stream, temp_str)) break;
-            size_t uid_pos = furi_string_search(temp_str, "cuid");
-            furi_string_left(temp_str, uid_pos);
-            furi_string_push_back(temp_str, '\n');
-            furi_string_cat(data_str, temp_str);
+            size_t uid_pos = furry_string_search(temp_str, "cuid");
+            furry_string_left(temp_str, uid_pos);
+            furry_string_push_back(temp_str, '\n');
+            furry_string_cat(data_str, temp_str);
             nonces_num++;
         }
     } while(false);
 
     buffered_file_stream_close(file_stream);
     stream_free(file_stream);
-    furi_string_free(temp_str);
+    furry_string_free(temp_str);
 
     return nonces_num;
 }

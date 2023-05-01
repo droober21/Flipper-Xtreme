@@ -1,19 +1,19 @@
 #include "../uart_terminal_app_i.h"
 
 void uart_terminal_console_output_handle_rx_data_cb(uint8_t* buf, size_t len, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     UART_TerminalApp* app = context;
 
     // If text box store gets too big, then truncate it
     app->text_box_store_strlen += len;
     if(app->text_box_store_strlen >= UART_TERMINAL_TEXT_BOX_STORE_SIZE - 1) {
-        furi_string_right(app->text_box_store, app->text_box_store_strlen / 2);
-        app->text_box_store_strlen = furi_string_size(app->text_box_store) + len;
+        furry_string_right(app->text_box_store, app->text_box_store_strlen / 2);
+        app->text_box_store_strlen = furry_string_size(app->text_box_store) + len;
     }
 
     // Null-terminate buf and append to text box store
     buf[len] = '\0';
-    furi_string_cat_printf(app->text_box_store, "%s", buf);
+    furry_string_cat_printf(app->text_box_store, "%s", buf);
 
     view_dispatcher_send_custom_event(
         app->view_dispatcher, UART_TerminalEventRefreshConsoleOutput);
@@ -84,25 +84,25 @@ void uart_terminal_scene_console_output_on_enter(void* context) {
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if(app->is_command) {
-        furi_string_reset(app->text_box_store);
+        furry_string_reset(app->text_box_store);
         app->text_box_store_strlen = 0;
 
         if(0 == strncmp("help", app->selected_tx_string, strlen("help"))) {
             const char* help_msg =
                 "UART terminal for Flipper\n\nI'm in github: cool4uma\n\nThis app is a modified\nWiFi Marauder companion,\nThanks 0xchocolate(github)\nfor great code and app.\n\n";
-            furi_string_cat_str(app->text_box_store, help_msg);
+            furry_string_cat_str(app->text_box_store, help_msg);
             app->text_box_store_strlen += strlen(help_msg);
         }
 
         if(app->show_stopscan_tip) {
             const char* help_msg = "Press BACK to return\n";
-            furi_string_cat_str(app->text_box_store, help_msg);
+            furry_string_cat_str(app->text_box_store, help_msg);
             app->text_box_store_strlen += strlen(help_msg);
         }
     }
 
     // Set starting text - for "View Log", this will just be what was already in the text box store
-    text_box_set_text(app->text_box, furi_string_get_cstr(app->text_box_store));
+    text_box_set_text(app->text_box, furry_string_get_cstr(app->text_box_store));
 
     scene_manager_set_scene_state(app->scene_manager, UART_TerminalSceneConsoleOutput, 0);
     view_dispatcher_switch_to_view(app->view_dispatcher, UART_TerminalAppViewConsoleOutput);
@@ -131,7 +131,7 @@ bool uart_terminal_scene_console_output_on_event(void* context, SceneManagerEven
     bool consumed = false;
 
     if(event.type == SceneManagerEventTypeCustom) {
-        text_box_set_text(app->text_box, furi_string_get_cstr(app->text_box_store));
+        text_box_set_text(app->text_box, furry_string_get_cstr(app->text_box_store));
         consumed = true;
     } else if(event.type == SceneManagerEventTypeTick) {
         consumed = true;

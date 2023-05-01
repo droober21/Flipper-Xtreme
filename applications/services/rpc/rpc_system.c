@@ -1,5 +1,5 @@
 #include <flipper.pb.h>
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include <power/power_service/power.h>
 #include <notification/notification_messages.h>
 #include <protobuf_version.h>
@@ -15,13 +15,13 @@ typedef struct {
 } RpcSystemContext;
 
 static void rpc_system_system_ping_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(request->which_content == PB_Main_system_ping_request_tag);
+    furry_assert(request);
+    furry_assert(request->which_content == PB_Main_system_ping_request_tag);
 
-    FURI_LOG_D(TAG, "Ping");
+    FURRY_LOG_D(TAG, "Ping");
 
     RpcSession* session = (RpcSession*)context;
-    furi_assert(session);
+    furry_assert(session);
 
     if(request->has_next) {
         rpc_send_and_release_empty(
@@ -46,13 +46,13 @@ static void rpc_system_system_ping_process(const PB_Main* request, void* context
 }
 
 static void rpc_system_system_reboot_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(request->which_content == PB_Main_system_reboot_request_tag);
+    furry_assert(request);
+    furry_assert(request->which_content == PB_Main_system_reboot_request_tag);
 
-    FURI_LOG_D(TAG, "Reboot");
+    FURRY_LOG_D(TAG, "Reboot");
 
     RpcSession* session = (RpcSession*)context;
-    furi_assert(session);
+    furry_assert(session);
 
     const int mode = request->content.system_reboot_request.mode;
 
@@ -73,13 +73,13 @@ static void rpc_system_system_device_info_callback(
     const char* value,
     bool last,
     void* context) {
-    furi_assert(key);
-    furi_assert(value);
+    furry_assert(key);
+    furry_assert(value);
     RpcSystemContext* ctx = context;
-    furi_assert(ctx);
+    furry_assert(ctx);
 
-    furi_assert(key);
-    furi_assert(value);
+    furry_assert(key);
+    furry_assert(value);
     char* str_key = strdup(key);
     char* str_value = strdup(value);
 
@@ -91,13 +91,13 @@ static void rpc_system_system_device_info_callback(
 }
 
 static void rpc_system_system_device_info_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(request->which_content == PB_Main_system_device_info_request_tag);
+    furry_assert(request);
+    furry_assert(request->which_content == PB_Main_system_device_info_request_tag);
 
-    FURI_LOG_D(TAG, "DeviceInfo");
+    FURRY_LOG_D(TAG, "DeviceInfo");
 
     RpcSession* session = (RpcSession*)context;
-    furi_assert(session);
+    furry_assert(session);
 
     PB_Main* response = malloc(sizeof(PB_Main));
     response->command_id = request->command_id;
@@ -108,22 +108,22 @@ static void rpc_system_system_device_info_process(const PB_Main* request, void* 
         .session = session,
         .response = response,
     };
-    furi_hal_info_get(rpc_system_system_device_info_callback, '_', &device_info_context);
+    furry_hal_info_get(rpc_system_system_device_info_callback, '_', &device_info_context);
 
     free(response);
 }
 
 static void rpc_system_system_get_datetime_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(request->which_content == PB_Main_system_get_datetime_request_tag);
+    furry_assert(request);
+    furry_assert(request->which_content == PB_Main_system_get_datetime_request_tag);
 
-    FURI_LOG_D(TAG, "GetDatetime");
+    FURRY_LOG_D(TAG, "GetDatetime");
 
     RpcSession* session = (RpcSession*)context;
-    furi_assert(session);
+    furry_assert(session);
 
-    FuriHalRtcDateTime datetime;
-    furi_hal_rtc_get_datetime(&datetime);
+    FurryHalRtcDateTime datetime;
+    furry_hal_rtc_get_datetime(&datetime);
 
     PB_Main* response = malloc(sizeof(PB_Main));
     response->command_id = request->command_id;
@@ -143,13 +143,13 @@ static void rpc_system_system_get_datetime_process(const PB_Main* request, void*
 }
 
 static void rpc_system_system_set_datetime_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(request->which_content == PB_Main_system_set_datetime_request_tag);
+    furry_assert(request);
+    furry_assert(request->which_content == PB_Main_system_set_datetime_request_tag);
 
-    FURI_LOG_D(TAG, "SetDatetime");
+    FURRY_LOG_D(TAG, "SetDatetime");
 
     RpcSession* session = (RpcSession*)context;
-    furi_assert(session);
+    furry_assert(session);
 
     if(!request->content.system_set_datetime_request.has_datetime) {
         rpc_send_and_release_empty(
@@ -157,7 +157,7 @@ static void rpc_system_system_set_datetime_process(const PB_Main* request, void*
         return;
     }
 
-    FuriHalRtcDateTime datetime;
+    FurryHalRtcDateTime datetime;
     datetime.hour = request->content.system_set_datetime_request.datetime.hour;
     datetime.minute = request->content.system_set_datetime_request.datetime.minute;
     datetime.second = request->content.system_set_datetime_request.datetime.second;
@@ -165,21 +165,21 @@ static void rpc_system_system_set_datetime_process(const PB_Main* request, void*
     datetime.month = request->content.system_set_datetime_request.datetime.month;
     datetime.year = request->content.system_set_datetime_request.datetime.year;
     datetime.weekday = request->content.system_set_datetime_request.datetime.weekday;
-    furi_hal_rtc_set_datetime(&datetime);
+    furry_hal_rtc_set_datetime(&datetime);
 
     rpc_send_and_release_empty(session, request->command_id, PB_CommandStatus_OK);
 }
 
 static void rpc_system_system_factory_reset_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(request->which_content == PB_Main_system_factory_reset_request_tag);
+    furry_assert(request);
+    furry_assert(request->which_content == PB_Main_system_factory_reset_request_tag);
 
-    FURI_LOG_D(TAG, "Reset");
+    FURRY_LOG_D(TAG, "Reset");
 
     RpcSession* session = (RpcSession*)context;
-    furi_assert(session);
+    furry_assert(session);
 
-    furi_hal_rtc_set_flag(FuriHalRtcFlagFactoryReset);
+    furry_hal_rtc_set_flag(FurryHalRtcFlagFactoryReset);
     power_reboot(PowerBootModeNormal);
 
     (void)session;
@@ -187,29 +187,29 @@ static void rpc_system_system_factory_reset_process(const PB_Main* request, void
 
 static void
     rpc_system_system_play_audiovisual_alert_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(request->which_content == PB_Main_system_play_audiovisual_alert_request_tag);
+    furry_assert(request);
+    furry_assert(request->which_content == PB_Main_system_play_audiovisual_alert_request_tag);
 
-    FURI_LOG_D(TAG, "Alert");
+    FURRY_LOG_D(TAG, "Alert");
 
     RpcSession* session = (RpcSession*)context;
-    furi_assert(session);
+    furry_assert(session);
 
-    NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+    NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
     notification_message(notification, &sequence_audiovisual_alert);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
 
     rpc_send_and_release_empty(session, request->command_id, PB_CommandStatus_OK);
 }
 
 static void rpc_system_system_protobuf_version_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(request->which_content == PB_Main_system_protobuf_version_request_tag);
+    furry_assert(request);
+    furry_assert(request->which_content == PB_Main_system_protobuf_version_request_tag);
 
-    FURI_LOG_D(TAG, "ProtobufVersion");
+    FURRY_LOG_D(TAG, "ProtobufVersion");
 
     RpcSession* session = (RpcSession*)context;
-    furi_assert(session);
+    furry_assert(session);
 
     PB_Main* response = malloc(sizeof(PB_Main));
     response->command_id = request->command_id;
@@ -230,13 +230,13 @@ static void rpc_system_system_power_info_callback(
     const char* value,
     bool last,
     void* context) {
-    furi_assert(key);
-    furi_assert(value);
+    furry_assert(key);
+    furry_assert(value);
     RpcSystemContext* ctx = context;
-    furi_assert(ctx);
+    furry_assert(ctx);
 
-    furi_assert(key);
-    furi_assert(value);
+    furry_assert(key);
+    furry_assert(value);
     char* str_key = strdup(key);
     char* str_value = strdup(value);
 
@@ -248,13 +248,13 @@ static void rpc_system_system_power_info_callback(
 }
 
 static void rpc_system_system_get_power_info_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(request->which_content == PB_Main_system_power_info_request_tag);
+    furry_assert(request);
+    furry_assert(request->which_content == PB_Main_system_power_info_request_tag);
 
-    FURI_LOG_D(TAG, "GetPowerInfo");
+    FURRY_LOG_D(TAG, "GetPowerInfo");
 
     RpcSession* session = (RpcSession*)context;
-    furi_assert(session);
+    furry_assert(session);
 
     PB_Main* response = malloc(sizeof(PB_Main));
     response->command_id = request->command_id;
@@ -265,20 +265,20 @@ static void rpc_system_system_get_power_info_process(const PB_Main* request, voi
         .session = session,
         .response = response,
     };
-    furi_hal_power_info_get(rpc_system_system_power_info_callback, '_', &power_info_context);
+    furry_hal_power_info_get(rpc_system_system_power_info_callback, '_', &power_info_context);
 
     free(response);
 }
 
 #ifdef APP_UPDATER
 static void rpc_system_system_update_request_process(const PB_Main* request, void* context) {
-    furi_assert(request);
-    furi_assert(request->which_content == PB_Main_system_update_request_tag);
+    furry_assert(request);
+    furry_assert(request->which_content == PB_Main_system_update_request_tag);
 
-    FURI_LOG_D(TAG, "SystemUpdate");
+    FURRY_LOG_D(TAG, "SystemUpdate");
 
     RpcSession* session = (RpcSession*)context;
-    furi_assert(session);
+    furry_assert(session);
 
     UpdatePrepareResult update_prepare_result =
         update_operation_prepare(request->content.system_update_request.update_manifest);
@@ -298,7 +298,7 @@ static void rpc_system_system_update_request_process(const PB_Main* request, voi
 #endif
 
 void* rpc_system_system_alloc(RpcSession* session) {
-    furi_assert(session);
+    furry_assert(session);
 
     RpcHandler rpc_handler = {
         .message_handler = NULL,

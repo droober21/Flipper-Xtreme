@@ -6,15 +6,15 @@ typedef struct {
     Align horizontal;
     Align vertical;
     Font font;
-    FuriString* text;
+    FurryString* text;
 } GuiStringModel;
 
 static void gui_string_draw(Canvas* canvas, WidgetElement* element) {
-    furi_assert(canvas);
-    furi_assert(element);
+    furry_assert(canvas);
+    furry_assert(element);
     GuiStringModel* model = element->model;
 
-    if(furi_string_size(model->text)) {
+    if(furry_string_size(model->text)) {
         canvas_set_font(canvas, model->font);
         canvas_draw_str_aligned(
             canvas,
@@ -22,15 +22,15 @@ static void gui_string_draw(Canvas* canvas, WidgetElement* element) {
             model->y,
             model->horizontal,
             model->vertical,
-            furi_string_get_cstr(model->text));
+            furry_string_get_cstr(model->text));
     }
 }
 
 static void gui_string_free(WidgetElement* gui_string) {
-    furi_assert(gui_string);
+    furry_assert(gui_string);
 
     GuiStringModel* model = gui_string->model;
-    furi_string_free(model->text);
+    furry_string_free(model->text);
     free(gui_string->model);
     free(gui_string);
 }
@@ -42,7 +42,7 @@ WidgetElement* widget_element_string_create(
     Align vertical,
     Font font,
     const char* text) {
-    furi_assert(text);
+    furry_assert(text);
 
     // Allocate and init model
     GuiStringModel* model = malloc(sizeof(GuiStringModel));
@@ -51,7 +51,7 @@ WidgetElement* widget_element_string_create(
     model->horizontal = horizontal;
     model->vertical = vertical;
     model->font = font;
-    model->text = furi_string_alloc_set(text);
+    model->text = furry_string_alloc_set(text);
 
     // Allocate and init Element
     WidgetElement* gui_string = malloc(sizeof(WidgetElement));

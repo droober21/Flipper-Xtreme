@@ -83,17 +83,17 @@ static bool totp_cli_read_pin(Cli* cli, uint8_t* pin, uint8_t* pin_length) {
     return true;
 }
 
-void totp_cli_command_pin_handle(PluginState* plugin_state, FuriString* args, Cli* cli) {
+void totp_cli_command_pin_handle(PluginState* plugin_state, FurryString* args, Cli* cli) {
     UNUSED(plugin_state);
-    FuriString* temp_str = furi_string_alloc();
+    FurryString* temp_str = furry_string_alloc();
 
     bool do_change = false;
     bool do_remove = false;
     UNUSED(do_remove);
     if(args_read_string_and_trim(args, temp_str)) {
-        if(furi_string_cmpi_str(temp_str, TOTP_CLI_COMMAND_PIN_COMMAND_SET) == 0) {
+        if(furry_string_cmpi_str(temp_str, TOTP_CLI_COMMAND_PIN_COMMAND_SET) == 0) {
             do_change = true;
-        } else if(furi_string_cmpi_str(temp_str, TOTP_CLI_COMMAND_PIN_COMMAND_REMOVE) == 0) {
+        } else if(furry_string_cmpi_str(temp_str, TOTP_CLI_COMMAND_PIN_COMMAND_REMOVE) == 0) {
             do_remove = true;
         } else {
             totp_cli_print_invalid_arguments();
@@ -157,5 +157,5 @@ void totp_cli_command_pin_handle(PluginState* plugin_state, FuriString* args, Cl
         TOTP_CLI_UNLOCK_UI(plugin_state);
     }
 
-    furi_string_free(temp_str);
+    furry_string_free(temp_str);
 }

@@ -1,5 +1,5 @@
 #include "power_off.h"
-#include <furi.h>
+#include <furry.h>
 #include <gui/elements.h>
 #include <assets_icons.h>
 
@@ -13,7 +13,7 @@ typedef struct {
 } PowerOffModel;
 
 static void power_off_draw_callback(Canvas* canvas, void* _model) {
-    furi_assert(_model);
+    furry_assert(_model);
     PowerOffModel* model = _model;
     char buff[32];
 
@@ -75,24 +75,24 @@ PowerOff* power_off_alloc() {
 }
 
 void power_off_free(PowerOff* power_off) {
-    furi_assert(power_off);
+    furry_assert(power_off);
     view_free(power_off->view);
     free(power_off);
 }
 
 View* power_off_get_view(PowerOff* power_off) {
-    furi_assert(power_off);
+    furry_assert(power_off);
     return power_off->view;
 }
 
 void power_off_set_time_left(PowerOff* power_off, uint8_t time_left) {
-    furi_assert(power_off);
+    furry_assert(power_off);
     with_view_model(
         power_off->view, PowerOffModel * model, { model->time_left_sec = time_left; }, true);
 }
 
 PowerOffResponse power_off_get_response(PowerOff* power_off) {
-    furi_assert(power_off);
+    furry_assert(power_off);
     PowerOffResponse response;
     with_view_model(
         power_off->view, PowerOffModel * model, { response = model->response; }, false);

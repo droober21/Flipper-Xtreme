@@ -1,6 +1,6 @@
 #include "worker.h"
-#include <furi_hal_resources.h>
-#include <furi.h>
+#include <furry_hal_resources.h>
+#include <furry.h>
 
 bool killswitch = false;
 
@@ -221,7 +221,7 @@ void input_kill(void* _ctx) {
 void beginWorker() {
     status = 1;
 
-    //redefined from furi_hal_resources.c
+    //redefined from furry_hal_resources.c
     const GpioPin gpio_button_back = {.port = GPIOC, .pin = LL_GPIO_PIN_13};
 
     while(inst[instPtr] != 0x00) {
@@ -236,8 +236,8 @@ void beginWorker() {
             break;
         }
 
-        //read back button directly to avoid weirdness in furi
-        if(killswitch || !furi_hal_gpio_read(&gpio_button_back)) {
+        //read back button directly to avoid weirdness in furry
+        if(killswitch || !furry_hal_gpio_read(&gpio_button_back)) {
             status = 0;
             killswitch = false;
             break;

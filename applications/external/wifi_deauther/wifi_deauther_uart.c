@@ -3,12 +3,12 @@
 
 #include <stream_buffer.h>
 
-#define UART_CH (FuriHalUartIdUSART1)
+#define UART_CH (FurryHalUartIdUSART1)
 #define BAUDRATE (115200)
 
 struct WifideautherUart {
     WifideautherApp* app;
-    FuriThread* rx_thread;
+    FurryThread* rx_thread;
     StreamBufferHandle_t rx_stream;
     uint8_t rx_buf[RX_BUF_SIZE + 1];
     void (*handle_rx_data_cb)(uint8_t* buf, size_t len, void* context);
@@ -22,7 +22,7 @@ typedef enum {
 void wifi_deauther_uart_set_handle_rx_data_cb(
     WifideautherUart* uart,
     void (*handle_rx_data_cb)(uint8_t* buf, size_t len, void* context)) {
-    furi_assert(uart);
+    furry_assert(uart);
     uart->handle_rx_data_cb = handle_rx_data_cb;
 }
 
@@ -34,7 +34,7 @@ void wifi_deauther_uart_on_irq_cb(UartIrqEvent ev, uint8_t data, void* context) 
 
     if(ev == UartIrqEventRXNE) {
         xStreamBufferSendFromISR(uart->rx_stream, &data, 1, &xHigherPriorityTaskWoken);
-        furi_thread_flags_set(furi_thread_get_id(uart->rx_thread), WorkerEvtRxDone);
+        furry_thread_flags_set(furry_thread_get_id(uart->rx_thread), WorkerEvtRxDone);
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 }
@@ -44,8 +44,8 @@ static int32_t uart_worker(void* context) {
 
     while(1) {
         uint32_t events =
-            furi_thread_flags_wait(WORKER_ALL_RX_EVENTS, FuriFlagWaitAny, FuriWaitForever);
-        furi_check((events & FuriFlagError) == 0);
+            furry_thread_flags_wait(WORKER_ALL_RX_EVENTS, FurryFlagWaitAny, FurryWaitForever);
+        furry_check((events & FurryFlagError) == 0);
         if(events & WorkerEvtStop) break;
         if(events & WorkerEvtRxDone) {
             size_t len = xStreamBufferReceive(uart->rx_stream, uart->rx_buf, RX_BUF_SIZE, 0);
@@ -61,7 +61,7 @@ static int32_t uart_worker(void* context) {
 }
 
 void wifi_deauther_uart_tx(uint8_t* data, size_t len) {
-    furi_hal_uart_tx(UART_CH, data, len);
+    furry_hal_uart_tx(UART_CH, data, len);
 }
 
 WifideautherUart* wifi_deauther_uart_init(WifideautherApp* app) {
@@ -69,30 +69,30 @@ WifideautherUart* wifi_deauther_uart_init(WifideautherApp* app) {
 
     uart->app = app;
     uart->rx_stream = xStreamBufferCreate(RX_BUF_SIZE, 1);
-    uart->rx_thread = furi_thread_alloc();
-    furi_thread_set_name(uart->rx_thread, "WifideautherUartRxThread");
-    furi_thread_set_stack_size(uart->rx_thread, 1024);
-    furi_thread_set_context(uart->rx_thread, uart);
-    furi_thread_set_callback(uart->rx_thread, uart_worker);
+    uart->rx_thread = furry_thread_alloc();
+    furry_thread_set_name(uart->rx_thread, "WifideautherUartRxThread");
+    furry_thread_set_stack_size(uart->rx_thread, 1024);
+    furry_thread_set_context(uart->rx_thread, uart);
+    furry_thread_set_callback(uart->rx_thread, uart_worker);
 
-    furi_thread_start(uart->rx_thread);
+    furry_thread_start(uart->rx_thread);
 
-    furi_hal_console_disable();
-    furi_hal_uart_set_br(UART_CH, BAUDRATE);
-    furi_hal_uart_set_irq_cb(UART_CH, wifi_deauther_uart_on_irq_cb, uart);
+    furry_hal_console_disable();
+    furry_hal_uart_set_br(UART_CH, BAUDRATE);
+    furry_hal_uart_set_irq_cb(UART_CH, wifi_deauther_uart_on_irq_cb, uart);
 
     return uart;
 }
 
 void wifi_deauther_uart_free(WifideautherUart* uart) {
-    furi_assert(uart);
+    furry_assert(uart);
 
-    furi_thread_flags_set(furi_thread_get_id(uart->rx_thread), WorkerEvtStop);
-    furi_thread_join(uart->rx_thread);
-    furi_thread_free(uart->rx_thread);
+    furry_thread_flags_set(furry_thread_get_id(uart->rx_thread), WorkerEvtStop);
+    furry_thread_join(uart->rx_thread);
+    furry_thread_free(uart->rx_thread);
 
-    furi_hal_uart_set_irq_cb(UART_CH, NULL, NULL);
-    furi_hal_console_enable();
+    furry_hal_uart_set_irq_cb(UART_CH, NULL, NULL);
+    furry_hal_console_enable();
 
     free(uart);
 }

@@ -10,7 +10,7 @@ typedef enum {
 
 typedef struct WifiMarauderScriptWorker {
     WifiMarauderScript* script;
-    FuriThread* worker_thread;
+    FurryThread* worker_thread;
     void (*callback_start)(void*);
     void (*callback_stage)(WifiMarauderScriptStage*, void*);
     void* context;

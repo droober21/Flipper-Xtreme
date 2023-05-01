@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <flipper.h>
 #include <alt_boot.h>
 
@@ -26,7 +26,7 @@ static bool flipper_update_mount_sd() {
     for(int i = 0; i < sd_max_mount_retry_count(); ++i) {
         if(sd_init((i % 2) == 0) != SdSpiStatusOK) {
             /* Next attempt will be without card reset, let it settle */
-            furi_delay_ms(1000);
+            furry_delay_ms(1000);
             continue;
         }
 
@@ -38,11 +38,11 @@ static bool flipper_update_mount_sd() {
 }
 
 static bool flipper_update_init() {
-    furi_hal_clock_init();
-    furi_hal_rtc_init();
-    furi_hal_interrupt_init();
+    furry_hal_clock_init();
+    furry_hal_rtc_init();
+    furry_hal_interrupt_init();
 
-    furi_hal_spi_config_init();
+    furry_hal_spi_config_init();
 
     fatfs_init();
     if(!hal_sd_detect()) {
@@ -54,21 +54,21 @@ static bool flipper_update_init() {
     return flipper_update_mount_sd();
 }
 
-static bool flipper_update_load_stage(const FuriString* work_dir, UpdateManifest* manifest) {
+static bool flipper_update_load_stage(const FurryString* work_dir, UpdateManifest* manifest) {
     FIL file;
     FILINFO stat;
 
-    FuriString* loader_img_path;
-    loader_img_path = furi_string_alloc_set(work_dir);
-    path_append(loader_img_path, furi_string_get_cstr(manifest->staged_loader_file));
+    FurryString* loader_img_path;
+    loader_img_path = furry_string_alloc_set(work_dir);
+    path_append(loader_img_path, furry_string_get_cstr(manifest->staged_loader_file));
 
-    if((f_stat(furi_string_get_cstr(loader_img_path), &stat) != FR_OK) ||
-       (f_open(&file, furi_string_get_cstr(loader_img_path), FA_OPEN_EXISTING | FA_READ) !=
+    if((f_stat(furry_string_get_cstr(loader_img_path), &stat) != FR_OK) ||
+       (f_open(&file, furry_string_get_cstr(loader_img_path), FA_OPEN_EXISTING | FA_READ) !=
         FR_OK)) {
-        furi_string_free(loader_img_path);
+        furry_string_free(loader_img_path);
         return false;
     }
-    furi_string_free(loader_img_path);
+    furry_string_free(loader_img_path);
 
     void* img = malloc(stat.fsize);
     uint32_t bytes_read = 0;
@@ -102,7 +102,7 @@ static bool flipper_update_load_stage(const FuriString* work_dir, UpdateManifest
 
         memmove((void*)(SRAM1_BASE), img, stat.fsize);
         LL_SYSCFG_SetRemapMemory(LL_SYSCFG_REMAP_SRAM);
-        furi_hal_switch((void*)SRAM1_BASE);
+        furry_hal_switch((void*)SRAM1_BASE);
         return true;
 
     } while(false);
@@ -111,13 +111,13 @@ static bool flipper_update_load_stage(const FuriString* work_dir, UpdateManifest
     return false;
 }
 
-static bool flipper_update_get_manifest_path(FuriString* out_path) {
+static bool flipper_update_get_manifest_path(FurryString* out_path) {
     FIL file;
     FILINFO stat;
     uint16_t size_read = 0;
     char manifest_name_buf[UPDATE_OPERATION_MAX_MANIFEST_PATH_LEN] = {0};
 
-    furi_string_reset(out_path);
+    furry_string_reset(out_path);
     CHECK_FRESULT(f_stat(UPDATE_POINTER_FILE_PATH, &stat));
     CHECK_FRESULT(f_open(&file, UPDATE_POINTER_FILE_PATH, FA_OPEN_EXISTING | FA_READ));
     do {
@@ -129,19 +129,19 @@ static bool flipper_update_get_manifest_path(FuriString* out_path) {
         if((size_read == 0) || (size_read == UPDATE_OPERATION_MAX_MANIFEST_PATH_LEN)) {
             break;
         }
-        furi_string_set(out_path, manifest_name_buf);
-        furi_string_right(out_path, strlen(STORAGE_EXT_PATH_PREFIX));
+        furry_string_set(out_path, manifest_name_buf);
+        furry_string_right(out_path, strlen(STORAGE_EXT_PATH_PREFIX));
     } while(0);
     f_close(&file);
-    return !furi_string_empty(out_path);
+    return !furry_string_empty(out_path);
 }
 
-static UpdateManifest* flipper_update_process_manifest(const FuriString* manifest_path) {
+static UpdateManifest* flipper_update_process_manifest(const FurryString* manifest_path) {
     FIL file;
     FILINFO stat;
 
-    CHECK_FRESULT(f_stat(furi_string_get_cstr(manifest_path), &stat));
-    CHECK_FRESULT(f_open(&file, furi_string_get_cstr(manifest_path), FA_OPEN_EXISTING | FA_READ));
+    CHECK_FRESULT(f_stat(furry_string_get_cstr(manifest_path), &stat));
+    CHECK_FRESULT(f_open(&file, furry_string_get_cstr(manifest_path), FA_OPEN_EXISTING | FA_READ));
 
     uint8_t* manifest_data = malloc(stat.fsize);
     uint32_t bytes_read = 0;
@@ -178,8 +178,8 @@ void flipper_boot_update_exec() {
         return;
     }
 
-    FuriString* work_dir = furi_string_alloc();
-    FuriString* manifest_path = furi_string_alloc();
+    FurryString* work_dir = furry_string_alloc();
+    FurryString* manifest_path = furry_string_alloc();
 
     do {
         if(!flipper_update_get_manifest_path(manifest_path)) {
@@ -191,12 +191,12 @@ void flipper_boot_update_exec() {
             break;
         }
 
-        path_extract_dirname(furi_string_get_cstr(manifest_path), work_dir);
+        path_extract_dirname(furry_string_get_cstr(manifest_path), work_dir);
         if(!flipper_update_load_stage(work_dir, manifest)) {
             update_manifest_free(manifest);
         }
     } while(false);
-    furi_string_free(manifest_path);
-    furi_string_free(work_dir);
+    furry_string_free(manifest_path);
+    furry_string_free(work_dir);
     free(pfs);
 }

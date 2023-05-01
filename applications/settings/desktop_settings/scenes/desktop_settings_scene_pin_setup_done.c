@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <notification/notification.h>
 #include <notification/notification_messages.h>
 #include <stdint.h>
@@ -13,8 +13,8 @@
 #define SCENE_EVENT_DONE (0U)
 
 static void pin_setup_done_callback(const PinCode* pin_code, void* context) {
-    furi_assert(pin_code);
-    furi_assert(context);
+    furry_assert(pin_code);
+    furry_assert(context);
     DesktopSettingsApp* app = context;
 
     view_dispatcher_send_custom_event(app->view_dispatcher, SCENE_EVENT_DONE);
@@ -25,9 +25,9 @@ void desktop_settings_scene_pin_setup_done_on_enter(void* context) {
 
     app->settings.pin_code = app->pincode_buffer;
     DESKTOP_SETTINGS_SAVE(&app->settings);
-    NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+    NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
     notification_message(notification, &sequence_single_vibro);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
 
     desktop_view_pin_input_set_context(app->pin_input_view, app);
     desktop_view_pin_input_set_back_callback(app->pin_input_view, NULL);
@@ -69,7 +69,7 @@ bool desktop_settings_scene_pin_setup_done_on_event(void* context, SceneManagerE
 }
 
 void desktop_settings_scene_pin_setup_done_on_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DesktopSettingsApp* app = context;
     desktop_view_pin_input_set_pin_position(app->pin_input_view, 64, 32);
     desktop_view_pin_input_set_back_callback(app->pin_input_view, NULL);

@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <input/input.h>
 
@@ -11,7 +11,7 @@ typedef struct {
     uint16_t left;
     uint16_t right;
     uint16_t ok;
-    FuriMutex* mutex;
+    FurryMutex* mutex;
 } KeypadTestState;
 
 static void keypad_test_reset_state(KeypadTestState* state) {
@@ -24,7 +24,7 @@ static void keypad_test_reset_state(KeypadTestState* state) {
 
 static void keypad_test_render_callback(Canvas* canvas, void* ctx) {
     KeypadTestState* state = ctx;
-    furi_mutex_acquire(state->mutex, FuriWaitForever);
+    furry_mutex_acquire(state->mutex, FurryWaitForever);
     canvas_clear(canvas);
     char strings[5][20];
 
@@ -53,24 +53,24 @@ static void keypad_test_render_callback(Canvas* canvas, void* ctx) {
 
     canvas_draw_str(canvas, 10, 63, "[back] - reset, hold to exit");
 
-    furi_mutex_release(state->mutex);
+    furry_mutex_release(state->mutex);
 }
 
 static void keypad_test_input_callback(InputEvent* input_event, void* ctx) {
-    FuriMessageQueue* event_queue = ctx;
-    furi_message_queue_put(event_queue, input_event, FuriWaitForever);
+    FurryMessageQueue* event_queue = ctx;
+    furry_message_queue_put(event_queue, input_event, FurryWaitForever);
 }
 
 int32_t keypad_test_app(void* p) {
     UNUSED(p);
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(32, sizeof(InputEvent));
-    furi_check(event_queue);
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(32, sizeof(InputEvent));
+    furry_check(event_queue);
 
     KeypadTestState state = {{false, false, false, false, false}, 0, 0, 0, 0, 0, NULL};
-    state.mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    state.mutex = furry_mutex_alloc(FurryMutexTypeNormal);
 
     if(!state.mutex) {
-        FURI_LOG_E(TAG, "cannot create mutex");
+        FURRY_LOG_E(TAG, "cannot create mutex");
         return 0;
     }
 
@@ -80,13 +80,13 @@ int32_t keypad_test_app(void* p) {
     view_port_input_callback_set(view_port, keypad_test_input_callback, event_queue);
 
     // Open GUI and register view_port
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     InputEvent event;
-    while(furi_message_queue_get(event_queue, &event, FuriWaitForever) == FuriStatusOk) {
-        furi_mutex_acquire(state.mutex, FuriWaitForever);
-        FURI_LOG_I(
+    while(furry_message_queue_get(event_queue, &event, FurryWaitForever) == FurryStatusOk) {
+        furry_mutex_acquire(state.mutex, FurryWaitForever);
+        FURRY_LOG_I(
             TAG,
             "key: %s type: %s",
             input_get_key_name(event.key),
@@ -134,24 +134,24 @@ int32_t keypad_test_app(void* p) {
             }
         } else if(event.key == InputKeyBack) {
             if(event.type == InputTypeLong) {
-                furi_mutex_release(state.mutex);
+                furry_mutex_release(state.mutex);
                 break;
             } else if(event.type == InputTypeShort) {
                 keypad_test_reset_state(&state);
             }
         }
 
-        furi_mutex_release(state.mutex);
+        furry_mutex_release(state.mutex);
         view_port_update(view_port);
     }
 
     // remove & free all stuff created by app
     gui_remove_view_port(gui, view_port);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_mutex_free(state.mutex);
+    furry_message_queue_free(event_queue);
+    furry_mutex_free(state.mutex);
 
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
     return 0;
 }

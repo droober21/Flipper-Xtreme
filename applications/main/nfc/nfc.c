@@ -1,24 +1,24 @@
 #include "nfc_i.h"
-#include <furi_hal_nfc.h>
+#include <furry_hal_nfc.h>
 #include <dolphin/dolphin.h>
 
 bool nfc_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     Nfc* nfc = context;
     return scene_manager_handle_custom_event(nfc->scene_manager, event);
 }
 
 bool nfc_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Nfc* nfc = context;
     return scene_manager_handle_back_event(nfc->scene_manager);
 }
 
 static void nfc_rpc_command_callback(RpcAppSystemEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Nfc* nfc = context;
 
-    furi_assert(nfc->rpc_ctx);
+    furry_assert(nfc->rpc_ctx);
 
     if(event == RpcAppEventSessionClose) {
         view_dispatcher_send_custom_event(nfc->view_dispatcher, NfcCustomEventRpcSessionClose);
@@ -46,13 +46,13 @@ Nfc* nfc_alloc() {
 
     // Nfc device
     nfc->dev = nfc_device_alloc();
-    furi_string_set(nfc->dev->folder, NFC_APP_FOLDER);
+    furry_string_set(nfc->dev->folder, NFC_APP_FOLDER);
 
     // Open GUI record
-    nfc->gui = furi_record_open(RECORD_GUI);
+    nfc->gui = furry_record_open(RECORD_GUI);
 
     // Open Notification record
-    nfc->notifications = furi_record_open(RECORD_NOTIFICATION);
+    nfc->notifications = furry_record_open(RECORD_NOTIFICATION);
 
     // Submenu
     nfc->submenu = submenu_alloc();
@@ -85,7 +85,7 @@ Nfc* nfc_alloc() {
     nfc->text_box = text_box_alloc();
     view_dispatcher_add_view(
         nfc->view_dispatcher, NfcViewTextBox, text_box_get_view(nfc->text_box));
-    nfc->text_box_store = furi_string_alloc();
+    nfc->text_box_store = furry_string_alloc();
 
     // Custom Widget
     nfc->widget = widget_alloc();
@@ -108,7 +108,7 @@ Nfc* nfc_alloc() {
 }
 
 void nfc_free(Nfc* nfc) {
-    furi_assert(nfc);
+    furry_assert(nfc);
 
     if(nfc->rpc_state == NfcRpcStateEmulating) {
         // Stop worker
@@ -117,8 +117,8 @@ void nfc_free(Nfc* nfc) {
         // Stop worker
         nfc_worker_stop(nfc->worker);
         // Save data in shadow file
-        if(furi_string_size(nfc->dev->load_path)) {
-            nfc_device_save_shadow(nfc->dev, furi_string_get_cstr(nfc->dev->load_path));
+        if(furry_string_size(nfc->dev->load_path)) {
+            nfc_device_save_shadow(nfc->dev, furry_string_get_cstr(nfc->dev->load_path));
         }
     }
     if(nfc->rpc_ctx) {
@@ -157,7 +157,7 @@ void nfc_free(Nfc* nfc) {
     // TextBox
     view_dispatcher_remove_view(nfc->view_dispatcher, NfcViewTextBox);
     text_box_free(nfc->text_box);
-    furi_string_free(nfc->text_box_store);
+    furry_string_free(nfc->text_box_store);
 
     // Custom Widget
     view_dispatcher_remove_view(nfc->view_dispatcher, NfcViewWidget);
@@ -182,11 +182,11 @@ void nfc_free(Nfc* nfc) {
     scene_manager_free(nfc->scene_manager);
 
     // GUI
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     nfc->gui = NULL;
 
     // Notifications
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
     nfc->notifications = NULL;
 
     free(nfc);
@@ -222,9 +222,9 @@ void nfc_blink_stop(Nfc* nfc) {
 }
 
 bool nfc_save_file(Nfc* nfc) {
-    furi_string_printf(
+    furry_string_printf(
         nfc->dev->load_path, "%s/%s%s", NFC_APP_FOLDER, nfc->dev->dev_name, NFC_APP_EXTENSION);
-    bool file_saved = nfc_device_save(nfc->dev, furi_string_get_cstr(nfc->dev->load_path));
+    bool file_saved = nfc_device_save(nfc->dev, furry_string_get_cstr(nfc->dev->load_path));
     return file_saved;
 }
 
@@ -243,9 +243,9 @@ void nfc_show_loading_popup(void* context, bool show) {
 }
 
 static bool nfc_is_hal_ready() {
-    if(!furi_hal_nfc_is_init()) {
+    if(!furry_hal_nfc_is_init()) {
         // No connection to the chip, show an error screen
-        DialogsApp* dialogs = furi_record_open(RECORD_DIALOGS);
+        DialogsApp* dialogs = furry_record_open(RECORD_DIALOGS);
         DialogMessage* message = dialog_message_alloc();
         dialog_message_set_text(
             message,
@@ -256,7 +256,7 @@ static bool nfc_is_hal_ready() {
             AlignTop);
         dialog_message_show(dialogs, message);
         dialog_message_free(message);
-        furi_record_close(RECORD_DIALOGS);
+        furry_record_close(RECORD_DIALOGS);
         return false;
     } else {
         return true;

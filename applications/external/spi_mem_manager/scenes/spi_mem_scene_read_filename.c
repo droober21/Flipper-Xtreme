@@ -7,9 +7,9 @@ void spi_mem_scene_read_filename_view_result_callback(void* context) {
 }
 
 void spi_mem_scene_read_set_random_filename(SPIMemApp* app) {
-    if(furi_string_end_with(app->file_path, SPI_MEM_FILE_EXTENSION)) {
-        size_t filename_start = furi_string_search_rchar(app->file_path, '/');
-        furi_string_left(app->file_path, filename_start);
+    if(furry_string_end_with(app->file_path, SPI_MEM_FILE_EXTENSION)) {
+        size_t filename_start = furry_string_search_rchar(app->file_path, '/');
+        furry_string_left(app->file_path, filename_start);
     }
     set_random_name(app->text_buffer, SPI_MEM_TEXT_BUFFER_SIZE);
 }

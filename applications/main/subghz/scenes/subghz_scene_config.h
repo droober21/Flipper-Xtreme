@@ -14,7 +14,7 @@ ADD_SCENE(subghz, delete, Delete)
 ADD_SCENE(subghz, delete_success, DeleteSuccess)
 ADD_SCENE(subghz, test, Test)
 ADD_SCENE(subghz, test_carrier, TestCarrier)
-#if FURI_DEBUG
+#if FURRY_DEBUG
 ADD_SCENE(subghz, test_static, TestStatic)
 ADD_SCENE(subghz, test_packet, TestPacket)
 #endif

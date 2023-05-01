@@ -1,6 +1,6 @@
 #include "avr_isp_spi_sw.h"
 
-#include <furi.h>
+#include <furry.h>
 
 #define AVR_ISP_SPI_SW_MISO &gpio_ext_pa6
 #define AVR_ISP_SPI_SW_MOSI &gpio_ext_pa7
@@ -23,49 +23,49 @@ AvrIspSpiSw* avr_isp_spi_sw_init(AvrIspSpiSwSpeed speed) {
     instance->sck = AVR_ISP_SPI_SW_SCK;
     instance->res = AVR_ISP_RESET;
 
-    furi_hal_gpio_init(instance->miso, GpioModeInput, GpioPullNo, GpioSpeedVeryHigh);
-    furi_hal_gpio_write(instance->mosi, false);
-    furi_hal_gpio_init(instance->mosi, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
-    furi_hal_gpio_write(instance->sck, false);
-    furi_hal_gpio_init(instance->sck, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
-    furi_hal_gpio_init(instance->res, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
+    furry_hal_gpio_init(instance->miso, GpioModeInput, GpioPullNo, GpioSpeedVeryHigh);
+    furry_hal_gpio_write(instance->mosi, false);
+    furry_hal_gpio_init(instance->mosi, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
+    furry_hal_gpio_write(instance->sck, false);
+    furry_hal_gpio_init(instance->sck, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
+    furry_hal_gpio_init(instance->res, GpioModeOutputPushPull, GpioPullNo, GpioSpeedVeryHigh);
 
     return instance;
 }
 
 void avr_isp_spi_sw_free(AvrIspSpiSw* instance) {
-    furi_assert(instance);
-    furi_hal_gpio_init(instance->res, GpioModeAnalog, GpioPullNo, GpioSpeedLow);
-    furi_hal_gpio_init(instance->miso, GpioModeAnalog, GpioPullNo, GpioSpeedLow);
-    furi_hal_gpio_init(instance->mosi, GpioModeAnalog, GpioPullNo, GpioSpeedLow);
-    furi_hal_gpio_init(instance->sck, GpioModeAnalog, GpioPullNo, GpioSpeedLow);
+    furry_assert(instance);
+    furry_hal_gpio_init(instance->res, GpioModeAnalog, GpioPullNo, GpioSpeedLow);
+    furry_hal_gpio_init(instance->miso, GpioModeAnalog, GpioPullNo, GpioSpeedLow);
+    furry_hal_gpio_init(instance->mosi, GpioModeAnalog, GpioPullNo, GpioSpeedLow);
+    furry_hal_gpio_init(instance->sck, GpioModeAnalog, GpioPullNo, GpioSpeedLow);
     free(instance);
 }
 
 uint8_t avr_isp_spi_sw_txrx(AvrIspSpiSw* instance, uint8_t data) {
-    furi_assert(instance);
+    furry_assert(instance);
     for(uint8_t i = 0; i < 8; ++i) {
-        furi_hal_gpio_write(instance->mosi, (data & 0x80) ? true : false);
+        furry_hal_gpio_write(instance->mosi, (data & 0x80) ? true : false);
 
-        furi_hal_gpio_write(instance->sck, true);
+        furry_hal_gpio_write(instance->sck, true);
         if(instance->speed_wait_time != AvrIspSpiSwSpeed1Mhz)
-            furi_delay_us(instance->speed_wait_time - 1);
+            furry_delay_us(instance->speed_wait_time - 1);
 
-        data = (data << 1) | furi_hal_gpio_read(instance->miso); //-V792
+        data = (data << 1) | furry_hal_gpio_read(instance->miso); //-V792
 
-        furi_hal_gpio_write(instance->sck, false);
+        furry_hal_gpio_write(instance->sck, false);
         if(instance->speed_wait_time != AvrIspSpiSwSpeed1Mhz)
-            furi_delay_us(instance->speed_wait_time - 1);
+            furry_delay_us(instance->speed_wait_time - 1);
     }
     return data;
 }
 
 void avr_isp_spi_sw_res_set(AvrIspSpiSw* instance, bool state) {
-    furi_assert(instance);
-    furi_hal_gpio_write(instance->res, state);
+    furry_assert(instance);
+    furry_hal_gpio_write(instance->res, state);
 }
 
 void avr_isp_spi_sw_sck_set(AvrIspSpiSw* instance, bool state) {
-    furi_assert(instance);
-    furi_hal_gpio_write(instance->sck, state);
+    furry_assert(instance);
+    furry_hal_gpio_write(instance->sck, state);
 }

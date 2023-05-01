@@ -3,7 +3,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <furi.h>
+#include <furry.h>
 
 #ifdef __cplusplus
 extern "C" {

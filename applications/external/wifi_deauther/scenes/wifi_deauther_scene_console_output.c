@@ -1,19 +1,19 @@
 #include "../wifi_deauther_app_i.h"
 
 void wifi_deauther_console_output_handle_rx_data_cb(uint8_t* buf, size_t len, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WifideautherApp* app = context;
 
     // If text box store gets too big, then truncate it
     app->text_box_store_strlen += len;
     if(app->text_box_store_strlen >= WIFI_deauther_TEXT_BOX_STORE_SIZE - 1) {
-        furi_string_right(app->text_box_store, app->text_box_store_strlen / 2);
-        app->text_box_store_strlen = furi_string_size(app->text_box_store);
+        furry_string_right(app->text_box_store, app->text_box_store_strlen / 2);
+        app->text_box_store_strlen = furry_string_size(app->text_box_store);
     }
 
     // Null-terminate buf and append to text box store
     buf[len] = '\0';
-    furi_string_cat_printf(app->text_box_store, "%s", buf);
+    furry_string_cat_printf(app->text_box_store, "%s", buf);
 
     view_dispatcher_send_custom_event(app->view_dispatcher, WifideautherEventRefreshConsoleOutput);
 }
@@ -30,21 +30,21 @@ void wifi_deauther_scene_console_output_on_enter(void* context) {
         text_box_set_focus(text_box, TextBoxFocusEnd);
     }
     if(app->is_command) {
-        furi_string_reset(app->text_box_store);
+        furry_string_reset(app->text_box_store);
         app->text_box_store_strlen = 0;
         if(0 == strncmp("help", app->selected_tx_string, strlen("help"))) {
             const char* help_msg = "For app support/feedback,\nreach out to\n";
-            furi_string_cat_str(app->text_box_store, help_msg);
+            furry_string_cat_str(app->text_box_store, help_msg);
             app->text_box_store_strlen += strlen(help_msg);
         }
 
         if(app->show_stopscan_tip) {
             const char* help_msg = "Press BACK to send stopscan\n";
-            furi_string_cat_str(app->text_box_store, help_msg);
+            furry_string_cat_str(app->text_box_store, help_msg);
             app->text_box_store_strlen += strlen(help_msg);
         }
     } else { // "View Log" menu action
-        text_box_set_text(app->text_box, furi_string_get_cstr(app->text_box_store));
+        text_box_set_text(app->text_box, furry_string_get_cstr(app->text_box_store));
     }
 
     scene_manager_set_scene_state(app->scene_manager, WifideautherSceneConsoleOutput, 0);
@@ -68,7 +68,7 @@ bool wifi_deauther_scene_console_output_on_event(void* context, SceneManagerEven
     bool consumed = false;
 
     if(event.type == SceneManagerEventTypeCustom) {
-        text_box_set_text(app->text_box, furi_string_get_cstr(app->text_box_store));
+        text_box_set_text(app->text_box, furry_string_get_cstr(app->text_box_store));
         consumed = true;
     } else if(event.type == SceneManagerEventTypeTick) {
         consumed = true;

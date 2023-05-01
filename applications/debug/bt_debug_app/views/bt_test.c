@@ -5,14 +5,14 @@
 
 #include <lib/toolbox/float_tools.h>
 #include <m-array.h>
-#include <furi.h>
+#include <furry.h>
 #include <inttypes.h>
 #include <stdint.h>
 
 struct BtTestParam {
     const char* label;
     uint8_t current_value_index;
-    FuriString* current_value_text;
+    FurryString* current_value_text;
     uint8_t values_count;
     BtTestParamChangeCallback change_callback;
     void* context;
@@ -88,7 +88,7 @@ static void bt_test_draw_callback(Canvas* canvas, void* _model) {
             }
 
             canvas_draw_str(
-                canvas, 61, param_text_y, furi_string_get_cstr(param->current_value_text));
+                canvas, 61, param_text_y, furry_string_get_cstr(param->current_value_text));
 
             if(param->current_value_index < (param->values_count - 1)) {
                 canvas_draw_str(canvas, 113, param_text_y, ">");
@@ -118,7 +118,7 @@ static void bt_test_draw_callback(Canvas* canvas, void* _model) {
 
 static bool bt_test_input_callback(InputEvent* event, void* context) {
     BtTest* bt_test = context;
-    furi_assert(bt_test);
+    furry_assert(bt_test);
     bool consumed = false;
 
     if(event->type == InputTypeShort) {
@@ -213,7 +213,7 @@ BtTestParam* bt_test_get_selected_param(BtTestModel* model) {
 
     param = BtTestParamArray_ref(it);
 
-    furi_assert(param);
+    furry_assert(param);
     return param;
 }
 
@@ -332,7 +332,7 @@ BtTest* bt_test_alloc() {
 }
 
 void bt_test_free(BtTest* bt_test) {
-    furi_assert(bt_test);
+    furry_assert(bt_test);
 
     with_view_model(
         bt_test->view,
@@ -341,7 +341,7 @@ void bt_test_free(BtTest* bt_test) {
             BtTestParamArray_it_t it;
             for(BtTestParamArray_it(it, model->params); !BtTestParamArray_end_p(it);
                 BtTestParamArray_next(it)) {
-                furi_string_free(BtTestParamArray_ref(it)->current_value_text);
+                furry_string_free(BtTestParamArray_ref(it)->current_value_text);
             }
             BtTestParamArray_clear(model->params);
         },
@@ -351,7 +351,7 @@ void bt_test_free(BtTest* bt_test) {
 }
 
 View* bt_test_get_view(BtTest* bt_test) {
-    furi_assert(bt_test);
+    furry_assert(bt_test);
     return bt_test->view;
 }
 
@@ -362,8 +362,8 @@ BtTestParam* bt_test_param_add(
     BtTestParamChangeCallback change_callback,
     void* context) {
     BtTestParam* param = NULL;
-    furi_assert(label);
-    furi_assert(bt_test);
+    furry_assert(label);
+    furry_assert(bt_test);
 
     with_view_model(
         bt_test->view,
@@ -375,7 +375,7 @@ BtTestParam* bt_test_param_add(
             param->change_callback = change_callback;
             param->context = context;
             param->current_value_index = 0;
-            param->current_value_text = furi_string_alloc();
+            param->current_value_text = furry_string_alloc();
         },
         true);
 
@@ -383,37 +383,37 @@ BtTestParam* bt_test_param_add(
 }
 
 void bt_test_set_rssi(BtTest* bt_test, float rssi) {
-    furi_assert(bt_test);
+    furry_assert(bt_test);
     with_view_model(
         bt_test->view, BtTestModel * model, { model->rssi = rssi; }, true);
 }
 
 void bt_test_set_packets_tx(BtTest* bt_test, uint32_t packets_num) {
-    furi_assert(bt_test);
+    furry_assert(bt_test);
     with_view_model(
         bt_test->view, BtTestModel * model, { model->packets_num_tx = packets_num; }, true);
 }
 
 void bt_test_set_packets_rx(BtTest* bt_test, uint32_t packets_num) {
-    furi_assert(bt_test);
+    furry_assert(bt_test);
     with_view_model(
         bt_test->view, BtTestModel * model, { model->packets_num_rx = packets_num; }, true);
 }
 
 void bt_test_set_change_state_callback(BtTest* bt_test, BtTestChangeStateCallback callback) {
-    furi_assert(bt_test);
-    furi_assert(callback);
+    furry_assert(bt_test);
+    furry_assert(callback);
     bt_test->change_state_callback = callback;
 }
 
 void bt_test_set_back_callback(BtTest* bt_test, BtTestBackCallback callback) {
-    furi_assert(bt_test);
-    furi_assert(callback);
+    furry_assert(bt_test);
+    furry_assert(callback);
     bt_test->back_callback = callback;
 }
 
 void bt_test_set_context(BtTest* bt_test, void* context) {
-    furi_assert(bt_test);
+    furry_assert(bt_test);
     bt_test->context = context;
 }
 
@@ -422,7 +422,7 @@ void bt_test_set_current_value_index(BtTestParam* param, uint8_t current_value_i
 }
 
 void bt_test_set_current_value_text(BtTestParam* param, const char* current_value_text) {
-    furi_string_set(param->current_value_text, current_value_text);
+    furry_string_set(param->current_value_text, current_value_text);
 }
 
 uint8_t bt_test_get_current_value_index(BtTestParam* param) {

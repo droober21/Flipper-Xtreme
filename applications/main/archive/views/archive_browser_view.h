@@ -79,10 +79,10 @@ struct ArchiveBrowserView {
     bool worker_running;
     ArchiveBrowserViewCallback callback;
     void* context;
-    FuriString* path;
+    FurryString* path;
     InputKey last_tab_switch_dir;
     bool is_root;
-    FuriTimer* scroll_timer;
+    FurryTimer* scroll_timer;
 };
 
 typedef struct {

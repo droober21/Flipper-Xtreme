@@ -27,7 +27,7 @@ static bool bf_dev_process_right(BFDevEnv* devEnv);
 static bool bf_dev_process_ok(BFDevEnv* devEnv, InputEvent* event);
 
 BFApp* appDev;
-FuriThread* workerThread;
+FurryThread* workerThread;
 
 char bfChars[9] = {'<', '>', '[', ']', '+', '-', '.', ',', 0x00};
 
@@ -81,13 +81,13 @@ static void bf_dev_draw_button(Canvas* canvas, int x, int y, bool selected, cons
 
 void bf_save_changes() {
     //remove old file
-    Storage* storage = furi_record_open(RECORD_STORAGE);
-    storage_simply_remove(storage, furi_string_get_cstr(appDev->BF_file_path));
+    Storage* storage = furry_record_open(RECORD_STORAGE);
+    storage_simply_remove(storage, furry_string_get_cstr(appDev->BF_file_path));
 
     //save new file
     Stream* stream = buffered_file_stream_alloc(storage);
     buffered_file_stream_open(
-        stream, furi_string_get_cstr(appDev->BF_file_path), FSAM_WRITE, FSOM_CREATE_ALWAYS);
+        stream, furry_string_get_cstr(appDev->BF_file_path), FSAM_WRITE, FSOM_CREATE_ALWAYS);
     stream_write(stream, (const uint8_t*)appDev->dataBuffer, appDev->dataSize);
     buffered_file_stream_close(stream);
 }
@@ -167,7 +167,7 @@ static void bf_dev_draw_callback(Canvas* canvas, void* _model) {
 }
 
 static bool bf_dev_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     BFDevEnv* devEnv = context;
     bool consumed = false;
 
@@ -301,7 +301,7 @@ static bool bf_dev_process_ok(BFDevEnv* devEnv, InputEvent* event) {
     case 10: {
         if(getStatus() != 0) {
             killThread();
-            furi_thread_join(workerThread);
+            furry_thread_join(workerThread);
         }
 
         bf_save_changes();
@@ -310,8 +310,8 @@ static bool bf_dev_process_ok(BFDevEnv* devEnv, InputEvent* event) {
         text_box_set_focus(appDev->text_box, TextBoxFocusEnd);
         text_box_set_text(appDev->text_box, workerGetOutput());
 
-        workerThread = furi_thread_alloc_ex("Worker", 2048, (void*)beginWorker, NULL);
-        furi_thread_start(workerThread);
+        workerThread = furry_thread_alloc_ex("Worker", 2048, (void*)beginWorker, NULL);
+        furry_thread_start(workerThread);
 
         scene_manager_next_scene(appDev->scene_manager, brainfuckSceneExecEnv);
         break;
@@ -329,7 +329,7 @@ static bool bf_dev_process_ok(BFDevEnv* devEnv, InputEvent* event) {
 }
 
 static void bf_dev_enter_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     BFDevEnv* devEnv = context;
 
     with_view_model(
@@ -347,17 +347,17 @@ static void bf_dev_enter_callback(void* context) {
     //exit the running thread if required
     if(getStatus() != 0) {
         killThread();
-        furi_thread_join(workerThread);
+        furry_thread_join(workerThread);
     }
 
     //clear the bf instruction buffer
     memset(appDev->dataBuffer, 0x00, BF_INST_BUFFER_SIZE * sizeof(char));
 
     //open the file
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     Stream* stream = buffered_file_stream_alloc(storage);
     buffered_file_stream_open(
-        stream, furi_string_get_cstr(appDev->BF_file_path), FSAM_READ, FSOM_OPEN_EXISTING);
+        stream, furry_string_get_cstr(appDev->BF_file_path), FSAM_READ, FSOM_OPEN_EXISTING);
 
     //read into the buffer
     appDev->dataSize = stream_size(stream);
@@ -409,15 +409,15 @@ BFDevEnv* bf_dev_env_alloc(BFApp* appDev) {
 void bf_dev_env_free(BFDevEnv* devEnv) {
     if(getStatus() != 0) {
         killThread();
-        furi_thread_join(workerThread);
+        furry_thread_join(workerThread);
     }
 
-    furi_assert(devEnv);
+    furry_assert(devEnv);
     view_free(devEnv->view);
     free(devEnv);
 }
 
 View* bf_dev_env_get_view(BFDevEnv* devEnv) {
-    furi_assert(devEnv);
+    furry_assert(devEnv);
     return devEnv->view;
 }

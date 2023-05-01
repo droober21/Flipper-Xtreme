@@ -1,6 +1,6 @@
 #include <core/common_defines.h>
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #include <gui/gui.h>
 #include <input/input.h>
@@ -54,11 +54,11 @@ static const NotificationSequence* blink_test_colors[] = {
 };
 
 static void blink_test_update(void* ctx) {
-    furi_assert(ctx);
-    FuriMessageQueue* event_queue = ctx;
+    furry_assert(ctx);
+    FurryMessageQueue* event_queue = ctx;
     BlinkEvent event = {.type = BlinkEventTypeTick};
     // It's OK to loose this event if system overloaded
-    furi_message_queue_put(event_queue, &event, 0);
+    furry_message_queue_put(event_queue, &event, 0);
 }
 
 static void blink_test_draw_callback(Canvas* canvas, void* ctx) {
@@ -69,35 +69,35 @@ static void blink_test_draw_callback(Canvas* canvas, void* ctx) {
 }
 
 static void blink_test_input_callback(InputEvent* input_event, void* ctx) {
-    furi_assert(ctx);
-    FuriMessageQueue* event_queue = ctx;
+    furry_assert(ctx);
+    FurryMessageQueue* event_queue = ctx;
 
     BlinkEvent event = {.type = BlinkEventTypeInput, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 int32_t blink_test_app(void* p) {
     UNUSED(p);
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(BlinkEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(BlinkEvent));
 
     // Configure view port
     ViewPort* view_port = view_port_alloc();
     view_port_draw_callback_set(view_port, blink_test_draw_callback, NULL);
     view_port_input_callback_set(view_port, blink_test_input_callback, event_queue);
-    FuriTimer* timer = furi_timer_alloc(blink_test_update, FuriTimerTypePeriodic, event_queue);
-    furi_timer_start(timer, furi_kernel_get_tick_frequency());
+    FurryTimer* timer = furry_timer_alloc(blink_test_update, FurryTimerTypePeriodic, event_queue);
+    furry_timer_start(timer, furry_kernel_get_tick_frequency());
 
     // Register view port in GUI
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
-    NotificationApp* notifications = furi_record_open(RECORD_NOTIFICATION);
+    NotificationApp* notifications = furry_record_open(RECORD_NOTIFICATION);
 
     uint8_t state = 0;
     BlinkEvent event;
 
     while(1) {
-        furi_check(furi_message_queue_get(event_queue, &event, FuriWaitForever) == FuriStatusOk);
+        furry_check(furry_message_queue_get(event_queue, &event, FurryWaitForever) == FurryStatusOk);
         if(event.type == BlinkEventTypeInput) {
             if((event.input.type == InputTypeShort) && (event.input.key == InputKeyBack)) {
                 break;
@@ -113,14 +113,14 @@ int32_t blink_test_app(void* p) {
 
     notification_message(notifications, &blink_test_sequence_hw_blink_stop);
 
-    furi_timer_free(timer);
+    furry_timer_free(timer);
 
     gui_remove_view_port(gui, view_port);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
+    furry_message_queue_free(event_queue);
 
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_GUI);
 
     return 0;
 }

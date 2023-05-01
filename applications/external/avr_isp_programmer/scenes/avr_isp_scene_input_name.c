@@ -4,16 +4,16 @@
 #define MAX_TEXT_INPUT_LEN 22
 
 void avr_isp_scene_input_name_text_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspApp* app = context;
     view_dispatcher_send_custom_event(app->view_dispatcher, AvrIspCustomEventSceneInputName);
 }
 
-void avr_isp_scene_input_name_get_timefilename(FuriString* name) {
-    FuriHalRtcDateTime datetime = {0};
-    furi_hal_rtc_get_datetime(&datetime);
-    furi_string_printf(
+void avr_isp_scene_input_name_get_timefilename(FurryString* name) {
+    FurryHalRtcDateTime datetime = {0};
+    furry_hal_rtc_get_datetime(&datetime);
+    furry_string_printf(
         name,
         "AVR_dump-%.4d%.2d%.2d-%.2d%.2d%.2d",
         datetime.year,
@@ -25,21 +25,21 @@ void avr_isp_scene_input_name_get_timefilename(FuriString* name) {
 }
 
 void avr_isp_scene_input_name_on_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspApp* app = context;
     // Setup view
     TextInput* text_input = app->text_input;
     bool dev_name_empty = false;
 
-    FuriString* file_name = furi_string_alloc();
+    FurryString* file_name = furry_string_alloc();
 
     avr_isp_scene_input_name_get_timefilename(file_name);
-    furi_string_set(app->file_path, STORAGE_APP_DATA_PATH_PREFIX);
+    furry_string_set(app->file_path, STORAGE_APP_DATA_PATH_PREFIX);
     //highlighting the entire filename by default
     dev_name_empty = true;
 
-    strncpy(app->file_name_tmp, furi_string_get_cstr(file_name), AVR_ISP_MAX_LEN_NAME);
+    strncpy(app->file_name_tmp, furry_string_get_cstr(file_name), AVR_ISP_MAX_LEN_NAME);
     text_input_set_header_text(text_input, "Name dump");
     text_input_set_result_callback(
         text_input,
@@ -53,13 +53,13 @@ void avr_isp_scene_input_name_on_enter(void* context) {
         validator_is_file_alloc_init(STORAGE_APP_DATA_PATH_PREFIX, AVR_ISP_APP_EXTENSION, "");
     text_input_set_validator(text_input, validator_is_file_callback, validator_is_file);
 
-    furi_string_free(file_name);
+    furry_string_free(file_name);
 
     view_dispatcher_switch_to_view(app->view_dispatcher, AvrIspViewTextInput);
 }
 
 bool avr_isp_scene_input_name_on_event(void* context, SceneManagerEvent event) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspApp* app = context;
     if(event.type == SceneManagerEventTypeBack) {
@@ -77,7 +77,7 @@ bool avr_isp_scene_input_name_on_event(void* context, SceneManagerEvent event) {
 }
 
 void avr_isp_scene_input_name_on_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspApp* app = context;
     // Clear validator

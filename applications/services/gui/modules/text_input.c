@@ -1,11 +1,11 @@
 #include "text_input.h"
 #include <gui/elements.h>
 #include <assets_icons.h>
-#include <furi.h>
+#include <furry.h>
 
 struct TextInput {
     View* view;
-    FuriTimer* timer;
+    FurryTimer* timer;
 };
 
 typedef struct {
@@ -25,7 +25,7 @@ typedef struct {
     size_t text_buffer_size;
     size_t minimum_length;
     bool clear_default_text;
-    FuriString* temp_str;
+    FurryString* temp_str;
 
     bool cursor_select;
     size_t cursor_pos;
@@ -39,7 +39,7 @@ typedef struct {
 
     TextInputValidatorCallback validator_callback;
     void* validator_callback_context;
-    FuriString* validator_text;
+    FurryString* validator_text;
     bool validator_message_visible;
 } TextInputModel;
 
@@ -188,7 +188,7 @@ static uint8_t get_row_size(const Keyboard* keyboard, uint8_t row_index) {
             row_size = COUNT_OF(symbol_keyboard_keys_row_3);
             break;
         default:
-            furi_crash(NULL);
+            furry_crash(NULL);
         }
     } else {
         switch(row_index + 1) {
@@ -202,7 +202,7 @@ static uint8_t get_row_size(const Keyboard* keyboard, uint8_t row_index) {
             row_size = COUNT_OF(keyboard_keys_row_3);
             break;
         default:
-            furi_crash(NULL);
+            furry_crash(NULL);
         }
     }
 
@@ -214,7 +214,7 @@ static const TextInputKey* get_row(const Keyboard* keyboard, uint8_t row_index) 
     if(row_index < 3) {
         row = keyboard->rows[row_index];
     } else {
-        furi_crash(NULL);
+        furry_crash(NULL);
     }
 
     return row;
@@ -245,10 +245,10 @@ static void text_input_backspace_cb(TextInputModel* model) {
         model->text_buffer[0] = 0;
         model->cursor_pos = 0;
     } else if(model->cursor_pos > 0) {
-        furi_string_set_str(model->temp_str, model->text_buffer);
-        furi_string_replace_at(model->temp_str, model->cursor_pos - 1, 1, "");
+        furry_string_set_str(model->temp_str, model->text_buffer);
+        furry_string_replace_at(model->temp_str, model->cursor_pos - 1, 1, "");
         model->cursor_pos--;
-        strcpy(model->text_buffer, furi_string_get_cstr(model->temp_str));
+        strcpy(model->text_buffer, furry_string_get_cstr(model->temp_str));
     }
 }
 
@@ -266,20 +266,20 @@ static void text_input_view_draw_callback(Canvas* canvas, void* _model) {
     canvas_draw_str(canvas, 2, 8, model->header);
     elements_slightly_rounded_frame(canvas, 1, 12, 126, 15);
 
-    FuriString* str = model->temp_str;
+    FurryString* str = model->temp_str;
     if(model->text_buffer) {
-        furi_string_set_str(str, model->text_buffer);
+        furry_string_set_str(str, model->text_buffer);
     } else {
-        furi_string_reset(str);
+        furry_string_reset(str);
     }
-    const char* cstr = furi_string_get_cstr(str);
+    const char* cstr = furry_string_get_cstr(str);
 
     if(model->clear_default_text) {
         elements_slightly_rounded_box(
             canvas, start_pos - 1, 14, canvas_string_width(canvas, cstr) + 2, 10);
         canvas_set_color(canvas, ColorWhite);
     } else {
-        furi_string_replace_at(str, model->cursor_pos, 0, "|");
+        furry_string_replace_at(str, model->cursor_pos, 0, "|");
     }
 
     if(model->cursor_pos > 0 && canvas_string_width(canvas, cstr) > needed_string_width) {
@@ -287,19 +287,19 @@ static void text_input_view_draw_callback(Canvas* canvas, void* _model) {
         start_pos += 6;
         needed_string_width -= 8;
         for(uint32_t off = 0;
-            !furi_string_empty(str) && canvas_string_width(canvas, cstr) > needed_string_width &&
+            !furry_string_empty(str) && canvas_string_width(canvas, cstr) > needed_string_width &&
             off < model->cursor_pos;
             off++) {
-            furi_string_right(str, 1);
+            furry_string_right(str, 1);
         }
     }
 
     if(canvas_string_width(canvas, cstr) > needed_string_width) {
         needed_string_width -= 4;
-        while(!furi_string_empty(str) && canvas_string_width(canvas, cstr) > needed_string_width) {
-            furi_string_left(str, furi_string_size(str) - 1);
+        while(!furry_string_empty(str) && canvas_string_width(canvas, cstr) > needed_string_width) {
+            furry_string_left(str, furry_string_size(str) - 1);
         }
-        furi_string_cat_str(str, "...");
+        furry_string_cat_str(str, "...");
     }
 
     canvas_draw_str(canvas, start_pos, 22, cstr);
@@ -363,7 +363,7 @@ static void text_input_view_draw_callback(Canvas* canvas, void* _model) {
         canvas_draw_icon(canvas, 10, 14, &I_WarningDolphin_45x42);
         canvas_draw_rframe(canvas, 8, 8, 112, 50, 3);
         canvas_draw_rframe(canvas, 9, 9, 110, 48, 2);
-        elements_multiline_text(canvas, 62, 20, furi_string_get_cstr(model->validator_text));
+        elements_multiline_text(canvas, 62, 20, furry_string_get_cstr(model->validator_text));
         canvas_set_font(canvas, FontKeyboard);
     }
 }
@@ -450,7 +450,7 @@ static void text_input_handle_ok(TextInput* text_input, TextInputModel* model, I
            (!model->validator_callback(
                model->text_buffer, model->validator_text, model->validator_callback_context))) {
             model->validator_message_visible = true;
-            furi_timer_start(text_input->timer, furi_kernel_get_tick_frequency() * 4);
+            furry_timer_start(text_input->timer, furry_kernel_get_tick_frequency() * 4);
         } else if(model->callback != 0 && text_length >= model->minimum_length) {
             model->callback(model->callback_context);
         }
@@ -468,14 +468,14 @@ static void text_input_handle_ok(TextInput* text_input, TextInputModel* model, I
                     selected = char_to_uppercase(selected);
                 }
                 if(model->clear_default_text) {
-                    furi_string_set_str(model->temp_str, &selected);
+                    furry_string_set_str(model->temp_str, &selected);
                     model->cursor_pos = 1;
                 } else {
-                    furi_string_set_str(model->temp_str, model->text_buffer);
-                    furi_string_replace_at(model->temp_str, model->cursor_pos, 0, &selected);
+                    furry_string_set_str(model->temp_str, model->text_buffer);
+                    furry_string_replace_at(model->temp_str, model->cursor_pos, 0, &selected);
                     model->cursor_pos++;
                 }
-                strcpy(model->text_buffer, furi_string_get_cstr(model->temp_str));
+                strcpy(model->text_buffer, furry_string_get_cstr(model->temp_str));
             }
         }
         model->clear_default_text = false;
@@ -484,7 +484,7 @@ static void text_input_handle_ok(TextInput* text_input, TextInputModel* model, I
 
 static bool text_input_view_input_callback(InputEvent* event, void* context) {
     TextInput* text_input = context;
-    furi_assert(text_input);
+    furry_assert(text_input);
 
     bool consumed = false;
 
@@ -576,7 +576,7 @@ static bool text_input_view_input_callback(InputEvent* event, void* context) {
 }
 
 void text_input_timer_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     TextInput* text_input = context;
 
     with_view_model(
@@ -594,14 +594,14 @@ TextInput* text_input_alloc() {
     view_set_draw_callback(text_input->view, text_input_view_draw_callback);
     view_set_input_callback(text_input->view, text_input_view_input_callback);
 
-    text_input->timer = furi_timer_alloc(text_input_timer_callback, FuriTimerTypeOnce, text_input);
+    text_input->timer = furry_timer_alloc(text_input_timer_callback, FurryTimerTypeOnce, text_input);
 
     with_view_model(
         text_input->view,
         TextInputModel * model,
         {
-            model->validator_text = furi_string_alloc();
-            model->temp_str = furi_string_alloc();
+            model->validator_text = furry_string_alloc();
+            model->temp_str = furry_string_alloc();
         },
         false);
 
@@ -611,20 +611,20 @@ TextInput* text_input_alloc() {
 }
 
 void text_input_free(TextInput* text_input) {
-    furi_assert(text_input);
+    furry_assert(text_input);
     with_view_model(
         text_input->view,
         TextInputModel * model,
         {
-            furi_string_free(model->validator_text);
-            furi_string_free(model->temp_str);
+            furry_string_free(model->validator_text);
+            furry_string_free(model->temp_str);
         },
         false);
 
     // Send stop command
-    furi_timer_stop(text_input->timer);
+    furry_timer_stop(text_input->timer);
     // Release allocated memory
-    furi_timer_free(text_input->timer);
+    furry_timer_free(text_input->timer);
 
     view_free(text_input->view);
 
@@ -632,7 +632,7 @@ void text_input_free(TextInput* text_input) {
 }
 
 void text_input_reset(TextInput* text_input) {
-    furi_assert(text_input);
+    furry_assert(text_input);
     with_view_model(
         text_input->view,
         TextInputModel * model,
@@ -651,14 +651,14 @@ void text_input_reset(TextInput* text_input) {
             model->callback_context = NULL;
             model->validator_callback = NULL;
             model->validator_callback_context = NULL;
-            furi_string_reset(model->validator_text);
+            furry_string_reset(model->validator_text);
             model->validator_message_visible = false;
         },
         true);
 }
 
 View* text_input_get_view(TextInput* text_input) {
-    furi_assert(text_input);
+    furry_assert(text_input);
     return text_input->view;
 }
 

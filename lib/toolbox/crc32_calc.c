@@ -9,7 +9,7 @@ uint32_t crc32_calc_buffer(uint32_t crc, const void* buffer, size_t size) {
 }
 
 uint32_t crc32_calc_file(File* file, const FileCrcProgressCb progress_cb, void* context) {
-    furi_check(storage_file_is_open(file) && storage_file_seek(file, 0, true));
+    furry_check(storage_file_is_open(file) && storage_file_seek(file, 0, true));
 
     uint32_t file_crc = 0;
 

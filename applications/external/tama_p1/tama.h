@@ -14,7 +14,7 @@
 #define TAMA_SAVE_PATH EXT_PATH("tama_p1/save.bin")
 
 typedef struct {
-    FuriThread* thread;
+    FurryThread* thread;
     hal_t hal;
     uint8_t* rom;
     // 32x16 screen, perfectly represented through uint32_t
@@ -37,6 +37,6 @@ typedef struct {
 } TamaEvent;
 
 extern TamaApp* g_ctx;
-extern FuriMutex* g_state_mutex;
+extern FurryMutex* g_state_mutex;
 
 void tama_p1_hal_init(hal_t* hal);

@@ -9,7 +9,7 @@ typedef struct InfraredEncoderRC6 {
 } InfraredEncoderRC6;
 
 void infrared_encoder_rc6_reset(void* encoder_ptr, const InfraredMessage* message) {
-    furi_assert(encoder_ptr);
+    furry_assert(encoder_ptr);
 
     InfraredEncoderRC6* encoder = encoder_ptr;
     InfraredCommonEncoder* common_encoder = encoder->common_encoder;
@@ -39,7 +39,7 @@ void* infrared_encoder_rc6_alloc(void) {
 }
 
 void infrared_encoder_rc6_free(void* encoder_ptr) {
-    furi_assert(encoder_ptr);
+    furry_assert(encoder_ptr);
 
     InfraredEncoderRC6* encoder = encoder_ptr;
     free(encoder->common_encoder);

@@ -4,19 +4,19 @@
 #define TAG "PicoPass"
 
 bool picopass_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     Picopass* picopass = context;
     return scene_manager_handle_custom_event(picopass->scene_manager, event);
 }
 
 bool picopass_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Picopass* picopass = context;
     return scene_manager_handle_back_event(picopass->scene_manager);
 }
 
 void picopass_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Picopass* picopass = context;
     scene_manager_handle_tick_event(picopass->scene_manager);
 }
@@ -40,12 +40,12 @@ Picopass* picopass_alloc() {
     picopass->dev = picopass_device_alloc();
 
     // Open GUI record
-    picopass->gui = furi_record_open(RECORD_GUI);
+    picopass->gui = furry_record_open(RECORD_GUI);
     view_dispatcher_attach_to_gui(
         picopass->view_dispatcher, picopass->gui, ViewDispatcherTypeFullscreen);
 
     // Open Notification record
-    picopass->notifications = furi_record_open(RECORD_NOTIFICATION);
+    picopass->notifications = furry_record_open(RECORD_NOTIFICATION);
 
     // Submenu
     picopass->submenu = submenu_alloc();
@@ -84,7 +84,7 @@ Picopass* picopass_alloc() {
 }
 
 void picopass_free(Picopass* picopass) {
-    furi_assert(picopass);
+    furry_assert(picopass);
 
     // Picopass device
     picopass_device_free(picopass->dev);
@@ -124,11 +124,11 @@ void picopass_free(Picopass* picopass) {
     scene_manager_free(picopass->scene_manager);
 
     // GUI
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     picopass->gui = NULL;
 
     // Notifications
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
     picopass->notifications = NULL;
 
     free(picopass);
@@ -182,9 +182,9 @@ void picopass_show_loading_popup(void* context, bool show) {
 }
 
 static void picopass_migrate_from_old_folder() {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     storage_common_migrate(storage, "/ext/picopass", STORAGE_APP_DATA_PATH_PREFIX);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 bool picopass_is_memset(const uint8_t* data, const uint8_t pattern, size_t size) {

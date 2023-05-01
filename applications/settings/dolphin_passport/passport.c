@@ -2,15 +2,15 @@
 #include "dolphin/helpers/dolphin_state.h"
 #include <core/check.h>
 #include <core/record.h>
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
-#include <furi_hal_version.h>
+#include <furry_hal_version.h>
 #include "dolphin/dolphin.h"
 #include <xtreme.h>
 #include "math.h"
 
 typedef struct {
-    FuriSemaphore* semaphore;
+    FurrySemaphore* semaphore;
     DolphinStats* stats;
     ViewPort* view_port;
     bool progress_total;
@@ -25,7 +25,7 @@ static void input_callback(InputEvent* input, void* _ctx) {
     }
 
     if((input->type == InputTypeShort) && (input->key == InputKeyBack)) {
-        furi_semaphore_release(ctx->semaphore);
+        furry_semaphore_release(ctx->semaphore);
     }
 }
 
@@ -84,10 +84,10 @@ static void render_callback(Canvas* canvas, void* _ctx) {
     canvas_draw_icon(canvas, 0, 0, xtreme_assets->I_passport_DB);
 
     // portrait
-    furi_assert((stats->level > 0) && (stats->level <= DOLPHIN_LEVEL_COUNT + 1));
+    furry_assert((stats->level > 0) && (stats->level <= DOLPHIN_LEVEL_COUNT + 1));
     canvas_draw_icon(canvas, 11, 2, portrait);
 
-    const char* my_name = furi_hal_version_get_name_ptr();
+    const char* my_name = furry_hal_version_get_name_ptr();
     snprintf(level_str, 12, "Level: %hu", stats->level);
     if(stats->level == DOLPHIN_LEVEL_COUNT + 1) {
         snprintf(xp_str, 12, "Max Level!");
@@ -115,31 +115,31 @@ static void render_callback(Canvas* canvas, void* _ctx) {
 
 int32_t passport_app(void* p) {
     UNUSED(p);
-    FuriSemaphore* semaphore = furi_semaphore_alloc(1, 0);
-    furi_assert(semaphore);
+    FurrySemaphore* semaphore = furry_semaphore_alloc(1, 0);
+    furry_assert(semaphore);
 
     ViewPort* view_port = view_port_alloc();
 
-    Dolphin* dolphin = furi_record_open(RECORD_DOLPHIN);
+    Dolphin* dolphin = furry_record_open(RECORD_DOLPHIN);
     DolphinStats stats = dolphin_stats(dolphin);
     PassportContext* ctx = malloc(sizeof(PassportContext));
     ctx->stats = &stats;
     ctx->view_port = view_port;
     ctx->semaphore = semaphore;
     ctx->progress_total = false;
-    furi_record_close(RECORD_DOLPHIN);
+    furry_record_close(RECORD_DOLPHIN);
     view_port_draw_callback_set(view_port, render_callback, ctx);
     view_port_input_callback_set(view_port, input_callback, ctx);
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
     view_port_update(view_port);
 
-    furi_check(furi_semaphore_acquire(semaphore, FuriWaitForever) == FuriStatusOk);
+    furry_check(furry_semaphore_acquire(semaphore, FurryWaitForever) == FurryStatusOk);
 
     gui_remove_view_port(gui, view_port);
     view_port_free(view_port);
-    furi_record_close(RECORD_GUI);
-    furi_semaphore_free(semaphore);
+    furry_record_close(RECORD_GUI);
+    furry_semaphore_free(semaphore);
     free(ctx);
 
     return 0;

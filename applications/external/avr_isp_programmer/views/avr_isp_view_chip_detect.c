@@ -22,15 +22,15 @@ void avr_isp_chip_detect_view_set_callback(
     AvrIspChipDetectView* instance,
     AvrIspChipDetectViewCallback callback,
     void* context) {
-    furi_assert(instance);
-    furi_assert(callback);
+    furry_assert(instance);
+    furry_assert(callback);
 
     instance->callback = callback;
     instance->context = context;
 }
 
 void avr_isp_chip_detect_set_state(AvrIspChipDetectView* instance, AvrIspChipDetectViewState state) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     with_view_model(
         instance->view, AvrIspChipDetectViewModel * model, { model->state = state; }, true);
@@ -81,7 +81,7 @@ void avr_isp_chip_detect_view_draw(Canvas* canvas, AvrIspChipDetectViewModel* mo
 }
 
 bool avr_isp_chip_detect_view_input(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspChipDetectView* instance = context;
 
@@ -127,7 +127,7 @@ static void avr_isp_chip_detect_detect_chip_callback(
     const char* name,
     bool detect_chip,
     uint32_t flash_size) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspChipDetectView* instance = context;
     with_view_model(
@@ -145,7 +145,7 @@ static void avr_isp_chip_detect_detect_chip_callback(
         true);
 }
 void avr_isp_chip_detect_view_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspChipDetectView* instance = context;
     bool detect_chip = false;
@@ -170,7 +170,7 @@ void avr_isp_chip_detect_view_enter(void* context) {
 }
 
 void avr_isp_chip_detect_view_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspChipDetectView* instance = context;
 
@@ -200,14 +200,14 @@ AvrIspChipDetectView* avr_isp_chip_detect_view_alloc() {
 }
 
 void avr_isp_chip_detect_view_free(AvrIspChipDetectView* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     view_free(instance->view);
     free(instance);
 }
 
 View* avr_isp_chip_detect_view_get_view(AvrIspChipDetectView* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     return instance->view;
 }

@@ -3,14 +3,14 @@
 #define NFC_SCENE_MF_CLASSIC_KEYS_LIST_MAX (100)
 
 void nfc_scene_mf_classic_keys_list_submenu_callback(void* context, uint32_t index) {
-    furi_assert(context);
+    furry_assert(context);
 
     Nfc* nfc = context;
     view_dispatcher_send_custom_event(nfc->view_dispatcher, index);
 }
 
 void nfc_scene_mf_classic_keys_list_popup_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     Nfc* nfc = context;
     view_dispatcher_send_custom_event(nfc->view_dispatcher, NfcCustomEventViewExit);
@@ -19,19 +19,19 @@ void nfc_scene_mf_classic_keys_list_popup_callback(void* context) {
 void nfc_scene_mf_classic_keys_list_prepare(Nfc* nfc, MfClassicDict* dict) {
     Submenu* submenu = nfc->submenu;
     uint32_t index = 0;
-    FuriString* temp_key;
-    temp_key = furi_string_alloc();
+    FurryString* temp_key;
+    temp_key = furry_string_alloc();
 
     submenu_set_header(submenu, "Select key to delete:");
     while(mf_classic_dict_get_next_key_str(dict, temp_key)) {
         char* current_key = (char*)malloc(sizeof(char) * 13);
-        strncpy(current_key, furi_string_get_cstr(temp_key), 12);
+        strncpy(current_key, furry_string_get_cstr(temp_key), 12);
         MfClassicUserKeys_push_back(nfc->mfc_key_strs, current_key);
-        FURI_LOG_D("ListKeys", "Key %lu: %s", index, current_key);
+        FURRY_LOG_D("ListKeys", "Key %lu: %s", index, current_key);
         submenu_add_item(
             submenu, current_key, index++, nfc_scene_mf_classic_keys_list_submenu_callback, nfc);
     }
-    furi_string_free(temp_key);
+    furry_string_free(temp_key);
 }
 
 void nfc_scene_mf_classic_keys_list_on_enter(void* context) {

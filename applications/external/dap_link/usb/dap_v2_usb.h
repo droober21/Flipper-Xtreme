@@ -1,8 +1,8 @@
 #pragma once
-#include <furi_hal_usb.h>
+#include <furry_hal_usb.h>
 #include <usb_cdc.h>
 
-extern FuriHalUsbInterface dap_v2_usb_hid;
+extern FurryHalUsbInterface dap_v2_usb_hid;
 
 // receive callback type
 typedef void (*DapRxCallback)(void* context);

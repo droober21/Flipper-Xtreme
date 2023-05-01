@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <input/input.h>
 #include <gui/gui.h>
 #include <stdlib.h>
@@ -65,7 +65,7 @@ typedef enum {
 typedef struct {
     const char* name; // Name to show to the user.
     const char* id; // Identifier in the Flipper API/file.
-    FuriHalSubGhzPreset preset; // The preset ID.
+    FurryHalSubGhzPreset preset; // The preset ID.
     uint8_t* custom; /* If not null, a set of registers for
                                        the CC1101, specifying a custom preset.*/
     uint32_t duration_filter; /* Ignore pulses and gaps that are less
@@ -105,12 +105,12 @@ struct ProtoViewApp {
     ViewPort* view_port; /* We just use a raw viewport and we render
                                 everything into the low level canvas. */
     ProtoViewCurrentView current_view; /* Active left-right view ID. */
-    FuriMutex* view_updating_mutex; /* The Flipper GUI calls the screen redraw
+    FurryMutex* view_updating_mutex; /* The Flipper GUI calls the screen redraw
                                        callback in a different thread. We
                                        use this mutex to protect the redraw
                                        from changes in app->view_privdata. */
     int current_subview[ViewLast]; /* Active up-down subview ID. */
-    FuriMessageQueue* event_queue; /* Keypress events go here. */
+    FurryMessageQueue* event_queue; /* Keypress events go here. */
 
     /* Input text state. */
     ViewDispatcher* view_dispatcher; /* Used only when we want to show
@@ -247,7 +247,7 @@ void radio_rx_end(ProtoViewApp* app);
 void radio_sleep(ProtoViewApp* app);
 void raw_sampling_worker_start(ProtoViewApp* app);
 void raw_sampling_worker_stop(ProtoViewApp* app);
-void radio_tx_signal(ProtoViewApp* app, FuriHalSubGhzAsyncTxCallback data_feeder, void* ctx);
+void radio_tx_signal(ProtoViewApp* app, FurryHalSubGhzAsyncTxCallback data_feeder, void* ctx);
 void protoview_rx_callback(bool level, uint32_t duration, void* context);
 
 /* signal.c */

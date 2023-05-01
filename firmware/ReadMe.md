@@ -3,8 +3,8 @@
 What does it do?
 
 - [x] RTOS
-- [x] FuriHAL
-- [x] FuriCore
+- [x] FurryHAL
+- [x] FurryCore
 - [x] Services
 - [x] Applications
 

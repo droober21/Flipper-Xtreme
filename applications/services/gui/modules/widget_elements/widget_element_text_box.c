@@ -8,16 +8,16 @@ typedef struct {
     uint8_t height;
     Align horizontal;
     Align vertical;
-    FuriString* text;
+    FurryString* text;
     bool strip_to_dots;
 } GuiTextBoxModel;
 
 static void gui_text_box_draw(Canvas* canvas, WidgetElement* element) {
-    furi_assert(canvas);
-    furi_assert(element);
+    furry_assert(canvas);
+    furry_assert(element);
     GuiTextBoxModel* model = element->model;
 
-    if(furi_string_size(model->text)) {
+    if(furry_string_size(model->text)) {
         elements_text_box(
             canvas,
             model->x,
@@ -26,16 +26,16 @@ static void gui_text_box_draw(Canvas* canvas, WidgetElement* element) {
             model->height,
             model->horizontal,
             model->vertical,
-            furi_string_get_cstr(model->text),
+            furry_string_get_cstr(model->text),
             model->strip_to_dots);
     }
 }
 
 static void gui_text_box_free(WidgetElement* gui_string) {
-    furi_assert(gui_string);
+    furry_assert(gui_string);
 
     GuiTextBoxModel* model = gui_string->model;
-    furi_string_free(model->text);
+    furry_string_free(model->text);
     free(gui_string->model);
     free(gui_string);
 }
@@ -49,7 +49,7 @@ WidgetElement* widget_element_text_box_create(
     Align vertical,
     const char* text,
     bool strip_to_dots) {
-    furi_assert(text);
+    furry_assert(text);
 
     // Allocate and init model
     GuiTextBoxModel* model = malloc(sizeof(GuiTextBoxModel));
@@ -59,7 +59,7 @@ WidgetElement* widget_element_text_box_create(
     model->height = height;
     model->horizontal = horizontal;
     model->vertical = vertical;
-    model->text = furi_string_alloc_set(text);
+    model->text = furry_string_alloc_set(text);
     model->strip_to_dots = strip_to_dots;
 
     // Allocate and init Element

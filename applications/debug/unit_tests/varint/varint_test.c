@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include "../minunit.h"
 #include <toolbox/varint.h>
 #include <toolbox/profiler.h>

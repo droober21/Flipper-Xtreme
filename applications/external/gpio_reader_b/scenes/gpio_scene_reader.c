@@ -1,7 +1,7 @@
 #include "../gpio_app_i.h"
 
 void gpio_scene_reader_ok_callback(InputType type, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     GpioApp* app = context;
 
     if(type == InputTypePress) {

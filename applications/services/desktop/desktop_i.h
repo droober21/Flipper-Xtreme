@@ -11,7 +11,7 @@
 #include "views/desktop_view_slideshow.h"
 #include <desktop/desktop_settings.h>
 
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <gui/view_stack.h>
 #include <gui/view_dispatcher.h>
@@ -37,7 +37,7 @@ typedef enum {
 
 struct Desktop {
     // Scene
-    FuriThread* scene_thread;
+    FurryThread* scene_thread;
     // GUI
     Gui* gui;
     ViewDispatcher* view_dispatcher;
@@ -65,10 +65,10 @@ struct Desktop {
     Loader* loader;
     NotificationApp* notification;
 
-    FuriPubSubSubscription* app_start_stop_subscription;
-    FuriPubSub* input_events_pubsub;
-    FuriPubSubSubscription* input_events_subscription;
-    FuriTimer* auto_lock_timer;
+    FurryPubSubSubscription* app_start_stop_subscription;
+    FurryPubSub* input_events_pubsub;
+    FurryPubSubSubscription* input_events_subscription;
+    FurryTimer* auto_lock_timer;
 
     bool in_transition;
 };

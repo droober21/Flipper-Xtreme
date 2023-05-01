@@ -8,22 +8,22 @@ void flipfrid_scene_entrypoint_menu_callback(
     case FlipFridAttackDefaultValues:
         context->attack = FlipFridAttackDefaultValues;
         context->current_scene = SceneAttack;
-        furi_string_set(context->attack_name, "Default Values");
+        furry_string_set(context->attack_name, "Default Values");
         break;
     case FlipFridAttackBfCustomerId:
         context->attack = FlipFridAttackBfCustomerId;
         context->current_scene = SceneAttack;
-        furi_string_set(context->attack_name, "Bad Customer ID");
+        furry_string_set(context->attack_name, "Bad Customer ID");
         break;
     case FlipFridAttackLoadFile:
         context->attack = FlipFridAttackLoadFile;
         context->current_scene = SceneSelectFile;
-        furi_string_set(context->attack_name, "Load File");
+        furry_string_set(context->attack_name, "Load File");
         break;
     case FlipFridAttackLoadFileCustomUids:
         context->attack = FlipFridAttackLoadFileCustomUids;
         context->current_scene = SceneLoadCustomUids;
-        furi_string_set(context->attack_name, "Load Custom UIDs");
+        furry_string_set(context->attack_name, "Load Custom UIDs");
         break;
     default:
         break;
@@ -32,19 +32,19 @@ void flipfrid_scene_entrypoint_menu_callback(
     switch(proto_index) {
     case EM4100:
         context->proto = EM4100;
-        furi_string_set(context->proto_name, "EM4100");
+        furry_string_set(context->proto_name, "EM4100");
         break;
     case HIDProx:
         context->proto = HIDProx;
-        furi_string_set(context->proto_name, "HIDProx");
+        furry_string_set(context->proto_name, "HIDProx");
         break;
     case PAC:
         context->proto = PAC;
-        furi_string_set(context->proto_name, "PAC/Stanley");
+        furry_string_set(context->proto_name, "PAC/Stanley");
         break;
     case H10301:
         context->proto = H10301;
-        furi_string_set(context->proto_name, "H10301");
+        furry_string_set(context->proto_name, "H10301");
         break;
     default:
         break;
@@ -62,12 +62,12 @@ void flipfrid_scene_entrypoint_on_enter(FlipFridState* context) {
 
     context->menu_index = 0;
     /*for(uint32_t i = 0; i < 4; i++) {
-        menu_items[i] = furi_string_alloc();
+        menu_items[i] = furry_string_alloc();
     }*/
 
     context->menu_proto_index = 0;
     /*for(uint32_t i = 0; i < 4; i++) {
-        menu_proto_items[i] = furi_string_alloc();
+        menu_proto_items[i] = furry_string_alloc();
     }*/
 }
 
@@ -135,7 +135,7 @@ void flipfrid_scene_entrypoint_on_draw(Canvas* canvas, FlipFridState* context) {
                     24,
                     AlignCenter,
                     AlignTop,
-                    furi_string_get_cstr(context->main_menu_items[context->menu_index - 1]));
+                    furry_string_get_cstr(context->main_menu_items[context->menu_index - 1]));
             }
 
             canvas_set_font(canvas, FontPrimary);
@@ -145,7 +145,7 @@ void flipfrid_scene_entrypoint_on_draw(Canvas* canvas, FlipFridState* context) {
                 36,
                 AlignCenter,
                 AlignTop,
-                furi_string_get_cstr(context->main_menu_items[context->menu_index]));
+                furry_string_get_cstr(context->main_menu_items[context->menu_index]));
 
             if(context->menu_index < FlipFridAttackLoadFileCustomUids) {
                 canvas_set_font(canvas, FontSecondary);
@@ -155,7 +155,7 @@ void flipfrid_scene_entrypoint_on_draw(Canvas* canvas, FlipFridState* context) {
                     48,
                     AlignCenter,
                     AlignTop,
-                    furi_string_get_cstr(context->main_menu_items[context->menu_index + 1]));
+                    furry_string_get_cstr(context->main_menu_items[context->menu_index + 1]));
             }
 
             if(context->menu_proto_index > EM4100) {
@@ -166,7 +166,7 @@ void flipfrid_scene_entrypoint_on_draw(Canvas* canvas, FlipFridState* context) {
                     -12,
                     AlignCenter,
                     AlignTop,
-                    furi_string_get_cstr(
+                    furry_string_get_cstr(
                         context->main_menu_proto_items[context->menu_proto_index - 1]));
             }
 
@@ -180,7 +180,7 @@ void flipfrid_scene_entrypoint_on_draw(Canvas* canvas, FlipFridState* context) {
                 4,
                 AlignCenter,
                 AlignTop,
-                furi_string_get_cstr(context->main_menu_proto_items[context->menu_proto_index]));
+                furry_string_get_cstr(context->main_menu_proto_items[context->menu_proto_index]));
 
             canvas_set_font(canvas, FontPrimary);
             canvas_draw_str_aligned(canvas, 101, 4, AlignCenter, AlignTop, ">");
@@ -193,7 +193,7 @@ void flipfrid_scene_entrypoint_on_draw(Canvas* canvas, FlipFridState* context) {
                     -12,
                     AlignCenter,
                     AlignTop,
-                    furi_string_get_cstr(
+                    furry_string_get_cstr(
                         context->main_menu_proto_items[context->menu_proto_index + 1]));
             }
         }

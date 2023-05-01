@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-#include <furi.h>
+#include <furry.h>
 
 typedef enum {
     U2fNotifyRegister,

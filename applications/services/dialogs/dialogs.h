@@ -1,5 +1,5 @@
 #pragma once
-#include <furi.h>
+#include <furry.h>
 #include <gui/canvas.h>
 #include <gui/modules/file_browser.h>
 
@@ -59,8 +59,8 @@ void dialog_file_browser_set_basic_options(
  */
 bool dialog_file_browser_show(
     DialogsApp* context,
-    FuriString* result_path,
-    FuriString* path,
+    FurryString* result_path,
+    FurryString* path,
     const DialogsFileBrowserOptions* options);
 
 /****************** MESSAGE ******************/

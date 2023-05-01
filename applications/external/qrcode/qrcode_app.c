@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 
 #include <dialogs/dialogs.h>
 #include <gui/gui.h>
@@ -49,12 +49,12 @@ static const uint16_t MAX_LENGTH[3][4][MAX_QRCODE_VERSION] = {
 
 /** Main app instance */
 typedef struct {
-    FuriMessageQueue* input_queue;
+    FurryMessageQueue* input_queue;
     Gui* gui;
     ViewPort* view_port;
 
-    FuriMutex** mutex;
-    FuriString* message;
+    FurryMutex** mutex;
+    FurryString* message;
     QRCode* qrcode;
     uint8_t min_version;
     uint8_t max_ecc_at_min_version;
@@ -111,11 +111,11 @@ static char get_mode_char(uint8_t mode) {
  * @param ctx Context provided to the callback by view_port_draw_callback_set
  */
 static void render_callback(Canvas* canvas, void* ctx) {
-    furi_assert(canvas);
-    furi_assert(ctx);
+    furry_assert(canvas);
+    furry_assert(ctx);
 
     QRCodeApp* instance = ctx;
-    furi_check(furi_mutex_acquire(instance->mutex, FuriWaitForever) == FuriStatusOk);
+    furry_check(furry_mutex_acquire(instance->mutex, FurryWaitForever) == FurryStatusOk);
 
     canvas_clear(canvas);
     canvas_set_color(canvas, ColorBlack);
@@ -153,11 +153,11 @@ static void render_callback(Canvas* canvas, void* ctx) {
             top = 10;
             left = 66;
 
-            FuriString* str = furi_string_alloc();
+            FurryString* str = furry_string_alloc();
 
             if(!instance->edit || instance->selected_idx == 0) {
-                furi_string_printf(str, "Ver: %i", instance->set_version);
-                canvas_draw_str(canvas, left + 5, top + font_height, furi_string_get_cstr(str));
+                furry_string_printf(str, "Ver: %i", instance->set_version);
+                canvas_draw_str(canvas, left + 5, top + font_height, furry_string_get_cstr(str));
                 if(instance->selected_idx == 0) {
                     canvas_draw_triangle(
                         canvas,
@@ -182,9 +182,9 @@ static void render_callback(Canvas* canvas, void* ctx) {
             }
 
             if(!instance->edit || instance->selected_idx == 1) {
-                furi_string_printf(str, "ECC: %c", get_ecc_char(instance->set_ecc));
+                furry_string_printf(str, "ECC: %c", get_ecc_char(instance->set_ecc));
                 canvas_draw_str(
-                    canvas, left + 5, 2 * font_height + top + 2, furi_string_get_cstr(str));
+                    canvas, left + 5, 2 * font_height + top + 2, furry_string_get_cstr(str));
                 if(instance->selected_idx == 1) {
                     canvas_draw_triangle(
                         canvas,
@@ -214,12 +214,12 @@ static void render_callback(Canvas* canvas, void* ctx) {
             }
 
             if(!instance->edit) {
-                furi_string_printf(str, "Mod: %c", get_mode_char(instance->qrcode->mode));
+                furry_string_printf(str, "Mod: %c", get_mode_char(instance->qrcode->mode));
                 canvas_draw_str(
-                    canvas, left + 5, 3 * font_height + top + 4, furi_string_get_cstr(str));
+                    canvas, left + 5, 3 * font_height + top + 4, furry_string_get_cstr(str));
             }
 
-            furi_string_free(str);
+            furry_string_free(str);
         }
     } else {
         uint8_t margin = (height - font_height * 2) / 3;
@@ -231,7 +231,7 @@ static void render_callback(Canvas* canvas, void* ctx) {
         }
     }
 
-    furi_mutex_release(instance->mutex);
+    furry_mutex_release(instance->mutex);
 }
 
 /**
@@ -240,11 +240,11 @@ static void render_callback(Canvas* canvas, void* ctx) {
  * @param ctx Context provided to the callback by view_port_input_callback_set
  */
 static void input_callback(InputEvent* input_event, void* ctx) {
-    furi_assert(input_event);
-    furi_assert(ctx);
+    furry_assert(input_event);
+    furry_assert(ctx);
     if(input_event->type == InputTypeShort) {
         QRCodeApp* instance = ctx;
-        furi_message_queue_put(instance->input_queue, input_event, 0);
+        furry_message_queue_put(instance->input_queue, input_event, 0);
     }
 }
 
@@ -254,7 +254,7 @@ static void input_callback(InputEvent* input_event, void* ctx) {
  * @returns true if the string is all numeric
  */
 static bool is_numeric(const char* str, uint16_t len) {
-    furi_assert(str);
+    furry_assert(str);
     while(len > 0) {
         char c = str[--len];
         if(c < '0' || c > '9') return false;
@@ -268,7 +268,7 @@ static bool is_numeric(const char* str, uint16_t len) {
  * @returns true if the string is alphanumeric
  */
 static bool is_alphanumeric(const char* str, uint16_t len) {
-    furi_assert(str);
+    furry_assert(str);
     while(len > 0) {
         char c = str[--len];
         if(c >= '0' && c <= '9') continue;
@@ -297,7 +297,7 @@ static QRCode* qrcode_alloc(uint8_t version) {
  * @param qrcode The QRCode to free
  */
 static void qrcode_free(QRCode* qrcode) {
-    furi_assert(qrcode);
+    furry_assert(qrcode);
     free(qrcode->modules);
     free(qrcode);
 }
@@ -313,17 +313,17 @@ static void qrcode_free(QRCode* qrcode) {
  * @returns true if the qrcode was successfully created
  */
 static bool rebuild_qrcode(QRCodeApp* instance, uint8_t version, uint8_t ecc) {
-    furi_assert(instance);
-    furi_assert(instance->message);
+    furry_assert(instance);
+    furry_assert(instance->message);
 
-    const char* cstr = furi_string_get_cstr(instance->message);
+    const char* cstr = furry_string_get_cstr(instance->message);
     uint16_t len = strlen(cstr);
     instance->qrcode = qrcode_alloc(version);
 
     int8_t res = qrcode_initBytes(
         instance->qrcode, instance->qrcode->modules, version, ecc, (uint8_t*)cstr, len);
     if(res != 0) {
-        FURI_LOG_E(TAG, "Could not create qrcode");
+        FURRY_LOG_E(TAG, "Could not create qrcode");
 
         qrcode_free(instance->qrcode);
         instance->qrcode = NULL;
@@ -339,13 +339,13 @@ static bool rebuild_qrcode(QRCodeApp* instance, uint8_t version, uint8_t ecc) {
  * @param str The message to encode as a qrcode
  * @returns true if the string was successfully loaded
  */
-static bool qrcode_load_string(QRCodeApp* instance, FuriString* str) {
-    furi_assert(instance);
-    furi_assert(str);
+static bool qrcode_load_string(QRCodeApp* instance, FurryString* str) {
+    furry_assert(instance);
+    furry_assert(str);
 
-    furi_check(furi_mutex_acquire(instance->mutex, FuriWaitForever) == FuriStatusOk);
+    furry_check(furry_mutex_acquire(instance->mutex, FurryWaitForever) == FurryStatusOk);
     if(instance->message) {
-        furi_string_free(instance->message);
+        furry_string_free(instance->message);
         instance->message = NULL;
     }
     if(instance->qrcode) {
@@ -359,12 +359,12 @@ static bool qrcode_load_string(QRCodeApp* instance, FuriString* str) {
 
     bool result = false;
     do {
-        const char* cstr = furi_string_get_cstr(str);
+        const char* cstr = furry_string_get_cstr(str);
         uint16_t len = strlen(cstr);
 
-        instance->message = furi_string_alloc_set(str);
+        instance->message = furry_string_alloc_set(str);
         if(!instance->message) {
-            FURI_LOG_E(TAG, "Could not allocate message");
+            FURRY_LOG_E(TAG, "Could not allocate message");
             break;
         }
 
@@ -403,7 +403,7 @@ static bool qrcode_load_string(QRCodeApp* instance, FuriString* str) {
 
         // Build the qrcode
         if(!rebuild_qrcode(instance, version, ecc)) {
-            furi_string_free(instance->message);
+            furry_string_free(instance->message);
             instance->message = NULL;
             break;
         }
@@ -415,7 +415,7 @@ static bool qrcode_load_string(QRCodeApp* instance, FuriString* str) {
 
     instance->loading = false;
 
-    furi_mutex_release(instance->mutex);
+    furry_mutex_release(instance->mutex);
 
     return result;
 }
@@ -427,13 +427,13 @@ static bool qrcode_load_string(QRCodeApp* instance, FuriString* str) {
  * @returns true if the file was successfully loaded
  */
 static bool qrcode_load_file(QRCodeApp* instance, const char* file_path) {
-    furi_assert(instance);
-    furi_assert(file_path);
+    furry_assert(instance);
+    furry_assert(file_path);
 
-    FuriString* temp_str = furi_string_alloc();
+    FurryString* temp_str = furry_string_alloc();
     bool result = false;
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* file = flipper_format_file_alloc(storage);
 
     do {
@@ -441,13 +441,13 @@ static bool qrcode_load_file(QRCodeApp* instance, const char* file_path) {
 
         uint32_t version = 0;
         if(!flipper_format_read_header(file, temp_str, &version)) break;
-        if(furi_string_cmp_str(temp_str, QRCODE_FILETYPE) || version != QRCODE_FILE_VERSION) {
-            FURI_LOG_E(TAG, "Incorrect file format or version");
+        if(furry_string_cmp_str(temp_str, QRCODE_FILETYPE) || version != QRCODE_FILE_VERSION) {
+            FURRY_LOG_E(TAG, "Incorrect file format or version");
             break;
         }
 
         if(!flipper_format_read_string(file, "Message", temp_str)) {
-            FURI_LOG_E(TAG, "Message is missing");
+            FURRY_LOG_E(TAG, "Message is missing");
             break;
         }
 
@@ -458,9 +458,9 @@ static bool qrcode_load_file(QRCodeApp* instance, const char* file_path) {
         result = true;
     } while(false);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     flipper_format_free(file);
-    furi_string_free(temp_str);
+    furry_string_free(temp_str);
 
     return result;
 }
@@ -472,16 +472,16 @@ static bool qrcode_load_file(QRCodeApp* instance, const char* file_path) {
 static QRCodeApp* qrcode_app_alloc() {
     QRCodeApp* instance = malloc(sizeof(QRCodeApp));
 
-    instance->input_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+    instance->input_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
 
     instance->view_port = view_port_alloc();
     view_port_draw_callback_set(instance->view_port, render_callback, instance);
     view_port_input_callback_set(instance->view_port, input_callback, instance);
 
-    instance->gui = furi_record_open(RECORD_GUI);
+    instance->gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(instance->gui, instance->view_port, GuiLayerFullscreen);
 
-    instance->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    instance->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
 
     instance->message = NULL;
     instance->qrcode = NULL;
@@ -499,17 +499,17 @@ static QRCodeApp* qrcode_app_alloc() {
  * @param qrcode_app The app to free
  */
 static void qrcode_app_free(QRCodeApp* instance) {
-    if(instance->message) furi_string_free(instance->message);
+    if(instance->message) furry_string_free(instance->message);
     if(instance->qrcode) qrcode_free(instance->qrcode);
 
     gui_remove_view_port(instance->gui, instance->view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
     view_port_free(instance->view_port);
 
-    furi_message_queue_free(instance->input_queue);
+    furry_message_queue_free(instance->input_queue);
 
-    furi_mutex_free(instance->mutex);
+    furry_mutex_free(instance->mutex);
 
     free(instance);
 }
@@ -517,13 +517,13 @@ static void qrcode_app_free(QRCodeApp* instance) {
 /** App entrypoint */
 int32_t qrcode_app(void* p) {
     QRCodeApp* instance = qrcode_app_alloc();
-    FuriString* file_path = furi_string_alloc();
+    FurryString* file_path = furry_string_alloc();
 
     do {
         if(p && strlen(p)) {
-            furi_string_set(file_path, (const char*)p);
+            furry_string_set(file_path, (const char*)p);
         } else {
-            furi_string_set(file_path, QRCODE_FOLDER);
+            furry_string_set(file_path, QRCODE_FOLDER);
 
             DialogsFileBrowserOptions browser_options;
             dialog_file_browser_set_basic_options(
@@ -531,28 +531,28 @@ int32_t qrcode_app(void* p) {
             browser_options.hide_ext = true;
             browser_options.base_path = QRCODE_FOLDER;
 
-            DialogsApp* dialogs = furi_record_open(RECORD_DIALOGS);
+            DialogsApp* dialogs = furry_record_open(RECORD_DIALOGS);
             bool res = dialog_file_browser_show(dialogs, file_path, file_path, &browser_options);
 
-            furi_record_close(RECORD_DIALOGS);
+            furry_record_close(RECORD_DIALOGS);
             if(!res) {
-                FURI_LOG_E(TAG, "No file selected");
+                FURRY_LOG_E(TAG, "No file selected");
                 break;
             }
         }
 
-        if(!qrcode_load_file(instance, furi_string_get_cstr(file_path))) {
-            FURI_LOG_E(TAG, "Unable to load file");
+        if(!qrcode_load_file(instance, furry_string_get_cstr(file_path))) {
+            FURRY_LOG_E(TAG, "Unable to load file");
         }
 
         InputEvent input;
-        while(furi_message_queue_get(instance->input_queue, &input, FuriWaitForever) ==
-              FuriStatusOk) {
-            furi_check(furi_mutex_acquire(instance->mutex, FuriWaitForever) == FuriStatusOk);
+        while(furry_message_queue_get(instance->input_queue, &input, FurryWaitForever) ==
+              FurryStatusOk) {
+            furry_check(furry_mutex_acquire(instance->mutex, FurryWaitForever) == FurryStatusOk);
 
             if(input.key == InputKeyBack) {
                 if(instance->message) {
-                    furi_string_free(instance->message);
+                    furry_string_free(instance->message);
                     instance->message = NULL;
                 }
                 if(instance->qrcode) {
@@ -561,7 +561,7 @@ int32_t qrcode_app(void* p) {
                 }
                 instance->loading = true;
                 instance->edit = false;
-                furi_mutex_release(instance->mutex);
+                furry_mutex_release(instance->mutex);
                 break;
             } else if(input.key == InputKeyRight) {
                 instance->show_stats = true;
@@ -608,7 +608,7 @@ int32_t qrcode_app(void* p) {
                         if(rebuild_qrcode(instance, instance->set_version, instance->set_ecc)) {
                             qrcode_free(qrcode);
                         } else {
-                            FURI_LOG_E(TAG, "Could not rebuild qrcode");
+                            FURRY_LOG_E(TAG, "Could not rebuild qrcode");
                             instance->qrcode = qrcode;
                             instance->set_version = qrcode->version;
                             instance->set_ecc = qrcode->ecc;
@@ -620,7 +620,7 @@ int32_t qrcode_app(void* p) {
                 }
             }
 
-            furi_mutex_release(instance->mutex);
+            furry_mutex_release(instance->mutex);
             view_port_update(instance->view_port);
         }
 
@@ -631,7 +631,7 @@ int32_t qrcode_app(void* p) {
         }
     } while(true);
 
-    furi_string_free(file_path);
+    furry_string_free(file_path);
     qrcode_app_free(instance);
 
     return 0;

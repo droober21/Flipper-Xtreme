@@ -17,7 +17,7 @@
 */
 #ifndef UNITEMP_SENSORS
 #define UNITEMP_SENSORS
-#include <furi.h>
+#include <furry.h>
 #include <input/input.h>
 
 //Маски бит для определения типов возвращаемых значений

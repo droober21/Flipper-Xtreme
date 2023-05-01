@@ -17,57 +17,57 @@ bool save_signal(ProtoViewApp* app, const char* filename) {
     /* We have a message at all? */
     if(app->msg_info == NULL || app->msg_info->pulses_count == 0) return false;
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* file = flipper_format_file_alloc(storage);
     Stream* stream = flipper_format_get_raw_stream(file);
-    FuriString* file_content = NULL;
+    FurryString* file_content = NULL;
     bool success = true;
 
     if(flipper_format_file_open_always(file, filename)) {
         /* Write the file header. */
-        FuriString* file_content = furi_string_alloc();
+        FurryString* file_content = furry_string_alloc();
         const char* preset_id = ProtoViewModulations[app->modulation].id;
 
-        furi_string_printf(
+        furry_string_printf(
             file_content,
             "Filetype: Flipper SubGhz RAW File\n"
             "Version: 1\n"
             "Frequency: %ld\n"
             "Preset: %s\n",
             app->frequency,
-            preset_id ? preset_id : "FuriHalSubGhzPresetCustom");
+            preset_id ? preset_id : "FurryHalSubGhzPresetCustom");
 
         /* For custom modulations, we need to emit a set of registers. */
         if(preset_id == NULL) {
-            FuriString* custom = furi_string_alloc();
+            FurryString* custom = furry_string_alloc();
             uint8_t* regs = ProtoViewModulations[app->modulation].custom;
-            furi_string_printf(
+            furry_string_printf(
                 custom,
                 "Custom_preset_module: CC1101\n"
                 "Custom_preset_data: ");
             for(int j = 0; regs[j]; j += 2) {
-                furi_string_cat_printf(custom, "%02X %02X ", (int)regs[j], (int)regs[j + 1]);
+                furry_string_cat_printf(custom, "%02X %02X ", (int)regs[j], (int)regs[j + 1]);
             }
-            size_t len = furi_string_size(file_content);
-            furi_string_set_char(custom, len - 1, '\n');
-            furi_string_cat(file_content, custom);
-            furi_string_free(custom);
+            size_t len = furry_string_size(file_content);
+            furry_string_set_char(custom, len - 1, '\n');
+            furry_string_cat(file_content, custom);
+            furry_string_free(custom);
         }
 
         /* We always save raw files. */
-        furi_string_cat_printf(
+        furry_string_cat_printf(
             file_content,
             "Protocol: RAW\n"
             "RAW_Data: -10000\n"); // Start with 10 ms of gap
 
         /* Write header. */
-        size_t len = furi_string_size(file_content);
-        if(stream_write(stream, (uint8_t*)furi_string_get_cstr(file_content), len) != len) {
-            FURI_LOG_W(TAG, "Short write to file");
+        size_t len = furry_string_size(file_content);
+        if(stream_write(stream, (uint8_t*)furry_string_get_cstr(file_content), len) != len) {
+            FURRY_LOG_W(TAG, "Short write to file");
             success = false;
             goto write_err;
         }
-        furi_string_reset(file_content);
+        furry_string_reset(file_content);
 
         /* Write raw data sections. The Flipper subghz parser can't handle
          * too much data on a single line, so we generate a new one
@@ -93,8 +93,8 @@ bool save_signal(ProtoViewApp* app, const char* filename) {
 
             /* Emit the sample. If this is the first sample of the line,
              * also emit the RAW_Data: field. */
-            if(this_line_samples == 0) furi_string_cat_printf(file_content, "RAW_Data: ");
-            furi_string_cat_printf(file_content, "%d ", (int)dur);
+            if(this_line_samples == 0) furry_string_cat_printf(file_content, "RAW_Data: ");
+            furry_string_cat_printf(file_content, "%d ", (int)dur);
             this_line_samples++;
 
             /* Store the current set of samples on disk, when we reach a
@@ -103,33 +103,33 @@ bool save_signal(ProtoViewApp* app, const char* filename) {
             if(this_line_samples == max_line_samples || end_reached) {
                 /* If that's the end, terminate the signal with a long
                  * gap. */
-                if(end_reached) furi_string_cat_printf(file_content, "-10000 ");
+                if(end_reached) furry_string_cat_printf(file_content, "-10000 ");
 
                 /* We always have a trailing space in the last sample. Make it
                  * a newline. */
-                size_t len = furi_string_size(file_content);
-                furi_string_set_char(file_content, len - 1, '\n');
+                size_t len = furry_string_size(file_content);
+                furry_string_set_char(file_content, len - 1, '\n');
 
-                if(stream_write(stream, (uint8_t*)furi_string_get_cstr(file_content), len) !=
+                if(stream_write(stream, (uint8_t*)furry_string_get_cstr(file_content), len) !=
                    len) {
-                    FURI_LOG_W(TAG, "Short write to file");
+                    FURRY_LOG_W(TAG, "Short write to file");
                     success = false;
                     goto write_err;
                 }
 
                 /* Prepare for next line. */
-                furi_string_reset(file_content);
+                furry_string_reset(file_content);
                 this_line_samples = 0;
             }
         }
     } else {
         success = false;
-        FURI_LOG_W(TAG, "Unable to open file");
+        FURRY_LOG_W(TAG, "Unable to open file");
     }
 
 write_err:
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     flipper_format_free(file);
-    if(file_content != NULL) furi_string_free(file_content);
+    if(file_content != NULL) furry_string_free(file_content);
     return success;
 }

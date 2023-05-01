@@ -6,7 +6,7 @@ InfraredMessage* infrared_decoder_nec_check_ready(void* ctx) {
 }
 
 bool infrared_decoder_nec_interpret(InfraredCommonDecoder* decoder) {
-    furi_assert(decoder);
+    furry_assert(decoder);
 
     bool result = false;
 
@@ -58,7 +58,7 @@ bool infrared_decoder_nec_interpret(InfraredCommonDecoder* decoder) {
 
 // timings start from Space (delay between message and repeat)
 InfraredStatus infrared_decoder_nec_decode_repeat(InfraredCommonDecoder* decoder) {
-    furi_assert(decoder);
+    furry_assert(decoder);
 
     float preamble_tolerance = decoder->protocol->timings.preamble_tolerance;
     uint32_t bit_tolerance = decoder->protocol->timings.bit_tolerance;

@@ -1,8 +1,8 @@
 #include "../file_browser_app_i.h"
-#include <furi.h>
+#include <furry.h>
 
 void file_browser_scene_result_ok_callback(InputType type, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     FileBrowserApp* app = context;
     view_dispatcher_send_custom_event(app->view_dispatcher, type);
 }
@@ -29,7 +29,7 @@ void file_browser_scene_result_on_enter(void* context) {
         AlignCenter,
         AlignTop,
         FontSecondary,
-        furi_string_get_cstr(app->file_path));
+        furry_string_get_cstr(app->file_path));
 
     view_dispatcher_switch_to_view(app->view_dispatcher, FileBrowserAppViewResult);
 }

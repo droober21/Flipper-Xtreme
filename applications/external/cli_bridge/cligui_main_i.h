@@ -1,10 +1,10 @@
 #pragma once
 
-#include <furi.h>
-#include <furi_hal.h>
-#include <furi_hal_version.h>
-#include <furi_hal_usb_cdc.h>
-#include <furi_hal_usb.h>
+#include <furry.h>
+#include <furry_hal.h>
+#include <furry_hal_version.h>
+#include <furry_hal_usb_cdc.h>
+#include <furry_hal_usb.h>
 #include <gui/gui.h>
 #include <gui/view_dispatcher.h>
 #include <gui/modules/text_box.h>
@@ -24,8 +24,8 @@ typedef enum {
 typedef struct {
     CliguiState state;
     struct {
-        FuriStreamBuffer* app_tx;
-        FuriStreamBuffer* app_rx;
+        FurryStreamBuffer* app_tx;
+        FurryStreamBuffer* app_rx;
     } streams;
 } CliguiData;
 
@@ -33,7 +33,7 @@ typedef struct {
     CliguiData* data;
     Gui* gui;
     TextBox* text_box;
-    FuriString* text_box_store;
+    FurryString* text_box_store;
     char text_input_store[TEXT_INPUT_STORE_SIZE + 1];
     TextInput* text_input;
     ViewDispatcher* view_dispatcher;

@@ -14,7 +14,7 @@ InfraredMessage* infrared_decoder_rc5_check_ready(void* ctx) {
 }
 
 bool infrared_decoder_rc5_interpret(InfraredCommonDecoder* decoder) {
-    furi_assert(decoder);
+    furry_assert(decoder);
 
     bool result = false;
     uint32_t* data = (void*)&decoder->data[0];

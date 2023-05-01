@@ -19,7 +19,7 @@ typedef struct {
 } PluginEvent;
 
 typedef struct {
-    FuriMutex* mutex;
+    FurryMutex* mutex;
 } PluginState;
 
 struct FOUND {
@@ -30,7 +30,7 @@ struct FOUND {
 
 typedef struct {
     Gui* gui;
-    FuriMessageQueue* event_queue;
+    FurryMessageQueue* event_queue;
     ViewPort* view_port;
     Storage* storage;
     NotificationApp* notification;

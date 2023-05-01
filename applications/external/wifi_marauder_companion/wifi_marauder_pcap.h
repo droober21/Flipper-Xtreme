@@ -1,6 +1,6 @@
 #pragma once
 
-#include "furi_hal.h"
+#include "furry_hal.h"
 
 /**
  * Creates a PCAP file to store incoming packets.

@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <notification/notification_messages.h>
@@ -30,7 +30,7 @@ typedef struct {
 } PluginEvent;
 
 typedef struct {
-    FuriMutex* mutex;
+    FurryMutex* mutex;
 } PluginState;
 
 char rate_text_fmt[] = "Transfer rate: %dMbps";
@@ -96,9 +96,9 @@ static void insert_addr(uint8_t* addr, uint8_t addr_size) {
 }
 
 static void render_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     const PluginState* plugin_state = ctx;
-    furi_mutex_acquire(plugin_state->mutex, FuriWaitForever);
+    furry_mutex_acquire(plugin_state->mutex, FurryWaitForever);
 
     uint8_t rate = 2;
     char sniffing[] = "Yes";
@@ -126,14 +126,14 @@ static void render_callback(Canvas* const canvas, void* ctx) {
     canvas_draw_str_aligned(canvas, 30, 50, AlignLeft, AlignBottom, addresses_header_text);
     canvas_draw_str_aligned(canvas, 30, 60, AlignLeft, AlignBottom, sniffed_address);
 
-    furi_mutex_release(plugin_state->mutex);
+    furry_mutex_release(plugin_state->mutex);
 }
 
-static void input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     PluginEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 static void hexlify(uint8_t* in, uint8_t size, char* out) {
@@ -189,17 +189,17 @@ static bool save_addr_to_file(
         }
 
         if(found) {
-            FURI_LOG_I(TAG, "Address exists in file. Ending save process.");
+            FURRY_LOG_I(TAG, "Address exists in file. Ending save process.");
             stream_free(stream);
             return false;
         } else {
             if(stream_write(stream, (uint8_t*)addrline, linesize) != linesize) {
-                FURI_LOG_I(TAG, "Failed to write bytes to file stream.");
+                FURRY_LOG_I(TAG, "Failed to write bytes to file stream.");
                 stream_free(stream);
                 return false;
             } else {
-                FURI_LOG_I(TAG, "Found a new address: %s", addrline);
-                FURI_LOG_I(TAG, "Save successful!");
+                FURRY_LOG_I(TAG, "Found a new address: %s", addrline);
+                FURRY_LOG_I(TAG, "Save successful!");
 
                 notification_message(notification, &sequence_success);
 
@@ -209,7 +209,7 @@ static bool save_addr_to_file(
             }
         }
     } else {
-        FURI_LOG_I(TAG, "Cannot open file \"%s\"", filepath);
+        FURRY_LOG_I(TAG, "Cannot open file \"%s\"", filepath);
         stream_free(stream);
         return false;
     }
@@ -274,16 +274,16 @@ static void wrap_up(Storage* storage, NotificationApp* notification) {
         counts[idx] = 0;
         memcpy(addr, candidates[idx], 5);
         hexlify(addr, 5, trying);
-        FURI_LOG_I(TAG, "trying address %s", trying);
+        FURRY_LOG_I(TAG, "trying address %s", trying);
         ch = nrf24_find_channel(nrf24_HANDLE, addr, addr, 5, rate, 2, LOGITECH_MAX_CHANNEL, false);
-        FURI_LOG_I(TAG, "find_channel returned %d", (int)ch);
+        FURRY_LOG_I(TAG, "find_channel returned %d", (int)ch);
         if(ch > LOGITECH_MAX_CHANNEL) {
             alt_address(addr, altaddr);
             hexlify(altaddr, 5, trying);
-            FURI_LOG_I(TAG, "trying alternate address %s", trying);
+            FURRY_LOG_I(TAG, "trying alternate address %s", trying);
             ch = nrf24_find_channel(
                 nrf24_HANDLE, altaddr, altaddr, 5, rate, 2, LOGITECH_MAX_CHANNEL, false);
-            FURI_LOG_I(TAG, "find_channel returned %d", (int)ch);
+            FURRY_LOG_I(TAG, "find_channel returned %d", (int)ch);
             memcpy(addr, altaddr, 5);
         }
 
@@ -319,12 +319,12 @@ int32_t nrfsniff_app(void* p) {
     uint8_t address[5] = {0};
     uint32_t start = 0;
     hexlify(address, 5, top_address);
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(PluginEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(PluginEvent));
     PluginState* plugin_state = malloc(sizeof(PluginState));
-    plugin_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    plugin_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!plugin_state->mutex) {
-        furi_message_queue_free(event_queue);
-        FURI_LOG_E(TAG, "cannot create mutex\r\n");
+        furry_message_queue_free(event_queue);
+        FURRY_LOG_E(TAG, "cannot create mutex\r\n");
         free(plugin_state);
         return 255;
     }
@@ -337,20 +337,20 @@ int32_t nrfsniff_app(void* p) {
     view_port_input_callback_set(view_port, input_callback, event_queue);
 
     // Open GUI and register view_port
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
-    NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+    NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     storage_common_mkdir(storage, NRFSNIFF_APP_PATH_FOLDER);
 
     PluginEvent event;
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 100);
-        furi_mutex_acquire(plugin_state->mutex, FuriWaitForever);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 100);
+        furry_mutex_acquire(plugin_state->mutex, FurryWaitForever);
 
-        if(event_status == FuriStatusOk) {
+        if(event_status == FurryStatusOk) {
             // press events
             if(event.type == EventTypeKey) {
                 if(event.input.type == InputTypePress ||
@@ -393,7 +393,7 @@ int32_t nrfsniff_app(void* p) {
                         if(sniffing_state) {
                             clear_cache();
                             start_sniffing();
-                            start = furi_get_tick();
+                            start = furry_get_tick();
                         } else
                             wrap_up(storage, notification);
                         break;
@@ -423,7 +423,7 @@ int32_t nrfsniff_app(void* p) {
                 }
             }
 
-            if(furi_get_tick() - start >= sample_time) {
+            if(furry_get_tick() - start >= sample_time) {
                 target_channel++;
                 if(target_channel > LOGITECH_MAX_CHANNEL) target_channel = 2;
                 {
@@ -431,12 +431,12 @@ int32_t nrfsniff_app(void* p) {
                     start_sniffing();
                 }
 
-                start = furi_get_tick();
+                start = furry_get_tick();
             }
         }
 
         view_port_update(view_port);
-        furi_mutex_release(plugin_state->mutex);
+        furry_mutex_release(plugin_state->mutex);
     }
 
     clear_cache();
@@ -446,12 +446,12 @@ int32_t nrfsniff_app(void* p) {
     nrf24_deinit();
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_STORAGE);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_mutex_free(plugin_state->mutex);
+    furry_message_queue_free(event_queue);
+    furry_mutex_free(plugin_state->mutex);
     free(plugin_state);
 
     return 0;

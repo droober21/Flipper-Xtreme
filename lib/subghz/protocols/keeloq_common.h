@@ -2,7 +2,7 @@
 
 #include "base.h"
 
-#include <furi.h>
+#include <furry.h>
 
 /*
  * Keeloq

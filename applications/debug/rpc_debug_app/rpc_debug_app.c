@@ -4,27 +4,27 @@
 #include <string.h>
 
 static bool rpc_debug_app_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     RpcDebugApp* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool rpc_debug_app_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     RpcDebugApp* app = context;
     return scene_manager_handle_back_event(app->scene_manager);
 }
 
 static void rpc_debug_app_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     RpcDebugApp* app = context;
     scene_manager_handle_tick_event(app->scene_manager);
 }
 
 static void rpc_debug_app_rpc_command_callback(RpcAppSystemEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     RpcDebugApp* app = context;
-    furi_assert(app->rpc);
+    furry_assert(app->rpc);
 
     if(event == RpcAppEventSessionClose) {
         scene_manager_stop(app->scene_manager);
@@ -57,8 +57,8 @@ static bool rpc_debug_app_rpc_init_rpc(RpcDebugApp* app, const char* args) {
 static RpcDebugApp* rpc_debug_app_alloc() {
     RpcDebugApp* app = malloc(sizeof(RpcDebugApp));
 
-    app->gui = furi_record_open(RECORD_GUI);
-    app->notifications = furi_record_open(RECORD_NOTIFICATION);
+    app->gui = furry_record_open(RECORD_GUI);
+    app->notifications = furry_record_open(RECORD_NOTIFICATION);
     app->scene_manager = scene_manager_alloc(&rpc_debug_app_scene_handlers, app);
     app->view_dispatcher = view_dispatcher_alloc();
 
@@ -107,9 +107,9 @@ static void rpc_debug_app_free(RpcDebugApp* app) {
     free(app->scene_manager);
     free(app->view_dispatcher);
 
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
     app->notifications = NULL;
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     app->gui = NULL;
 
     if(app->rpc) {

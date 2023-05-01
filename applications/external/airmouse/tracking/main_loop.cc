@@ -1,7 +1,7 @@
 #include "main_loop.h"
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #include "imu/imu.h"
 #include "orientation_tracker.h"
@@ -119,7 +119,7 @@ extern "C" {
 
 void calibration_begin() {
     calibration.reset();
-    FURI_LOG_I(TAG, "Calibrating");
+    FURRY_LOG_I(TAG, "Calibrating");
 }
 
 bool calibration_step() {
@@ -129,7 +129,7 @@ bool calibration_step() {
     double vec[6];
     if (imu_read(vec) & GYR_DATA_READY) {
         cardboard::Vector3 data(vec[3], vec[4], vec[5]);
-        furi_delay_ms(9); // Artificially limit to ~100Hz
+        furry_delay_ms(9); // Artificially limit to ~100Hz
         return calibration.add(data);
     }
 
@@ -154,7 +154,7 @@ void tracking_begin() {
         median[2] = store.z;
     }
 
-    ippms = furi_hal_cortex_instructions_per_microsecond();
+    ippms = furry_hal_cortex_instructions_per_microsecond();
     ippms2 = ippms / 2;
     tracker.SetCalibration(median);
     tracker.Resume();

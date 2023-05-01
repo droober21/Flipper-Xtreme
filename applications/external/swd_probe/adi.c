@@ -1,5 +1,5 @@
 
-#include <furi.h>
+#include <furry.h>
 #include <stdlib.h>
 
 #include "adi.h"
@@ -883,16 +883,16 @@ bool adi_get_pidr(AppFSM* const ctx, uint32_t base, pidr_data_t* data) {
     uint32_t pidrs[7];
     uint32_t offsets[] = {0xFE0, 0xFE4, 0xFE8, 0xFEC, 0xFD0, 0xFD4, 0xFD8, 0xFDC};
 
-    furi_mutex_acquire(ctx->swd_mutex, FuriWaitForever);
+    furry_mutex_acquire(ctx->swd_mutex, FurryWaitForever);
     for(size_t pos = 0; pos < COUNT(pidrs); pos++) {
         uint8_t ret = swd_read_memory(ctx, ctx->ap_pos, base + offsets[pos], &pidrs[pos]);
         if(ret != 1) {
             DBGS("Read failed");
-            furi_mutex_release(ctx->swd_mutex);
+            furry_mutex_release(ctx->swd_mutex);
             return false;
         }
     }
-    furi_mutex_release(ctx->swd_mutex);
+    furry_mutex_release(ctx->swd_mutex);
 
     data->designer = ((pidrs[4] & 0x0F) << 7) | ((pidrs[2] & 0x07) << 4) |
                      ((pidrs[1] >> 4) & 0x0F);
@@ -909,16 +909,16 @@ bool adi_get_class(AppFSM* const ctx, uint32_t base, uint8_t* class) {
     uint32_t cidrs[4];
     uint32_t offsets[] = {0xFF0, 0xFF4, 0xFF8, 0xFFC};
 
-    furi_mutex_acquire(ctx->swd_mutex, FuriWaitForever);
+    furry_mutex_acquire(ctx->swd_mutex, FurryWaitForever);
     for(size_t pos = 0; pos < COUNT(cidrs); pos++) {
         uint8_t ret = swd_read_memory(ctx, ctx->ap_pos, base + offsets[pos], &cidrs[pos]);
         if(ret != 1) {
             DBGS("Read failed");
-            furi_mutex_release(ctx->swd_mutex);
+            furry_mutex_release(ctx->swd_mutex);
             return false;
         }
     }
-    furi_mutex_release(ctx->swd_mutex);
+    furry_mutex_release(ctx->swd_mutex);
 
     if((cidrs[0] & 0xFF) != 0x0D) {
         return false;
@@ -964,7 +964,7 @@ uint32_t adi_romtable_entry_count(AppFSM* const ctx, uint32_t base) {
     uint32_t count = 0;
     uint32_t entry = 0;
 
-    furi_mutex_acquire(ctx->swd_mutex, FuriWaitForever);
+    furry_mutex_acquire(ctx->swd_mutex, FurryWaitForever);
     for(size_t pos = 0; pos < 960; pos++) {
         uint8_t ret = 0;
         for(int tries = 0; tries < 10 && ret != 1; tries++) {
@@ -982,21 +982,21 @@ uint32_t adi_romtable_entry_count(AppFSM* const ctx, uint32_t base) {
         }
         count++;
     }
-    furi_mutex_release(ctx->swd_mutex);
+    furry_mutex_release(ctx->swd_mutex);
     return count;
 }
 
 uint32_t adi_romtable_get(AppFSM* const ctx, uint32_t base, uint32_t pos) {
     uint32_t entry = 0;
 
-    furi_mutex_acquire(ctx->swd_mutex, FuriWaitForever);
+    furry_mutex_acquire(ctx->swd_mutex, FurryWaitForever);
     uint8_t ret = swd_read_memory(ctx, ctx->ap_pos, base + pos * 4, &entry);
     if(ret != 1) {
         DBGS("Read failed");
-        furi_mutex_release(ctx->swd_mutex);
+        furry_mutex_release(ctx->swd_mutex);
         return 0;
     }
-    furi_mutex_release(ctx->swd_mutex);
+    furry_mutex_release(ctx->swd_mutex);
 
     return base + (entry & 0xFFFFF000);
 }

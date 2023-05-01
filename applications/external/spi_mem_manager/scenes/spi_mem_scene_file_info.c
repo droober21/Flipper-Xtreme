@@ -3,13 +3,13 @@
 
 void spi_mem_scene_file_info_on_enter(void* context) {
     SPIMemApp* app = context;
-    FuriString* str = furi_string_alloc();
-    furi_string_printf(str, "Size: %zu KB", spi_mem_file_get_size(app) / 1024);
+    FurryString* str = furry_string_alloc();
+    furry_string_printf(str, "Size: %zu KB", spi_mem_file_get_size(app) / 1024);
     widget_add_string_element(
         app->widget, 64, 9, AlignCenter, AlignBottom, FontPrimary, "File info");
     widget_add_string_element(
-        app->widget, 64, 20, AlignCenter, AlignBottom, FontSecondary, furi_string_get_cstr(str));
-    furi_string_free(str);
+        app->widget, 64, 20, AlignCenter, AlignBottom, FontSecondary, furry_string_get_cstr(str));
+    furry_string_free(str);
     view_dispatcher_switch_to_view(app->view_dispatcher, SPIMemViewWidget);
 }
 

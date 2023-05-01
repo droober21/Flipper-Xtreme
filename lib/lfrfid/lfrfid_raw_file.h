@@ -1,5 +1,5 @@
 #pragma once
-#include <furi.h>
+#include <furry.h>
 #include <storage/storage.h>
 
 #ifdef __cplusplus

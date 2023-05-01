@@ -7,7 +7,7 @@
 #include "application_manifest.h"
 #include "elf/elf_api_interface.h"
 
-#include <furi.h>
+#include <furry.h>
 #include <storage/storage.h>
 
 #include <stdbool.h>
@@ -113,7 +113,7 @@ FlipperApplicationLoadStatus flipper_application_map_to_memory(FlipperApplicatio
  * @param args Object to pass to app's entry point
  * @return Created thread
  */
-FuriThread* flipper_application_spawn(FlipperApplication* app, void* args);
+FurryThread* flipper_application_spawn(FlipperApplication* app, void* args);
 
 /**
  * @brief Check if application is a plugin (not a runnable standalone app)

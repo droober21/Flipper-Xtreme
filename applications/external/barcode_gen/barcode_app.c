@@ -10,47 +10,47 @@
  *                  file_path will be the folder path is nothing is selected
  * @returns true if a file is selected
 */
-static bool select_file(const char* folder, FuriString* file_path) {
-    DialogsApp* dialogs = furi_record_open(RECORD_DIALOGS);
+static bool select_file(const char* folder, FurryString* file_path) {
+    DialogsApp* dialogs = furry_record_open(RECORD_DIALOGS);
     DialogsFileBrowserOptions browser_options;
     dialog_file_browser_set_basic_options(&browser_options, BARCODE_EXTENSION, &I_barcode_10);
     browser_options.base_path = DEFAULT_USER_BARCODES;
-    furi_string_set(file_path, folder);
+    furry_string_set(file_path, folder);
 
     bool res = dialog_file_browser_show(dialogs, file_path, file_path, &browser_options);
 
-    furi_record_close(RECORD_DIALOGS);
+    furry_record_close(RECORD_DIALOGS);
 
     return res;
 }
 
 /**
- * Reads the data from a file and stores them in the FuriStrings raw_type and raw_data
+ * Reads the data from a file and stores them in the FurryStrings raw_type and raw_data
 */
-ErrorCode read_raw_data(FuriString* file_path, FuriString* raw_type, FuriString* raw_data) {
+ErrorCode read_raw_data(FurryString* file_path, FurryString* raw_type, FurryString* raw_data) {
     //Open Storage
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* ff = flipper_format_file_alloc(storage);
 
     ErrorCode reason = OKCode;
 
-    if(!flipper_format_file_open_existing(ff, furi_string_get_cstr(file_path))) {
-        FURI_LOG_E(TAG, "Could not open file %s", furi_string_get_cstr(file_path));
+    if(!flipper_format_file_open_existing(ff, furry_string_get_cstr(file_path))) {
+        FURRY_LOG_E(TAG, "Could not open file %s", furry_string_get_cstr(file_path));
         reason = FileOpening;
     } else {
         if(!flipper_format_read_string(ff, "Type", raw_type)) {
-            FURI_LOG_E(TAG, "Could not read \"Type\" string");
+            FURRY_LOG_E(TAG, "Could not read \"Type\" string");
             reason = InvalidFileData;
         }
         if(!flipper_format_read_string(ff, "Data", raw_data)) {
-            FURI_LOG_E(TAG, "Could not read \"Data\" string");
+            FURRY_LOG_E(TAG, "Could not read \"Data\" string");
             reason = InvalidFileData;
         }
     }
 
     //Close Storage
     flipper_format_free(ff);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return reason;
 }
@@ -58,24 +58,24 @@ ErrorCode read_raw_data(FuriString* file_path, FuriString* raw_type, FuriString*
 /**
  * Gets the file name from a file path
  * @param file_path  the file path
- * @param file_name  the FuriString to store the file name
+ * @param file_name  the FurryString to store the file name
  * @param remove_extension  true if the extension should be removed, otherwise false
 */
-bool get_file_name_from_path(FuriString* file_path, FuriString* file_name, bool remove_extension) {
+bool get_file_name_from_path(FurryString* file_path, FurryString* file_name, bool remove_extension) {
     if(file_path == NULL || file_name == NULL) {
         return false;
     }
-    uint slash_index = furi_string_search_rchar(file_path, '/', 0);
-    if(slash_index == FURI_STRING_FAILURE || slash_index >= (furi_string_size(file_path) - 1)) {
+    uint slash_index = furry_string_search_rchar(file_path, '/', 0);
+    if(slash_index == FURRY_STRING_FAILURE || slash_index >= (furry_string_size(file_path) - 1)) {
         return false;
     }
 
-    furi_string_set(file_name, file_path);
-    furi_string_right(file_name, slash_index + 1);
+    furry_string_set(file_name, file_path);
+    furry_string_right(file_name, slash_index + 1);
     if(remove_extension) {
-        uint ext_index = furi_string_search_rchar(file_name, '.', 0);
-        if(ext_index != FURI_STRING_FAILURE && ext_index < (furi_string_size(file_path))) {
-            furi_string_left(file_name, ext_index);
+        uint ext_index = furry_string_search_rchar(file_name, '.', 0);
+        if(ext_index != FURRY_STRING_FAILURE && ext_index < (furry_string_size(file_path))) {
+            furry_string_left(file_name, ext_index);
         }
     }
 
@@ -86,20 +86,20 @@ bool get_file_name_from_path(FuriString* file_path, FuriString* file_name, bool 
  * Creates the barcode folder
 */
 void init_folder() {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
-    FURI_LOG_I(TAG, "Creating barcodes folder");
+    Storage* storage = furry_record_open(RECORD_STORAGE);
+    FURRY_LOG_I(TAG, "Creating barcodes folder");
     if(storage_simply_mkdir(storage, DEFAULT_USER_BARCODES)) {
-        FURI_LOG_I(TAG, "Barcodes folder successfully created!");
+        FURRY_LOG_I(TAG, "Barcodes folder successfully created!");
     } else {
-        FURI_LOG_I(TAG, "Barcodes folder already exists.");
+        FURRY_LOG_I(TAG, "Barcodes folder already exists.");
     }
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 void select_barcode_item(BarcodeApp* app) {
-    FuriString* file_path = furi_string_alloc();
-    FuriString* raw_type = furi_string_alloc();
-    FuriString* raw_data = furi_string_alloc();
+    FurryString* file_path = furry_string_alloc();
+    FurryString* raw_type = furry_string_alloc();
+    FurryString* raw_data = furry_string_alloc();
 
     //this determines if the data was read correctly or if the
     bool loaded_success = true;
@@ -107,13 +107,13 @@ void select_barcode_item(BarcodeApp* app) {
 
     bool file_selected = select_file(DEFAULT_USER_BARCODES, file_path);
     if(file_selected) {
-        FURI_LOG_I(TAG, "The file selected is %s", furi_string_get_cstr(file_path));
+        FURRY_LOG_I(TAG, "The file selected is %s", furry_string_get_cstr(file_path));
         Barcode* barcode = app->barcode_view;
 
         reason = read_raw_data(file_path, raw_type, raw_data);
         if(reason != OKCode) {
             loaded_success = false;
-            FURI_LOG_E(TAG, "Could not read data correctly");
+            FURRY_LOG_E(TAG, "Could not read data correctly");
         }
 
         //Free the data from the previous barcode
@@ -123,14 +123,14 @@ void select_barcode_item(BarcodeApp* app) {
             barcode->view,
             BarcodeModel * model,
             {
-                model->file_path = furi_string_alloc_set(file_path);
+                model->file_path = furry_string_alloc_set(file_path);
 
                 model->data = malloc(sizeof(BarcodeData));
                 model->data->valid = loaded_success;
 
                 if(loaded_success) {
-                    model->data->raw_data = furi_string_alloc_set(raw_data);
-                    model->data->correct_data = furi_string_alloc();
+                    model->data->raw_data = furry_string_alloc_set(raw_data);
+                    model->data->correct_data = furry_string_alloc();
 
                     model->data->type_obj = get_type(raw_type);
 
@@ -144,28 +144,28 @@ void select_barcode_item(BarcodeApp* app) {
         view_dispatcher_switch_to_view(app->view_dispatcher, BarcodeView);
     }
 
-    furi_string_free(raw_type);
-    furi_string_free(raw_data);
-    furi_string_free(file_path);
+    furry_string_free(raw_type);
+    furry_string_free(raw_data);
+    furry_string_free(file_path);
 }
 
 void edit_barcode_item(BarcodeApp* app) {
-    FuriString* file_path = furi_string_alloc();
-    FuriString* file_name = furi_string_alloc();
-    FuriString* raw_type = furi_string_alloc();
-    FuriString* raw_data = furi_string_alloc();
+    FurryString* file_path = furry_string_alloc();
+    FurryString* file_name = furry_string_alloc();
+    FurryString* raw_type = furry_string_alloc();
+    FurryString* raw_data = furry_string_alloc();
 
     //this determines if the data was read correctly or if the
     ErrorCode reason = OKCode;
 
     bool file_selected = select_file(DEFAULT_USER_BARCODES, file_path);
     if(file_selected) {
-        FURI_LOG_I(TAG, "The file selected is %s", furi_string_get_cstr(file_path));
+        FURRY_LOG_I(TAG, "The file selected is %s", furry_string_get_cstr(file_path));
         CreateView* create_view_object = app->create_view;
 
         reason = read_raw_data(file_path, raw_type, raw_data);
         if(reason != OKCode) {
-            FURI_LOG_E(TAG, "Could not read data correctly");
+            FURRY_LOG_E(TAG, "Could not read data correctly");
             with_view_model(
                 app->message_view->view,
                 MessageViewModel * model,
@@ -189,9 +189,9 @@ void edit_barcode_item(BarcodeApp* app) {
                 {
                     model->selected_menu_item = 0;
                     model->barcode_type = type_obj;
-                    model->file_path = furi_string_alloc_set(file_path);
-                    model->file_name = furi_string_alloc_set(file_name);
-                    model->barcode_data = furi_string_alloc_set(raw_data);
+                    model->file_path = furry_string_alloc_set(file_path);
+                    model->file_name = furry_string_alloc_set(file_name);
+                    model->barcode_data = furry_string_alloc_set(raw_data);
                     model->mode = EditMode;
                 },
                 true);
@@ -199,10 +199,10 @@ void edit_barcode_item(BarcodeApp* app) {
         }
     }
 
-    furi_string_free(raw_type);
-    furi_string_free(raw_data);
-    furi_string_free(file_name);
-    furi_string_free(file_path);
+    furry_string_free(raw_type);
+    furry_string_free(raw_data);
+    furry_string_free(file_name);
+    furry_string_free(file_path);
 }
 
 void create_barcode_item(BarcodeApp* app) {
@@ -216,9 +216,9 @@ void create_barcode_item(BarcodeApp* app) {
         {
             model->selected_menu_item = 0;
             model->barcode_type = barcode_type_objs[0];
-            model->file_path = furi_string_alloc();
-            model->file_name = furi_string_alloc();
-            model->barcode_data = furi_string_alloc();
+            model->file_path = furry_string_alloc();
+            model->file_name = furry_string_alloc();
+            model->barcode_data = furry_string_alloc();
             model->mode = NewMode;
         },
         true);
@@ -226,7 +226,7 @@ void create_barcode_item(BarcodeApp* app) {
 }
 
 void submenu_callback(void* context, uint32_t index) {
-    furi_assert(context);
+    furry_assert(context);
 
     BarcodeApp* app = context;
 
@@ -250,7 +250,7 @@ uint32_t exit_callback(void* context) {
 }
 
 void free_app(BarcodeApp* app) {
-    FURI_LOG_I(TAG, "Freeing Data");
+    FURRY_LOG_I(TAG, "Freeing Data");
 
     init_folder();
     free_types();
@@ -273,9 +273,9 @@ void free_app(BarcodeApp* app) {
     //free the dispatcher
     view_dispatcher_free(app->view_dispatcher);
 
-    furi_message_queue_free(app->event_queue);
+    furry_message_queue_free(app->event_queue);
 
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     app->gui = NULL;
 
     free(app);
@@ -285,10 +285,10 @@ int32_t barcode_main(void* p) {
     UNUSED(p);
     BarcodeApp* app = malloc(sizeof(BarcodeApp));
     init_types();
-    app->event_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+    app->event_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
 
     // Register view port in GUI
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
 
     app->view_dispatcher = view_dispatcher_alloc();
     view_dispatcher_enable_queue(app->view_dispatcher);

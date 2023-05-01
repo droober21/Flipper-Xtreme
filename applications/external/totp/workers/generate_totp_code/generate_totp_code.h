@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdlib.h>
-#include <furi/core/mutex.h>
+#include <furry/core/mutex.h>
 #include "../../types/token_info.h"
 
 typedef uint8_t TotpGenerateCodeWorkerEvent;
@@ -44,7 +44,7 @@ enum TotGenerateCodeWorkerEvents {
 TotpGenerateCodeWorkerContext* totp_generate_code_worker_start(
     char* code_buffer,
     const TokenInfo* token_info,
-    FuriMutex* code_buffer_sync,
+    FurryMutex* code_buffer_sync,
     float timezone_offset,
     uint8_t* iv);
 

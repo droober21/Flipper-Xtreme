@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi_hal_nfc.h>
+#include <furry_hal_nfc.h>
 #include "../nfc_worker.h"
 #include "../nfc_device.h"
 
@@ -15,9 +15,9 @@ typedef enum {
     NfcSupportedCardTypeEnd,
 } NfcSupportedCardType;
 
-typedef bool (*NfcSupportedCardVerify)(NfcWorker* nfc_worker, FuriHalNfcTxRxContext* tx_rx);
+typedef bool (*NfcSupportedCardVerify)(NfcWorker* nfc_worker, FurryHalNfcTxRxContext* tx_rx);
 
-typedef bool (*NfcSupportedCardRead)(NfcWorker* nfc_worker, FuriHalNfcTxRxContext* tx_rx);
+typedef bool (*NfcSupportedCardRead)(NfcWorker* nfc_worker, FurryHalNfcTxRxContext* tx_rx);
 
 typedef bool (*NfcSupportedCardParse)(NfcDeviceData* dev_data);
 

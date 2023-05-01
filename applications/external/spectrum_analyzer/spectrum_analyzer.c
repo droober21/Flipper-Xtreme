@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #include <gui/gui.h>
 #include <input/input.h>
@@ -29,9 +29,9 @@ typedef struct {
 
 typedef struct {
     SpectrumAnalyzerModel* model;
-    FuriMutex* model_mutex;
+    FurryMutex* model_mutex;
 
-    FuriMessageQueue* event_queue;
+    FurryMessageQueue* event_queue;
 
     ViewPort* view_port;
     Gui* gui;
@@ -90,7 +90,7 @@ void spectrum_analyzer_draw_scale(Canvas* canvas, const SpectrumAnalyzerModel* m
 
 static void spectrum_analyzer_render_callback(Canvas* const canvas, void* ctx) {
     SpectrumAnalyzer* spectrum_analyzer = ctx;
-    //furi_check(furi_mutex_acquire(spectrum_analyzer->model_mutex, FuriWaitForever) == FuriStatusOk);
+    //furry_check(furry_mutex_acquire(spectrum_analyzer->model_mutex, FurryWaitForever) == FurryStatusOk);
 
     SpectrumAnalyzerModel* model = spectrum_analyzer->model;
 
@@ -168,16 +168,16 @@ static void spectrum_analyzer_render_callback(Canvas* const canvas, void* ctx) {
         canvas_draw_str_aligned(canvas, 127, 0, AlignRight, AlignTop, temp_str);
     }
 
-    //furi_mutex_release(spectrum_analyzer->model_mutex);
+    //furry_mutex_release(spectrum_analyzer->model_mutex);
 
-    // FURI_LOG_D("Spectrum", "model->vscroll %u", model->vscroll);
+    // FURRY_LOG_D("Spectrum", "model->vscroll %u", model->vscroll);
 }
 
 static void spectrum_analyzer_input_callback(InputEvent* input_event, void* ctx) {
     SpectrumAnalyzer* spectrum_analyzer = ctx;
     // Only handle short presses
     if(input_event->type == InputTypeShort) {
-        furi_message_queue_put(spectrum_analyzer->event_queue, input_event, FuriWaitForever);
+        furry_message_queue_put(spectrum_analyzer->event_queue, input_event, FurryWaitForever);
     }
 }
 
@@ -188,8 +188,8 @@ static void spectrum_analyzer_worker_callback(
     uint8_t max_rssi_channel,
     void* context) {
     SpectrumAnalyzer* spectrum_analyzer = context;
-    furi_check(
-        furi_mutex_acquire(spectrum_analyzer->model_mutex, FuriWaitForever) == FuriStatusOk);
+    furry_check(
+        furry_mutex_acquire(spectrum_analyzer->model_mutex, FurryWaitForever) == FurryStatusOk);
 
     SpectrumAnalyzerModel* model = (SpectrumAnalyzerModel*)spectrum_analyzer->model;
     memcpy(model->channel_ss, (uint8_t*)channel_ss, sizeof(uint8_t) * NUM_CHANNELS);
@@ -197,7 +197,7 @@ static void spectrum_analyzer_worker_callback(
     model->max_rssi_dec = max_rssi_dec;
     model->max_rssi_channel = max_rssi_channel;
 
-    furi_mutex_release(spectrum_analyzer->model_mutex);
+    furry_mutex_release(spectrum_analyzer->model_mutex);
     view_port_update(spectrum_analyzer->view_port);
 }
 
@@ -309,7 +309,7 @@ void spectrum_analyzer_calculate_frequencies(SpectrumAnalyzerModel* model) {
     // max_chan = NUM_CHANNELS / 2;
     // while (hz <= max_hz && max_chan < NUM_CHANNELS) {
     //     instance->chan_table[max_chan].frequency = hz;
-    //     FURI_LOG_T("Spectrum", "calibrate_freq ch[%u]: %lu", max_chan, hz);
+    //     FURRY_LOG_T("Spectrum", "calibrate_freq ch[%u]: %lu", max_chan, hz);
     //     hz += model->spacing;
     //     max_chan++;
     // }
@@ -320,16 +320,16 @@ void spectrum_analyzer_calculate_frequencies(SpectrumAnalyzerModel* model) {
     // while (hz >= min_hz && min_chan > 0) {
     //     min_chan--;
     //     instance->chan_table[min_chan].frequency = hz;
-    //     FURI_LOG_T("Spectrum", "calibrate_freq ch[%u]: %lu", min_chan, hz);
+    //     FURRY_LOG_T("Spectrum", "calibrate_freq ch[%u]: %lu", min_chan, hz);
     //     hz -= model->spacing;
     // }
 
     model->max_rssi = -200.0;
     model->max_rssi_dec = 0;
 
-    FURI_LOG_D("Spectrum", "setup_frequencies - max_hz: %lu - min_hz: %lu", max_hz, min_hz);
-    FURI_LOG_D("Spectrum", "center_freq: %u", model->center_freq);
-    FURI_LOG_D(
+    FURRY_LOG_D("Spectrum", "setup_frequencies - max_hz: %lu - min_hz: %lu", max_hz, min_hz);
+    FURRY_LOG_D("Spectrum", "center_freq: %u", model->center_freq);
+    FURRY_LOG_D(
         "Spectrum",
         "ch[0]: %lu - ch[%u]: %lu",
         model->channel0_frequency,
@@ -356,8 +356,8 @@ SpectrumAnalyzer* spectrum_analyzer_alloc() {
 
     model->vscroll = DEFAULT_VSCROLL;
 
-    instance->model_mutex = furi_mutex_alloc(FuriMutexTypeNormal);
-    instance->event_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+    instance->model_mutex = furry_mutex_alloc(FurryMutexTypeNormal);
+    instance->event_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
 
     instance->worker = spectrum_analyzer_worker_alloc();
 
@@ -370,7 +370,7 @@ SpectrumAnalyzer* spectrum_analyzer_alloc() {
     view_port_input_callback_set(instance->view_port, spectrum_analyzer_input_callback, instance);
 
     // Open GUI and register view_port
-    instance->gui = furi_record_open(RECORD_GUI);
+    instance->gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(instance->gui, instance->view_port, GuiLayerFullscreen);
 
     return instance;
@@ -379,25 +379,25 @@ SpectrumAnalyzer* spectrum_analyzer_alloc() {
 void spectrum_analyzer_free(SpectrumAnalyzer* instance) {
     // view_port_enabled_set(view_port, false);
     gui_remove_view_port(instance->gui, instance->view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(instance->view_port);
 
     spectrum_analyzer_worker_free(instance->worker);
 
-    furi_message_queue_free(instance->event_queue);
+    furry_message_queue_free(instance->event_queue);
 
-    furi_mutex_free(instance->model_mutex);
+    furry_mutex_free(instance->model_mutex);
 
     free(instance->model);
     free(instance);
 
-    furi_hal_subghz_idle();
-    furi_hal_subghz_sleep();
+    furry_hal_subghz_idle();
+    furry_hal_subghz_sleep();
 
     // Disable power for External CC1101 if it was enabled and module is connected
-    furi_hal_subghz_disable_ext_power();
+    furry_hal_subghz_disable_ext_power();
     // Reinit SPI handles for internal radio / nfc
-    furi_hal_subghz_init_radio_type(SubGhzRadioInternal);
+    furry_hal_subghz_init_radio_type(SubGhzRadioInternal);
 }
 
 int32_t spectrum_analyzer_app(void* p) {
@@ -408,30 +408,30 @@ int32_t spectrum_analyzer_app(void* p) {
     InputEvent input;
 
     // Enable power for External CC1101 if it is connected
-    furi_hal_subghz_enable_ext_power();
+    furry_hal_subghz_enable_ext_power();
     // Auto switch to internal radio if external radio is not available
-    furi_delay_ms(15);
-    if(!furi_hal_subghz_check_radio()) {
-        furi_hal_subghz_select_radio_type(SubGhzRadioInternal);
-        furi_hal_subghz_init_radio_type(SubGhzRadioInternal);
+    furry_delay_ms(15);
+    if(!furry_hal_subghz_check_radio()) {
+        furry_hal_subghz_select_radio_type(SubGhzRadioInternal);
+        furry_hal_subghz_init_radio_type(SubGhzRadioInternal);
     }
 
-    furi_hal_power_suppress_charge_enter();
+    furry_hal_power_suppress_charge_enter();
 
-    FURI_LOG_D("Spectrum", "Main Loop - Starting worker");
-    furi_delay_ms(50);
+    FURRY_LOG_D("Spectrum", "Main Loop - Starting worker");
+    furry_delay_ms(50);
 
     spectrum_analyzer_worker_start(spectrum_analyzer->worker);
 
-    FURI_LOG_D("Spectrum", "Main Loop - Wait on queue");
-    furi_delay_ms(50);
+    FURRY_LOG_D("Spectrum", "Main Loop - Wait on queue");
+    furry_delay_ms(50);
 
-    while(furi_message_queue_get(spectrum_analyzer->event_queue, &input, FuriWaitForever) ==
-          FuriStatusOk) {
-        furi_check(
-            furi_mutex_acquire(spectrum_analyzer->model_mutex, FuriWaitForever) == FuriStatusOk);
+    while(furry_message_queue_get(spectrum_analyzer->event_queue, &input, FurryWaitForever) ==
+          FurryStatusOk) {
+        furry_check(
+            furry_mutex_acquire(spectrum_analyzer->model_mutex, FurryWaitForever) == FurryStatusOk);
 
-        FURI_LOG_D("Spectrum", "Main Loop - Input: %u", input.key);
+        FURRY_LOG_D("Spectrum", "Main Loop - Input: %u", input.key);
 
         SpectrumAnalyzerModel* model = spectrum_analyzer->model;
 
@@ -458,15 +458,15 @@ int32_t spectrum_analyzer_app(void* p) {
         switch(input.key) {
         case InputKeyUp:
             model->vscroll = MAX(model->vscroll - vstep, MIN_VSCROLL);
-            FURI_LOG_D("Spectrum", "Vscroll: %u", model->vscroll);
+            FURRY_LOG_D("Spectrum", "Vscroll: %u", model->vscroll);
             break;
         case InputKeyDown:
             model->vscroll = MIN(model->vscroll + vstep, MAX_VSCROLL);
-            FURI_LOG_D("Spectrum", "Vscroll: %u", model->vscroll);
+            FURRY_LOG_D("Spectrum", "Vscroll: %u", model->vscroll);
             break;
         case InputKeyRight:
             model->center_freq += hstep;
-            FURI_LOG_D("Spectrum", "center_freq: %u", model->center_freq);
+            FURRY_LOG_D("Spectrum", "center_freq: %u", model->center_freq);
             spectrum_analyzer_calculate_frequencies(model);
             spectrum_analyzer_worker_set_frequencies(
                 spectrum_analyzer->worker, model->channel0_frequency, model->spacing, model->width);
@@ -476,7 +476,7 @@ int32_t spectrum_analyzer_app(void* p) {
             spectrum_analyzer_calculate_frequencies(model);
             spectrum_analyzer_worker_set_frequencies(
                 spectrum_analyzer->worker, model->channel0_frequency, model->spacing, model->width);
-            FURI_LOG_D("Spectrum", "center_freq: %u", model->center_freq);
+            FURRY_LOG_D("Spectrum", "center_freq: %u", model->center_freq);
             break;
         case InputKeyOk: {
             switch(model->width) {
@@ -501,13 +501,13 @@ int32_t spectrum_analyzer_app(void* p) {
             model->mode_change = true;
             view_port_update(spectrum_analyzer->view_port);
 
-            furi_delay_ms(1000);
+            furry_delay_ms(1000);
 
             model->mode_change = false;
             spectrum_analyzer_calculate_frequencies(model);
             spectrum_analyzer_worker_set_frequencies(
                 spectrum_analyzer->worker, model->channel0_frequency, model->spacing, model->width);
-            FURI_LOG_D("Spectrum", "Width: %u", model->width);
+            FURRY_LOG_D("Spectrum", "Width: %u", model->width);
             break;
         case InputKeyBack:
             exit_loop = true;
@@ -516,14 +516,14 @@ int32_t spectrum_analyzer_app(void* p) {
             break;
         }
 
-        furi_mutex_release(spectrum_analyzer->model_mutex);
+        furry_mutex_release(spectrum_analyzer->model_mutex);
         view_port_update(spectrum_analyzer->view_port);
         if(exit_loop == true) break;
     }
 
     spectrum_analyzer_worker_stop(spectrum_analyzer->worker);
 
-    furi_hal_power_suppress_charge_exit();
+    furry_hal_power_suppress_charge_exit();
 
     spectrum_analyzer_free(spectrum_analyzer);
 

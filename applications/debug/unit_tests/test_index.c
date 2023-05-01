@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include "minunit_vars.h"
 #include <notification/notification_messages.h>
 #include <cli/cli.h>
@@ -8,9 +8,9 @@
 
 #define TAG "UnitTests"
 
-int run_minunit_test_furi();
-int run_minunit_test_furi_hal();
-int run_minunit_test_furi_string();
+int run_minunit_test_furry();
+int run_minunit_test_furry_hal();
+int run_minunit_test_furry_string();
 int run_minunit_test_infrared();
 int run_minunit_test_rpc();
 int run_minunit_test_manifest();
@@ -36,9 +36,9 @@ typedef struct {
 } UnitTest;
 
 const UnitTest unit_tests[] = {
-    {.name = "furi", .entry = run_minunit_test_furi},
-    {.name = "furi_hal", .entry = run_minunit_test_furi_hal},
-    {.name = "furi_string", .entry = run_minunit_test_furi_string},
+    {.name = "furry", .entry = run_minunit_test_furry},
+    {.name = "furry_hal", .entry = run_minunit_test_furry_hal},
+    {.name = "furry_string", .entry = run_minunit_test_furry_string},
     {.name = "storage", .entry = run_minunit_test_storage},
     {.name = "stream", .entry = run_minunit_test_stream},
     {.name = "dirwalk", .entry = run_minunit_test_dirwalk},
@@ -70,10 +70,10 @@ void minunit_print_progress() {
 }
 
 void minunit_print_fail(const char* str) {
-    printf(_FURI_LOG_CLR_E "%s\r\n" _FURI_LOG_CLR_RESET, str);
+    printf(_FURRY_LOG_CLR_E "%s\r\n" _FURRY_LOG_CLR_RESET, str);
 }
 
-void unit_tests_cli(Cli* cli, FuriString* args, void* context) {
+void unit_tests_cli(Cli* cli, FurryString* args, void* context) {
     UNUSED(cli);
     UNUSED(args);
     UNUSED(context);
@@ -82,8 +82,8 @@ void unit_tests_cli(Cli* cli, FuriString* args, void* context) {
     minunit_fail = 0;
     minunit_status = 0;
 
-    Loader* loader = furi_record_open(RECORD_LOADER);
-    NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+    Loader* loader = furry_record_open(RECORD_LOADER);
+    NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
 
     // TODO: lock device while test running
     if(loader_is_locked(loader)) {
@@ -93,15 +93,15 @@ void unit_tests_cli(Cli* cli, FuriString* args, void* context) {
         notification_message_block(notification, &sequence_set_only_blue_255);
 
         uint32_t heap_before = memmgr_get_free_heap();
-        uint32_t cycle_counter = furi_get_tick();
+        uint32_t cycle_counter = furry_get_tick();
 
         for(size_t i = 0; i < COUNT_OF(unit_tests); i++) {
             if(cli_cmd_interrupt_received(cli)) {
                 break;
             }
 
-            if(furi_string_size(args)) {
-                if(furi_string_cmp_str(args, unit_tests[i].name) == 0) {
+            if(furry_string_size(args)) {
+                if(furry_string_cmp_str(args, unit_tests[i].name) == 0) {
                     unit_tests[i].entry();
                 } else {
                     printf("Skipping %s\r\n", unit_tests[i].name);
@@ -115,11 +115,11 @@ void unit_tests_cli(Cli* cli, FuriString* args, void* context) {
             printf("\r\nFailed tests: %u\r\n", minunit_fail);
 
             // Time report
-            cycle_counter = (furi_get_tick() - cycle_counter);
+            cycle_counter = (furry_get_tick() - cycle_counter);
             printf("Consumed: %lu ms\r\n", cycle_counter);
 
             // Wait for tested services and apps to deallocate memory
-            furi_delay_ms(200);
+            furry_delay_ms(200);
             uint32_t heap_after = memmgr_get_free_heap();
             printf("Leaked: %ld\r\n", heap_before - heap_after);
 
@@ -134,16 +134,16 @@ void unit_tests_cli(Cli* cli, FuriString* args, void* context) {
         }
     }
 
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_record_close(RECORD_LOADER);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_LOADER);
 }
 
 void unit_tests_on_system_start() {
 #ifdef SRV_CLI
-    Cli* cli = furi_record_open(RECORD_CLI);
+    Cli* cli = furry_record_open(RECORD_CLI);
 
     // We need to launch apps from tests, so we cannot lock loader
     cli_add_command(cli, "unit_tests", CliCommandFlagParallelSafe, unit_tests_cli, NULL);
-    furi_record_close(RECORD_CLI);
+    furry_record_close(RECORD_CLI);
 #endif
 }

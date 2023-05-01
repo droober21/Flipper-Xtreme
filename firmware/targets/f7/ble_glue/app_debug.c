@@ -6,7 +6,7 @@
 #include <utilities/dbg_trace.h>
 #include <utilities/utilities_common.h>
 
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 typedef PACKED_STRUCT {
     GPIO_TypeDef* port;
@@ -257,7 +257,7 @@ void DbgOutputInit(void) {
 }
 
 void DbgOutputTraces(uint8_t* p_data, uint16_t size, void (*cb)(void)) {
-    furi_hal_console_tx(p_data, size);
+    furry_hal_console_tx(p_data, size);
     cb();
 }
 #endif

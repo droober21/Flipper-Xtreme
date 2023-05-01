@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <gui/elements.h>
 #include <gui/canvas.h>
 #include <toolbox/version.h>
@@ -16,7 +16,7 @@ struct DesktopSettingsViewPinSetupHowto {
 };
 
 static void desktop_settings_view_pin_setup_howto_draw(Canvas* canvas, void* model) {
-    furi_assert(canvas);
+    furry_assert(canvas);
     UNUSED(model);
 
     canvas_draw_icon(canvas, 16, 18, &I_Pin_attention_dpad_29x29);
@@ -30,8 +30,8 @@ static void desktop_settings_view_pin_setup_howto_draw(Canvas* canvas, void* mod
 }
 
 static bool desktop_settings_view_pin_setup_howto_input(InputEvent* event, void* context) {
-    furi_assert(event);
-    furi_assert(context);
+    furry_assert(event);
+    furry_assert(context);
 
     DesktopSettingsViewPinSetupHowto* instance = context;
     bool consumed = false;
@@ -48,8 +48,8 @@ void desktop_settings_view_pin_setup_howto_set_callback(
     DesktopSettingsViewPinSetupHowto* instance,
     DesktopSettingsViewPinSetupHowtoDoneCallback callback,
     void* context) {
-    furi_assert(instance);
-    furi_assert(callback);
+    furry_assert(instance);
+    furry_assert(callback);
     instance->callback = callback;
     instance->context = context;
 }
@@ -65,13 +65,13 @@ DesktopSettingsViewPinSetupHowto* desktop_settings_view_pin_setup_howto_alloc() 
 }
 
 void desktop_settings_view_pin_setup_howto_free(DesktopSettingsViewPinSetupHowto* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     view_free(instance->view);
     free(instance);
 }
 
 View* desktop_settings_view_pin_setup_howto_get_view(DesktopSettingsViewPinSetupHowto* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     return instance->view;
 }

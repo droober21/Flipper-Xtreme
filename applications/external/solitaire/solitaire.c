@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <furi.h>
+#include <furry.h>
 #include <gui/canvas_i.h>
 #include "defines.h"
 #include "common/ui.h"
@@ -33,7 +33,7 @@ int8_t columns[7][3] = {
 };
 
 bool can_place_card(Card where, Card what) {
-    FURI_LOG_D(
+    FURRY_LOG_D(
         APP_NAME,
         "TESTING pip %i, letter %i with pip %i, letter %i",
         where.pip,
@@ -154,9 +154,9 @@ static void draw_animation(Canvas* const canvas, const GameState* game_state) {
 }
 
 static void render_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     const GameState* game_state = ctx;
-    furi_mutex_acquire(game_state->mutex, FuriWaitForever);
+    furry_mutex_acquire(game_state->mutex, FurryWaitForever);
 
     switch(game_state->state) {
     case GameStateAnimate:
@@ -172,7 +172,7 @@ static void render_callback(Canvas* const canvas, void* ctx) {
         break;
     }
 
-    furi_mutex_release(game_state->mutex);
+    furry_mutex_release(game_state->mutex);
 }
 
 void remove_drag(GameState* game_state) {
@@ -267,7 +267,7 @@ bool place_on_top(Card* where, Card what) {
 }
 
 void tick(GameState* game_state, NotificationApp* notification) {
-    game_state->last_tick = furi_get_tick();
+    game_state->last_tick = furry_get_tick();
     uint8_t row = game_state->selectRow;
     uint8_t column = game_state->selectColumn;
     if(game_state->state != GameStatePlay && game_state->state != GameStateAnimate) return;
@@ -292,7 +292,7 @@ void tick(GameState* game_state, NotificationApp* notification) {
                 }
             } else {
                 if(row == 0 && column == 0 && game_state->dragging_hand.index == 0) {
-                    FURI_LOG_D(APP_NAME, "Drawing card");
+                    FURRY_LOG_D(APP_NAME, "Drawing card");
                     game_state->deck.index++;
                     wasAction = true;
                     if(game_state->deck.index >= (game_state->deck.card_count))
@@ -444,22 +444,22 @@ void init_start(GameState* game_state) {
     game_state->animation.buffer = make_buffer();
 }
 
-static void input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
     AppEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
-static void update_timer_callback(FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void update_timer_callback(FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
     AppEvent event = {.type = EventTypeTick};
-    furi_message_queue_put(event_queue, &event, 0);
+    furry_message_queue_put(event_queue, &event, 0);
 }
 
 int32_t solitaire_app(void* p) {
     UNUSED(p);
     int32_t return_code = 0;
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(AppEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(AppEvent));
     GameState* game_state = malloc(sizeof(GameState));
     init_start(game_state);
     set_card_graphics(&I_card_graphics);
@@ -467,13 +467,13 @@ int32_t solitaire_app(void* p) {
     game_state->state = GameStateStart;
 
     game_state->processing = true;
-    game_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    game_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!game_state->mutex) {
-        FURI_LOG_E(APP_NAME, "cannot create mutex\r\n");
+        FURRY_LOG_E(APP_NAME, "cannot create mutex\r\n");
         return_code = 255;
         goto free_and_exit;
     }
-    NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+    NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
 
     notification_message_block(notification, &sequence_display_backlight_enforce_on);
 
@@ -481,19 +481,19 @@ int32_t solitaire_app(void* p) {
     view_port_draw_callback_set(view_port, render_callback, game_state);
     view_port_input_callback_set(view_port, input_callback, event_queue);
 
-    FuriTimer* timer = furi_timer_alloc(update_timer_callback, FuriTimerTypePeriodic, event_queue);
-    furi_timer_start(timer, furi_kernel_get_tick_frequency() / 30);
+    FurryTimer* timer = furry_timer_alloc(update_timer_callback, FurryTimerTypePeriodic, event_queue);
+    furry_timer_start(timer, furry_kernel_get_tick_frequency() / 30);
 
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     AppEvent event;
 
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 150);
-        furi_mutex_acquire(game_state->mutex, FuriWaitForever);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 150);
+        furry_mutex_acquire(game_state->mutex, FurryWaitForever);
         bool hadChange = false;
-        if(event_status == FuriStatusOk) {
+        if(event_status == FurryStatusOk) {
             if(event.type == EventTypeKey) {
                 if(event.input.type == InputTypeLong) {
                     game_state->longPress = true;
@@ -542,21 +542,21 @@ int32_t solitaire_app(void* p) {
                 game_state->input = InputKeyMAX;
             }
         } else {
-            //FURI_LOG_W(APP_NAME, "osMessageQueue: event timeout");
+            //FURRY_LOG_W(APP_NAME, "osMessageQueue: event timeout");
             // event timeout
         }
         if(hadChange || game_state->state == GameStateAnimate) view_port_update(view_port);
-        furi_mutex_release(game_state->mutex);
+        furry_mutex_release(game_state->mutex);
     }
 
     notification_message_block(notification, &sequence_display_backlight_enforce_auto);
-    furi_timer_free(timer);
+    furry_timer_free(timer);
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
     view_port_free(view_port);
-    furi_mutex_free(game_state->mutex);
+    furry_mutex_free(game_state->mutex);
 
 free_and_exit:
     free(game_state->animation.buffer);
@@ -565,6 +565,6 @@ free_and_exit:
 
     free(game_state->deck.cards);
     free(game_state);
-    furi_message_queue_free(event_queue);
+    furry_message_queue_free(event_queue);
     return return_code;
 }

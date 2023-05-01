@@ -77,4 +77,4 @@ SubGhzProtocolStatus
  * @param context Pointer to a WSProtocolDecoderThermoPRO_TX4 instance
  * @param output Resulting text
  */
-void ws_protocol_decoder_thermopro_tx4_get_string(void* context, FuriString* output);
+void ws_protocol_decoder_thermopro_tx4_get_string(void* context, FurryString* output);

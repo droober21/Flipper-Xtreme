@@ -94,7 +94,7 @@ void* subghz_protocol_encoder_princeton_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_encoder_princeton_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderPrinceton* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -107,12 +107,12 @@ void subghz_protocol_encoder_princeton_free(void* context) {
  */
 static bool
     subghz_protocol_encoder_princeton_get_upload(SubGhzProtocolEncoderPrinceton* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     size_t index = 0;
     size_t size_upload = (instance->generic.data_count_bit * 2) + 2;
     if(size_upload > instance->encoder.size_upload) {
-        FURI_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
+        FURRY_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
         return false;
     } else {
         instance->encoder.size_upload = size_upload;
@@ -143,7 +143,7 @@ static bool
 
 SubGhzProtocolStatus
     subghz_protocol_encoder_princeton_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderPrinceton* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -155,12 +155,12 @@ SubGhzProtocolStatus
             break;
         }
         if(!flipper_format_rewind(flipper_format)) {
-            FURI_LOG_E(TAG, "Rewind error");
+            FURRY_LOG_E(TAG, "Rewind error");
             ret = SubGhzProtocolStatusErrorParserOthers;
             break;
         }
         if(!flipper_format_read_uint32(flipper_format, "TE", (uint32_t*)&instance->te, 1)) {
-            FURI_LOG_E(TAG, "Missing TE");
+            FURRY_LOG_E(TAG, "Missing TE");
             ret = SubGhzProtocolStatusErrorParserTe;
             break;
         }
@@ -210,20 +210,20 @@ void* subghz_protocol_decoder_princeton_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_princeton_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderPrinceton* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_princeton_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderPrinceton* instance = context;
     instance->decoder.parser_step = PrincetonDecoderStepReset;
     instance->last_data = 0;
 }
 
 void subghz_protocol_decoder_princeton_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderPrinceton* instance = context;
 
     switch(instance->decoder.parser_step) {
@@ -304,7 +304,7 @@ static void subghz_protocol_princeton_check_remote_controller(SubGhzBlockGeneric
 }
 
 uint8_t subghz_protocol_decoder_princeton_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderPrinceton* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -314,13 +314,13 @@ SubGhzProtocolStatus subghz_protocol_decoder_princeton_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderPrinceton* instance = context;
     SubGhzProtocolStatus ret =
         subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
     if((ret == SubGhzProtocolStatusOk) &&
        !flipper_format_write_uint32(flipper_format, "TE", &instance->te, 1)) {
-        FURI_LOG_E(TAG, "Unable to add TE");
+        FURRY_LOG_E(TAG, "Unable to add TE");
         ret = SubGhzProtocolStatusErrorParserTe;
     }
     return ret;
@@ -328,7 +328,7 @@ SubGhzProtocolStatus subghz_protocol_decoder_princeton_serialize(
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_princeton_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderPrinceton* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -340,12 +340,12 @@ SubGhzProtocolStatus
             break;
         }
         if(!flipper_format_rewind(flipper_format)) {
-            FURI_LOG_E(TAG, "Rewind error");
+            FURRY_LOG_E(TAG, "Rewind error");
             ret = SubGhzProtocolStatusErrorParserOthers;
             break;
         }
         if(!flipper_format_read_uint32(flipper_format, "TE", (uint32_t*)&instance->te, 1)) {
-            FURI_LOG_E(TAG, "Missing TE");
+            FURRY_LOG_E(TAG, "Missing TE");
             ret = SubGhzProtocolStatusErrorParserTe;
             break;
         }
@@ -354,14 +354,14 @@ SubGhzProtocolStatus
     return ret;
 }
 
-void subghz_protocol_decoder_princeton_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_princeton_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderPrinceton* instance = context;
     subghz_protocol_princeton_check_remote_controller(&instance->generic);
     uint32_t data_rev = subghz_protocol_blocks_reverse_key(
         instance->generic.data, instance->generic.data_count_bit);
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %dbit\r\n"
         "Key:0x%08lX\r\n"

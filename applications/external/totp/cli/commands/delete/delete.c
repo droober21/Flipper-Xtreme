@@ -31,7 +31,7 @@ void totp_cli_command_delete_docopt_options() {
         TOTP_CLI_COMMAND_DELETE_ARG_FORCE_PREFIX) "             Force command to do not ask user for interactive confirmation\r\n");
 }
 
-void totp_cli_command_delete_handle(PluginState* plugin_state, FuriString* args, Cli* cli) {
+void totp_cli_command_delete_handle(PluginState* plugin_state, FurryString* args, Cli* cli) {
     if(!totp_cli_ensure_authenticated(plugin_state, cli)) {
         return;
     }
@@ -46,19 +46,19 @@ void totp_cli_command_delete_handle(PluginState* plugin_state, FuriString* args,
         return;
     }
 
-    FuriString* temp_str = furi_string_alloc();
+    FurryString* temp_str = furry_string_alloc();
     bool confirm_needed = true;
     if(args_read_string_and_trim(args, temp_str)) {
-        if(furi_string_cmpi_str(temp_str, TOTP_CLI_COMMAND_DELETE_ARG_FORCE_PREFIX) == 0) {
+        if(furry_string_cmpi_str(temp_str, TOTP_CLI_COMMAND_DELETE_ARG_FORCE_PREFIX) == 0) {
             confirm_needed = false;
         } else {
             totp_cli_printf_unknown_argument(temp_str);
             totp_cli_print_invalid_arguments();
-            furi_string_free(temp_str);
+            furry_string_free(temp_str);
             return;
         }
     }
-    furi_string_free(temp_str);
+    furry_string_free(temp_str);
 
     TOTP_CLI_LOCK_UI(plugin_state);
 
@@ -66,7 +66,7 @@ void totp_cli_command_delete_handle(PluginState* plugin_state, FuriString* args,
         totp_token_info_iterator_get_current_token_index(iterator_context);
     totp_token_info_iterator_go_to(iterator_context, token_number - 1);
     const TokenInfo* token_info = totp_token_info_iterator_get_current_token(iterator_context);
-    const char* token_info_name = furi_string_get_cstr(token_info->name);
+    const char* token_info_name = furry_string_get_cstr(token_info->name);
 
     bool confirmed = !confirm_needed;
     if(confirm_needed) {

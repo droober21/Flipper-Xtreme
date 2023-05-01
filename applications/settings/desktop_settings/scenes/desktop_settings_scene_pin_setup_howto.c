@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/scene_manager.h>
 #include <gui/view_dispatcher.h>
 
@@ -32,7 +32,7 @@ bool desktop_settings_scene_pin_setup_howto_on_event(void* context, SceneManager
             consumed = true;
             break;
         default:
-            furi_crash(NULL);
+            furry_crash(NULL);
         }
     }
     return consumed;

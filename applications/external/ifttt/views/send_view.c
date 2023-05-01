@@ -1,9 +1,9 @@
 #include "send_view.h"
-#include <furi.h>
+#include <furry.h>
 #include <gui/elements.h>
 #include <notification/notification.h>
 #include <notification/notification_messages.h>
-#include <furi_hal_uart.h>
+#include <furry_hal_uart.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -21,9 +21,9 @@ typedef struct {
 } SendViewModel;
 
 static void Shake(void) {
-    NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+    NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
     notification_message(notification, &sequence_single_vibro);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
 }
 
 void send_serial_command_send(ESerialCommand command) {
@@ -40,12 +40,12 @@ void send_serial_command_send(ESerialCommand command) {
             return;
         };
 
-        furi_hal_uart_tx(FuriHalUartIdUSART1, data, 1);
+        furry_hal_uart_tx(FurryHalUartIdUSART1, data, 1);
     }
 }
 
 static void send_view_draw_callback(Canvas* canvas, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SendViewModel* model = context;
     canvas_clear(canvas);
     canvas_set_color(canvas, ColorBlack);
@@ -94,7 +94,7 @@ static void send_view_process(SendView* send_view, InputEvent* event) {
 }
 
 static bool send_view_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SendView* send_view = context;
     bool consumed = false;
 
@@ -114,24 +114,24 @@ SendView* send_view_alloc() {
     view_allocate_model(send_view->view, ViewModelTypeLocking, sizeof(SendViewModel));
     view_set_draw_callback(send_view->view, send_view_draw_callback);
     view_set_input_callback(send_view->view, send_view_input_callback);
-    furi_hal_uart_set_br(FuriHalUartIdUSART1, FLIPPERZERO_SERIAL_BAUD);
+    furry_hal_uart_set_br(FurryHalUartIdUSART1, FLIPPERZERO_SERIAL_BAUD);
 
     return send_view;
 }
 
 void send_view_free(SendView* send_view) {
-    furi_assert(send_view);
+    furry_assert(send_view);
     view_free(send_view->view);
     free(send_view);
 }
 
 View* send_view_get_view(SendView* send_view) {
-    furi_assert(send_view);
+    furry_assert(send_view);
     return send_view->view;
 }
 
 void send_view_set_data(SendView* send_view, bool connected) {
-    furi_assert(send_view);
+    furry_assert(send_view);
     with_view_model(
         send_view->view, SendViewModel * model, { model->connected = connected; }, true);
 }

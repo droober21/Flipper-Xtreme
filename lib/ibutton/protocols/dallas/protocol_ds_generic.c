@@ -24,8 +24,8 @@ static bool ds_generic_write_blank(OneWireHost*, iButtonProtocolData*);
 static void ds_generic_emulate(OneWireSlave*, iButtonProtocolData*);
 static bool ds_generic_load(FlipperFormat*, uint32_t, iButtonProtocolData*);
 static bool ds_generic_save(FlipperFormat*, const iButtonProtocolData*);
-static void ds_generic_render_brief_data(FuriString*, const iButtonProtocolData*);
-static void ds_generic_render_error(FuriString*, const iButtonProtocolData*);
+static void ds_generic_render_brief_data(FurryString*, const iButtonProtocolData*);
+static void ds_generic_render_error(FurryString*, const iButtonProtocolData*);
 static bool ds_generic_is_data_valid(const iButtonProtocolData*);
 static void ds_generic_get_editable_data(iButtonEditableData*, iButtonProtocolData*);
 static void ds_generic_apply_edits(iButtonProtocolData*);
@@ -62,7 +62,7 @@ bool ds_generic_write_blank(OneWireHost* host, iButtonProtocolData* protocol_dat
 }
 
 static bool ds_generic_reset_callback(bool is_short, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DallasGenericProtocolData* data = context;
     if(!is_short) {
         onewire_slave_set_overdrive(data->state.bus, is_short);
@@ -71,7 +71,7 @@ static bool ds_generic_reset_callback(bool is_short, void* context) {
 }
 
 static bool ds_generic_command_callback(uint8_t command, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DallasGenericProtocolData* data = context;
     OneWireSlave* bus = data->state.bus;
 
@@ -111,15 +111,15 @@ bool ds_generic_load(
     return dallas_common_load_rom_data(ff, format_version, &data->rom_data);
 }
 
-void ds_generic_render_brief_data(FuriString* result, const iButtonProtocolData* protocol_data) {
+void ds_generic_render_brief_data(FurryString* result, const iButtonProtocolData* protocol_data) {
     const DallasGenericProtocolData* data = protocol_data;
 
     for(size_t i = 0; i < sizeof(DallasCommonRomData); ++i) {
-        furi_string_cat_printf(result, "%02X ", data->rom_data.bytes[i]);
+        furry_string_cat_printf(result, "%02X ", data->rom_data.bytes[i]);
     }
 }
 
-void ds_generic_render_error(FuriString* result, const iButtonProtocolData* protocol_data) {
+void ds_generic_render_error(FurryString* result, const iButtonProtocolData* protocol_data) {
     UNUSED(result);
     UNUSED(protocol_data);
 }

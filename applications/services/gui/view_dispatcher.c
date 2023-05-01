@@ -23,43 +23,43 @@ void view_dispatcher_free(ViewDispatcher* view_dispatcher) {
         gui_remove_view_port(view_dispatcher->gui, view_dispatcher->view_port);
     }
     // Crash if not all views were freed
-    furi_assert(!ViewDict_size(view_dispatcher->views));
+    furry_assert(!ViewDict_size(view_dispatcher->views));
 
     ViewDict_clear(view_dispatcher->views);
     // Free ViewPort
     view_port_free(view_dispatcher->view_port);
     // Free internal queue
     if(view_dispatcher->queue) {
-        furi_message_queue_free(view_dispatcher->queue);
+        furry_message_queue_free(view_dispatcher->queue);
     }
     // Free dispatcher
     free(view_dispatcher);
 }
 
 void view_dispatcher_enable_queue(ViewDispatcher* view_dispatcher) {
-    furi_assert(view_dispatcher);
-    furi_assert(view_dispatcher->queue == NULL);
-    view_dispatcher->queue = furi_message_queue_alloc(16, sizeof(ViewDispatcherMessage));
+    furry_assert(view_dispatcher);
+    furry_assert(view_dispatcher->queue == NULL);
+    view_dispatcher->queue = furry_message_queue_alloc(16, sizeof(ViewDispatcherMessage));
 }
 
 void view_dispatcher_set_event_callback_context(ViewDispatcher* view_dispatcher, void* context) {
-    furi_assert(view_dispatcher);
+    furry_assert(view_dispatcher);
     view_dispatcher->event_context = context;
 }
 
 void view_dispatcher_set_navigation_event_callback(
     ViewDispatcher* view_dispatcher,
     ViewDispatcherNavigationEventCallback callback) {
-    furi_assert(view_dispatcher);
-    furi_assert(callback);
+    furry_assert(view_dispatcher);
+    furry_assert(callback);
     view_dispatcher->navigation_event_callback = callback;
 }
 
 void view_dispatcher_set_custom_event_callback(
     ViewDispatcher* view_dispatcher,
     ViewDispatcherCustomEventCallback callback) {
-    furi_assert(view_dispatcher);
-    furi_assert(callback);
+    furry_assert(view_dispatcher);
+    furry_assert(callback);
     view_dispatcher->custom_event_callback = callback;
 }
 
@@ -67,21 +67,21 @@ void view_dispatcher_set_tick_event_callback(
     ViewDispatcher* view_dispatcher,
     ViewDispatcherTickEventCallback callback,
     uint32_t tick_period) {
-    furi_assert(view_dispatcher);
-    furi_assert(callback);
+    furry_assert(view_dispatcher);
+    furry_assert(callback);
     view_dispatcher->tick_event_callback = callback;
     view_dispatcher->tick_period = tick_period;
 }
 
 void view_dispatcher_run(ViewDispatcher* view_dispatcher) {
-    furi_assert(view_dispatcher);
-    furi_assert(view_dispatcher->queue);
+    furry_assert(view_dispatcher);
+    furry_assert(view_dispatcher->queue);
 
-    uint32_t tick_period = view_dispatcher->tick_period == 0 ? FuriWaitForever :
+    uint32_t tick_period = view_dispatcher->tick_period == 0 ? FurryWaitForever :
                                                                view_dispatcher->tick_period;
     ViewDispatcherMessage message;
     while(1) {
-        if(furi_message_queue_get(view_dispatcher->queue, &message, tick_period) != FuriStatusOk) {
+        if(furry_message_queue_get(view_dispatcher->queue, &message, tick_period) != FurryStatusOk) {
             view_dispatcher_handle_tick_event(view_dispatcher);
             continue;
         }
@@ -96,7 +96,7 @@ void view_dispatcher_run(ViewDispatcher* view_dispatcher) {
 
     // Wait till all input events delivered
     while(view_dispatcher->ongoing_input) {
-        furi_message_queue_get(view_dispatcher->queue, &message, FuriWaitForever);
+        furry_message_queue_get(view_dispatcher->queue, &message, FurryWaitForever);
         if(message.type == ViewDispatcherMessageTypeInput) {
             uint8_t key_bit = (1 << message.input.key);
             if(message.input.type == InputTypePress) {
@@ -109,19 +109,19 @@ void view_dispatcher_run(ViewDispatcher* view_dispatcher) {
 }
 
 void view_dispatcher_stop(ViewDispatcher* view_dispatcher) {
-    furi_assert(view_dispatcher);
-    furi_assert(view_dispatcher->queue);
+    furry_assert(view_dispatcher);
+    furry_assert(view_dispatcher->queue);
     ViewDispatcherMessage message;
     message.type = ViewDispatcherMessageTypeStop;
-    furi_check(
-        furi_message_queue_put(view_dispatcher->queue, &message, FuriWaitForever) == FuriStatusOk);
+    furry_check(
+        furry_message_queue_put(view_dispatcher->queue, &message, FurryWaitForever) == FurryStatusOk);
 }
 
 void view_dispatcher_add_view(ViewDispatcher* view_dispatcher, uint32_t view_id, View* view) {
-    furi_assert(view_dispatcher);
-    furi_assert(view);
+    furry_assert(view_dispatcher);
+    furry_assert(view);
     // Check if view id is not used and register view
-    furi_check(ViewDict_get(view_dispatcher->views, view_id) == NULL);
+    furry_check(ViewDict_get(view_dispatcher->views, view_id) == NULL);
 
     // Lock gui
     if(view_dispatcher->gui) {
@@ -139,7 +139,7 @@ void view_dispatcher_add_view(ViewDispatcher* view_dispatcher, uint32_t view_id,
 }
 
 void view_dispatcher_remove_view(ViewDispatcher* view_dispatcher, uint32_t view_id) {
-    furi_assert(view_dispatcher);
+    furry_assert(view_dispatcher);
 
     // Lock gui
     if(view_dispatcher->gui) {
@@ -157,7 +157,7 @@ void view_dispatcher_remove_view(ViewDispatcher* view_dispatcher, uint32_t view_
         view_dispatcher->ongoing_input_view = NULL;
     }
     // Remove view
-    furi_check(ViewDict_erase(view_dispatcher->views, view_id));
+    furry_check(ViewDict_erase(view_dispatcher->views, view_id));
 
     view_set_update_callback(view, NULL);
     view_set_update_callback_context(view, NULL);
@@ -169,26 +169,26 @@ void view_dispatcher_remove_view(ViewDispatcher* view_dispatcher, uint32_t view_
 }
 
 void view_dispatcher_switch_to_view(ViewDispatcher* view_dispatcher, uint32_t view_id) {
-    furi_assert(view_dispatcher);
+    furry_assert(view_dispatcher);
     if(view_id == VIEW_NONE) {
         view_dispatcher_set_current_view(view_dispatcher, NULL);
     } else if(view_id == VIEW_IGNORE) {
     } else {
         View** view_pp = ViewDict_get(view_dispatcher->views, view_id);
-        furi_check(view_pp != NULL);
+        furry_check(view_pp != NULL);
         view_dispatcher_set_current_view(view_dispatcher, *view_pp);
     }
 }
 
 void view_dispatcher_send_to_front(ViewDispatcher* view_dispatcher) {
-    furi_assert(view_dispatcher);
-    furi_assert(view_dispatcher->gui);
+    furry_assert(view_dispatcher);
+    furry_assert(view_dispatcher->gui);
     gui_view_port_send_to_front(view_dispatcher->gui, view_dispatcher->view_port);
 }
 
 void view_dispatcher_send_to_back(ViewDispatcher* view_dispatcher) {
-    furi_assert(view_dispatcher);
-    furi_assert(view_dispatcher->gui);
+    furry_assert(view_dispatcher);
+    furry_assert(view_dispatcher->gui);
     gui_view_port_send_to_back(view_dispatcher->gui, view_dispatcher->view_port);
 }
 
@@ -196,9 +196,9 @@ void view_dispatcher_attach_to_gui(
     ViewDispatcher* view_dispatcher,
     Gui* gui,
     ViewDispatcherType type) {
-    furi_assert(view_dispatcher);
-    furi_assert(view_dispatcher->gui == NULL);
-    furi_assert(gui);
+    furry_assert(view_dispatcher);
+    furry_assert(view_dispatcher->gui == NULL);
+    furry_assert(gui);
 
     if(type == ViewDispatcherTypeDesktop) {
         gui_add_view_port(gui, view_dispatcher->view_port, GuiLayerDesktop);
@@ -207,7 +207,7 @@ void view_dispatcher_attach_to_gui(
     } else if(type == ViewDispatcherTypeFullscreen) {
         gui_add_view_port(gui, view_dispatcher->view_port, GuiLayerFullscreen);
     } else {
-        furi_check(NULL);
+        furry_check(NULL);
     }
     view_dispatcher->gui = gui;
 }
@@ -225,9 +225,9 @@ void view_dispatcher_input_callback(InputEvent* event, void* context) {
         ViewDispatcherMessage message;
         message.type = ViewDispatcherMessageTypeInput;
         message.input = *event;
-        furi_check(
-            furi_message_queue_put(view_dispatcher->queue, &message, FuriWaitForever) ==
-            FuriStatusOk);
+        furry_check(
+            furry_message_queue_put(view_dispatcher->queue, &message, FurryWaitForever) ==
+            FurryStatusOk);
     } else {
         view_dispatcher_handle_input(view_dispatcher, event);
     }
@@ -241,7 +241,7 @@ void view_dispatcher_handle_input(ViewDispatcher* view_dispatcher, InputEvent* e
     } else if(event->type == InputTypeRelease) {
         view_dispatcher->ongoing_input &= ~key_bit;
     } else if(!(view_dispatcher->ongoing_input & key_bit)) {
-        FURI_LOG_D(
+        FURRY_LOG_D(
             TAG,
             "non-complementary input, discarding key: %s, type: %s, sequence: %p",
             input_get_key_name(event->key),
@@ -279,7 +279,7 @@ void view_dispatcher_handle_input(ViewDispatcher* view_dispatcher, InputEvent* e
             }
         }
     } else if(view_dispatcher->ongoing_input_view && event->type == InputTypeRelease) {
-        FURI_LOG_D(
+        FURRY_LOG_D(
             TAG,
             "View changed while key press %p -> %p. Sending key: %s, type: %s, sequence: %p to previous view port",
             view_dispatcher->ongoing_input_view,
@@ -309,15 +309,15 @@ void view_dispatcher_handle_custom_event(ViewDispatcher* view_dispatcher, uint32
 }
 
 void view_dispatcher_send_custom_event(ViewDispatcher* view_dispatcher, uint32_t event) {
-    furi_assert(view_dispatcher);
-    furi_assert(view_dispatcher->queue);
+    furry_assert(view_dispatcher);
+    furry_assert(view_dispatcher->queue);
 
     ViewDispatcherMessage message;
     message.type = ViewDispatcherMessageTypeCustomEvent;
     message.custom_event = event;
 
-    furi_check(
-        furi_message_queue_put(view_dispatcher->queue, &message, FuriWaitForever) == FuriStatusOk);
+    furry_check(
+        furry_message_queue_put(view_dispatcher->queue, &message, FurryWaitForever) == FurryStatusOk);
 }
 
 static const ViewPortOrientation view_dispatcher_view_port_orientation_table[] = {
@@ -328,7 +328,7 @@ static const ViewPortOrientation view_dispatcher_view_port_orientation_table[] =
 };
 
 void view_dispatcher_set_current_view(ViewDispatcher* view_dispatcher, View* view) {
-    furi_assert(view_dispatcher);
+    furry_assert(view_dispatcher);
     // Dispatch view exit event
     if(view_dispatcher->current_view) {
         view_exit(view_dispatcher->current_view);
@@ -356,8 +356,8 @@ void view_dispatcher_set_current_view(ViewDispatcher* view_dispatcher, View* vie
 }
 
 void view_dispatcher_update(View* view, void* context) {
-    furi_assert(view);
-    furi_assert(context);
+    furry_assert(view);
+    furry_assert(context);
 
     ViewDispatcher* view_dispatcher = context;
 

@@ -36,8 +36,8 @@ void avr_isp_writer_view_set_callback(
     AvrIspWriterView* instance,
     AvrIspWriterViewCallback callback,
     void* context) {
-    furi_assert(instance);
-    furi_assert(callback);
+    furry_assert(instance);
+    furry_assert(callback);
 
     instance->callback = callback;
     instance->context = context;
@@ -47,7 +47,7 @@ void avr_isp_writer_set_file_path(
     AvrIspWriterView* instance,
     const char* file_path,
     const char* file_name) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     instance->file_path = file_path;
     instance->file_name = file_name;
@@ -113,7 +113,7 @@ void avr_isp_writer_view_draw(Canvas* canvas, AvrIspWriterViewModel* model) {
 }
 
 bool avr_isp_writer_view_input(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     AvrIspWriterView* instance = context;
 
     bool ret = true;
@@ -162,7 +162,7 @@ bool avr_isp_writer_view_input(InputEvent* event, void* context) {
 }
 
 static void avr_isp_writer_callback_status(void* context, AvrIspWorkerRWStatus status) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspWriterView* instance = context;
     with_view_model(
@@ -204,7 +204,7 @@ static void avr_isp_writer_callback_status(void* context, AvrIspWorkerRWStatus s
 }
 
 void avr_isp_writer_view_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspWriterView* instance = context;
     with_view_model(
@@ -227,7 +227,7 @@ void avr_isp_writer_view_enter(void* context) {
 }
 
 void avr_isp_writer_view_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     AvrIspWriterView* instance = context;
 
     //Stop avr_isp_worker_rw
@@ -255,14 +255,14 @@ AvrIspWriterView* avr_isp_writer_view_alloc() {
 }
 
 void avr_isp_writer_view_free(AvrIspWriterView* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     view_free(instance->view);
     free(instance);
 }
 
 View* avr_isp_writer_view_get_view(AvrIspWriterView* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     return instance->view;
 }

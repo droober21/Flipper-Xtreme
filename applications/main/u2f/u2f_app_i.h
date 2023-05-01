@@ -52,7 +52,7 @@ struct U2fApp {
     SceneManager* scene_manager;
     NotificationApp* notifications;
     Widget* widget;
-    FuriTimer* timer;
+    FurryTimer* timer;
     U2fHid* u2f_hid;
     U2fView* u2f_view;
     U2fData* u2f_instance;

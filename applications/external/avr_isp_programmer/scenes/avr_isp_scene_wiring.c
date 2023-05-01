@@ -1,7 +1,7 @@
 #include "../avr_isp_app_i.h"
 
 void avr_isp_scene_wiring_on_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspApp* app = context;
     widget_add_icon_element(app->widget, 0, 0, &I_avr_wiring);
@@ -14,7 +14,7 @@ bool avr_isp_scene_wiring_on_event(void* context, SceneManagerEvent event) {
     return false;
 }
 void avr_isp_scene_wiring_on_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspApp* app = context;
     widget_reset(app->widget);

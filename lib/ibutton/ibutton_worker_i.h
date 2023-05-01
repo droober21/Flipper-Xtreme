@@ -34,8 +34,8 @@ struct iButtonWorker {
     iButtonKey* key;
     iButtonProtocols* protocols;
     iButtonWorkerMode mode_index;
-    FuriMessageQueue* messages;
-    FuriThread* thread;
+    FurryMessageQueue* messages;
+    FurryThread* thread;
 
     iButtonWorkerReadCallback read_cb;
     iButtonWorkerWriteCallback write_cb;

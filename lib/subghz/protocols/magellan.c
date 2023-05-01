@@ -85,7 +85,7 @@ void* subghz_protocol_encoder_magellan_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_encoder_magellan_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderMagellan* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -97,7 +97,7 @@ void subghz_protocol_encoder_magellan_free(void* context) {
  * @return true On success
  */
 static bool subghz_protocol_encoder_magellan_get_upload(SubGhzProtocolEncoderMagellan* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     size_t index = 0;
 
@@ -152,7 +152,7 @@ static bool subghz_protocol_encoder_magellan_get_upload(SubGhzProtocolEncoderMag
 
 SubGhzProtocolStatus
     subghz_protocol_encoder_magellan_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderMagellan* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -209,13 +209,13 @@ void* subghz_protocol_decoder_magellan_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_magellan_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderMagellan* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_magellan_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderMagellan* instance = context;
     instance->decoder.parser_step = MagellanDecoderStepReset;
 }
@@ -245,7 +245,7 @@ static bool subghz_protocol_magellan_check_crc(SubGhzProtocolDecoderMagellan* in
 }
 
 void subghz_protocol_decoder_magellan_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderMagellan* instance = context;
 
     switch(instance->decoder.parser_step) {
@@ -375,8 +375,8 @@ static void subghz_protocol_magellan_check_remote_controller(SubGhzBlockGeneric*
     instance->btn = (data_rev >> 16) & 0xFF;
 }
 
-static void subghz_protocol_magellan_get_event_serialize(uint8_t event, FuriString* output) {
-    furi_string_cat_printf(
+static void subghz_protocol_magellan_get_event_serialize(uint8_t event, FurryString* output) {
+    furry_string_cat_printf(
         output,
         "%s%s%s%s%s%s%s%s",
         ((event >> 4) & 0x1 ? (event & 0x1 ? " Open" : " Close") :
@@ -391,7 +391,7 @@ static void subghz_protocol_magellan_get_event_serialize(uint8_t event, FuriStri
 }
 
 uint8_t subghz_protocol_decoder_magellan_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderMagellan* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -401,14 +401,14 @@ SubGhzProtocolStatus subghz_protocol_decoder_magellan_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderMagellan* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_magellan_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderMagellan* instance = context;
     return subghz_block_generic_deserialize_check_count_bit(
         &instance->generic,
@@ -416,11 +416,11 @@ SubGhzProtocolStatus
         subghz_protocol_magellan_const.min_count_bit_for_found);
 }
 
-void subghz_protocol_decoder_magellan_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_magellan_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderMagellan* instance = context;
     subghz_protocol_magellan_check_remote_controller(&instance->generic);
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %dbit\r\n"
         "Key:0x%08lX\r\n"

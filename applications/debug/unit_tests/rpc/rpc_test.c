@@ -7,7 +7,7 @@
 #include "storage.pb.h"
 #include "storage/filesystem_api_defines.h"
 #include "storage/storage.h"
-#include <furi.h>
+#include <furry.h>
 #include "../minunit.h"
 #include <stdint.h>
 #include <pb.h>
@@ -33,7 +33,7 @@ static uint32_t command_id = 0;
 
 typedef struct {
     RpcSession* session;
-    FuriStreamBuffer* output_stream;
+    FurryStreamBuffer* output_stream;
     SemaphoreHandle_t close_session_semaphore;
     SemaphoreHandle_t terminate_semaphore;
     TickType_t timeout;
@@ -79,17 +79,17 @@ static void test_rpc_session_close_callback(void* context);
 static void test_rpc_session_terminated_callback(void* context);
 
 static void test_rpc_setup(void) {
-    furi_check(!rpc);
-    furi_check(!(rpc_session[0].session));
+    furry_check(!rpc);
+    furry_check(!(rpc_session[0].session));
 
-    rpc = furi_record_open(RECORD_RPC);
+    rpc = furry_record_open(RECORD_RPC);
     for(int i = 0; !(rpc_session[0].session) && (i < 10000); ++i) {
         rpc_session[0].session = rpc_session_open(rpc, RpcOwnerUnknown);
-        furi_delay_tick(1);
+        furry_delay_tick(1);
     }
-    furi_check(rpc_session[0].session);
+    furry_check(rpc_session[0].session);
 
-    rpc_session[0].output_stream = furi_stream_buffer_alloc(4096, 1);
+    rpc_session[0].output_stream = furry_stream_buffer_alloc(4096, 1);
     rpc_session_set_send_bytes_callback(rpc_session[0].session, output_bytes_callback);
     rpc_session[0].close_session_semaphore = xSemaphoreCreateBinary();
     rpc_session[0].terminate_semaphore = xSemaphoreCreateBinary();
@@ -100,16 +100,16 @@ static void test_rpc_setup(void) {
 }
 
 static void test_rpc_setup_second_session(void) {
-    furi_check(rpc);
-    furi_check(!(rpc_session[1].session));
+    furry_check(rpc);
+    furry_check(!(rpc_session[1].session));
 
     for(int i = 0; !(rpc_session[1].session) && (i < 10000); ++i) {
         rpc_session[1].session = rpc_session_open(rpc, RpcOwnerUnknown);
-        furi_delay_tick(1);
+        furry_delay_tick(1);
     }
-    furi_check(rpc_session[1].session);
+    furry_check(rpc_session[1].session);
 
-    rpc_session[1].output_stream = furi_stream_buffer_alloc(1000, 1);
+    rpc_session[1].output_stream = furry_stream_buffer_alloc(1000, 1);
     rpc_session_set_send_bytes_callback(rpc_session[1].session, output_bytes_callback);
     rpc_session[1].close_session_semaphore = xSemaphoreCreateBinary();
     rpc_session[1].terminate_semaphore = xSemaphoreCreateBinary();
@@ -120,12 +120,12 @@ static void test_rpc_setup_second_session(void) {
 }
 
 static void test_rpc_teardown(void) {
-    furi_check(rpc_session[0].close_session_semaphore);
+    furry_check(rpc_session[0].close_session_semaphore);
     xSemaphoreTake(rpc_session[0].terminate_semaphore, 0);
     rpc_session_close(rpc_session[0].session);
-    furi_check(xSemaphoreTake(rpc_session[0].terminate_semaphore, portMAX_DELAY));
-    furi_record_close(RECORD_RPC);
-    furi_stream_buffer_free(rpc_session[0].output_stream);
+    furry_check(xSemaphoreTake(rpc_session[0].terminate_semaphore, portMAX_DELAY));
+    furry_record_close(RECORD_RPC);
+    furry_stream_buffer_free(rpc_session[0].output_stream);
     vSemaphoreDelete(rpc_session[0].close_session_semaphore);
     vSemaphoreDelete(rpc_session[0].terminate_semaphore);
     ++command_id;
@@ -136,11 +136,11 @@ static void test_rpc_teardown(void) {
 }
 
 static void test_rpc_teardown_second_session(void) {
-    furi_check(rpc_session[1].close_session_semaphore);
+    furry_check(rpc_session[1].close_session_semaphore);
     xSemaphoreTake(rpc_session[1].terminate_semaphore, 0);
     rpc_session_close(rpc_session[1].session);
-    furi_check(xSemaphoreTake(rpc_session[1].terminate_semaphore, portMAX_DELAY));
-    furi_stream_buffer_free(rpc_session[1].output_stream);
+    furry_check(xSemaphoreTake(rpc_session[1].terminate_semaphore, portMAX_DELAY));
+    furry_stream_buffer_free(rpc_session[1].output_stream);
     vSemaphoreDelete(rpc_session[1].close_session_semaphore);
     vSemaphoreDelete(rpc_session[1].terminate_semaphore);
     ++command_id;
@@ -152,36 +152,36 @@ static void test_rpc_teardown_second_session(void) {
 static void test_rpc_storage_setup(void) {
     test_rpc_setup();
 
-    Storage* fs_api = furi_record_open(RECORD_STORAGE);
+    Storage* fs_api = furry_record_open(RECORD_STORAGE);
     clean_directory(fs_api, TEST_DIR_NAME);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 static void test_rpc_storage_teardown(void) {
     test_rpc_teardown();
 
-    Storage* fs_api = furi_record_open(RECORD_STORAGE);
+    Storage* fs_api = furry_record_open(RECORD_STORAGE);
     clean_directory(fs_api, TEST_DIR_NAME);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 static void test_rpc_session_close_callback(void* context) {
-    furi_check(context);
+    furry_check(context);
     RpcSessionContext* callbacks_context = context;
 
     xSemaphoreGive(callbacks_context->close_session_semaphore);
 }
 
 static void test_rpc_session_terminated_callback(void* context) {
-    furi_check(context);
+    furry_check(context);
     RpcSessionContext* callbacks_context = context;
 
     xSemaphoreGive(callbacks_context->terminate_semaphore);
 }
 
 static void clean_directory(Storage* fs_api, const char* clean_dir) {
-    furi_check(fs_api);
-    furi_check(clean_dir);
+    furry_check(fs_api);
+    furry_check(clean_dir);
 
     File* dir = storage_file_alloc(fs_api);
     if(storage_dir_open(dir, clean_dir)) {
@@ -195,14 +195,14 @@ static void clean_directory(Storage* fs_api, const char* clean_dir) {
                 clean_directory(fs_api, fullname);
             }
             FS_Error error = storage_common_remove(fs_api, fullname);
-            furi_check(error == FSE_OK);
+            furry_check(error == FSE_OK);
             free(fullname);
         }
         free(name);
     } else {
         FS_Error error = storage_common_mkdir(fs_api, clean_dir);
         (void)error;
-        furi_check(error == FSE_OK);
+        furry_check(error == FSE_OK);
     }
 
     storage_dir_close(dir);
@@ -267,10 +267,10 @@ static PB_CommandStatus test_rpc_storage_get_file_error(File* file) {
 static void output_bytes_callback(void* ctx, uint8_t* got_bytes, size_t got_size) {
     RpcSessionContext* callbacks_context = ctx;
 
-    size_t bytes_sent = furi_stream_buffer_send(
-        callbacks_context->output_stream, got_bytes, got_size, FuriWaitForever);
+    size_t bytes_sent = furry_stream_buffer_send(
+        callbacks_context->output_stream, got_bytes, got_size, FurryWaitForever);
     (void)bytes_sent;
-    furi_check(bytes_sent == got_size);
+    furry_check(bytes_sent == got_size);
 }
 
 static void test_rpc_add_ping_to_list(MsgList_t msg_list, bool request, uint32_t command_id) {
@@ -288,7 +288,7 @@ static void test_rpc_create_simple_message(
     uint16_t tag,
     const char* str,
     uint32_t command_id) {
-    furi_check(message);
+    furry_check(message);
 
     char* str_copy = NULL;
     if(str) {
@@ -324,13 +324,13 @@ static void test_rpc_create_simple_message(
     case PB_Main_storage_md5sum_response_tag: {
         char* md5sum = message->content.storage_md5sum_response.md5sum;
         size_t md5sum_size = sizeof(message->content.storage_md5sum_response.md5sum);
-        furi_check((strlen(str) + 1) <= md5sum_size);
+        furry_check((strlen(str) + 1) <= md5sum_size);
         memcpy(md5sum, str_copy, md5sum_size);
         free(str_copy);
         break;
     }
     default:
-        furi_check(0);
+        furry_check(0);
         break;
     }
 }
@@ -343,7 +343,7 @@ static void test_rpc_add_read_or_write_to_list(
     size_t pattern_size,
     size_t pattern_repeats,
     uint32_t command_id) {
-    furi_check(pattern_repeats > 0);
+    furry_check(pattern_repeats > 0);
 
     do {
         PB_Main* request = MsgList_push_new(msg_list);
@@ -374,13 +374,13 @@ static void test_rpc_add_read_or_write_to_list(
 }
 
 static void test_rpc_encode_and_feed_one(PB_Main* request, uint8_t session) {
-    furi_check(request);
-    furi_check(session < TEST_RPC_SESSIONS);
+    furry_check(request);
+    furry_check(session < TEST_RPC_SESSIONS);
 
     pb_ostream_t ostream = PB_OSTREAM_SIZING;
 
     bool result = pb_encode_ex(&ostream, &PB_Main_msg, request, PB_ENCODE_DELIMITED);
-    furi_check(result && ostream.bytes_written);
+    furry_check(result && ostream.bytes_written);
 
     uint8_t* buffer = malloc(ostream.bytes_written);
     ostream = pb_ostream_from_buffer(buffer, ostream.bytes_written);
@@ -521,7 +521,7 @@ static void test_rpc_compare_messages(PB_Main* result, PB_Main* expected) {
         break;
     }
     default:
-        furi_check(0);
+        furry_check(0);
         break;
     }
 }
@@ -534,7 +534,7 @@ static bool test_rpc_pb_stream_read(pb_istream_t* istream, pb_byte_t* buf, size_
     int32_t time_left = session_context->timeout - now;
     time_left = MAX(time_left, 0);
     bytes_received =
-        furi_stream_buffer_receive(session_context->output_stream, buf, count, time_left);
+        furry_stream_buffer_receive(session_context->output_stream, buf, count, time_left);
     return (count == bytes_received);
 }
 
@@ -574,7 +574,7 @@ static void test_rpc_storage_list_create_expected_list(
     MsgList_t msg_list,
     const char* path,
     uint32_t command_id) {
-    Storage* fs_api = furi_record_open(RECORD_STORAGE);
+    Storage* fs_api = furry_record_open(RECORD_STORAGE);
     File* dir = storage_file_alloc(fs_api);
 
     PB_Main response = {
@@ -629,12 +629,12 @@ static void test_rpc_storage_list_create_expected_list(
     storage_dir_close(dir);
     storage_file_free(dir);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 static void test_rpc_decode_and_compare(MsgList_t expected_msg_list, uint8_t session) {
-    furi_check(!MsgList_empty_p(expected_msg_list));
-    furi_check(session < TEST_RPC_SESSIONS);
+    furry_check(!MsgList_empty_p(expected_msg_list));
+    furry_check(session < TEST_RPC_SESSIONS);
 
     rpc_session[session].timeout = xTaskGetTickCount() + MAX_RECEIVE_OUTPUT_TIMEOUT;
     pb_istream_t istream = {
@@ -719,8 +719,8 @@ static void test_rpc_add_read_to_list_by_reading_real_file(
     MsgList_t msg_list,
     const char* path,
     uint32_t command_id) {
-    furi_check(MsgList_empty_p(msg_list));
-    Storage* fs_api = furi_record_open(RECORD_STORAGE);
+    furry_check(MsgList_empty_p(msg_list));
+    Storage* fs_api = furry_record_open(RECORD_STORAGE);
     File* file = storage_file_alloc(fs_api);
 
     bool result = false;
@@ -761,7 +761,7 @@ static void test_rpc_add_read_to_list_by_reading_real_file(
     storage_file_close(file);
     storage_file_free(file);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 static void test_storage_read_run(const char* path, uint32_t command_id) {
@@ -779,25 +779,25 @@ static void test_storage_read_run(const char* path, uint32_t command_id) {
 }
 
 static bool test_is_exists(const char* path) {
-    Storage* fs_api = furi_record_open(RECORD_STORAGE);
+    Storage* fs_api = furry_record_open(RECORD_STORAGE);
     FileInfo fileinfo;
     FS_Error result = storage_common_stat(fs_api, path, &fileinfo);
-    furi_check((result == FSE_OK) || (result == FSE_NOT_EXIST));
-    furi_record_close(RECORD_STORAGE);
+    furry_check((result == FSE_OK) || (result == FSE_NOT_EXIST));
+    furry_record_close(RECORD_STORAGE);
     return result == FSE_OK;
 }
 
 static void test_create_dir(const char* path) {
-    Storage* fs_api = furi_record_open(RECORD_STORAGE);
+    Storage* fs_api = furry_record_open(RECORD_STORAGE);
     FS_Error error = storage_common_mkdir(fs_api, path);
     (void)error;
-    furi_check((error == FSE_OK) || (error == FSE_EXIST));
-    furi_record_close(RECORD_STORAGE);
-    furi_check(test_is_exists(path));
+    furry_check((error == FSE_OK) || (error == FSE_EXIST));
+    furry_record_close(RECORD_STORAGE);
+    furry_check(test_is_exists(path));
 }
 
 static void test_create_file(const char* path, size_t size) {
-    Storage* fs_api = furi_record_open(RECORD_STORAGE);
+    Storage* fs_api = furry_record_open(RECORD_STORAGE);
     File* file = storage_file_alloc(fs_api);
 
     if(storage_file_open(file, path, FSAM_WRITE, FSOM_CREATE_ALWAYS)) {
@@ -807,7 +807,7 @@ static void test_create_file(const char* path, size_t size) {
         }
         while(size) {
             size_t written = storage_file_write(file, buf, MIN(size, sizeof(buf)));
-            furi_check(written);
+            furry_check(written);
             size -= written;
         }
     }
@@ -815,8 +815,8 @@ static void test_create_file(const char* path, size_t size) {
     storage_file_close(file);
     storage_file_free(file);
 
-    furi_record_close(RECORD_STORAGE);
-    furi_check(test_is_exists(path));
+    furry_record_close(RECORD_STORAGE);
+    furry_check(test_is_exists(path));
 }
 
 static void test_rpc_storage_info_run(const char* path, uint32_t command_id) {
@@ -829,7 +829,7 @@ static void test_rpc_storage_info_run(const char* path, uint32_t command_id) {
     PB_Main* response = MsgList_push_new(expected_msg_list);
     response->command_id = command_id;
 
-    Storage* fs_api = furi_record_open(RECORD_STORAGE);
+    Storage* fs_api = furry_record_open(RECORD_STORAGE);
 
     FS_Error error = storage_common_fs_info(
         fs_api,
@@ -858,10 +858,10 @@ static void test_rpc_storage_stat_run(const char* path, uint32_t command_id) {
 
     test_rpc_create_simple_message(&request, PB_Main_storage_stat_request_tag, path, command_id);
 
-    Storage* fs_api = furi_record_open(RECORD_STORAGE);
+    Storage* fs_api = furry_record_open(RECORD_STORAGE);
     FileInfo fileinfo;
     FS_Error error = storage_common_stat(fs_api, path, &fileinfo);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     PB_Main* response = MsgList_push_new(expected_msg_list);
     response->command_id = command_id;
@@ -1180,7 +1180,7 @@ MU_TEST(test_storage_delete_recursive) {
 MU_TEST(test_storage_delete) {
     test_storage_delete_run(NULL, ++command_id, PB_CommandStatus_ERROR_INVALID_PARAMETERS, false);
 
-    furi_check(!test_is_exists(TEST_DIR "empty.txt"));
+    furry_check(!test_is_exists(TEST_DIR "empty.txt"));
     test_storage_delete_run(TEST_DIR "empty.txt", ++command_id, PB_CommandStatus_OK, false);
     mu_check(!test_is_exists(TEST_DIR "empty.txt"));
 
@@ -1188,7 +1188,7 @@ MU_TEST(test_storage_delete) {
     test_storage_delete_run(TEST_DIR "empty.txt", ++command_id, PB_CommandStatus_OK, false);
     mu_check(!test_is_exists(TEST_DIR "empty.txt"));
 
-    furi_check(!test_is_exists(TEST_DIR "dir1"));
+    furry_check(!test_is_exists(TEST_DIR "dir1"));
     test_create_dir(TEST_DIR "dir1");
     test_storage_delete_run(TEST_DIR "dir1", ++command_id, PB_CommandStatus_OK, false);
     mu_check(!test_is_exists(TEST_DIR "dir1"));
@@ -1213,21 +1213,21 @@ static void test_storage_mkdir_run(const char* path, size_t command_id, PB_Comma
 }
 
 MU_TEST(test_storage_mkdir) {
-    furi_check(!test_is_exists(TEST_DIR "dir1"));
+    furry_check(!test_is_exists(TEST_DIR "dir1"));
     test_storage_mkdir_run(TEST_DIR "dir1", ++command_id, PB_CommandStatus_OK);
     mu_check(test_is_exists(TEST_DIR "dir1"));
 
     test_storage_mkdir_run(TEST_DIR "dir1", ++command_id, PB_CommandStatus_ERROR_STORAGE_EXIST);
     mu_check(test_is_exists(TEST_DIR "dir1"));
 
-    furi_check(!test_is_exists(TEST_DIR "dir2"));
+    furry_check(!test_is_exists(TEST_DIR "dir2"));
     test_create_dir(TEST_DIR "dir2");
     test_storage_mkdir_run(TEST_DIR "dir2", ++command_id, PB_CommandStatus_ERROR_STORAGE_EXIST);
     mu_check(test_is_exists(TEST_DIR "dir2"));
 }
 
 static void test_storage_calculate_md5sum(const char* path, char* md5sum, size_t md5sum_size) {
-    Storage* api = furi_record_open(RECORD_STORAGE);
+    Storage* api = furry_record_open(RECORD_STORAGE);
     File* file = storage_file_alloc(api);
 
     if(storage_file_open(file, path, FSAM_READ, FSOM_OPEN_EXISTING)) {
@@ -1253,13 +1253,13 @@ static void test_storage_calculate_md5sum(const char* path, char* md5sum, size_t
         free(hash);
         free(data);
     } else {
-        furi_check(0);
+        furry_check(0);
     }
 
     storage_file_close(file);
     storage_file_free(file);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 static void test_storage_md5sum_run(
@@ -1350,14 +1350,14 @@ static void test_rpc_storage_rename_run(
 MU_TEST(test_storage_rename) {
     test_rpc_storage_rename_run("", "", ++command_id, PB_CommandStatus_ERROR_STORAGE_INVALID_NAME);
 
-    furi_check(!test_is_exists(TEST_DIR "empty.txt"));
+    furry_check(!test_is_exists(TEST_DIR "empty.txt"));
     test_create_file(TEST_DIR "empty.txt", 0);
     test_rpc_storage_rename_run(
         TEST_DIR "empty.txt", TEST_DIR "empty2.txt", ++command_id, PB_CommandStatus_OK);
     mu_check(!test_is_exists(TEST_DIR "empty.txt"));
     mu_check(test_is_exists(TEST_DIR "empty2.txt"));
 
-    furi_check(!test_is_exists(TEST_DIR "dir1"));
+    furry_check(!test_is_exists(TEST_DIR "dir1"));
     test_create_dir(TEST_DIR "dir1");
     test_rpc_storage_rename_run(
         TEST_DIR "dir1", TEST_DIR "dir2", ++command_id, PB_CommandStatus_OK);
@@ -1526,28 +1526,28 @@ MU_TEST(test_app_start_and_lock_status) {
     test_app_get_status_lock_run(false, ++command_id);
 
     test_app_start_run("Delay Test", "0", PB_CommandStatus_OK, ++command_id);
-    furi_delay_ms(100);
+    furry_delay_ms(100);
     test_app_get_status_lock_run(false, ++command_id);
 
     test_app_start_run("Delay Test", "200", PB_CommandStatus_OK, ++command_id);
     test_app_get_status_lock_run(true, ++command_id);
-    furi_delay_ms(100);
+    furry_delay_ms(100);
     test_app_get_status_lock_run(true, ++command_id);
     test_app_start_run("Delay Test", "0", PB_CommandStatus_ERROR_APP_SYSTEM_LOCKED, ++command_id);
-    furi_delay_ms(200);
+    furry_delay_ms(200);
     test_app_get_status_lock_run(false, ++command_id);
 
     test_app_start_run("Delay Test", "500", PB_CommandStatus_OK, ++command_id);
-    furi_delay_ms(100);
+    furry_delay_ms(100);
     test_app_get_status_lock_run(true, ++command_id);
     test_app_start_run("Infrared", "0", PB_CommandStatus_ERROR_APP_SYSTEM_LOCKED, ++command_id);
-    furi_delay_ms(100);
+    furry_delay_ms(100);
     test_app_get_status_lock_run(true, ++command_id);
     test_app_start_run(
         "2_girls_1_app", "0", PB_CommandStatus_ERROR_INVALID_PARAMETERS, ++command_id);
-    furi_delay_ms(100);
+    furry_delay_ms(100);
     test_app_get_status_lock_run(true, ++command_id);
-    furi_delay_ms(500);
+    furry_delay_ms(500);
     test_app_get_status_lock_run(false, ++command_id);
 }
 
@@ -1566,7 +1566,7 @@ static void
     }
 
     size_t bytes_sent = rpc_session_feed(rpc_session[0].session, buf, size, 1000);
-    furi_check(bytes_sent == size);
+    furry_check(bytes_sent == size);
     free(buf);
 }
 
@@ -1581,7 +1581,7 @@ static void test_rpc_feed_rubbish_run(
 
     test_rpc_add_empty_to_list(expected, PB_CommandStatus_ERROR_DECODE, 0);
 
-    furi_check(!xSemaphoreTake(rpc_session[0].close_session_semaphore, 0));
+    furry_check(!xSemaphoreTake(rpc_session[0].close_session_semaphore, 0));
     test_rpc_encode_and_feed(input_before, 0);
     test_send_rubbish(rpc_session[0].session, pattern, pattern_size, size);
     test_rpc_encode_and_feed(input_after, 0);
@@ -1767,23 +1767,23 @@ MU_TEST_SUITE(test_rpc_session) {
     MU_RUN_TEST(test_rpc_feed_rubbish);
     MU_RUN_TEST(test_rpc_multisession_ping);
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     if(storage_sd_status(storage) != FSE_OK) {
-        FURI_LOG_E(TAG, "SD card not mounted - skip storage tests");
+        FURRY_LOG_E(TAG, "SD card not mounted - skip storage tests");
     } else {
         MU_RUN_TEST(test_rpc_multisession_storage);
     }
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 int run_minunit_test_rpc() {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     if(storage_sd_status(storage) != FSE_OK) {
-        FURI_LOG_E(TAG, "SD card not mounted - skip storage tests");
+        FURRY_LOG_E(TAG, "SD card not mounted - skip storage tests");
     } else {
         MU_RUN_SUITE(test_rpc_storage);
     }
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     MU_RUN_SUITE(test_rpc_system);
     MU_RUN_SUITE(test_rpc_app);
     MU_RUN_SUITE(test_rpc_session);
@@ -1795,7 +1795,7 @@ int32_t delay_test_app(void* p) {
     int timeout = atoi((const char*)p);
 
     if(timeout > 0) {
-        furi_delay_ms(timeout);
+        furry_delay_ms(timeout);
     }
 
     return 0;

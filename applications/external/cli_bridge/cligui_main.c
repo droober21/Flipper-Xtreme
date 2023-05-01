@@ -16,28 +16,28 @@ static bool cligui_back_event_cb(void* context) {
 }
 static void cligui_tick_event_cb(void* context) {
     CliguiApp* app = context;
-    size_t available = furi_stream_buffer_bytes_available(app->data->streams.app_rx);
+    size_t available = furry_stream_buffer_bytes_available(app->data->streams.app_rx);
     for(size_t i = 0; i < available; i++) {
         char c = 0;
-        size_t len = furi_stream_buffer_receive(app->data->streams.app_rx, &c, 1, 100);
+        size_t len = furry_stream_buffer_receive(app->data->streams.app_rx, &c, 1, 100);
         if(len > 0) {
-            furi_string_push_back(app->text_box_store, c);
+            furry_string_push_back(app->text_box_store, c);
         }
     }
     if(available > 0) {
-        text_box_set_text(app->text_box, furi_string_get_cstr(app->text_box_store));
+        text_box_set_text(app->text_box, furry_string_get_cstr(app->text_box_store));
     }
     // Set input header stuff
-    size_t len = furi_string_size(app->text_box_store);
+    size_t len = furry_string_size(app->text_box_store);
     size_t idx = len - 2;
     while(idx > 0) {
-        if(furi_string_get_char(app->text_box_store, idx) == '\n') {
+        if(furry_string_get_char(app->text_box_store, idx) == '\n') {
             idx++;
             break;
         }
         idx--;
     }
-    text_input_set_header_text(app->text_input, furi_string_get_cstr(app->text_box_store) + idx);
+    text_input_set_header_text(app->text_input, furry_string_get_cstr(app->text_box_store) + idx);
     UNUSED(app);
 }
 
@@ -65,8 +65,8 @@ static void input_callback_wrapper(InputEvent* event, void* context) {
 
 int32_t cligui_main(void* p) {
     UNUSED(p);
-    loader_unlock(furi_record_open(RECORD_LOADER));
-    furi_record_close(RECORD_LOADER);
+    loader_unlock(furry_record_open(RECORD_LOADER));
+    furry_record_close(RECORD_LOADER);
 
     CliguiApp* cligui = malloc(sizeof(CliguiApp));
     cligui->data = malloc(sizeof(CliguiData));
@@ -75,7 +75,7 @@ int32_t cligui_main(void* p) {
     cligui->data->streams.app_tx = rx_stream;
     cligui->data->streams.app_rx = tx_stream;
 
-    cligui->gui = furi_record_open(RECORD_GUI);
+    cligui->gui = furry_record_open(RECORD_GUI);
     cligui->view_dispatcher = view_dispatcher_alloc();
     cligui->view_dispatcher_i = (ViewDispatcher_internal*)(cligui->view_dispatcher);
     prev_input_callback =
@@ -96,10 +96,10 @@ int32_t cligui_main(void* p) {
     cligui->text_box = text_box_alloc();
     view_dispatcher_add_view(
         cligui->view_dispatcher, ViewConsoleOutput, text_box_get_view(cligui->text_box));
-    cligui->text_box_store = furi_string_alloc();
-    furi_string_reserve(cligui->text_box_store, TEXT_BOX_STORE_SIZE);
-    furi_string_set_char(cligui->text_box_store, 0, 0);
-    text_box_set_text(cligui->text_box, furi_string_get_cstr(cligui->text_box_store));
+    cligui->text_box_store = furry_string_alloc();
+    furry_string_reserve(cligui->text_box_store, TEXT_BOX_STORE_SIZE);
+    furry_string_set_char(cligui->text_box_store, 0, 0);
+    text_box_set_text(cligui->text_box, furry_string_get_cstr(cligui->text_box_store));
     text_box_set_focus(cligui->text_box, TextBoxFocusEnd);
 
     cligui->text_input = text_input_alloc();
@@ -121,13 +121,13 @@ int32_t cligui_main(void* p) {
     view_dispatcher_remove_view(cligui->view_dispatcher, ViewConsoleOutput);
     view_dispatcher_remove_view(cligui->view_dispatcher, ViewTextInput);
     text_box_free(cligui->text_box);
-    furi_string_free(cligui->text_box_store);
+    furry_string_free(cligui->text_box_store);
     text_input_free(cligui->text_input);
     view_dispatcher_free(cligui->view_dispatcher);
 
     unlatch_tx_handler(persistent_exit);
 
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
     free(cligui->data);
     free(cligui);

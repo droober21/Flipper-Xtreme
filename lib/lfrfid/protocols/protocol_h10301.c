@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <toolbox/protocols/protocol.h>
 #include <lfrfid/tools/fsk_demod.h>
 #include <lfrfid/tools/fsk_osc.h>
@@ -355,9 +355,9 @@ bool protocol_h10301_write_data(ProtocolH10301* protocol, void* data) {
     return result;
 };
 
-void protocol_h10301_render_data(ProtocolH10301* protocol, FuriString* result) {
+void protocol_h10301_render_data(ProtocolH10301* protocol, FurryString* result) {
     uint8_t* data = protocol->data;
-    furi_string_printf(
+    furry_string_printf(
         result,
         "FC: %u\r\n"
         "Card: %u",

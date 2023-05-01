@@ -2,8 +2,8 @@
 #include "../subghz_i.h"
 
 #include <math.h>
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <input/input.h>
 #include <notification/notification_messages.h>
 #include <gui/elements.h>
@@ -65,8 +65,8 @@ void subghz_frequency_analyzer_set_callback(
     SubGhzFrequencyAnalyzer* subghz_frequency_analyzer,
     SubGhzFrequencyAnalyzerCallback callback,
     void* context) {
-    furi_assert(subghz_frequency_analyzer);
-    furi_assert(callback);
+    furry_assert(subghz_frequency_analyzer);
+    furry_assert(callback);
     subghz_frequency_analyzer->callback = callback;
     subghz_frequency_analyzer->context = context;
 }
@@ -165,7 +165,7 @@ void subghz_frequency_analyzer_draw(Canvas* canvas, SubGhzFrequencyAnalyzerModel
     // Title
     canvas_set_color(canvas, ColorBlack);
     canvas_set_font(canvas, FontSecondary);
-    canvas_draw_str(canvas, 0, 7, furi_hal_subghz_get_radio_type() ? "Ext" : "Int");
+    canvas_draw_str(canvas, 0, 7, furry_hal_subghz_get_radio_type() ? "Ext" : "Int");
     canvas_draw_str(canvas, 20, 7, "Frequency Analyzer");
 
     // RSSI
@@ -224,8 +224,8 @@ uint32_t subghz_frequency_find_correct(uint32_t input) {
     uint32_t prev_freq = 0;
     uint32_t current = 0;
     uint32_t result = 0;
-#ifdef FURI_DEBUG
-    FURI_LOG_D(TAG, "input: %ld", input);
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(TAG, "input: %ld", input);
 #endif
     for(size_t i = 0; i < sizeof(subghz_frequency_list); i++) {
         current = subghz_frequency_list[i];
@@ -248,7 +248,7 @@ uint32_t subghz_frequency_find_correct(uint32_t input) {
 }
 
 bool subghz_frequency_analyzer_input(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzFrequencyAnalyzer* instance = context;
 
     bool need_redraw = false;
@@ -277,7 +277,7 @@ bool subghz_frequency_analyzer_input(InputEvent* event, void* context) {
             break;
         }
         subghz_frequency_analyzer_worker_set_trigger_level(instance->worker, trigger_level);
-        FURI_LOG_I(TAG, "trigger = %.1f", (double)trigger_level);
+        FURRY_LOG_I(TAG, "trigger = %.1f", (double)trigger_level);
         need_redraw = true;
     } else if(event->type == InputTypePress && event->key == InputKeyUp) {
         if(instance->feedback_level == 0) {
@@ -285,8 +285,8 @@ bool subghz_frequency_analyzer_input(InputEvent* event, void* context) {
         } else {
             instance->feedback_level--;
         }
-#ifdef FURI_DEBUG
-        FURI_LOG_D(TAG, "feedback_level = %d", instance->feedback_level);
+#ifdef FURRY_DEBUG
+        FURRY_LOG_D(TAG, "feedback_level = %d", instance->feedback_level);
 #endif
         need_redraw = true;
     } else if(
@@ -310,7 +310,7 @@ bool subghz_frequency_analyzer_input(InputEvent* event, void* context) {
                     uint32_t prev_freq_to_save = model->frequency_to_save;
                     uint32_t frequency_candidate = model->history_frequency[model->selected_index];
                     if(frequency_candidate == 0 ||
-                       !furi_hal_subghz_is_frequency_valid(frequency_candidate) ||
+                       !furry_hal_subghz_is_frequency_valid(frequency_candidate) ||
                        prev_freq_to_save == frequency_candidate) {
                         frequency_candidate = 0;
                     } else {
@@ -318,8 +318,8 @@ bool subghz_frequency_analyzer_input(InputEvent* event, void* context) {
                     }
                     if(frequency_candidate > 0 &&
                        frequency_candidate != model->frequency_to_save) {
-#ifdef FURI_DEBUG
-                        FURI_LOG_D(
+#ifdef FURRY_DEBUG
+                        FURRY_LOG_D(
                             TAG,
                             "frequency_to_save: %ld, candidate: %ld",
                             model->frequency_to_save,
@@ -332,7 +332,7 @@ bool subghz_frequency_analyzer_input(InputEvent* event, void* context) {
                     uint32_t prev_freq_to_save = model->frequency_to_save;
                     uint32_t frequency_candidate = subghz_frequency_find_correct(model->frequency);
                     if(frequency_candidate == 0 ||
-                       !furi_hal_subghz_is_frequency_valid(frequency_candidate) ||
+                       !furry_hal_subghz_is_frequency_valid(frequency_candidate) ||
                        prev_freq_to_save == frequency_candidate) {
                         frequency_candidate = 0;
                     } else {
@@ -347,7 +347,7 @@ bool subghz_frequency_analyzer_input(InputEvent* event, void* context) {
                     uint32_t prev_freq_to_save = model->frequency_to_save;
                     uint32_t frequency_candidate = subghz_frequency_find_correct(model->frequency);
                     if(frequency_candidate == 0 ||
-                       !furi_hal_subghz_is_frequency_valid(frequency_candidate) ||
+                       !furry_hal_subghz_is_frequency_valid(frequency_candidate) ||
                        prev_freq_to_save == frequency_candidate) {
                         frequency_candidate = 0;
                     } else {
@@ -362,8 +362,8 @@ bool subghz_frequency_analyzer_input(InputEvent* event, void* context) {
             },
             true);
 
-#ifdef FURI_DEBUG
-        FURI_LOG_I(
+#ifdef FURRY_DEBUG
+        FURRY_LOG_I(
             TAG,
             "updated: %d, long: %d, type: %d",
             updated,
@@ -377,8 +377,8 @@ bool subghz_frequency_analyzer_input(InputEvent* event, void* context) {
 
         // First device receive short, then when user release button we get long
         if(event->type == InputTypeLong && frequency_to_save > 0) {
-#ifdef FURI_DEBUG
-            FURI_LOG_I(TAG, "Long press!");
+#ifdef FURRY_DEBUG
+            FURRY_LOG_I(TAG, "Long press!");
 #endif
             // Stop worker
             if(subghz_frequency_analyzer_worker_is_running(instance->worker)) {
@@ -493,7 +493,7 @@ void subghz_frequency_analyzer_pair_callback(
         instance->max_index = max_index;
     } else if((rssi != 0.f) && (!instance->locked)) {
         // There is some signal
-        FURI_LOG_I(TAG, "rssi = %.2f, frequency = %ld Hz", (double)rssi, frequency);
+        FURRY_LOG_I(TAG, "rssi = %.2f, frequency = %ld Hz", (double)rssi, frequency);
         frequency = round_int(frequency, 3); // Round 299999990Hz to 300000000Hz
 
         // Triggered!
@@ -527,7 +527,7 @@ void subghz_frequency_analyzer_pair_callback(
 }
 
 void subghz_frequency_analyzer_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzFrequencyAnalyzer* instance = context;
 
     //Start worker
@@ -571,7 +571,7 @@ void subghz_frequency_analyzer_enter(void* context) {
 }
 
 void subghz_frequency_analyzer_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzFrequencyAnalyzer* instance = context;
 
     // Stop worker
@@ -580,7 +580,7 @@ void subghz_frequency_analyzer_exit(void* context) {
     }
     subghz_frequency_analyzer_worker_free(instance->worker);
 
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
 }
 
 SubGhzFrequencyAnalyzer* subghz_frequency_analyzer_alloc() {
@@ -602,19 +602,19 @@ SubGhzFrequencyAnalyzer* subghz_frequency_analyzer_alloc() {
 }
 
 void subghz_frequency_analyzer_free(SubGhzFrequencyAnalyzer* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     view_free(instance->view);
     free(instance);
 }
 
 View* subghz_frequency_analyzer_get_view(SubGhzFrequencyAnalyzer* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     return instance->view;
 }
 
 uint32_t subghz_frequency_analyzer_get_frequency_to_save(SubGhzFrequencyAnalyzer* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     uint32_t frequency;
     with_view_model(
         instance->view,
@@ -629,7 +629,7 @@ SubGHzFrequencyAnalyzerFeedbackLevel subghz_frequency_analyzer_feedback_level(
     SubGhzFrequencyAnalyzer* instance,
     SubGHzFrequencyAnalyzerFeedbackLevel level,
     bool update) {
-    furi_assert(instance);
+    furry_assert(instance);
     if(update) {
         instance->feedback_level = level;
         with_view_model(
@@ -643,6 +643,6 @@ SubGHzFrequencyAnalyzerFeedbackLevel subghz_frequency_analyzer_feedback_level(
 }
 
 float subghz_frequency_analyzer_get_trigger_level(SubGhzFrequencyAnalyzer* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     return subghz_frequency_analyzer_worker_get_trigger_level(instance->worker);
 }

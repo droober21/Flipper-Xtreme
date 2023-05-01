@@ -6,7 +6,7 @@
 
 static void
     nfc_magic_worker_change_state(NfcMagicWorker* nfc_magic_worker, NfcMagicWorkerState state) {
-    furi_assert(nfc_magic_worker);
+    furry_assert(nfc_magic_worker);
 
     nfc_magic_worker->state = state;
 }
@@ -16,7 +16,7 @@ NfcMagicWorker* nfc_magic_worker_alloc() {
 
     // Worker thread attributes
     nfc_magic_worker->thread =
-        furi_thread_alloc_ex("NfcMagicWorker", 8192, nfc_magic_worker_task, nfc_magic_worker);
+        furry_thread_alloc_ex("NfcMagicWorker", 8192, nfc_magic_worker_task, nfc_magic_worker);
 
     nfc_magic_worker->callback = NULL;
     nfc_magic_worker->context = NULL;
@@ -27,17 +27,17 @@ NfcMagicWorker* nfc_magic_worker_alloc() {
 }
 
 void nfc_magic_worker_free(NfcMagicWorker* nfc_magic_worker) {
-    furi_assert(nfc_magic_worker);
+    furry_assert(nfc_magic_worker);
 
-    furi_thread_free(nfc_magic_worker->thread);
+    furry_thread_free(nfc_magic_worker->thread);
     free(nfc_magic_worker);
 }
 
 void nfc_magic_worker_stop(NfcMagicWorker* nfc_magic_worker) {
-    furi_assert(nfc_magic_worker);
+    furry_assert(nfc_magic_worker);
 
     nfc_magic_worker_change_state(nfc_magic_worker, NfcMagicWorkerStateStop);
-    furi_thread_join(nfc_magic_worker->thread);
+    furry_thread_join(nfc_magic_worker->thread);
 }
 
 void nfc_magic_worker_start(
@@ -46,17 +46,17 @@ void nfc_magic_worker_start(
     NfcDeviceData* dev_data,
     NfcMagicWorkerCallback callback,
     void* context) {
-    furi_assert(nfc_magic_worker);
-    furi_assert(dev_data);
+    furry_assert(nfc_magic_worker);
+    furry_assert(dev_data);
 
-    furi_hal_nfc_deinit();
-    furi_hal_nfc_init();
+    furry_hal_nfc_deinit();
+    furry_hal_nfc_init();
 
     nfc_magic_worker->callback = callback;
     nfc_magic_worker->context = context;
     nfc_magic_worker->dev_data = dev_data;
     nfc_magic_worker_change_state(nfc_magic_worker, state);
-    furi_thread_start(nfc_magic_worker->thread);
+    furry_thread_start(nfc_magic_worker->thread);
 }
 
 int32_t nfc_magic_worker_task(void* context) {
@@ -77,36 +77,36 @@ int32_t nfc_magic_worker_task(void* context) {
 
 void nfc_magic_worker_write(NfcMagicWorker* nfc_magic_worker) {
     bool card_found_notified = false;
-    FuriHalNfcDevData nfc_data = {};
+    FurryHalNfcDevData nfc_data = {};
     MfClassicData* src_data = &nfc_magic_worker->dev_data->mf_classic_data;
 
     while(nfc_magic_worker->state == NfcMagicWorkerStateWrite) {
-        if(furi_hal_nfc_detect(&nfc_data, 200)) {
+        if(furry_hal_nfc_detect(&nfc_data, 200)) {
             if(!card_found_notified) {
                 nfc_magic_worker->callback(
                     NfcMagicWorkerEventCardDetected, nfc_magic_worker->context);
                 card_found_notified = true;
             }
-            furi_hal_nfc_sleep();
+            furry_hal_nfc_sleep();
             if(!magic_wupa()) {
-                FURI_LOG_E(TAG, "No card response to WUPA (not a magic card)");
+                FURRY_LOG_E(TAG, "No card response to WUPA (not a magic card)");
                 nfc_magic_worker->callback(
                     NfcMagicWorkerEventWrongCard, nfc_magic_worker->context);
                 break;
             }
-            furi_hal_nfc_sleep();
+            furry_hal_nfc_sleep();
         }
         if(magic_wupa()) {
             if(!magic_data_access_cmd()) {
-                FURI_LOG_E(TAG, "No card response to data access command (not a magic card)");
+                FURRY_LOG_E(TAG, "No card response to data access command (not a magic card)");
                 nfc_magic_worker->callback(
                     NfcMagicWorkerEventWrongCard, nfc_magic_worker->context);
                 break;
             }
             for(size_t i = 0; i < 64; i++) {
-                FURI_LOG_D(TAG, "Writing block %d", i);
+                FURRY_LOG_D(TAG, "Writing block %d", i);
                 if(!magic_write_blk(i, &src_data->block[i])) {
-                    FURI_LOG_E(TAG, "Failed to write %d block", i);
+                    FURRY_LOG_E(TAG, "Failed to write %d block", i);
                     nfc_magic_worker->callback(NfcMagicWorkerEventFail, nfc_magic_worker->context);
                     break;
                 }
@@ -120,7 +120,7 @@ void nfc_magic_worker_write(NfcMagicWorker* nfc_magic_worker) {
                 card_found_notified = false;
             }
         }
-        furi_delay_ms(300);
+        furry_delay_ms(300);
     }
     magic_deactivate();
 }
@@ -145,7 +145,7 @@ void nfc_magic_worker_check(NfcMagicWorker* nfc_magic_worker) {
                 card_found_notified = false;
             }
         }
-        furi_delay_ms(300);
+        furry_delay_ms(300);
     }
     magic_deactivate();
 }
@@ -163,7 +163,7 @@ void nfc_magic_worker_wipe(NfcMagicWorker* nfc_magic_worker) {
 
     while(nfc_magic_worker->state == NfcMagicWorkerStateWipe) {
         magic_deactivate();
-        furi_delay_ms(300);
+        furry_delay_ms(300);
         if(!magic_wupa()) continue;
         if(!magic_wipe()) continue;
         if(!magic_data_access_cmd()) continue;

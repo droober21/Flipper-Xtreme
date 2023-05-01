@@ -3,8 +3,8 @@
 #include "../animation_storage.h"
 #include "bubble_animation_view.h"
 
-#include <furi_hal.h>
-#include <furi.h>
+#include <furry_hal.h>
+#include <furry.h>
 #include <gui/canvas.h>
 #include <gui/elements.h>
 #include <gui/view.h>
@@ -30,7 +30,7 @@ typedef struct {
 
 struct BubbleAnimationView {
     View* view;
-    FuriTimer* timer;
+    FurryTimer* timer;
     BubbleAnimationInteractCallback interact_callback;
     void* interact_callback_context;
 };
@@ -39,7 +39,7 @@ static void bubble_animation_activate(BubbleAnimationView* view, bool force);
 static void bubble_animation_activate_right_now(BubbleAnimationView* view);
 
 static uint8_t bubble_animation_get_frame_index(BubbleAnimationViewModel* model) {
-    furi_assert(model);
+    furry_assert(model);
     uint8_t icon_index = 0;
     const BubbleAnimation* animation = model->current;
 
@@ -50,14 +50,14 @@ static uint8_t bubble_animation_get_frame_index(BubbleAnimationViewModel* model)
             (model->current_frame - animation->passive_frames) % animation->active_frames +
             animation->passive_frames;
     }
-    furi_assert(icon_index < (animation->passive_frames + animation->active_frames));
+    furry_assert(icon_index < (animation->passive_frames + animation->active_frames));
 
     return animation->frame_order[icon_index];
 }
 
 static void bubble_animation_draw_callback(Canvas* canvas, void* model_) {
-    furi_assert(model_);
-    furi_assert(canvas);
+    furry_assert(model_);
+    furry_assert(canvas);
 
     BubbleAnimationViewModel* model = model_;
     const BubbleAnimation* animation = model->current;
@@ -72,7 +72,7 @@ static void bubble_animation_draw_callback(Canvas* canvas, void* model_) {
         return;
     }
 
-    furi_assert(model->current_frame < 255);
+    furry_assert(model->current_frame < 255);
 
     uint8_t index = bubble_animation_get_frame_index(model);
     uint8_t width = icon_get_width(&animation->icon_animation);
@@ -100,7 +100,7 @@ static const FrameBubble*
     }
 
     uint8_t index =
-        furi_hal_random_get() % (active ? model->active_bubbles : model->passive_bubbles);
+        furry_hal_random_get() % (active ? model->active_bubbles : model->passive_bubbles);
     const BubbleAnimation* animation = model->current;
 
     for(int i = 0; i < animation->frame_bubble_sequences_count; ++i) {
@@ -117,8 +117,8 @@ static const FrameBubble*
 }
 
 static bool bubble_animation_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
-    furi_assert(event);
+    furry_assert(context);
+    furry_assert(event);
 
     BubbleAnimationView* animation_view = context;
     bool consumed = false;
@@ -135,9 +135,9 @@ static bool bubble_animation_input_callback(InputEvent* event, void* context) {
                 animation_view->interact_callback(animation_view->interact_callback_context);
             }
         } else if(event->type == InputTypeLong) {
-            Loader* loader = furi_record_open(RECORD_LOADER);
+            Loader* loader = furry_record_open(RECORD_LOADER);
             loader_start(loader, "About", "batt");
-            furi_record_close(RECORD_LOADER);
+            furry_record_close(RECORD_LOADER);
         }
     }
 
@@ -145,7 +145,7 @@ static bool bubble_animation_input_callback(InputEvent* event, void* context) {
 }
 
 static void bubble_animation_activate(BubbleAnimationView* view, bool force) {
-    furi_assert(view);
+    furry_assert(view);
     bool activate = true;
     BubbleAnimationViewModel* model = view_get_model(view->view);
     if(model->current == NULL) {
@@ -184,7 +184,7 @@ static void bubble_animation_activate(BubbleAnimationView* view, bool force) {
 }
 
 static void bubble_animation_activate_right_now(BubbleAnimationView* view) {
-    furi_assert(view);
+    furry_assert(view);
 
     uint8_t frame_rate = 0;
 
@@ -197,12 +197,12 @@ static void bubble_animation_activate_right_now(BubbleAnimationView* view) {
     view_commit_model(view->view, true);
 
     if(frame_rate) {
-        furi_timer_start(view->timer, 1000 / frame_rate);
+        furry_timer_start(view->timer, 1000 / frame_rate);
     }
 }
 
 static void bubble_animation_next_frame(BubbleAnimationViewModel* model) {
-    furi_assert(model);
+    furry_assert(model);
 
     if(!model->current) {
         return;
@@ -232,7 +232,7 @@ static void bubble_animation_next_frame(BubbleAnimationViewModel* model) {
 }
 
 static void bubble_animation_timer_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     BubbleAnimationView* view = context;
     bool activate = false;
 
@@ -258,9 +258,9 @@ static void bubble_animation_timer_callback(void* context) {
  * passive frame first, and 2 frames after - active
  */
 static Icon* bubble_animation_clone_first_frame(const Icon* icon_orig) {
-    furi_assert(icon_orig);
-    furi_assert(icon_orig->frames);
-    furi_assert(icon_orig->frames[0]);
+    furry_assert(icon_orig);
+    furry_assert(icon_orig->frames);
+    furry_assert(icon_orig->frames[0]);
 
     Icon* icon_clone = malloc(sizeof(Icon));
     memcpy(icon_clone, icon_orig, sizeof(Icon));
@@ -272,16 +272,16 @@ static Icon* bubble_animation_clone_first_frame(const Icon* icon_orig) {
      * for compressed header
      */
     size_t max_bitmap_size = ROUND_UP_TO(icon_orig->width, 8) * icon_orig->height + 1;
-    FURI_CONST_ASSIGN_PTR(icon_clone->frames[0], malloc(max_bitmap_size));
+    FURRY_CONST_ASSIGN_PTR(icon_clone->frames[0], malloc(max_bitmap_size));
     memcpy((void*)icon_clone->frames[0], icon_orig->frames[0], max_bitmap_size);
-    FURI_CONST_ASSIGN(icon_clone->frame_count, 1);
+    FURRY_CONST_ASSIGN(icon_clone->frame_count, 1);
 
     return icon_clone;
 }
 
 static void bubble_animation_release_frame(Icon** icon) {
-    furi_assert(icon);
-    furi_assert(*icon);
+    furry_assert(icon);
+    furry_assert(*icon);
 
     free((void*)(*icon)->frames[0]);
     free((void*)(*icon)->frames);
@@ -290,7 +290,7 @@ static void bubble_animation_release_frame(Icon** icon) {
 }
 
 static void bubble_animation_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     BubbleAnimationView* view = context;
     bubble_animation_activate(view, false);
 
@@ -302,21 +302,21 @@ static void bubble_animation_enter(void* context) {
     view_commit_model(view->view, false);
 
     if(frame_rate) {
-        furi_timer_start(view->timer, 1000 / frame_rate);
+        furry_timer_start(view->timer, 1000 / frame_rate);
     }
 }
 
 static void bubble_animation_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     BubbleAnimationView* view = context;
-    furi_timer_stop(view->timer);
+    furry_timer_stop(view->timer);
 }
 
 BubbleAnimationView* bubble_animation_view_alloc(void) {
     BubbleAnimationView* view = malloc(sizeof(BubbleAnimationView));
     view->view = view_alloc();
     view->interact_callback = NULL;
-    view->timer = furi_timer_alloc(bubble_animation_timer_callback, FuriTimerTypePeriodic, view);
+    view->timer = furry_timer_alloc(bubble_animation_timer_callback, FurryTimerTypePeriodic, view);
 
     view_allocate_model(view->view, ViewModelTypeLocking, sizeof(BubbleAnimationViewModel));
     view_set_context(view->view, view);
@@ -329,7 +329,7 @@ BubbleAnimationView* bubble_animation_view_alloc(void) {
 }
 
 void bubble_animation_view_free(BubbleAnimationView* view) {
-    furi_assert(view);
+    furry_assert(view);
 
     view_set_draw_callback(view->view, NULL);
     view_set_input_callback(view->view, NULL);
@@ -344,7 +344,7 @@ void bubble_animation_view_set_interact_callback(
     BubbleAnimationView* view,
     BubbleAnimationInteractCallback callback,
     void* context) {
-    furi_assert(view);
+    furry_assert(view);
 
     view->interact_callback_context = context;
     view->interact_callback = callback;
@@ -353,11 +353,11 @@ void bubble_animation_view_set_interact_callback(
 void bubble_animation_view_set_animation(
     BubbleAnimationView* view,
     const BubbleAnimation* new_animation) {
-    furi_assert(view);
-    furi_assert(new_animation);
+    furry_assert(view);
+    furry_assert(new_animation);
 
     BubbleAnimationViewModel* model = view_get_model(view->view);
-    furi_assert(model);
+    furry_assert(model);
     model->current = new_animation;
 
     model->active_ended_at = xTaskGetTickCount() - (model->current->active_cooldown * 1000);
@@ -377,38 +377,38 @@ void bubble_animation_view_set_animation(
     model->active_cycle = 0;
     view_commit_model(view->view, true);
 
-    furi_timer_start(view->timer, 1000 / new_animation->icon_animation.frame_rate);
+    furry_timer_start(view->timer, 1000 / new_animation->icon_animation.frame_rate);
 }
 
 void bubble_animation_freeze(BubbleAnimationView* view) {
-    furi_assert(view);
+    furry_assert(view);
 
     BubbleAnimationViewModel* model = view_get_model(view->view);
-    furi_assert(model->current);
-    furi_assert(!model->freeze_frame);
+    furry_assert(model->current);
+    furry_assert(!model->freeze_frame);
     model->freeze_frame = bubble_animation_clone_first_frame(&model->current->icon_animation);
     model->current = NULL;
     view_commit_model(view->view, false);
-    furi_timer_stop(view->timer);
+    furry_timer_stop(view->timer);
 }
 
 void bubble_animation_unfreeze(BubbleAnimationView* view) {
-    furi_assert(view);
+    furry_assert(view);
     uint8_t frame_rate;
 
     BubbleAnimationViewModel* model = view_get_model(view->view);
-    furi_assert(model->freeze_frame);
+    furry_assert(model->freeze_frame);
     bubble_animation_release_frame(&model->freeze_frame);
-    furi_assert(model->current);
+    furry_assert(model->current);
     frame_rate = model->current->icon_animation.frame_rate;
     view_commit_model(view->view, true);
 
-    furi_timer_start(view->timer, 1000 / frame_rate);
+    furry_timer_start(view->timer, 1000 / frame_rate);
     bubble_animation_activate(view, false);
 }
 
 View* bubble_animation_get_view(BubbleAnimationView* view) {
-    furi_assert(view);
+    furry_assert(view);
 
     return view->view;
 }

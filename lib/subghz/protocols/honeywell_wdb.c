@@ -96,7 +96,7 @@ void* subghz_protocol_encoder_honeywell_wdb_alloc(SubGhzEnvironment* environment
 }
 
 void subghz_protocol_encoder_honeywell_wdb_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderHoneywell_WDB* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -109,11 +109,11 @@ void subghz_protocol_encoder_honeywell_wdb_free(void* context) {
  */
 static bool subghz_protocol_encoder_honeywell_wdb_get_upload(
     SubGhzProtocolEncoderHoneywell_WDB* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     size_t index = 0;
     size_t size_upload = (instance->generic.data_count_bit * 2) + 2;
     if(size_upload > instance->encoder.size_upload) {
-        FURI_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
+        FURRY_LOG_E(TAG, "Size upload exceeds allocated encoder buffer.");
         return false;
     } else {
         instance->encoder.size_upload = size_upload;
@@ -145,7 +145,7 @@ static bool subghz_protocol_encoder_honeywell_wdb_get_upload(
 SubGhzProtocolStatus subghz_protocol_encoder_honeywell_wdb_deserialize(
     void* context,
     FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderHoneywell_WDB* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -203,19 +203,19 @@ void* subghz_protocol_decoder_honeywell_wdb_alloc(SubGhzEnvironment* environment
 }
 
 void subghz_protocol_decoder_honeywell_wdb_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderHoneywell_WDB* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_honeywell_wdb_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderHoneywell_WDB* instance = context;
     instance->decoder.parser_step = Honeywell_WDBDecoderStepReset;
 }
 
 void subghz_protocol_decoder_honeywell_wdb_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderHoneywell_WDB* instance = context;
     switch(instance->decoder.parser_step) {
     case Honeywell_WDBDecoderStepReset:
@@ -338,7 +338,7 @@ static void subghz_protocol_honeywell_wdb_check_remote_controller(
 }
 
 uint8_t subghz_protocol_decoder_honeywell_wdb_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderHoneywell_WDB* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -348,7 +348,7 @@ SubGhzProtocolStatus subghz_protocol_decoder_honeywell_wdb_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderHoneywell_WDB* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
@@ -356,7 +356,7 @@ SubGhzProtocolStatus subghz_protocol_decoder_honeywell_wdb_serialize(
 SubGhzProtocolStatus subghz_protocol_decoder_honeywell_wdb_deserialize(
     void* context,
     FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderHoneywell_WDB* instance = context;
     return subghz_block_generic_deserialize_check_count_bit(
         &instance->generic,
@@ -364,12 +364,12 @@ SubGhzProtocolStatus subghz_protocol_decoder_honeywell_wdb_deserialize(
         subghz_protocol_honeywell_wdb_const.min_count_bit_for_found);
 }
 
-void subghz_protocol_decoder_honeywell_wdb_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_honeywell_wdb_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderHoneywell_WDB* instance = context;
     subghz_protocol_honeywell_wdb_check_remote_controller(instance);
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %dbit\r\n"
         "Key:0x%lX%08lX\r\n"

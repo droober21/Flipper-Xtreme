@@ -13,8 +13,8 @@
 #define SCENE_EVENT_PINS_DIFFERENT (2U)
 
 static void pin_auth_done_callback(const PinCode* pin_code, void* context) {
-    furi_assert(pin_code);
-    furi_assert(context);
+    furry_assert(pin_code);
+    furry_assert(context);
     DesktopSettingsApp* app = context;
 
     app->pincode_buffer = *pin_code;
@@ -34,7 +34,7 @@ void desktop_settings_scene_pin_auth_on_enter(void* context) {
     DesktopSettingsApp* app = context;
 
     DESKTOP_SETTINGS_LOAD(&app->settings);
-    furi_assert(app->settings.pin_code.length > 0);
+    furry_assert(app->settings.pin_code.length > 0);
 
     desktop_view_pin_input_set_context(app->pin_input_view, app);
     desktop_view_pin_input_set_back_callback(app->pin_input_view, pin_auth_back_callback);
@@ -68,7 +68,7 @@ bool desktop_settings_scene_pin_auth_on_event(void* context, SceneManagerEvent e
             } else if(state == SCENE_STATE_PIN_AUTH_DISABLE) {
                 scene_manager_next_scene(app->scene_manager, DesktopSettingsAppScenePinDisable);
             } else {
-                furi_assert(0);
+                furry_assert(0);
             }
             consumed = true;
             break;
@@ -88,7 +88,7 @@ bool desktop_settings_scene_pin_auth_on_event(void* context, SceneManagerEvent e
 }
 
 void desktop_settings_scene_pin_auth_on_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DesktopSettingsApp* app = context;
     desktop_view_pin_input_set_back_callback(app->pin_input_view, NULL);
     desktop_view_pin_input_set_done_callback(app->pin_input_view, NULL);

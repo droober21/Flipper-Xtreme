@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <stdlib.h>
@@ -105,7 +105,7 @@ typedef struct {
     uint8_t sent;
     PlayerState* p1;
     PlayerState* p2;
-    FuriMutex* mutex;
+    FurryMutex* mutex;
 } TanksState;
 
 typedef enum {
@@ -389,9 +389,9 @@ void tanks_game_deserialize_and_render(unsigned char* data, Canvas* const canvas
 }
 
 static void tanks_game_render_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     const TanksState* tanks_state = ctx;
-    furi_mutex_acquire(tanks_state->mutex, FuriWaitForever);
+    furry_mutex_acquire(tanks_state->mutex, FurryWaitForever);
 
     // Before the function is called, the state is set with the canvas_reset(canvas)
     if(tanks_state->state == GameStateMenu) {
@@ -415,7 +415,7 @@ static void tanks_game_render_callback(Canvas* const canvas, void* ctx) {
 
         canvas_draw_frame(canvas, 0, 0, 128, 64);
 
-        furi_mutex_release(tanks_state->mutex);
+        furry_mutex_release(tanks_state->mutex);
         return;
     }
 
@@ -432,7 +432,7 @@ static void tanks_game_render_callback(Canvas* const canvas, void* ctx) {
 
         tanks_game_render_constant_cells(canvas);
 
-        furi_mutex_release(tanks_state->mutex);
+        furry_mutex_release(tanks_state->mutex);
         return;
     }
 
@@ -615,21 +615,21 @@ static void tanks_game_render_callback(Canvas* const canvas, void* ctx) {
     tanks_game_deserialize_and_render(data, canvas);
     // TEST enf
 
-    furi_mutex_release(tanks_state->mutex);
+    furry_mutex_release(tanks_state->mutex);
 }
 
-static void tanks_game_input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void tanks_game_input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     TanksEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
-static void tanks_game_update_timer_callback(FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void tanks_game_update_timer_callback(FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     TanksEvent event = {.type = EventTypeTick};
-    furi_message_queue_put(event_queue, &event, 0);
+    furry_message_queue_put(event_queue, &event, 0);
 }
 
 static bool tanks_get_cell_is_free(TanksState* const tanks_state, Point point) {
@@ -1181,17 +1181,17 @@ int32_t tanks_game_app(void* p) {
     UNUSED(p);
     srand(DWT->CYCCNT);
 
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(TanksEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(TanksEvent));
 
     TanksState* tanks_state = malloc(sizeof(TanksState));
 
     tanks_state->state = GameStateMenu;
     tanks_state->menu_state = MenuStateSingleMode;
 
-    tanks_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    tanks_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!tanks_state->mutex) {
-        FURI_LOG_E("Tanks", "cannot create mutex\r\n");
-        furi_message_queue_free(event_queue);
+        FURRY_LOG_E("Tanks", "cannot create mutex\r\n");
+        furry_message_queue_free(event_queue);
         free(tanks_state);
         return 255;
     }
@@ -1200,12 +1200,12 @@ int32_t tanks_game_app(void* p) {
     view_port_draw_callback_set(view_port, tanks_game_render_callback, tanks_state);
     view_port_input_callback_set(view_port, tanks_game_input_callback, event_queue);
 
-    FuriTimer* timer =
-        furi_timer_alloc(tanks_game_update_timer_callback, FuriTimerTypePeriodic, event_queue);
-    furi_timer_start(timer, furi_kernel_get_tick_frequency() / 4);
+    FurryTimer* timer =
+        furry_timer_alloc(tanks_game_update_timer_callback, FurryTimerTypePeriodic, event_queue);
+    furry_timer_start(timer, furry_kernel_get_tick_frequency() / 4);
 
     // Open GUI and register view_port
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     TanksEvent event;
@@ -1216,14 +1216,14 @@ int32_t tanks_game_app(void* p) {
     uint8_t incomingMessage[180] = {0};
     SubGhzTxRxWorker* subghz_txrx = subghz_tx_rx_worker_alloc();
     subghz_tx_rx_worker_start(subghz_txrx, frequency);
-    furi_hal_power_suppress_charge_enter();
+    furry_hal_power_suppress_charge_enter();
 
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 100);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 100);
 
-        furi_mutex_acquire(tanks_state->mutex, FuriWaitForever);
+        furry_mutex_acquire(tanks_state->mutex, FurryWaitForever);
 
-        if(event_status == FuriStatusOk) {
+        if(event_status == FurryStatusOk) {
             // press events
             if(event.type == EventTypeKey) {
                 if(event.input.type == InputTypePress) {
@@ -1236,16 +1236,16 @@ int32_t tanks_game_app(void* p) {
                                 tanks_state->menu_state = MenuStateCooperativeServerMode;
                             }
                         } else if(tanks_state->state == GameStateCooperativeClient) {
-                            FuriString* goesUp = NULL;
+                            FurryString* goesUp = NULL;
                             char arr[2];
                             arr[0] = GoesUp;
                             arr[1] = 0;
-                            furi_string_set(goesUp, (char*)&arr);
+                            furry_string_set(goesUp, (char*)&arr);
 
                             subghz_tx_rx_worker_write(
                                 subghz_txrx,
-                                (uint8_t*)furi_string_get_cstr(goesUp),
-                                strlen(furi_string_get_cstr(goesUp)));
+                                (uint8_t*)furry_string_get_cstr(goesUp),
+                                strlen(furry_string_get_cstr(goesUp)));
 
                         } else {
                             tanks_state->p1->moving = true;
@@ -1260,16 +1260,16 @@ int32_t tanks_game_app(void* p) {
                                 tanks_state->menu_state = MenuStateCooperativeClientMode;
                             }
                         } else if(tanks_state->state == GameStateCooperativeClient) {
-                            FuriString* goesDown = NULL;
+                            FurryString* goesDown = NULL;
                             char arr[2];
                             arr[0] = GoesDown;
                             arr[1] = 0;
-                            furi_string_set(goesDown, (char*)&arr);
+                            furry_string_set(goesDown, (char*)&arr);
 
                             subghz_tx_rx_worker_write(
                                 subghz_txrx,
-                                (uint8_t*)furi_string_get_cstr(goesDown),
-                                strlen(furi_string_get_cstr(goesDown)));
+                                (uint8_t*)furry_string_get_cstr(goesDown),
+                                strlen(furry_string_get_cstr(goesDown)));
                         } else {
                             tanks_state->p1->moving = true;
                             tanks_state->p1->direction = DirectionDown;
@@ -1277,16 +1277,16 @@ int32_t tanks_game_app(void* p) {
                         break;
                     case InputKeyRight:
                         if(tanks_state->state == GameStateCooperativeClient) {
-                            FuriString* goesRight = NULL;
+                            FurryString* goesRight = NULL;
                             char arr[2];
                             arr[0] = GoesRight;
                             arr[1] = 0;
-                            furi_string_set(goesRight, (char*)&arr);
+                            furry_string_set(goesRight, (char*)&arr);
 
                             subghz_tx_rx_worker_write(
                                 subghz_txrx,
-                                (uint8_t*)furi_string_get_cstr(goesRight),
-                                strlen(furi_string_get_cstr(goesRight)));
+                                (uint8_t*)furry_string_get_cstr(goesRight),
+                                strlen(furry_string_get_cstr(goesRight)));
                         } else {
                             tanks_state->p1->moving = true;
                             tanks_state->p1->direction = DirectionRight;
@@ -1294,16 +1294,16 @@ int32_t tanks_game_app(void* p) {
                         break;
                     case InputKeyLeft:
                         if(tanks_state->state == GameStateCooperativeClient) {
-                            FuriString* goesLeft = NULL;
+                            FurryString* goesLeft = NULL;
                             char arr[2];
                             arr[0] = GoesLeft;
                             arr[1] = 0;
-                            furi_string_set(goesLeft, (char*)&arr);
+                            furry_string_set(goesLeft, (char*)&arr);
 
                             subghz_tx_rx_worker_write(
                                 subghz_txrx,
-                                (uint8_t*)furi_string_get_cstr(goesLeft),
-                                strlen(furi_string_get_cstr(goesLeft)));
+                                (uint8_t*)furry_string_get_cstr(goesLeft),
+                                strlen(furry_string_get_cstr(goesLeft)));
                         } else {
                             tanks_state->p1->moving = true;
                             tanks_state->p1->direction = DirectionLeft;
@@ -1327,16 +1327,16 @@ int32_t tanks_game_app(void* p) {
                         } else if(tanks_state->state == GameStateGameOver) {
                             tanks_game_init_game(tanks_state, tanks_state->state);
                         } else if(tanks_state->state == GameStateCooperativeClient) {
-                            FuriString* shoots = NULL;
+                            FurryString* shoots = NULL;
                             char arr[2];
                             arr[0] = Shoots;
                             arr[1] = 0;
-                            furi_string_set(shoots, (char*)&arr);
+                            furry_string_set(shoots, (char*)&arr);
 
                             subghz_tx_rx_worker_write(
                                 subghz_txrx,
-                                (uint8_t*)furi_string_get_cstr(shoots),
-                                strlen(furi_string_get_cstr(shoots)));
+                                (uint8_t*)furry_string_get_cstr(shoots),
+                                strlen(furry_string_get_cstr(shoots)));
                         } else {
                             tanks_state->p1->shooting = true;
                         }
@@ -1385,7 +1385,7 @@ int32_t tanks_game_app(void* p) {
 
                     tanks_game_process_game_step(tanks_state);
 
-                    FuriString* serializedData = NULL;
+                    FurryString* serializedData = NULL;
                     unsigned char* data = tanks_game_serialize(tanks_state);
                     char arr[11 * 16 + 1];
 
@@ -1395,12 +1395,12 @@ int32_t tanks_game_app(void* p) {
 
                     arr[11 * 16] = 0;
 
-                    furi_string_set(serializedData, (char*)&arr);
+                    furry_string_set(serializedData, (char*)&arr);
 
                     subghz_tx_rx_worker_write(
                         subghz_txrx,
-                        (uint8_t*)furi_string_get_cstr(serializedData),
-                        strlen(furi_string_get_cstr(serializedData)));
+                        (uint8_t*)furry_string_get_cstr(serializedData),
+                        strlen(furry_string_get_cstr(serializedData)));
 
                     tanks_state->sent++;
                 } else if(tanks_state->state == GameStateSingle) {
@@ -1422,25 +1422,25 @@ int32_t tanks_game_app(void* p) {
         }
 
         view_port_update(view_port);
-        furi_mutex_release(tanks_state->mutex);
-        furi_delay_ms(1);
+        furry_mutex_release(tanks_state->mutex);
+        furry_delay_ms(1);
     }
 
-    furi_delay_ms(10);
-    furi_hal_power_suppress_charge_exit();
+    furry_delay_ms(10);
+    furry_hal_power_suppress_charge_exit();
 
     if(subghz_tx_rx_worker_is_running(subghz_txrx)) {
         subghz_tx_rx_worker_stop(subghz_txrx);
         subghz_tx_rx_worker_free(subghz_txrx);
     }
 
-    furi_timer_free(timer);
+    furry_timer_free(timer);
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_mutex_free(tanks_state->mutex);
+    furry_message_queue_free(event_queue);
+    furry_mutex_free(tanks_state->mutex);
 
     if(tanks_state->p1 != NULL) {
         free(tanks_state->p1);

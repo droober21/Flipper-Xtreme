@@ -2,8 +2,8 @@
 
 #include <ble/ble.h>
 
-#include <furi_hal.h>
-#include <furi.h>
+#include <furry_hal.h>
+#include <furry.h>
 
 #define TAG "BtGap"
 
@@ -29,12 +29,12 @@ typedef struct {
     GapState state;
     int8_t conn_rssi;
     uint32_t time_rssi_sample;
-    FuriMutex* state_mutex;
+    FurryMutex* state_mutex;
     GapEventCallback on_event_cb;
     void* context;
-    FuriTimer* advertise_timer;
-    FuriThread* thread;
-    FuriMessageQueue* command_queue;
+    FurryTimer* advertise_timer;
+    FurryThread* thread;
+    FurryMessageQueue* command_queue;
     bool enable_adv;
 } Gap;
 
@@ -61,19 +61,19 @@ static inline void fetch_rssi() {
     uint8_t ret_rssi = 127;
     if(hci_read_rssi(gap->service.connection_handle, &ret_rssi) == BLE_STATUS_SUCCESS) {
         gap->conn_rssi = (int8_t)ret_rssi;
-        gap->time_rssi_sample = furi_get_tick();
+        gap->time_rssi_sample = furry_get_tick();
         return;
     }
-    FURI_LOG_D(TAG, "Failed to read RSSI");
+    FURRY_LOG_D(TAG, "Failed to read RSSI");
 }
 
 static void gap_advertise_start(GapState new_state);
 static int32_t gap_app(void* context);
 
 static void gap_verify_connection_parameters(Gap* gap) {
-    furi_assert(gap);
+    furry_assert(gap);
 
-    FURI_LOG_I(
+    FURRY_LOG_I(
         TAG,
         "Connection parameters: Connection Interval: %d (%d ms), Slave Latency: %d, Supervision Timeout: %d",
         gap->connection_params.conn_interval,
@@ -85,14 +85,14 @@ static void gap_verify_connection_parameters(Gap* gap) {
     GapConnectionParamsRequest* params = &gap->config->conn_param;
     if(params->conn_int_min > gap->connection_params.conn_interval ||
        params->conn_int_max < gap->connection_params.conn_interval) {
-        FURI_LOG_W(TAG, "Unsupported connection interval. Request connection parameters update");
+        FURRY_LOG_W(TAG, "Unsupported connection interval. Request connection parameters update");
         if(aci_l2cap_connection_parameter_update_req(
                gap->service.connection_handle,
                params->conn_int_min,
                params->conn_int_max,
                gap->connection_params.slave_latency,
                gap->connection_params.supervisor_timeout)) {
-            FURI_LOG_E(TAG, "Failed to request connection parameters update");
+            FURRY_LOG_E(TAG, "Failed to request connection parameters update");
         }
     }
 }
@@ -109,7 +109,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void* pckt) {
     event_pckt = (hci_event_pckt*)((hci_uart_pckt*)pckt)->data;
 
     if(gap) {
-        furi_mutex_acquire(gap->state_mutex, FuriWaitForever);
+        furry_mutex_acquire(gap->state_mutex, FurryWaitForever);
     }
     switch(event_pckt->evt) {
     case EVT_DISCONN_COMPLETE: {
@@ -118,11 +118,11 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void* pckt) {
         if(disconnection_complete_event->Connection_Handle == gap->service.connection_handle) {
             gap->service.connection_handle = 0;
             gap->state = GapStateIdle;
-            FURI_LOG_I(
+            FURRY_LOG_I(
                 TAG, "Disconnect from client. Reason: %02X", disconnection_complete_event->Reason);
         }
         // Enterprise sleep
-        furi_delay_us(666 + 666);
+        furry_delay_us(666 + 666);
         if(gap->enable_adv) {
             // Restart advertising
             gap_advertise_start(GapStateAdvFast);
@@ -140,7 +140,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void* pckt) {
             gap->connection_params.conn_interval = event->Conn_Interval;
             gap->connection_params.slave_latency = event->Conn_Latency;
             gap->connection_params.supervisor_timeout = event->Supervision_Timeout;
-            FURI_LOG_I(TAG, "Connection parameters event complete");
+            FURRY_LOG_I(TAG, "Connection parameters event complete");
             gap_verify_connection_parameters(gap);
 
             // save rssi for current connection
@@ -151,16 +151,16 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void* pckt) {
         case EVT_LE_PHY_UPDATE_COMPLETE:
             evt_le_phy_update_complete = (hci_le_phy_update_complete_event_rp0*)meta_evt->data;
             if(evt_le_phy_update_complete->Status) {
-                FURI_LOG_E(
+                FURRY_LOG_E(
                     TAG, "Update PHY failed, status %d", evt_le_phy_update_complete->Status);
             } else {
-                FURI_LOG_I(TAG, "Update PHY succeed");
+                FURRY_LOG_I(TAG, "Update PHY succeed");
             }
             ret = hci_le_read_phy(gap->service.connection_handle, &tx_phy, &rx_phy);
             if(ret) {
-                FURI_LOG_E(TAG, "Read PHY failed, status: %d", ret);
+                FURRY_LOG_E(TAG, "Read PHY failed, status: %d", ret);
             } else {
-                FURI_LOG_I(TAG, "PHY Params TX = %d, RX = %d ", tx_phy, rx_phy);
+                FURRY_LOG_I(TAG, "PHY Params TX = %d, RX = %d ", tx_phy, rx_phy);
             }
             break;
 
@@ -172,7 +172,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void* pckt) {
             gap->connection_params.supervisor_timeout = event->Supervision_Timeout;
 
             // Stop advertising as connection completed
-            furi_timer_stop(gap->advertise_timer);
+            furry_timer_stop(gap->advertise_timer);
 
             // Update connection status and handle
             gap->state = GapStateConnected;
@@ -197,17 +197,17 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void* pckt) {
             aci_gap_pairing_complete_event_rp0* pairing_complete;
 
         case EVT_BLUE_GAP_LIMITED_DISCOVERABLE:
-            FURI_LOG_I(TAG, "Limited discoverable event");
+            FURRY_LOG_I(TAG, "Limited discoverable event");
             break;
 
         case EVT_BLUE_GAP_PASS_KEY_REQUEST: {
             // Generate random PIN code
             uint32_t pin = rand() % 999999; //-V1064
             aci_gap_pass_key_resp(gap->service.connection_handle, pin);
-            if(furi_hal_rtc_is_flag_set(FuriHalRtcFlagLock)) {
-                FURI_LOG_I(TAG, "Pass key request event. Pin: ******");
+            if(furry_hal_rtc_is_flag_set(FurryHalRtcFlagLock)) {
+                FURRY_LOG_I(TAG, "Pass key request event. Pin: ******");
             } else {
-                FURI_LOG_I(TAG, "Pass key request event. Pin: %06ld", pin);
+                FURRY_LOG_I(TAG, "Pass key request event. Pin: %06ld", pin);
             }
             GapEvent event = {.type = GapEventTypePinCodeShow, .data.pin_code = pin};
             gap->on_event_cb(event, gap->context);
@@ -215,7 +215,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void* pckt) {
 
         case EVT_BLUE_ATT_EXCHANGE_MTU_RESP: {
             aci_att_exchange_mtu_resp_event_rp0* pr = (void*)blue_evt->data;
-            FURI_LOG_I(TAG, "Rx MTU size: %d", pr->Server_RX_MTU);
+            FURRY_LOG_I(TAG, "Rx MTU size: %d", pr->Server_RX_MTU);
             // Set maximum packet size given header size is 3 bytes
             GapEvent event = {
                 .type = GapEventTypeUpdateMTU, .data.max_packet_size = pr->Server_RX_MTU - 3};
@@ -223,34 +223,34 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void* pckt) {
         } break;
 
         case EVT_BLUE_GAP_AUTHORIZATION_REQUEST:
-            FURI_LOG_D(TAG, "Authorization request event");
+            FURRY_LOG_D(TAG, "Authorization request event");
             break;
 
         case EVT_BLUE_GAP_SLAVE_SECURITY_INITIATED:
-            FURI_LOG_D(TAG, "Slave security initiated");
+            FURRY_LOG_D(TAG, "Slave security initiated");
             break;
 
         case EVT_BLUE_GAP_BOND_LOST:
-            FURI_LOG_D(TAG, "Bond lost event. Start rebonding");
+            FURRY_LOG_D(TAG, "Bond lost event. Start rebonding");
             aci_gap_allow_rebond(gap->service.connection_handle);
             break;
 
         case EVT_BLUE_GAP_DEVICE_FOUND:
-            FURI_LOG_D(TAG, "Device found event");
+            FURRY_LOG_D(TAG, "Device found event");
             break;
 
         case EVT_BLUE_GAP_ADDR_NOT_RESOLVED:
-            FURI_LOG_D(TAG, "Address not resolved event");
+            FURRY_LOG_D(TAG, "Address not resolved event");
             break;
 
         case EVT_BLUE_GAP_KEYPRESS_NOTIFICATION:
-            FURI_LOG_D(TAG, "Key press notification event");
+            FURRY_LOG_D(TAG, "Key press notification event");
             break;
 
         case EVT_BLUE_GAP_NUMERIC_COMPARISON_VALUE: {
             uint32_t pin =
                 ((aci_gap_numeric_comparison_value_event_rp0*)(blue_evt->data))->Numeric_Value;
-            FURI_LOG_I(TAG, "Verify numeric comparison: %06lu", pin);
+            FURRY_LOG_I(TAG, "Verify numeric comparison: %06lu", pin);
             GapEvent event = {.type = GapEventTypePinCodeVerify, .data.pin_code = pin};
             bool result = gap->on_event_cb(event, gap->context);
             aci_gap_numeric_comparison_value_confirm_yesno(gap->service.connection_handle, result);
@@ -260,7 +260,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void* pckt) {
         case EVT_BLUE_GAP_PAIRING_CMPLT:
             pairing_complete = (aci_gap_pairing_complete_event_rp0*)blue_evt->data;
             if(pairing_complete->Status) {
-                FURI_LOG_E(
+                FURRY_LOG_E(
                     TAG,
                     "Pairing failed with status: %d. Terminating connection",
                     pairing_complete->Status);
@@ -268,23 +268,23 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void* pckt) {
             } else {
                 fetch_rssi();
 
-                FURI_LOG_I(TAG, "Pairing complete");
+                FURRY_LOG_I(TAG, "Pairing complete");
                 GapEvent event = {.type = GapEventTypeConnected};
                 gap->on_event_cb(event, gap->context); //-V595
             }
             break;
 
         case EVT_BLUE_GAP_PROCEDURE_COMPLETE:
-            FURI_LOG_D(TAG, "Procedure complete event");
+            FURRY_LOG_D(TAG, "Procedure complete event");
             break;
 
         case EVT_BLUE_L2CAP_CONNECTION_UPDATE_RESP: {
             uint16_t result =
                 ((aci_l2cap_connection_update_resp_event_rp0*)(blue_evt->data))->Result;
             if(result == 0) {
-                FURI_LOG_D(TAG, "Connection parameters accepted");
+                FURRY_LOG_D(TAG, "Connection parameters accepted");
             } else if(result == 1) {
-                FURI_LOG_D(TAG, "Connection parameters denied");
+                FURRY_LOG_D(TAG, "Connection parameters denied");
             }
             break;
         }
@@ -293,7 +293,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void* pckt) {
         break;
     }
     if(gap) {
-        furi_mutex_release(gap->state_mutex);
+        furry_mutex_release(gap->state_mutex);
     }
     return SVCCTL_UserEvtFlowEnable;
 }
@@ -354,7 +354,7 @@ static void gap_init_svc(Gap* gap) {
         strlen(name),
         (uint8_t*)name);
     if(status) {
-        FURI_LOG_E(TAG, "Failed updating name characteristic: %d", status);
+        FURRY_LOG_E(TAG, "Failed updating name characteristic: %d", status);
     }
     uint8_t gap_appearence_char_uuid[2] = {
         gap->config->appearance_char & 0xff, gap->config->appearance_char >> 8};
@@ -365,7 +365,7 @@ static void gap_init_svc(Gap* gap) {
         2,
         gap_appearence_char_uuid);
     if(status) {
-        FURI_LOG_E(TAG, "Failed updating appearence characteristic: %d", status);
+        FURRY_LOG_E(TAG, "Failed updating appearence characteristic: %d", status);
     }
     // Set default PHY
     hci_le_set_default_phy(ALL_PHYS_PREFERENCE, TX_2M_PREFERRED, RX_2M_PREFERRED);
@@ -417,16 +417,16 @@ static void gap_advertise_start(GapState new_state) {
         max_interval = 0x0fa0; // 2.5 s
     }
     // Stop advertising timer
-    furi_timer_stop(gap->advertise_timer);
+    furry_timer_stop(gap->advertise_timer);
 
     if((new_state == GapStateAdvLowPower) &&
        ((gap->state == GapStateAdvFast) || (gap->state == GapStateAdvLowPower))) {
         // Stop advertising
         status = aci_gap_set_non_discoverable();
         if(status) {
-            FURI_LOG_E(TAG, "set_non_discoverable failed %d", status);
+            FURRY_LOG_E(TAG, "set_non_discoverable failed %d", status);
         } else {
-            FURI_LOG_D(TAG, "set_non_discoverable success");
+            FURRY_LOG_D(TAG, "set_non_discoverable success");
         }
     }
     // Configure advertising
@@ -443,12 +443,12 @@ static void gap_advertise_start(GapState new_state) {
         0,
         0);
     if(status) {
-        FURI_LOG_E(TAG, "set_discoverable failed %d", status);
+        FURRY_LOG_E(TAG, "set_discoverable failed %d", status);
     }
     gap->state = new_state;
     GapEvent event = {.type = GapEventTypeStartAdvertising};
     gap->on_event_cb(event, gap->context);
-    furi_timer_start(gap->advertise_timer, INITIAL_ADV_TIMEOUT);
+    furry_timer_start(gap->advertise_timer, INITIAL_ADV_TIMEOUT);
 }
 
 static void gap_advertise_stop() {
@@ -458,18 +458,18 @@ static void gap_advertise_stop() {
             // Terminate connection
             ret = aci_gap_terminate(gap->service.connection_handle, 0x13);
             if(ret != BLE_STATUS_SUCCESS) {
-                FURI_LOG_E(TAG, "terminate failed %d", ret);
+                FURRY_LOG_E(TAG, "terminate failed %d", ret);
             } else {
-                FURI_LOG_D(TAG, "terminate success");
+                FURRY_LOG_D(TAG, "terminate success");
             }
         }
         // Stop advertising
-        furi_timer_stop(gap->advertise_timer);
+        furry_timer_stop(gap->advertise_timer);
         ret = aci_gap_set_non_discoverable();
         if(ret != BLE_STATUS_SUCCESS) {
-            FURI_LOG_E(TAG, "set_non_discoverable failed %d", ret);
+            FURRY_LOG_E(TAG, "set_non_discoverable failed %d", ret);
         } else {
-            FURI_LOG_D(TAG, "set_non_discoverable success");
+            FURRY_LOG_D(TAG, "set_non_discoverable success");
         }
         gap->state = GapStateIdle;
     }
@@ -478,32 +478,32 @@ static void gap_advertise_stop() {
 }
 
 void gap_start_advertising() {
-    furi_mutex_acquire(gap->state_mutex, FuriWaitForever);
+    furry_mutex_acquire(gap->state_mutex, FurryWaitForever);
     if(gap->state == GapStateIdle) {
         gap->state = GapStateStartingAdv;
-        FURI_LOG_I(TAG, "Start advertising");
+        FURRY_LOG_I(TAG, "Start advertising");
         gap->enable_adv = true;
         GapCommand command = GapCommandAdvFast;
-        furi_check(furi_message_queue_put(gap->command_queue, &command, 0) == FuriStatusOk);
+        furry_check(furry_message_queue_put(gap->command_queue, &command, 0) == FurryStatusOk);
     }
-    furi_mutex_release(gap->state_mutex);
+    furry_mutex_release(gap->state_mutex);
 }
 
 void gap_stop_advertising() {
-    furi_mutex_acquire(gap->state_mutex, FuriWaitForever);
+    furry_mutex_acquire(gap->state_mutex, FurryWaitForever);
     if(gap->state > GapStateIdle) {
-        FURI_LOG_I(TAG, "Stop advertising");
+        FURRY_LOG_I(TAG, "Stop advertising");
         gap->enable_adv = false;
         GapCommand command = GapCommandAdvStop;
-        furi_check(furi_message_queue_put(gap->command_queue, &command, 0) == FuriStatusOk);
+        furry_check(furry_message_queue_put(gap->command_queue, &command, 0) == FurryStatusOk);
     }
-    furi_mutex_release(gap->state_mutex);
+    furry_mutex_release(gap->state_mutex);
 }
 
 static void gap_advetise_timer_callback(void* context) {
     UNUSED(context);
     GapCommand command = GapCommandAdvLowPower;
-    furi_check(furi_message_queue_put(gap->command_queue, &command, 0) == FuriStatusOk);
+    furry_check(furry_message_queue_put(gap->command_queue, &command, 0) == FurryStatusOk);
 }
 
 bool gap_init(GapConfig* config, GapEventCallback on_event_cb, void* context) {
@@ -514,11 +514,11 @@ bool gap_init(GapConfig* config, GapEventCallback on_event_cb, void* context) {
     gap = malloc(sizeof(Gap));
     gap->config = config;
     // Create advertising timer
-    gap->advertise_timer = furi_timer_alloc(gap_advetise_timer_callback, FuriTimerTypeOnce, NULL);
+    gap->advertise_timer = furry_timer_alloc(gap_advetise_timer_callback, FurryTimerTypeOnce, NULL);
     // Initialization of GATT & GAP layer
     gap->service.adv_name = config->adv_name;
-    FURI_LOG_D(TAG, "Advertising name: %s", &(gap->service.adv_name[1]));
-    FURI_LOG_D(
+    FURRY_LOG_D(TAG, "Advertising name: %s", &(gap->service.adv_name[1]));
+    FURRY_LOG_D(
         TAG,
         "MAC @ : %02X:%02X:%02X:%02X:%02X:%02X",
         config->mac_address[5],
@@ -531,7 +531,7 @@ bool gap_init(GapConfig* config, GapEventCallback on_event_cb, void* context) {
     // Initialization of the BLE Services
     SVCCTL_Init();
     // Initialization of the GAP state
-    gap->state_mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    gap->state_mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     gap->state = GapStateIdle;
     gap->service.connection_handle = 0xFFFF;
     gap->enable_adv = true;
@@ -540,11 +540,11 @@ bool gap_init(GapConfig* config, GapEventCallback on_event_cb, void* context) {
     gap->time_rssi_sample = 0;
 
     // Thread configuration
-    gap->thread = furi_thread_alloc_ex("BleGapDriver", 1024, gap_app, gap);
-    furi_thread_start(gap->thread);
+    gap->thread = furry_thread_alloc_ex("BleGapDriver", 1024, gap_app, gap);
+    furry_thread_start(gap->thread);
 
     // Command queue allocation
-    gap->command_queue = furi_message_queue_alloc(8, sizeof(GapCommand));
+    gap->command_queue = furry_message_queue_alloc(8, sizeof(GapCommand));
 
     uint8_t adv_service_uid[2];
     gap->service.adv_svc_uuid_len = 1;
@@ -563,7 +563,7 @@ uint32_t gap_get_remote_conn_rssi(int8_t* rssi) {
         fetch_rssi();
         *rssi = gap->conn_rssi;
 
-        if(gap->time_rssi_sample) return furi_get_tick() - gap->time_rssi_sample;
+        if(gap->time_rssi_sample) return furry_get_tick() - gap->time_rssi_sample;
     }
     return 0;
 }
@@ -571,9 +571,9 @@ uint32_t gap_get_remote_conn_rssi(int8_t* rssi) {
 GapState gap_get_state() {
     GapState state;
     if(gap) {
-        furi_mutex_acquire(gap->state_mutex, FuriWaitForever);
+        furry_mutex_acquire(gap->state_mutex, FurryWaitForever);
         state = gap->state;
-        furi_mutex_release(gap->state_mutex);
+        furry_mutex_release(gap->state_mutex);
     } else {
         state = GapStateUninitialized;
     }
@@ -582,19 +582,19 @@ GapState gap_get_state() {
 
 void gap_thread_stop() {
     if(gap) {
-        furi_mutex_acquire(gap->state_mutex, FuriWaitForever);
+        furry_mutex_acquire(gap->state_mutex, FurryWaitForever);
         gap->enable_adv = false;
         GapCommand command = GapCommandKillThread;
-        furi_message_queue_put(gap->command_queue, &command, FuriWaitForever);
-        furi_mutex_release(gap->state_mutex);
-        furi_thread_join(gap->thread);
-        furi_thread_free(gap->thread);
+        furry_message_queue_put(gap->command_queue, &command, FurryWaitForever);
+        furry_mutex_release(gap->state_mutex);
+        furry_thread_join(gap->thread);
+        furry_thread_free(gap->thread);
         // Free resources
-        furi_mutex_free(gap->state_mutex);
-        furi_message_queue_free(gap->command_queue);
-        furi_timer_stop(gap->advertise_timer);
-        while(xTimerIsTimerActive(gap->advertise_timer) == pdTRUE) furi_delay_tick(1);
-        furi_timer_free(gap->advertise_timer);
+        furry_mutex_free(gap->state_mutex);
+        furry_message_queue_free(gap->command_queue);
+        furry_timer_stop(gap->advertise_timer);
+        while(xTimerIsTimerActive(gap->advertise_timer) == pdTRUE) furry_delay_tick(1);
+        furry_timer_free(gap->advertise_timer);
         free(gap);
         gap = NULL;
     }
@@ -604,12 +604,12 @@ static int32_t gap_app(void* context) {
     UNUSED(context);
     GapCommand command;
     while(1) {
-        FuriStatus status = furi_message_queue_get(gap->command_queue, &command, FuriWaitForever);
-        if(status != FuriStatusOk) {
-            FURI_LOG_E(TAG, "Message queue get error: %d", status);
+        FurryStatus status = furry_message_queue_get(gap->command_queue, &command, FurryWaitForever);
+        if(status != FurryStatusOk) {
+            FURRY_LOG_E(TAG, "Message queue get error: %d", status);
             continue;
         }
-        furi_mutex_acquire(gap->state_mutex, FuriWaitForever);
+        furry_mutex_acquire(gap->state_mutex, FurryWaitForever);
         if(command == GapCommandKillThread) {
             break;
         }
@@ -620,7 +620,7 @@ static int32_t gap_app(void* context) {
         } else if(command == GapCommandAdvStop) {
             gap_advertise_stop();
         }
-        furi_mutex_release(gap->state_mutex);
+        furry_mutex_release(gap->state_mutex);
     }
 
     return 0;

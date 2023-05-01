@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <stdlib.h>
@@ -25,9 +25,9 @@ Sometimes duplicate cards will show up. there is a function to test this. I shou
 #define TAG "Video Poker"
 
 static void Shake(void) {
-    NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+    NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
     notification_message(notification, &sequence_single_vibro);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
 }
 
 typedef struct {
@@ -39,8 +39,8 @@ typedef struct {
 } PokerPlayer_card;
 
 typedef struct {
-    FuriMutex** model_mutex;
-    FuriMessageQueue* event_queue;
+    FurryMutex** model_mutex;
+    FurryMessageQueue* event_queue;
     ViewPort* view_port;
     Gui* gui;
     PokerPlayer_card hand[5];
@@ -128,12 +128,12 @@ Image Format
 0xa4,0x01 = 0x1a4, or, 420 - the size of the compressed array, minus this header.
 Rest of the data is char array output from heatshrink of the original XBM char array.
 Calculated Header: 0x01,0x00,0xa4,0x01
-from furi_hal_compress.c:
+from furry_hal_compress.c:
 typedef struct {
     uint8_t is_compressed;
     uint8_t reserved;
     uint16_t compressed_buff_size;
-} FuriHalCompressHeader;
+} FurryHalCompressHeader;
 */
 
 const uint8_t _I_Splash_128x64_0[] = {
@@ -564,7 +564,7 @@ static int recognize(PokerPlayer* app) {
 
 void poker_draw_callback(Canvas* canvas, void* ctx) {
     PokerPlayer* poker_player = ctx;
-    furi_check(furi_mutex_acquire(poker_player->model_mutex, FuriWaitForever) == FuriStatusOk);
+    furry_check(furry_mutex_acquire(poker_player->model_mutex, FurryWaitForever) == FurryStatusOk);
     canvas_clear(canvas);
     char buffer[30];
     canvas_set_color(canvas, ColorBlack);
@@ -662,20 +662,20 @@ void poker_draw_callback(Canvas* canvas, void* ctx) {
         canvas_draw_str_aligned(canvas, 63, 42, AlignCenter, AlignCenter, buffer);
     }
 
-    furi_mutex_release(poker_player->model_mutex);
+    furry_mutex_release(poker_player->model_mutex);
 }
 
 void poker_input_callback(InputEvent* input, void* ctx) {
     PokerPlayer* poker_player = ctx;
-    furi_message_queue_put(poker_player->event_queue, input, FuriWaitForever);
+    furry_message_queue_put(poker_player->event_queue, input, FurryWaitForever);
 }
 
 PokerPlayer* poker_player_alloc() {
     PokerPlayer* poker_player = malloc(sizeof(PokerPlayer));
 
     poker_player->score = 1000;
-    poker_player->model_mutex = furi_mutex_alloc(FuriMutexTypeNormal);
-    poker_player->event_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+    poker_player->model_mutex = furry_mutex_alloc(FurryMutexTypeNormal);
+    poker_player->event_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
     poker_player->view_port = view_port_alloc();
     poker_player->selected = 0;
     poker_player->GameState = 0;
@@ -689,7 +689,7 @@ PokerPlayer* poker_player_alloc() {
 
     view_port_input_callback_set(poker_player->view_port, poker_input_callback, poker_player);
 
-    poker_player->gui = furi_record_open(RECORD_GUI);
+    poker_player->gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(poker_player->gui, poker_player->view_port, GuiLayerFullscreen);
 
     return poker_player;
@@ -698,10 +698,10 @@ PokerPlayer* poker_player_alloc() {
 void poker_player_free(PokerPlayer* poker_player) {
     view_port_enabled_set(poker_player->view_port, false);
     gui_remove_view_port(poker_player->gui, poker_player->view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(poker_player->view_port);
-    furi_message_queue_free(poker_player->event_queue);
-    furi_mutex_free(poker_player->model_mutex);
+    furry_message_queue_free(poker_player->event_queue);
+    furry_mutex_free(poker_player->model_mutex);
 
     free(poker_player);
 }
@@ -712,9 +712,9 @@ int32_t video_poker_app(void* p) {
 
     InputEvent event;
     for(bool processing = true; processing;) {
-        FuriStatus status = furi_message_queue_get(poker_player->event_queue, &event, 100);
-        furi_check(furi_mutex_acquire(poker_player->model_mutex, FuriWaitForever) == FuriStatusOk);
-        if(status == FuriStatusOk) {
+        FurryStatus status = furry_message_queue_get(poker_player->event_queue, &event, 100);
+        furry_check(furry_mutex_acquire(poker_player->model_mutex, FurryWaitForever) == FurryStatusOk);
+        if(status == FurryStatusOk) {
             if(event.type == InputTypePress) {
                 switch(event.key) {
                 case InputKeyUp:
@@ -811,7 +811,7 @@ int32_t video_poker_app(void* p) {
                 }
             }
         }
-        furi_mutex_release(poker_player->model_mutex);
+        furry_mutex_release(poker_player->model_mutex);
         view_port_update(poker_player->view_port);
     }
 

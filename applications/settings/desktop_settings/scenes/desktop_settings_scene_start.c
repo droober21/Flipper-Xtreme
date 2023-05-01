@@ -135,7 +135,7 @@ void desktop_settings_scene_start_on_exit(void* context) {
     DESKTOP_SETTINGS_SAVE(&app->settings);
 
     // Trigger UI update in case we changed battery layout
-    Power* power = furi_record_open(RECORD_POWER);
+    Power* power = furry_record_open(RECORD_POWER);
     power_trigger_ui_update(power);
-    furi_record_close(RECORD_POWER);
+    furry_record_close(RECORD_POWER);
 }

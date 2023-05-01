@@ -71,20 +71,20 @@ bool subghz_scene_rpc_on_event(void* context, SceneManagerEvent event) {
                 if(subghz_key_load(subghz, arg, false)) {
                     scene_manager_set_scene_state(
                         subghz->scene_manager, SubGhzSceneRpc, SubGhzRpcStateLoaded);
-                    furi_string_set(subghz->file_path, arg);
+                    furry_string_set(subghz->file_path, arg);
                     result = true;
-                    FuriString* file_name;
-                    file_name = furi_string_alloc();
+                    FurryString* file_name;
+                    file_name = furry_string_alloc();
                     path_extract_filename(subghz->file_path, file_name, true);
 
                     snprintf(
                         subghz->file_name_tmp,
                         SUBGHZ_MAX_LEN_NAME,
                         "loaded\n%s",
-                        furi_string_get_cstr(file_name));
+                        furry_string_get_cstr(file_name));
                     popup_set_text(popup, subghz->file_name_tmp, 89, 44, AlignCenter, AlignTop);
 
-                    furi_string_free(file_name);
+                    furry_string_free(file_name);
                 } else {
                     rpc_system_app_set_error_code(subghz->rpc_ctx, SubGhzErrorTypeParseFile);
                     rpc_system_app_set_error_text(subghz->rpc_ctx, "Cannot parse file");

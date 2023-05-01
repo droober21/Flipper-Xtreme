@@ -1,6 +1,6 @@
 #include "compress.h"
 
-#include <furi.h>
+#include <furry.h>
 #include <lib/heatshrink/heatshrink_encoder.h>
 #include <lib/heatshrink/heatshrink_decoder.h>
 
@@ -40,15 +40,15 @@ CompressIcon* compress_icon_alloc() {
 }
 
 void compress_icon_free(CompressIcon* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     heatshrink_decoder_free(instance->decoder);
     free(instance);
 }
 
 void compress_icon_decode(CompressIcon* instance, const uint8_t* icon_data, uint8_t** decoded_buff) {
-    furi_assert(instance);
-    furi_assert(icon_data);
-    furi_assert(decoded_buff);
+    furry_assert(instance);
+    furry_assert(icon_data);
+    furry_assert(decoded_buff);
 
     CompressHeader* header = (CompressHeader*)icon_data;
     if(header->is_compressed) {
@@ -64,7 +64,7 @@ void compress_icon_decode(CompressIcon* instance, const uint8_t* icon_data, uint
                 instance->decoded_buff,
                 sizeof(instance->decoded_buff),
                 &data_processed);
-            furi_assert((res == HSDR_POLL_EMPTY) || (res == HSDR_POLL_MORE));
+            furry_assert((res == HSDR_POLL_EMPTY) || (res == HSDR_POLL_MORE));
             if(res != HSDR_POLL_MORE) {
                 break;
             }
@@ -82,7 +82,7 @@ struct Compress {
 };
 
 static void compress_reset(Compress* compress) {
-    furi_assert(compress);
+    furry_assert(compress);
     heatshrink_encoder_reset(compress->encoder);
     heatshrink_decoder_reset(compress->decoder);
 }
@@ -98,7 +98,7 @@ Compress* compress_alloc(uint16_t compress_buff_size) {
 }
 
 void compress_free(Compress* compress) {
-    furi_assert(compress);
+    furry_assert(compress);
 
     heatshrink_encoder_free(compress->encoder);
     heatshrink_decoder_free(compress->decoder);
@@ -112,9 +112,9 @@ bool compress_encode(
     uint8_t* data_out,
     size_t data_out_size,
     size_t* data_res_size) {
-    furi_assert(compress);
-    furi_assert(data_in);
-    furi_assert(data_in_size);
+    furry_assert(compress);
+    furry_assert(data_in);
+    furry_assert(data_in_size);
 
     size_t sink_size = 0;
     size_t poll_size = 0;
@@ -195,10 +195,10 @@ bool compress_decode(
     uint8_t* data_out,
     size_t data_out_size,
     size_t* data_res_size) {
-    furi_assert(compress);
-    furi_assert(data_in);
-    furi_assert(data_out);
-    furi_assert(data_res_size);
+    furry_assert(compress);
+    furry_assert(data_in);
+    furry_assert(data_out);
+    furry_assert(data_res_size);
 
     bool result = false;
     bool decode_failed = false;

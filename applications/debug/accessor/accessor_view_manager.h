@@ -1,5 +1,5 @@
 #pragma once
-#include <furi.h>
+#include <furry.h>
 #include <gui/view_dispatcher.h>
 #include <gui/modules/submenu.h>
 #include <gui/modules/popup.h>
@@ -13,7 +13,7 @@ public:
         Tune,
     };
 
-    FuriMessageQueue* event_queue;
+    FurryMessageQueue* event_queue;
 
     AccessorAppViewManager();
     ~AccessorAppViewManager();

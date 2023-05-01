@@ -16,8 +16,8 @@ void nfc_scene_mf_classic_keys_delete_on_enter(void* context) {
     uint32_t key_index =
         scene_manager_get_scene_state(nfc->scene_manager, NfcSceneMfClassicKeysDelete);
     // Setup Custom Widget view
-    FuriString* key_str;
-    key_str = furi_string_alloc();
+    FurryString* key_str;
+    key_str = furry_string_alloc();
 
     widget_add_string_element(
         nfc->widget, 64, 0, AlignCenter, AlignTop, FontPrimary, "Delete this key?");
@@ -42,9 +42,9 @@ void nfc_scene_mf_classic_keys_delete_on_enter(void* context) {
         AlignCenter,
         AlignCenter,
         FontSecondary,
-        furi_string_get_cstr(key_str));
+        furry_string_get_cstr(key_str));
 
-    furi_string_free(key_str);
+    furry_string_free(key_str);
     mf_classic_dict_free(dict);
 
     view_dispatcher_switch_to_view(nfc->view_dispatcher, NfcViewWidget);

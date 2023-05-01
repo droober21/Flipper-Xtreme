@@ -2,7 +2,7 @@
 #include <gui/view_i.h>
 
 void view_draw(View* view, Canvas* canvas) {
-    furi_assert(view);
+    furry_assert(view);
     if(view->draw_callback) {
         void* data = view_get_model(view);
         view->draw_callback(canvas, data);
@@ -11,7 +11,7 @@ void view_draw(View* view, Canvas* canvas) {
 }
 
 bool view_input(View* view, InputEvent* event) {
-    furi_assert(view);
+    furry_assert(view);
     if(view->input_callback) {
         return view->input_callback(event, view->context);
     } else {
@@ -20,10 +20,10 @@ bool view_input(View* view, InputEvent* event) {
 }
 
 void view_unlock_model(View* view) {
-    furi_assert(view);
+    furry_assert(view);
     if(view->model_type == ViewModelTypeLocking) {
         ViewModelLocking* model = (ViewModelLocking*)(view->model);
-        furi_check(furi_mutex_release(model->mutex) == FuriStatusOk);
+        furry_check(furry_mutex_release(model->mutex) == FurryStatusOk);
     }
 }
 
@@ -31,11 +31,11 @@ static void commit_text_input_callback(void* context) {
     InputTextSceneState* text_input_state = (InputTextSceneState*)context;
     if(text_input_state->callback != 0) {
         InputTextSceneCallbackResult* result = malloc(sizeof(InputTextSceneCallbackResult));
-        furi_check(result != NULL);
+        furry_check(result != NULL);
         result->user_input_length =
             strnlen(text_input_state->text_input_buffer, INPUT_BUFFER_SIZE);
         result->user_input = malloc(result->user_input_length + 1);
-        furi_check(result->user_input != NULL);
+        furry_check(result->user_input != NULL);
         result->callback_data = text_input_state->callback_data;
         strlcpy(
             result->user_input,
@@ -47,7 +47,7 @@ static void commit_text_input_callback(void* context) {
 
 InputTextSceneState* totp_input_text_activate(InputTextSceneContext* context) {
     InputTextSceneState* text_input_state = malloc(sizeof(InputTextSceneState));
-    furi_check(text_input_state != NULL);
+    furry_check(text_input_state != NULL);
     text_input_state->text_input = text_input_alloc();
     text_input_state->text_input_view = text_input_get_view(text_input_state->text_input);
     text_input_state->callback = context->callback;

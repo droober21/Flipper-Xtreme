@@ -12,13 +12,13 @@ struct PCSGReceiverInfo {
 };
 
 typedef struct {
-    FuriString* protocol_name;
+    FurryString* protocol_name;
     PCSGBlockGeneric* generic;
 } PCSGReceiverInfoModel;
 
 void pcsg_view_receiver_info_update(PCSGReceiverInfo* pcsg_receiver_info, FlipperFormat* fff) {
-    furi_assert(pcsg_receiver_info);
-    furi_assert(fff);
+    furry_assert(pcsg_receiver_info);
+    furry_assert(fff);
 
     with_view_model(
         pcsg_receiver_info->view,
@@ -45,7 +45,7 @@ void pcsg_view_receiver_info_draw(Canvas* canvas, PCSGReceiverInfoModel* model) 
             64,
             AlignLeft,
             AlignTop,
-            furi_string_get_cstr(model->generic->result_ric),
+            furry_string_get_cstr(model->generic->result_ric),
             false);
     }
     if(model->generic->result_msg != NULL) {
@@ -57,13 +57,13 @@ void pcsg_view_receiver_info_draw(Canvas* canvas, PCSGReceiverInfoModel* model) 
             64,
             AlignLeft,
             AlignTop,
-            furi_string_get_cstr(model->generic->result_msg),
+            furry_string_get_cstr(model->generic->result_msg),
             false);
     }
 }
 
 bool pcsg_view_receiver_info_input(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     //PCSGReceiverInfo* pcsg_receiver_info = context;
 
     if(event->key == InputKeyBack) {
@@ -74,17 +74,17 @@ bool pcsg_view_receiver_info_input(InputEvent* event, void* context) {
 }
 
 void pcsg_view_receiver_info_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 }
 
 void pcsg_view_receiver_info_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     PCSGReceiverInfo* pcsg_receiver_info = context;
 
     with_view_model(
         pcsg_receiver_info->view,
         PCSGReceiverInfoModel * model,
-        { furi_string_reset(model->protocol_name); },
+        { furry_string_reset(model->protocol_name); },
         false);
 }
 
@@ -108,7 +108,7 @@ PCSGReceiverInfo* pcsg_view_receiver_info_alloc() {
         PCSGReceiverInfoModel * model,
         {
             model->generic = malloc(sizeof(PCSGBlockGeneric));
-            model->protocol_name = furi_string_alloc();
+            model->protocol_name = furry_string_alloc();
         },
         true);
 
@@ -116,13 +116,13 @@ PCSGReceiverInfo* pcsg_view_receiver_info_alloc() {
 }
 
 void pcsg_view_receiver_info_free(PCSGReceiverInfo* pcsg_receiver_info) {
-    furi_assert(pcsg_receiver_info);
+    furry_assert(pcsg_receiver_info);
 
     with_view_model(
         pcsg_receiver_info->view,
         PCSGReceiverInfoModel * model,
         {
-            furi_string_free(model->protocol_name);
+            furry_string_free(model->protocol_name);
             free(model->generic);
         },
         false);
@@ -132,6 +132,6 @@ void pcsg_view_receiver_info_free(PCSGReceiverInfo* pcsg_receiver_info) {
 }
 
 View* pcsg_view_receiver_info_get_view(PCSGReceiverInfo* pcsg_receiver_info) {
-    furi_assert(pcsg_receiver_info);
+    furry_assert(pcsg_receiver_info);
     return pcsg_receiver_info->view;
 }

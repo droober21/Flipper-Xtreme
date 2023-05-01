@@ -2,7 +2,7 @@
 
 #include <inttypes.h>
 #include <lib/flipper_format/flipper_format_i.h>
-#include <furi/core/string.h>
+#include <furry/core/string.h>
 
 #define TAG "POCSAG"
 
@@ -41,10 +41,10 @@ struct SubGhzProtocolDecoderPocsag {
     uint8_t char_data;
 
     // message being decoded
-    FuriString* msg;
+    FurryString* msg;
 
     // Done messages, ready to be serialized/deserialized
-    FuriString* done_msg;
+    FurryString* done_msg;
 };
 
 typedef struct SubGhzProtocolDecoderPocsag SubGhzProtocolDecoderPocsag;
@@ -62,28 +62,28 @@ void* subghz_protocol_decoder_pocsag_alloc(SubGhzEnvironment* environment) {
     SubGhzProtocolDecoderPocsag* instance = malloc(sizeof(SubGhzProtocolDecoderPocsag));
     instance->base.protocol = &subghz_protocol_pocsag;
     instance->generic.protocol_name = instance->base.protocol->name;
-    instance->msg = furi_string_alloc();
-    instance->done_msg = furi_string_alloc();
+    instance->msg = furry_string_alloc();
+    instance->done_msg = furry_string_alloc();
     if(instance->generic.result_msg == NULL) {
-        instance->generic.result_msg = furi_string_alloc();
+        instance->generic.result_msg = furry_string_alloc();
     }
     if(instance->generic.result_ric == NULL) {
-        instance->generic.result_ric = furi_string_alloc();
+        instance->generic.result_ric = furry_string_alloc();
     }
 
     return instance;
 }
 
 void subghz_protocol_decoder_pocsag_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderPocsag* instance = context;
-    furi_string_free(instance->msg);
-    furi_string_free(instance->done_msg);
+    furry_string_free(instance->msg);
+    furry_string_free(instance->done_msg);
     free(instance);
 }
 
 void subghz_protocol_decoder_pocsag_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderPocsag* instance = context;
 
     instance->decoder.parser_step = PocsagDecoderStepReset;
@@ -92,10 +92,10 @@ void subghz_protocol_decoder_pocsag_reset(void* context) {
     instance->codeword_idx = 0;
     instance->char_bits = 0;
     instance->char_data = 0;
-    furi_string_reset(instance->msg);
-    furi_string_reset(instance->done_msg);
-    furi_string_reset(instance->generic.result_msg);
-    furi_string_reset(instance->generic.result_ric);
+    furry_string_reset(instance->msg);
+    furry_string_reset(instance->done_msg);
+    furry_string_reset(instance->generic.result_msg);
+    furry_string_reset(instance->generic.result_ric);
 }
 
 static void pocsag_decode_address_word(SubGhzProtocolDecoderPocsag* instance, uint32_t data) {
@@ -113,7 +113,7 @@ static bool decode_message_alphanumeric(SubGhzProtocolDecoderPocsag* instance, u
         instance->char_bits++;
         if(instance->char_bits == 7) {
             if(instance->char_data == 0) return false;
-            furi_string_push_back(instance->msg, instance->char_data);
+            furry_string_push_back(instance->msg, instance->char_data);
             instance->char_data = 0;
             instance->char_bits = 0;
         }
@@ -135,7 +135,7 @@ static void decode_message_numeric(SubGhzProtocolDecoderPocsag* instance, uint32
             val += '0';
         else
             val = bcd_chars[val - 10];
-        furi_string_push_back(instance->msg, val);
+        furry_string_push_back(instance->msg, val);
     }
 }
 
@@ -157,23 +157,23 @@ static bool pocsag_decode_message_word(SubGhzProtocolDecoderPocsag* instance, ui
 // Function called when current message got decoded, but other messages might follow
 static void pocsag_message_done(SubGhzProtocolDecoderPocsag* instance) {
     // append the message to the long-term storage string
-    furi_string_printf(instance->generic.result_ric, "\e#RIC: %" PRIu32 "\e# | ", instance->ric);
-    furi_string_cat_str(instance->generic.result_ric, func_msg[instance->func]);
+    furry_string_printf(instance->generic.result_ric, "\e#RIC: %" PRIu32 "\e# | ", instance->ric);
+    furry_string_cat_str(instance->generic.result_ric, func_msg[instance->func]);
     if(instance->func != POCSAG_FUNC_ALERT1) {
-        furi_string_cat(instance->done_msg, instance->msg);
+        furry_string_cat(instance->done_msg, instance->msg);
     }
-    furi_string_cat_str(instance->done_msg, " ");
+    furry_string_cat_str(instance->done_msg, " ");
 
-    furi_string_cat(instance->generic.result_msg, instance->done_msg);
+    furry_string_cat(instance->generic.result_msg, instance->done_msg);
 
     // reset the state
     instance->char_bits = 0;
     instance->char_data = 0;
-    furi_string_reset(instance->msg);
+    furry_string_reset(instance->msg);
 }
 
 void subghz_protocol_decoder_pocsag_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderPocsag* instance = context;
 
     // reset state - waiting for 32 bits of interleaving 1s and 0s
@@ -198,7 +198,7 @@ void subghz_protocol_decoder_pocsag_feed(void* context, bool level, uint32_t dur
         bits_count++;
     else if(extra > pocsag_const.te_delta) {
         // in non-reset state we faced the error signal - we reached the end of the packet, flush data
-        if(furi_string_size(instance->done_msg) > 0) {
+        if(furry_string_size(instance->done_msg) > 0) {
             if(instance->base.callback)
                 instance->base.callback(&instance->base, instance->base.context);
         }
@@ -279,11 +279,11 @@ void subghz_protocol_decoder_pocsag_feed(void* context, bool level, uint32_t dur
 }
 
 uint8_t subghz_protocol_decoder_pocsag_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderPocsag* instance = context;
     uint8_t hash = 0;
-    for(size_t i = 0; i < furi_string_size(instance->done_msg); i++)
-        hash ^= furi_string_get_char(instance->done_msg, i);
+    for(size_t i = 0; i < furry_string_size(instance->done_msg); i++)
+        hash ^= furry_string_get_char(instance->done_msg, i);
     return hash;
 }
 
@@ -291,7 +291,7 @@ SubGhzProtocolStatus subghz_protocol_decoder_pocsag_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderPocsag* instance = context;
     uint32_t msg_len;
 
@@ -299,15 +299,15 @@ SubGhzProtocolStatus subghz_protocol_decoder_pocsag_serialize(
        pcsg_block_generic_serialize(&instance->generic, flipper_format, preset))
         return SubGhzProtocolStatusError;
 
-    msg_len = furi_string_size(instance->done_msg);
+    msg_len = furry_string_size(instance->done_msg);
     if(!flipper_format_write_uint32(flipper_format, "MsgLen", &msg_len, 1)) {
-        FURI_LOG_E(TAG, "Error adding MsgLen");
+        FURRY_LOG_E(TAG, "Error adding MsgLen");
         return SubGhzProtocolStatusError;
     }
 
-    uint8_t* s = (uint8_t*)furi_string_get_cstr(instance->done_msg);
+    uint8_t* s = (uint8_t*)furry_string_get_cstr(instance->done_msg);
     if(!flipper_format_write_hex(flipper_format, "Msg", s, msg_len)) {
-        FURI_LOG_E(TAG, "Error adding Msg");
+        FURRY_LOG_E(TAG, "Error adding Msg");
         return SubGhzProtocolStatusError;
     }
     return SubGhzProtocolStatusOk;
@@ -315,7 +315,7 @@ SubGhzProtocolStatus subghz_protocol_decoder_pocsag_serialize(
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_pocsag_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderPocsag* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     uint32_t msg_len;
@@ -328,17 +328,17 @@ SubGhzProtocolStatus
         }
 
         if(!flipper_format_read_uint32(flipper_format, "MsgLen", &msg_len, 1)) {
-            FURI_LOG_E(TAG, "Missing MsgLen");
+            FURRY_LOG_E(TAG, "Missing MsgLen");
             break;
         }
 
         buf = malloc(msg_len);
         if(!flipper_format_read_hex(flipper_format, "Msg", buf, msg_len)) {
-            FURI_LOG_E(TAG, "Missing Msg");
+            FURRY_LOG_E(TAG, "Missing Msg");
             free(buf);
             break;
         }
-        furi_string_set_strn(instance->done_msg, (const char*)buf, msg_len);
+        furry_string_set_strn(instance->done_msg, (const char*)buf, msg_len);
         free(buf);
 
         ret = SubGhzProtocolStatusOk;
@@ -346,11 +346,11 @@ SubGhzProtocolStatus
     return ret;
 }
 
-void subhz_protocol_decoder_pocsag_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subhz_protocol_decoder_pocsag_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderPocsag* instance = context;
-    furi_string_cat_printf(output, "%s\r\n", instance->generic.protocol_name);
-    furi_string_cat(output, instance->done_msg);
+    furry_string_cat_printf(output, "%s\r\n", instance->generic.protocol_name);
+    furry_string_cat(output, instance->done_msg);
 }
 
 const SubGhzProtocolDecoder subghz_protocol_pocsag_decoder = {

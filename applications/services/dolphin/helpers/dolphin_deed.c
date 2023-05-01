@@ -1,5 +1,5 @@
 #include "dolphin_deed.h"
-#include <furi.h>
+#include <furry.h>
 
 static const DolphinDeedWeight dolphin_deed_weights[] = {
     {1, DolphinAppSubGhz}, // DolphinDeedSubGhzReceiverInfo
@@ -56,16 +56,16 @@ _Static_assert(COUNT_OF(dolphin_deed_weights) == DolphinDeedMAX, "dolphin_deed_w
 _Static_assert(COUNT_OF(dolphin_deed_limits) == DolphinAppMAX, "dolphin_deed_limits size error");
 
 uint8_t dolphin_deed_get_weight(DolphinDeed deed) {
-    furi_check(deed < DolphinDeedMAX);
+    furry_check(deed < DolphinDeedMAX);
     return dolphin_deed_weights[deed].icounter;
 }
 
 DolphinApp dolphin_deed_get_app(DolphinDeed deed) {
-    furi_check(deed < DolphinDeedMAX);
+    furry_check(deed < DolphinDeedMAX);
     return dolphin_deed_weights[deed].app;
 }
 
 uint8_t dolphin_deed_get_app_limit(DolphinApp app) {
-    furi_check(app < DolphinAppMAX);
+    furry_check(app < DolphinAppMAX);
     return dolphin_deed_limits[app];
 }

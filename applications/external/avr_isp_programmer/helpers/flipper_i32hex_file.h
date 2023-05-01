@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 typedef struct FlipperI32HexFile FlipperI32HexFile;
 

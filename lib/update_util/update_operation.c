@@ -2,8 +2,8 @@
 
 #include "update_manifest.h"
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <loader/loader.h>
 #include <lib/toolbox/path.h>
 #include <lib/toolbox/crc32_calc.h>
@@ -35,9 +35,9 @@ const char* update_operation_describe_preparation_result(const UpdatePrepareResu
     }
 }
 
-static bool update_operation_get_current_package_path_rtc(Storage* storage, FuriString* out_path) {
-    const uint32_t update_index = furi_hal_rtc_get_register(FuriHalRtcRegisterUpdateFolderFSIndex);
-    furi_string_set(out_path, UPDATE_ROOT_DIR);
+static bool update_operation_get_current_package_path_rtc(Storage* storage, FurryString* out_path) {
+    const uint32_t update_index = furry_hal_rtc_get_register(FurryHalRtcRegisterUpdateFolderFSIndex);
+    furry_string_set(out_path, UPDATE_ROOT_DIR);
     if(update_index == UPDATE_OPERATION_ROOT_DIR_PACKAGE_MAGIC) {
         return true;
     }
@@ -64,7 +64,7 @@ static bool update_operation_get_current_package_path_rtc(Storage* storage, Furi
     free(name_buffer);
     storage_file_free(dir);
     if(!found) {
-        furi_string_reset(out_path);
+        furry_string_reset(out_path);
     }
 
     return found;
@@ -73,8 +73,8 @@ static bool update_operation_get_current_package_path_rtc(Storage* storage, Furi
 #define UPDATE_FILE_POINTER_FN EXT_PATH(UPDATE_MANIFEST_POINTER_FILE_NAME)
 #define UPDATE_MANIFEST_MAX_PATH_LEN 256u
 
-bool update_operation_get_current_package_manifest_path(Storage* storage, FuriString* out_path) {
-    furi_string_reset(out_path);
+bool update_operation_get_current_package_manifest_path(Storage* storage, FurryString* out_path) {
+    furry_string_reset(out_path);
     if(storage_common_stat(storage, UPDATE_FILE_POINTER_FN, NULL) == FSE_OK) {
         char* manifest_name_buffer = malloc(UPDATE_MANIFEST_MAX_PATH_LEN);
         File* upd_file = NULL;
@@ -92,28 +92,28 @@ bool update_operation_get_current_package_manifest_path(Storage* storage, FuriSt
             if(storage_common_stat(storage, manifest_name_buffer, NULL) != FSE_OK) {
                 break;
             }
-            furi_string_set(out_path, manifest_name_buffer);
+            furry_string_set(out_path, manifest_name_buffer);
         } while(0);
         free(manifest_name_buffer);
         storage_file_free(upd_file);
     } else {
         /* legacy, will be deprecated */
-        FuriString* rtcpath;
-        rtcpath = furi_string_alloc();
+        FurryString* rtcpath;
+        rtcpath = furry_string_alloc();
         do {
             if(!update_operation_get_current_package_path_rtc(storage, rtcpath)) {
                 break;
             }
-            path_concat(furi_string_get_cstr(rtcpath), UPDATE_MANIFEST_DEFAULT_NAME, out_path);
+            path_concat(furry_string_get_cstr(rtcpath), UPDATE_MANIFEST_DEFAULT_NAME, out_path);
         } while(0);
-        furi_string_free(rtcpath);
+        furry_string_free(rtcpath);
     }
-    return !furi_string_empty(out_path);
+    return !furry_string_empty(out_path);
 }
 
 static bool update_operation_persist_manifest_path(Storage* storage, const char* manifest_path) {
     const size_t manifest_path_len = strlen(manifest_path);
-    furi_check(manifest_path && manifest_path_len);
+    furry_check(manifest_path && manifest_path_len);
     bool success = false;
     File* file = storage_file_alloc(storage);
     do {
@@ -137,13 +137,13 @@ static bool update_operation_persist_manifest_path(Storage* storage, const char*
 
 UpdatePrepareResult update_operation_prepare(const char* manifest_file_path) {
     UpdatePrepareResult result = UpdatePrepareResultIntFull;
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     UpdateManifest* manifest = update_manifest_alloc();
     File* file = storage_file_alloc(storage);
 
     uint64_t free_int_space;
-    FuriString* stage_path;
-    stage_path = furi_string_alloc();
+    FurryString* stage_path;
+    stage_path = furry_string_alloc();
     do {
         if((storage_common_fs_info(storage, STORAGE_INT_PATH_PREFIX, NULL, &free_int_space) !=
             FSE_OK) ||
@@ -166,17 +166,17 @@ UpdatePrepareResult update_operation_prepare(const char* manifest_file_path) {
             break;
         }
         /* Only compare hardware target if it is set - pre-production devices accept any firmware*/
-        if(furi_hal_version_get_hw_target() &&
-           (furi_hal_version_get_hw_target() != manifest->target)) {
+        if(furry_hal_version_get_hw_target() &&
+           (furry_hal_version_get_hw_target() != manifest->target)) {
             result = UpdatePrepareResultTargetMismatch;
             break;
         }
 
         path_extract_dirname(manifest_file_path, stage_path);
-        path_append(stage_path, furi_string_get_cstr(manifest->staged_loader_file));
+        path_append(stage_path, furry_string_get_cstr(manifest->staged_loader_file));
 
         if(!storage_file_open(
-               file, furi_string_get_cstr(stage_path), FSAM_READ, FSOM_OPEN_EXISTING)) {
+               file, furry_string_get_cstr(stage_path), FSAM_READ, FSOM_OPEN_EXISTING)) {
             result = UpdatePrepareResultStageMissing;
             break;
         }
@@ -193,35 +193,35 @@ UpdatePrepareResult update_operation_prepare(const char* manifest_file_path) {
         }
 
         result = UpdatePrepareResultOK;
-        furi_hal_rtc_set_boot_mode(FuriHalRtcBootModePreUpdate);
+        furry_hal_rtc_set_boot_mode(FurryHalRtcBootModePreUpdate);
     } while(false);
 
-    furi_string_free(stage_path);
+    furry_string_free(stage_path);
     storage_file_free(file);
 
     update_manifest_free(manifest);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return result;
 }
 
 bool update_operation_is_armed() {
-    FuriHalRtcBootMode boot_mode = furi_hal_rtc_get_boot_mode();
+    FurryHalRtcBootMode boot_mode = furry_hal_rtc_get_boot_mode();
     const uint32_t rtc_upd_index =
-        furi_hal_rtc_get_register(FuriHalRtcRegisterUpdateFolderFSIndex);
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+        furry_hal_rtc_get_register(FurryHalRtcRegisterUpdateFolderFSIndex);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     const bool upd_fn_ptr_exists =
         (storage_common_stat(storage, UPDATE_FILE_POINTER_FN, NULL) == FSE_OK);
-    furi_record_close(RECORD_STORAGE);
-    return (boot_mode >= FuriHalRtcBootModePreUpdate) &&
-           (boot_mode <= FuriHalRtcBootModePostUpdate) &&
+    furry_record_close(RECORD_STORAGE);
+    return (boot_mode >= FurryHalRtcBootModePreUpdate) &&
+           (boot_mode <= FurryHalRtcBootModePostUpdate) &&
            ((rtc_upd_index != INT_MAX) || upd_fn_ptr_exists);
 }
 
 void update_operation_disarm() {
-    furi_hal_rtc_set_boot_mode(FuriHalRtcBootModeNormal);
-    furi_hal_rtc_set_register(FuriHalRtcRegisterUpdateFolderFSIndex, INT_MAX);
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    furry_hal_rtc_set_boot_mode(FurryHalRtcBootModeNormal);
+    furry_hal_rtc_set_register(FurryHalRtcRegisterUpdateFolderFSIndex, INT_MAX);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     storage_simply_remove(storage, UPDATE_FILE_POINTER_FN);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }

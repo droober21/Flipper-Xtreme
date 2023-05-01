@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <gui/elements.h>
 #include <input/input.h>
@@ -39,10 +39,10 @@ const NotificationSequence PassGen_Alert_vibro = {
 };
 
 typedef struct {
-    FuriMessageQueue* input_queue;
+    FurryMessageQueue* input_queue;
     ViewPort* view_port;
     Gui* gui;
-    FuriMutex** mutex;
+    FurryMutex** mutex;
     NotificationApp* notify;
     char password[PASSGEN_MAX_LENGTH + 1];
     char alphabet[PASSGEN_CHARACTERS_LENGTH + 1];
@@ -52,25 +52,25 @@ typedef struct {
 
 void state_free(PassGen* app) {
     gui_remove_view_port(app->gui, app->view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(app->view_port);
-    furi_message_queue_free(app->input_queue);
-    furi_mutex_free(app->mutex);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_message_queue_free(app->input_queue);
+    furry_mutex_free(app->mutex);
+    furry_record_close(RECORD_NOTIFICATION);
     free(app);
 }
 
 static void input_callback(InputEvent* input_event, void* ctx) {
     PassGen* app = ctx;
     if(input_event->type == InputTypeShort) {
-        furi_message_queue_put(app->input_queue, input_event, 0);
+        furry_message_queue_put(app->input_queue, input_event, 0);
     }
 }
 
 static void render_callback(Canvas* canvas, void* ctx) {
     char str_length[8];
     PassGen* app = ctx;
-    furi_check(furi_mutex_acquire(app->mutex, FuriWaitForever) == FuriStatusOk);
+    furry_check(furry_mutex_acquire(app->mutex, FurryWaitForever) == FurryStatusOk);
 
     canvas_clear(canvas);
     canvas_draw_box(canvas, 0, 0, 128, 14);
@@ -93,7 +93,7 @@ static void render_callback(Canvas* canvas, void* ctx) {
     canvas_draw_icon(canvas, 4, 53, &I_Horizontal_arrow_9x7);
     canvas_draw_str(canvas, 15, 60, str_length);
 
-    furi_mutex_release(app->mutex);
+    furry_mutex_release(app->mutex);
 }
 
 void build_alphabet(PassGen* app) {
@@ -110,15 +110,15 @@ PassGen* state_init() {
     app->length = 8;
     app->level = 2;
     build_alphabet(app);
-    app->input_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+    app->input_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
     app->view_port = view_port_alloc();
-    app->gui = furi_record_open(RECORD_GUI);
-    app->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    app->gui = furry_record_open(RECORD_GUI);
+    app->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     view_port_input_callback_set(app->view_port, input_callback, app);
     view_port_draw_callback_set(app->view_port, render_callback, app);
     gui_add_view_port(app->gui, app->view_port, GuiLayerFullscreen);
 
-    app->notify = furi_record_open(RECORD_NOTIFICATION);
+    app->notify = furry_record_open(RECORD_NOTIFICATION);
 
     return app;
 }
@@ -148,13 +148,13 @@ int32_t passgenapp(void) {
 
     while(1) {
         InputEvent input;
-        while(furi_message_queue_get(app->input_queue, &input, FuriWaitForever) == FuriStatusOk) {
-            furi_check(furi_mutex_acquire(app->mutex, FuriWaitForever) == FuriStatusOk);
+        while(furry_message_queue_get(app->input_queue, &input, FurryWaitForever) == FurryStatusOk) {
+            furry_check(furry_mutex_acquire(app->mutex, FurryWaitForever) == FurryStatusOk);
 
             if(input.type == InputTypeShort) {
                 switch(input.key) {
                 case InputKeyBack:
-                    furi_mutex_release(app->mutex);
+                    furry_mutex_release(app->mutex);
                     state_free(app);
                     return 0;
                 case InputKeyDown:
@@ -194,7 +194,7 @@ int32_t passgenapp(void) {
                     break;
                 }
             }
-            furi_mutex_release(app->mutex);
+            furry_mutex_release(app->mutex);
         }
     }
     state_free(app);

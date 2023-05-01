@@ -14,7 +14,7 @@ void infrared_scene_edit_rename_on_enter(void* context) {
         text_input_set_header_text(text_input, "Name the button");
 
         const int32_t current_button_index = infrared->app_state.current_button_index;
-        furi_assert(current_button_index != InfraredButtonIndexNone);
+        furry_assert(current_button_index != InfraredButtonIndexNone);
 
         InfraredRemoteButton* current_button =
             infrared_remote_get_button(remote, current_button_index);
@@ -29,22 +29,22 @@ void infrared_scene_edit_rename_on_enter(void* context) {
         enter_name_length = INFRARED_MAX_REMOTE_NAME_LENGTH;
         strncpy(infrared->text_store[0], infrared_remote_get_name(remote), enter_name_length);
 
-        FuriString* folder_path;
-        folder_path = furi_string_alloc();
+        FurryString* folder_path;
+        folder_path = furry_string_alloc();
 
-        if(furi_string_end_with(infrared->file_path, INFRARED_APP_EXTENSION)) {
-            path_extract_dirname(furi_string_get_cstr(infrared->file_path), folder_path);
+        if(furry_string_end_with(infrared->file_path, INFRARED_APP_EXTENSION)) {
+            path_extract_dirname(furry_string_get_cstr(infrared->file_path), folder_path);
         }
 
         ValidatorIsFile* validator_is_file = validator_is_file_alloc_init(
-            furi_string_get_cstr(folder_path),
+            furry_string_get_cstr(folder_path),
             INFRARED_APP_EXTENSION,
             infrared_remote_get_name(remote));
         text_input_set_validator(text_input, validator_is_file_callback, validator_is_file);
 
-        furi_string_free(folder_path);
+        furry_string_free(folder_path);
     } else {
-        furi_assert(0);
+        furry_assert(0);
     }
 
     text_input_set_result_callback(
@@ -71,14 +71,14 @@ bool infrared_scene_edit_rename_on_event(void* context, SceneManagerEvent event)
             const InfraredEditTarget edit_target = app_state->edit_target;
             if(edit_target == InfraredEditTargetButton) {
                 const int32_t current_button_index = app_state->current_button_index;
-                furi_assert(current_button_index != InfraredButtonIndexNone);
+                furry_assert(current_button_index != InfraredButtonIndexNone);
                 success = infrared_remote_rename_button(
                     remote, infrared->text_store[0], current_button_index);
                 app_state->current_button_index = InfraredButtonIndexNone;
             } else if(edit_target == InfraredEditTargetRemote) {
                 success = infrared_rename_current_remote(infrared, infrared->text_store[0]);
             } else {
-                furi_assert(0);
+                furry_assert(0);
             }
 
             if(success) {

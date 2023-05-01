@@ -46,11 +46,11 @@ static bool decode(uint8_t* bits, uint32_t numbytes, uint32_t numbits, ProtoView
     }
     if(off == BITMAP_SEEK_NOT_FOUND) return false;
 
-    FURI_LOG_E(TAG, "Toyota TPMS sync[%s] found", sync[j]);
+    FURRY_LOG_E(TAG, "Toyota TPMS sync[%s] found", sync[j]);
 
     uint8_t raw[9];
     uint32_t decoded = convert_from_diff_manchester(raw, sizeof(raw), bits, numbytes, off, true);
-    FURI_LOG_E(TAG, "Toyota TPMS decoded bits: %lu", decoded);
+    FURRY_LOG_E(TAG, "Toyota TPMS decoded bits: %lu", decoded);
 
     if(decoded < 8 * 9) return false; /* Require the full 8 bytes. */
     if(crc8(raw, 8, 0x80, 7) != raw[8]) return false; /* Require sane CRC. */

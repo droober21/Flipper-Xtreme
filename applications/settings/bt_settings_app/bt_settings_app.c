@@ -1,13 +1,13 @@
 #include "bt_settings_app.h"
 
 static bool bt_settings_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     BtSettingsApp* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool bt_settings_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     BtSettingsApp* app = context;
     return scene_manager_handle_back_event(app->scene_manager);
 }
@@ -16,8 +16,8 @@ BtSettingsApp* bt_settings_app_alloc() {
     BtSettingsApp* app = malloc(sizeof(BtSettingsApp));
 
     // Load settings
-    app->gui = furi_record_open(RECORD_GUI);
-    app->bt = furi_record_open(RECORD_BT);
+    app->gui = furry_record_open(RECORD_GUI);
+    app->bt = furry_record_open(RECORD_BT);
     bt_settings_load(&app->bt->bt_settings);
 
     // View Dispatcher and Scene Manager
@@ -54,7 +54,7 @@ BtSettingsApp* bt_settings_app_alloc() {
 }
 
 void bt_settings_app_free(BtSettingsApp* app) {
-    furi_assert(app);
+    furry_assert(app);
     // Gui modules
     view_dispatcher_remove_view(app->view_dispatcher, BtSettingsAppViewVarItemList);
     variable_item_list_free(app->var_item_list);
@@ -70,8 +70,8 @@ void bt_settings_app_free(BtSettingsApp* app) {
     scene_manager_free(app->scene_manager);
 
     // Records
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_BT);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_BT);
     free(app);
 }
 

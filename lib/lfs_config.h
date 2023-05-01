@@ -1,29 +1,29 @@
 #pragma once
 
-#include <furi.h>
+#include <furry.h>
 
-#ifdef FURI_NDEBUG
+#ifdef FURRY_NDEBUG
 #define LFS_NO_ASSERT
 #define LFS_ASSERT(x)
 #else
-#define LFS_ASSERT furi_assert
+#define LFS_ASSERT furry_assert
 #endif
 
 #define LFS_TAG "Lfs"
 
-#ifdef FURI_LFS_DEBUG
-#define LFS_TRACE(...) FURI_LOG_T(LFS_TAG, __VA_ARGS__);
+#ifdef FURRY_LFS_DEBUG
+#define LFS_TRACE(...) FURRY_LOG_T(LFS_TAG, __VA_ARGS__);
 
-#define LFS_DEBUG(...) FURI_LOG_D(LFS_TAG, __VA_ARGS__);
+#define LFS_DEBUG(...) FURRY_LOG_D(LFS_TAG, __VA_ARGS__);
 #else
 #define LFS_TRACE(...)
 
 #define LFS_DEBUG(...)
-#endif // FURI_LFS_DEBUG
+#endif // FURRY_LFS_DEBUG
 
-#define LFS_WARN(...) FURI_LOG_W(LFS_TAG, __VA_ARGS__);
+#define LFS_WARN(...) FURRY_LOG_W(LFS_TAG, __VA_ARGS__);
 
-#define LFS_ERROR(...) FURI_LOG_E(LFS_TAG, __VA_ARGS__);
+#define LFS_ERROR(...) FURRY_LOG_E(LFS_TAG, __VA_ARGS__);
 
 // Because crc
 #undef LFS_CONFIG

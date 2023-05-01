@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi.h>
+#include <furry.h>
 #include "filesystem_api_internal.h"
 #include <m-list.h>
 
@@ -19,7 +19,7 @@ typedef struct {
 typedef struct {
     File* file;
     void* file_data;
-    FuriString* path;
+    FurryString* path;
 } StorageFile;
 
 typedef enum {
@@ -60,12 +60,12 @@ struct StorageData {
 };
 
 bool storage_has_file(const File* file, StorageData* storage_data);
-bool storage_path_already_open(FuriString* path, StorageData* storage_data);
+bool storage_path_already_open(FurryString* path, StorageData* storage_data);
 
 void storage_set_storage_file_data(const File* file, void* file_data, StorageData* storage);
 void* storage_get_storage_file_data(const File* file, StorageData* storage);
 
-void storage_push_storage_file(File* file, FuriString* path, StorageData* storage);
+void storage_push_storage_file(File* file, FurryString* path, StorageData* storage);
 bool storage_pop_storage_file(File* file, StorageData* storage);
 
 #ifdef __cplusplus

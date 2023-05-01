@@ -5,17 +5,17 @@
 void lfrfid_scene_save_name_on_enter(void* context) {
     LfRfid* app = context;
     TextInput* text_input = app->text_input;
-    FuriString* folder_path;
-    folder_path = furi_string_alloc();
+    FurryString* folder_path;
+    folder_path = furry_string_alloc();
 
-    bool key_name_is_empty = furi_string_empty(app->file_name);
+    bool key_name_is_empty = furry_string_empty(app->file_name);
     if(key_name_is_empty) {
-        furi_string_set(app->file_path, LFRFID_APP_FOLDER);
+        furry_string_set(app->file_path, LFRFID_APP_FOLDER);
         set_random_name(app->text_store, LFRFID_TEXT_STORE_SIZE);
-        furi_string_set(folder_path, LFRFID_APP_FOLDER);
+        furry_string_set(folder_path, LFRFID_APP_FOLDER);
     } else {
-        lfrfid_text_store_set(app, "%s", furi_string_get_cstr(app->file_name));
-        path_extract_dirname(furi_string_get_cstr(app->file_path), folder_path);
+        lfrfid_text_store_set(app, "%s", furry_string_get_cstr(app->file_name));
+        path_extract_dirname(furry_string_get_cstr(app->file_path), folder_path);
     }
 
     text_input_set_header_text(text_input, "Name the card");
@@ -27,15 +27,15 @@ void lfrfid_scene_save_name_on_enter(void* context) {
         LFRFID_KEY_NAME_SIZE,
         key_name_is_empty);
 
-    FURI_LOG_I("", "%s %s", furi_string_get_cstr(folder_path), app->text_store);
+    FURRY_LOG_I("", "%s %s", furry_string_get_cstr(folder_path), app->text_store);
 
     ValidatorIsFile* validator_is_file = validator_is_file_alloc_init(
-        furi_string_get_cstr(folder_path),
+        furry_string_get_cstr(folder_path),
         LFRFID_APP_EXTENSION,
-        furi_string_get_cstr(app->file_name));
+        furry_string_get_cstr(app->file_name));
     text_input_set_validator(text_input, validator_is_file_callback, validator_is_file);
 
-    furi_string_free(folder_path);
+    furry_string_free(folder_path);
 
     view_dispatcher_switch_to_view(app->view_dispatcher, LfRfidViewTextInput);
 }
@@ -48,11 +48,11 @@ bool lfrfid_scene_save_name_on_event(void* context, SceneManagerEvent event) {
     if(event.type == SceneManagerEventTypeCustom) {
         if(event.event == LfRfidEventNext) {
             consumed = true;
-            if(!furi_string_empty(app->file_name)) {
+            if(!furry_string_empty(app->file_name)) {
                 lfrfid_delete_key(app);
             }
 
-            furi_string_set(app->file_name, app->text_store);
+            furry_string_set(app->file_name, app->text_store);
 
             if(lfrfid_save_key(app)) {
                 scene_manager_next_scene(scene_manager, LfRfidSceneSaveSuccess);

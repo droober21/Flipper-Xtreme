@@ -94,7 +94,7 @@ void* subghz_protocol_encoder_intertechno_v3_alloc(SubGhzEnvironment* environmen
 }
 
 void subghz_protocol_encoder_intertechno_v3_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderIntertechno_V3* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -107,7 +107,7 @@ void subghz_protocol_encoder_intertechno_v3_free(void* context) {
  */
 static bool subghz_protocol_encoder_intertechno_v3_get_upload(
     SubGhzProtocolEncoderIntertechno_V3* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     size_t index = 0;
 
     //Send header
@@ -161,7 +161,7 @@ static bool subghz_protocol_encoder_intertechno_v3_get_upload(
 SubGhzProtocolStatus subghz_protocol_encoder_intertechno_v3_deserialize(
     void* context,
     FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderIntertechno_V3* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -172,7 +172,7 @@ SubGhzProtocolStatus subghz_protocol_encoder_intertechno_v3_deserialize(
         if((instance->generic.data_count_bit !=
             subghz_protocol_intertechno_v3_const.min_count_bit_for_found) &&
            (instance->generic.data_count_bit != INTERTECHNO_V3_DIMMING_COUNT_BIT)) {
-            FURI_LOG_E(TAG, "Wrong number of bits in key");
+            FURRY_LOG_E(TAG, "Wrong number of bits in key");
             ret = SubGhzProtocolStatusErrorValueBitCount;
             break;
         }
@@ -223,19 +223,19 @@ void* subghz_protocol_decoder_intertechno_v3_alloc(SubGhzEnvironment* environmen
 }
 
 void subghz_protocol_decoder_intertechno_v3_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderIntertechno_V3* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_intertechno_v3_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderIntertechno_V3* instance = context;
     instance->decoder.parser_step = IntertechnoV3DecoderStepReset;
 }
 
 void subghz_protocol_decoder_intertechno_v3_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderIntertechno_V3* instance = context;
     switch(instance->decoder.parser_step) {
     case IntertechnoV3DecoderStepReset:
@@ -400,7 +400,7 @@ static void subghz_protocol_intertechno_v3_check_remote_controller(SubGhzBlockGe
 }
 
 uint8_t subghz_protocol_decoder_intertechno_v3_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderIntertechno_V3* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -410,7 +410,7 @@ SubGhzProtocolStatus subghz_protocol_decoder_intertechno_v3_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderIntertechno_V3* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
@@ -418,7 +418,7 @@ SubGhzProtocolStatus subghz_protocol_decoder_intertechno_v3_serialize(
 SubGhzProtocolStatus subghz_protocol_decoder_intertechno_v3_deserialize(
     void* context,
     FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderIntertechno_V3* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     do {
@@ -429,7 +429,7 @@ SubGhzProtocolStatus subghz_protocol_decoder_intertechno_v3_deserialize(
         if((instance->generic.data_count_bit !=
             subghz_protocol_intertechno_v3_const.min_count_bit_for_found) &&
            (instance->generic.data_count_bit != INTERTECHNO_V3_DIMMING_COUNT_BIT)) {
-            FURI_LOG_E(TAG, "Wrong number of bits in key");
+            FURRY_LOG_E(TAG, "Wrong number of bits in key");
             ret = SubGhzProtocolStatusErrorValueBitCount;
             break;
         }
@@ -437,13 +437,13 @@ SubGhzProtocolStatus subghz_protocol_decoder_intertechno_v3_deserialize(
     return ret;
 }
 
-void subghz_protocol_decoder_intertechno_v3_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_intertechno_v3_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderIntertechno_V3* instance = context;
 
     subghz_protocol_intertechno_v3_check_remote_controller(&instance->generic);
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%.11s %db\r\n"
         "Key:0x%08llX\r\n"
@@ -456,17 +456,17 @@ void subghz_protocol_decoder_intertechno_v3_get_string(void* context, FuriString
     if(instance->generic.data_count_bit ==
        subghz_protocol_intertechno_v3_const.min_count_bit_for_found) {
         if(instance->generic.cnt >> 5) {
-            furi_string_cat_printf(
+            furry_string_cat_printf(
                 output, "Ch: All Btn:%s\r\n", (instance->generic.btn ? "On" : "Off"));
         } else {
-            furi_string_cat_printf(
+            furry_string_cat_printf(
                 output,
                 "Ch:" CH_PATTERN " Btn:%s\r\n",
                 CNT_TO_CH(instance->generic.cnt),
                 (instance->generic.btn ? "On" : "Off"));
         }
     } else if(instance->generic.data_count_bit == INTERTECHNO_V3_DIMMING_COUNT_BIT) {
-        furi_string_cat_printf(
+        furry_string_cat_printf(
             output,
             "Ch:" CH_PATTERN " Dimm:%d%%\r\n",
             CNT_TO_CH(instance->generic.cnt),

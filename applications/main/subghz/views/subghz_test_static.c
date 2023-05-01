@@ -3,8 +3,8 @@
 #include "../helpers/subghz_testing.h"
 
 #include <math.h>
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <input/input.h>
 #include <notification/notification_messages.h>
 #include <lib/subghz/protocols/princeton_for_testing.h>
@@ -41,8 +41,8 @@ void subghz_test_static_set_callback(
     SubGhzTestStatic* subghz_test_static,
     SubGhzTestStaticCallback callback,
     void* context) {
-    furi_assert(subghz_test_static);
-    furi_assert(callback);
+    furry_assert(subghz_test_static);
+    furry_assert(callback);
     subghz_test_static->callback = callback;
     subghz_test_static->context = context;
 }
@@ -69,7 +69,7 @@ void subghz_test_static_draw(Canvas* canvas, SubGhzTestStaticModel* model) {
 }
 
 bool subghz_test_static_input(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzTestStatic* instance = context;
 
     if(event->key == InputKeyBack) {
@@ -95,17 +95,17 @@ bool subghz_test_static_input(InputEvent* event, void* context) {
             model->real_frequency = subghz_frequencies_testing[model->frequency];
 
             if(event->key == InputKeyOk) {
-                NotificationApp* notification = furi_record_open(RECORD_NOTIFICATION);
+                NotificationApp* notification = furry_record_open(RECORD_NOTIFICATION);
                 if(event->type == InputTypePress) {
-                    furi_hal_subghz_idle();
-                    furi_hal_subghz_set_frequency_and_path(
+                    furry_hal_subghz_idle();
+                    furry_hal_subghz_set_frequency_and_path(
                         subghz_frequencies_testing[model->frequency]);
-                    if(!furi_hal_subghz_tx()) {
+                    if(!furry_hal_subghz_tx()) {
                         instance->callback(SubGhzTestStaticEventOnlyRx, instance->context);
                     } else {
                         notification_message_block(notification, &sequence_set_red_255);
 
-                        FURI_LOG_I(TAG, "TX Start");
+                        FURRY_LOG_I(TAG, "TX Start");
 
                         subghz_encoder_princeton_for_testing_set(
                             instance->encoder,
@@ -113,22 +113,22 @@ bool subghz_test_static_input(InputEvent* event, void* context) {
                             10000,
                             subghz_frequencies_testing[model->frequency]);
 
-                        furi_hal_subghz_start_async_tx(
+                        furry_hal_subghz_start_async_tx(
                             subghz_encoder_princeton_for_testing_yield, instance->encoder);
                         instance->status_tx = SubGhzTestStaticStatusTX;
                     }
                 } else if(event->type == InputTypeRelease) {
                     if(instance->status_tx == SubGhzTestStaticStatusTX) {
-                        FURI_LOG_I(TAG, "TX Stop");
+                        FURRY_LOG_I(TAG, "TX Stop");
                         subghz_encoder_princeton_for_testing_stop(
-                            instance->encoder, furi_get_tick());
+                            instance->encoder, furry_get_tick());
                         subghz_encoder_princeton_for_testing_print_log(instance->encoder);
-                        furi_hal_subghz_stop_async_tx();
+                        furry_hal_subghz_stop_async_tx();
                         notification_message(notification, &sequence_reset_red);
                     }
                     instance->status_tx = SubGhzTestStaticStatusIDLE;
                 }
-                furi_record_close(RECORD_NOTIFICATION);
+                furry_record_close(RECORD_NOTIFICATION);
             }
         },
         true);
@@ -137,15 +137,15 @@ bool subghz_test_static_input(InputEvent* event, void* context) {
 }
 
 void subghz_test_static_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzTestStatic* instance = context;
 
-    furi_hal_subghz_reset();
-    furi_hal_subghz_load_preset(FuriHalSubGhzPresetOok650Async);
+    furry_hal_subghz_reset();
+    furry_hal_subghz_load_preset(FurryHalSubGhzPresetOok650Async);
 
-    furi_hal_gpio_init(
-        furi_hal_subghz.cc1101_g0_pin, GpioModeOutputPushPull, GpioPullNo, GpioSpeedLow);
-    furi_hal_gpio_write(furi_hal_subghz.cc1101_g0_pin, false);
+    furry_hal_gpio_init(
+        furry_hal_subghz.cc1101_g0_pin, GpioModeOutputPushPull, GpioPullNo, GpioSpeedLow);
+    furry_hal_gpio_write(furry_hal_subghz.cc1101_g0_pin, false);
     instance->status_tx = SubGhzTestStaticStatusIDLE;
 
     with_view_model(
@@ -160,8 +160,8 @@ void subghz_test_static_enter(void* context) {
 }
 
 void subghz_test_static_exit(void* context) {
-    furi_assert(context);
-    furi_hal_subghz_sleep();
+    furry_assert(context);
+    furry_hal_subghz_sleep();
 }
 
 SubGhzTestStatic* subghz_test_static_alloc() {
@@ -182,13 +182,13 @@ SubGhzTestStatic* subghz_test_static_alloc() {
 }
 
 void subghz_test_static_free(SubGhzTestStatic* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     subghz_encoder_princeton_for_testing_free(instance->encoder);
     view_free(instance->view);
     free(instance);
 }
 
 View* subghz_test_static_get_view(SubGhzTestStatic* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     return instance->view;
 }

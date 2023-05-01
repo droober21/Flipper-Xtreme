@@ -6,7 +6,7 @@
 bool totp_config_migrate_to_latest(
     FlipperFormat* fff_data_file,
     FlipperFormat* fff_backup_data_file) {
-    FuriString* temp_str = furi_string_alloc();
+    FurryString* temp_str = furry_string_alloc();
     uint32_t current_version = 0;
     bool result = false;
     do {
@@ -76,11 +76,11 @@ bool totp_config_migrate_to_latest(
 
                 if(current_version < 5) {
                     uint32_t algo_as_uint32t = SHA1;
-                    if(furi_string_cmpi_str(temp_str, TOTP_TOKEN_ALGO_SHA256_NAME) == 0) {
+                    if(furry_string_cmpi_str(temp_str, TOTP_TOKEN_ALGO_SHA256_NAME) == 0) {
                         algo_as_uint32t = SHA256;
-                    } else if(furi_string_cmpi_str(temp_str, TOTP_TOKEN_ALGO_SHA512_NAME) == 0) {
+                    } else if(furry_string_cmpi_str(temp_str, TOTP_TOKEN_ALGO_SHA512_NAME) == 0) {
                         algo_as_uint32t = SHA512;
-                    } else if(furi_string_cmpi_str(temp_str, TOTP_TOKEN_ALGO_STEAM_NAME) == 0) {
+                    } else if(furry_string_cmpi_str(temp_str, TOTP_TOKEN_ALGO_STEAM_NAME) == 0) {
                         algo_as_uint32t = STEAM;
                     }
 
@@ -139,6 +139,6 @@ bool totp_config_migrate_to_latest(
         result = true;
     } while(false);
 
-    furi_string_free(temp_str);
+    furry_string_free(temp_str);
     return result;
 }

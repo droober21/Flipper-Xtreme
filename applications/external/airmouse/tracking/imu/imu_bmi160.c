@@ -1,6 +1,6 @@
 #include "bmi160.h"
 
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 #include "imu.h"
 
@@ -16,36 +16,36 @@ struct bmi160_sensor_data bmi160_accel;
 struct bmi160_sensor_data bmi160_gyro;
 
 int8_t bmi160_write_i2c(uint8_t dev_addr, uint8_t reg_addr, uint8_t* data, uint16_t len) {
-    if(furi_hal_i2c_write_mem(&furi_hal_i2c_handle_external, dev_addr, reg_addr, data, len, 50))
+    if(furry_hal_i2c_write_mem(&furry_hal_i2c_handle_external, dev_addr, reg_addr, data, len, 50))
         return BMI160_OK;
     return BMI160_E_COM_FAIL;
 }
 
 int8_t bmi160_read_i2c(uint8_t dev_addr, uint8_t reg_addr, uint8_t* read_data, uint16_t len) {
-    if(furi_hal_i2c_read_mem(&furi_hal_i2c_handle_external, dev_addr, reg_addr, read_data, len, 50))
+    if(furry_hal_i2c_read_mem(&furry_hal_i2c_handle_external, dev_addr, reg_addr, read_data, len, 50))
         return BMI160_OK;
     return BMI160_E_COM_FAIL;
 }
 
 bool bmi160_begin() {
-    FURI_LOG_I(TAG, "Init BMI160");
+    FURRY_LOG_I(TAG, "Init BMI160");
 
-    if(!furi_hal_i2c_is_device_ready(&furi_hal_i2c_handle_external, BMI160_DEV_ADDR, 50)) {
-        FURI_LOG_E(TAG, "Device not ready!");
+    if(!furry_hal_i2c_is_device_ready(&furry_hal_i2c_handle_external, BMI160_DEV_ADDR, 50)) {
+        FURRY_LOG_E(TAG, "Device not ready!");
         return false;
     }
 
-    FURI_LOG_I(TAG, "Device ready!");
+    FURRY_LOG_I(TAG, "Device ready!");
 
     bmi160dev.id = BMI160_DEV_ADDR;
     bmi160dev.intf = BMI160_I2C_INTF;
     bmi160dev.read = bmi160_read_i2c;
     bmi160dev.write = bmi160_write_i2c;
-    bmi160dev.delay_ms = furi_delay_ms;
+    bmi160dev.delay_ms = furry_delay_ms;
 
     if(bmi160_init(&bmi160dev) != BMI160_OK) {
-        FURI_LOG_E(TAG, "Initialization failure!");
-        FURI_LOG_E(TAG, "Chip ID 0x%X", bmi160dev.chip_id);
+        FURRY_LOG_E(TAG, "Initialization failure!");
+        FURRY_LOG_E(TAG, "Chip ID 0x%X", bmi160dev.chip_id);
         return false;
     }
 
@@ -59,13 +59,13 @@ bool bmi160_begin() {
     bmi160dev.gyro_cfg.power = BMI160_GYRO_NORMAL_MODE;
 
     if(bmi160_set_sens_conf(&bmi160dev) != BMI160_OK) {
-        FURI_LOG_E(TAG, "Initialization failure!");
-        FURI_LOG_E(TAG, "Chip ID 0x%X", bmi160dev.chip_id);
+        FURRY_LOG_E(TAG, "Initialization failure!");
+        FURRY_LOG_E(TAG, "Chip ID 0x%X", bmi160dev.chip_id);
         return false;
     }
 
-    FURI_LOG_I(TAG, "Initialization success!");
-    FURI_LOG_I(TAG, "Chip ID 0x%X", bmi160dev.chip_id);
+    FURRY_LOG_I(TAG, "Initialization success!");
+    FURRY_LOG_I(TAG, "Chip ID 0x%X", bmi160dev.chip_id);
 
     return true;
 }

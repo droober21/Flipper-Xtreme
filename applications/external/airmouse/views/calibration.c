@@ -2,7 +2,7 @@
 #include "../tracking/main_loop.h"
 #include "../air_mouse.h"
 
-#include <furi.h>
+#include <furry.h>
 #include <gui/elements.h>
 
 struct Calibration {
@@ -20,7 +20,7 @@ static void calibration_draw_callback(Canvas* canvas, void* context) {
 }
 
 void calibration_enter_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Calibration* calibration = context;
     calibration_begin();
     view_dispatcher_send_custom_event(calibration->view_dispatcher, 0);
@@ -28,7 +28,7 @@ void calibration_enter_callback(void* context) {
 
 bool calibration_custom_callback(uint32_t event, void* context) {
     UNUSED(event);
-    furi_assert(context);
+    furry_assert(context);
     Calibration* calibration = context;
 
     if(calibration_step()) {
@@ -41,7 +41,7 @@ bool calibration_custom_callback(uint32_t event, void* context) {
 }
 
 void calibration_exit_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     calibration_end();
 }
 
@@ -58,12 +58,12 @@ Calibration* calibration_alloc(ViewDispatcher* view_dispatcher) {
 }
 
 void calibration_free(Calibration* calibration) {
-    furi_assert(calibration);
+    furry_assert(calibration);
     view_free(calibration->view);
     free(calibration);
 }
 
 View* calibration_get_view(Calibration* calibration) {
-    furi_assert(calibration);
+    furry_assert(calibration);
     return calibration->view;
 }

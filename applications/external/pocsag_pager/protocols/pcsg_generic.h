@@ -5,8 +5,8 @@
 #include <stddef.h>
 
 #include <lib/flipper_format/flipper_format.h>
-#include "furi.h"
-#include "furi_hal.h"
+#include "furry.h"
+#include "furry_hal.h"
 #include <lib/subghz/types.h>
 
 #ifdef __cplusplus
@@ -17,8 +17,8 @@ typedef struct PCSGBlockGeneric PCSGBlockGeneric;
 
 struct PCSGBlockGeneric {
     const char* protocol_name;
-    FuriString* result_ric;
-    FuriString* result_msg;
+    FurryString* result_ric;
+    FurryString* result_msg;
 };
 
 /**
@@ -26,7 +26,7 @@ struct PCSGBlockGeneric {
  * @param preset_name name preset
  * @param preset_str Output name preset
  */
-void pcsg_block_generic_get_preset_name(const char* preset_name, FuriString* preset_str);
+void pcsg_block_generic_get_preset_name(const char* preset_name, FurryString* preset_str);
 
 /**
  * Serialize data PCSGBlockGeneric.

@@ -7,7 +7,7 @@ void ibutton_scene_read_error_on_enter(void* context) {
 
     Widget* widget = ibutton->widget;
 
-    FuriString* tmp = furi_string_alloc();
+    FurryString* tmp = furry_string_alloc();
 
     widget_add_button_element(
         widget, GuiButtonTypeLeft, "Retry", ibutton_widget_callback, context);
@@ -20,13 +20,13 @@ void ibutton_scene_read_error_on_enter(void* context) {
     ibutton_protocols_render_error(ibutton->protocols, key, tmp);
 
     widget_add_string_multiline_element(
-        widget, 128 / 2, 16, AlignCenter, AlignTop, FontSecondary, furi_string_get_cstr(tmp));
+        widget, 128 / 2, 16, AlignCenter, AlignTop, FontSecondary, furry_string_get_cstr(tmp));
 
     ibutton_notification_message(ibutton, iButtonNotificationMessageError);
     ibutton_notification_message(ibutton, iButtonNotificationMessageRedOn);
 
     view_dispatcher_switch_to_view(ibutton->view_dispatcher, iButtonViewWidget);
-    furi_string_free(tmp);
+    furry_string_free(tmp);
 }
 
 bool ibutton_scene_read_error_on_event(void* context, SceneManagerEvent event) {

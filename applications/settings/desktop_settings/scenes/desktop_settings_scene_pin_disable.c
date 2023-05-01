@@ -11,13 +11,13 @@
 #define SCENE_EVENT_EXIT (0U)
 
 static void pin_disable_back_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DesktopSettingsApp* app = context;
     view_dispatcher_send_custom_event(app->view_dispatcher, SCENE_EVENT_EXIT);
 }
 
 void desktop_settings_scene_pin_disable_on_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DesktopSettingsApp* app = context;
     app->settings.pin_code.length = 0;
     memset(app->settings.pin_code.data, '0', sizeof(app->settings.pin_code.data));

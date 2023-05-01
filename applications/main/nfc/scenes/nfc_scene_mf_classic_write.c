@@ -7,7 +7,7 @@ enum {
 };
 
 bool nfc_mf_classic_write_worker_callback(NfcWorkerEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     Nfc* nfc = context;
     view_dispatcher_send_custom_event(nfc->view_dispatcher, event);

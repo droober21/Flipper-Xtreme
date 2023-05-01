@@ -8,28 +8,28 @@
 #define TAG "SubGhzApp"
 
 bool subghz_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhz* subghz = context;
     return scene_manager_handle_custom_event(subghz->scene_manager, event);
 }
 
 bool subghz_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhz* subghz = context;
     return scene_manager_handle_back_event(subghz->scene_manager);
 }
 
 void subghz_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhz* subghz = context;
     scene_manager_handle_tick_event(subghz->scene_manager);
 }
 
 static void subghz_rpc_command_callback(RpcAppSystemEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhz* subghz = context;
 
-    furi_assert(subghz->rpc_ctx);
+    furry_assert(subghz->rpc_ctx);
 
     if(event == RpcAppEventSessionClose) {
         view_dispatcher_send_custom_event(
@@ -52,23 +52,23 @@ static void subghz_rpc_command_callback(RpcAppSystemEvent event, void* context) 
 }
 
 void subghz_blink_start(SubGhz* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     notification_message(instance->notifications, &sequence_blink_start_magenta);
 }
 
 void subghz_blink_stop(SubGhz* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     notification_message(instance->notifications, &sequence_blink_stop);
 }
 
 SubGhz* subghz_alloc(bool alloc_for_tx_only) {
     SubGhz* subghz = malloc(sizeof(SubGhz));
 
-    subghz->file_path = furi_string_alloc();
-    subghz->file_path_tmp = furi_string_alloc();
+    subghz->file_path = furry_string_alloc();
+    subghz->file_path_tmp = furry_string_alloc();
 
     // GUI
-    subghz->gui = furi_record_open(RECORD_GUI);
+    subghz->gui = furry_record_open(RECORD_GUI);
 
     subghz->in_decoder_scene = false;
     subghz->in_decoder_scene_skip = false;
@@ -87,7 +87,7 @@ SubGhz* subghz_alloc(bool alloc_for_tx_only) {
         subghz->view_dispatcher, subghz_tick_event_callback, 100);
 
     // Open Notification record
-    subghz->notifications = furi_record_open(RECORD_NOTIFICATION);
+    subghz->notifications = furry_record_open(RECORD_NOTIFICATION);
 
     if(!alloc_for_tx_only) {
         // SubMenu
@@ -127,7 +127,7 @@ SubGhz* subghz_alloc(bool alloc_for_tx_only) {
             subghz->view_dispatcher, SubGhzViewIdWidget, widget_get_view(subghz->widget));
     }
     //Dialog
-    subghz->dialogs = furi_record_open(RECORD_DIALOGS);
+    subghz->dialogs = furry_record_open(RECORD_DIALOGS);
 
     // Transmitter
     subghz->subghz_transmitter = subghz_view_transmitter_alloc();
@@ -164,7 +164,7 @@ SubGhz* subghz_alloc(bool alloc_for_tx_only) {
         SubGhzViewIdReadRAW,
         subghz_read_raw_get_view(subghz->subghz_read_raw));
 
-#if FURI_DEBUG
+#if FURRY_DEBUG
     // Packet Test
     subghz->subghz_test_packet = subghz_test_packet_alloc();
     view_dispatcher_add_view(
@@ -246,8 +246,8 @@ SubGhz* subghz_alloc(bool alloc_for_tx_only) {
     subghz->last_settings = subghz_last_settings_alloc();
     subghz_last_settings_load(subghz->last_settings, 0);
     if(!alloc_for_tx_only) {
-#if FURI_DEBUG
-        FURI_LOG_D(
+#if FURRY_DEBUG
+        FURRY_LOG_D(
             TAG,
             "last frequency: %ld, preset: %ld",
             subghz->last_settings->frequency,
@@ -259,7 +259,7 @@ SubGhz* subghz_alloc(bool alloc_for_tx_only) {
     subghz->lock = SubGhzLockOff;
     subghz->txrx = malloc(sizeof(SubGhzTxRx));
     subghz->txrx->preset = malloc(sizeof(SubGhzRadioPreset));
-    subghz->txrx->preset->name = furi_string_alloc();
+    subghz->txrx->preset->name = furry_string_alloc();
     if(!alloc_for_tx_only) {
         subghz_preset_init(subghz, "AM650", subghz->last_settings->frequency, NULL, 0);
     } else {
@@ -301,13 +301,13 @@ SubGhz* subghz_alloc(bool alloc_for_tx_only) {
     subghz_worker_set_context(subghz->txrx->worker, subghz->txrx->receiver);
 
     //Init Error_str
-    subghz->error_str = furi_string_alloc();
+    subghz->error_str = furry_string_alloc();
 
     return subghz;
 }
 
 void subghz_free(SubGhz* subghz, bool alloc_for_tx_only) {
-    furi_assert(subghz);
+    furry_assert(subghz);
 
     if(subghz->rpc_ctx) {
         rpc_system_app_set_callback(subghz->rpc_ctx, NULL, NULL);
@@ -318,7 +318,7 @@ void subghz_free(SubGhz* subghz, bool alloc_for_tx_only) {
 
     subghz_speaker_off(subghz);
 
-#if FURI_DEBUG
+#if FURRY_DEBUG
     // Packet Test
     view_dispatcher_remove_view(subghz->view_dispatcher, SubGhzViewIdTestPacket);
     subghz_test_packet_free(subghz->subghz_test_packet);
@@ -350,7 +350,7 @@ void subghz_free(SubGhz* subghz, bool alloc_for_tx_only) {
         widget_free(subghz->widget);
     }
     //Dialog
-    furi_record_close(RECORD_DIALOGS);
+    furry_record_close(RECORD_DIALOGS);
 
     // Transmitter
     view_dispatcher_remove_view(subghz->view_dispatcher, SubGhzViewIdTransmitter);
@@ -383,7 +383,7 @@ void subghz_free(SubGhz* subghz, bool alloc_for_tx_only) {
     view_dispatcher_free(subghz->view_dispatcher);
 
     // GUI
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     subghz->gui = NULL;
 
     //setting
@@ -403,21 +403,21 @@ void subghz_free(SubGhz* subghz, bool alloc_for_tx_only) {
     if(!alloc_for_tx_only) {
         subghz_history_free(subghz->txrx->history);
     }
-    furi_string_free(subghz->txrx->preset->name);
+    furry_string_free(subghz->txrx->preset->name);
     free(subghz->txrx->preset);
     free(subghz->txrx->secure_data);
     free(subghz->txrx);
 
     //Error string
-    furi_string_free(subghz->error_str);
+    furry_string_free(subghz->error_str);
 
     // Notifications
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
     subghz->notifications = NULL;
 
     // Path strings
-    furi_string_free(subghz->file_path);
-    furi_string_free(subghz->file_path_tmp);
+    furry_string_free(subghz->file_path);
+    furry_string_free(subghz->file_path_tmp);
 
     // The rest
     free(subghz);
@@ -446,13 +446,13 @@ int32_t subghz_app(void* p) {
         subghz->txrx->environment, EXT_PATH("subghz/assets/keeloq_mfcodes_user"));
 
     // Call enable power for external module
-    furi_hal_subghz_enable_ext_power();
+    furry_hal_subghz_enable_ext_power();
 
     // Auto switch to internal radio if external radio is not available
-    if(!furi_hal_subghz_check_radio()) {
+    if(!furry_hal_subghz_check_radio()) {
         subghz->last_settings->external_module_enabled = false;
-        furi_hal_subghz_select_radio_type(SubGhzRadioInternal);
-        furi_hal_subghz_init_radio_type(SubGhzRadioInternal);
+        furry_hal_subghz_select_radio_type(SubGhzRadioInternal);
+        furry_hal_subghz_init_radio_type(SubGhzRadioInternal);
     }
     // Check argument and run corresponding scene
     if(p && strlen(p)) {
@@ -469,7 +469,7 @@ int32_t subghz_app(void* p) {
             view_dispatcher_attach_to_gui(
                 subghz->view_dispatcher, subghz->gui, ViewDispatcherTypeFullscreen);
             if(subghz_key_load(subghz, p, true)) {
-                furi_string_set(subghz->file_path, (const char*)p);
+                furry_string_set(subghz->file_path, (const char*)p);
 
                 if((!strcmp(subghz->txrx->decoder_result->protocol->name, "RAW"))) {
                     //Load Raw TX
@@ -488,28 +488,28 @@ int32_t subghz_app(void* p) {
     } else {
         view_dispatcher_attach_to_gui(
             subghz->view_dispatcher, subghz->gui, ViewDispatcherTypeFullscreen);
-        furi_string_set(subghz->file_path, SUBGHZ_APP_FOLDER);
+        furry_string_set(subghz->file_path, SUBGHZ_APP_FOLDER);
         if(load_database) {
             scene_manager_next_scene(subghz->scene_manager, SubGhzSceneStart);
         } else {
             scene_manager_set_scene_state(
                 subghz->scene_manager, SubGhzSceneShowError, SubGhzCustomEventManagerSet);
-            furi_string_set(
+            furry_string_set(
                 subghz->error_str,
                 "No SD card or\ndatabase found.\nSome app function\nmay be reduced.");
             scene_manager_next_scene(subghz->scene_manager, SubGhzSceneShowError);
         }
     }
 
-    furi_hal_power_suppress_charge_enter();
+    furry_hal_power_suppress_charge_enter();
 
     view_dispatcher_run(subghz->view_dispatcher);
 
-    furi_hal_power_suppress_charge_exit();
+    furry_hal_power_suppress_charge_exit();
     // Disable power for External CC1101 if it was enabled and module is connected
-    furi_hal_subghz_disable_ext_power();
+    furry_hal_subghz_disable_ext_power();
     // Reinit SPI handles for internal radio / nfc
-    furi_hal_subghz_init_radio_type(SubGhzRadioInternal);
+    furry_hal_subghz_init_radio_type(SubGhzRadioInternal);
 
     subghz_free(subghz, alloc_for_tx);
 

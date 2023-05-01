@@ -1,8 +1,8 @@
 #pragma once
 
 #include <stdbool.h>
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -64,16 +64,16 @@ LocaleTimeFormat locale_get_time_format();
  */
 void locale_set_time_format(LocaleTimeFormat format);
 
-/** Format time to furi string
+/** Format time to furry string
  *
- * @param[out] out_str       The FuriString to store formatted time
+ * @param[out] out_str       The FurryString to store formatted time
  * @param[in]  datetime      Pointer to the datetime
  * @param[in]  format        The Locale Time Format
  * @param[in]  show_seconds  The show seconds flag
  */
 void locale_format_time(
-    FuriString* out_str,
-    const FuriHalRtcDateTime* datetime,
+    FurryString* out_str,
+    const FurryHalRtcDateTime* datetime,
     const LocaleTimeFormat format,
     const bool show_seconds);
 
@@ -89,16 +89,16 @@ LocaleDateFormat locale_get_date_format(void);
  */
 void locale_set_date_format(LocaleDateFormat format);
 
-/** Format date to furi string
+/** Format date to furry string
  *
- * @param[out] out_str    The FuriString to store formatted date
+ * @param[out] out_str    The FurryString to store formatted date
  * @param[in]  datetime   Pointer to the datetime
  * @param[in]  format     The format
  * @param[in]  separator  The separator
  */
 void locale_format_date(
-    FuriString* out_str,
-    const FuriHalRtcDateTime* datetime,
+    FurryString* out_str,
+    const FurryHalRtcDateTime* datetime,
     const LocaleDateFormat format,
     const char* separator);
 

@@ -83,7 +83,7 @@ typedef struct {
     /**
      * @brief Main rendering loop mutex
      */
-    FuriMutex* mutex;
+    FurryMutex* mutex;
 
     /**
      * @brief Automation method

@@ -117,7 +117,7 @@ void* subghz_protocol_encoder_came_twee_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_encoder_came_twee_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderCameTwee* instance = context;
     free(instance->encoder.upload);
     free(instance);
@@ -145,7 +145,7 @@ static LevelDuration
         break;
 
     default:
-        furi_crash("SubGhz: ManchesterEncoderResult is incorrect.");
+        furry_crash("SubGhz: ManchesterEncoderResult is incorrect.");
         break;
     }
     return level_duration_make(data.level, data.duration);
@@ -156,7 +156,7 @@ static LevelDuration
  * @param instance Pointer to a SubGhzProtocolEncoderCameTwee instance
  */
 static void subghz_protocol_encoder_came_twee_get_upload(SubGhzProtocolEncoderCameTwee* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     size_t index = 0;
 
     ManchesterEncoderState enc_state;
@@ -243,7 +243,7 @@ static void subghz_protocol_came_twee_remote_controller(SubGhzBlockGeneric* inst
 
 SubGhzProtocolStatus
     subghz_protocol_encoder_came_twee_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderCameTwee* instance = context;
     SubGhzProtocolStatus res = SubGhzProtocolStatusError;
     do {
@@ -298,13 +298,13 @@ void* subghz_protocol_decoder_came_twee_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_came_twee_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderCameTwee* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_came_twee_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderCameTwee* instance = context;
     instance->decoder.parser_step = CameTweeDecoderStepReset;
     manchester_advance(
@@ -315,7 +315,7 @@ void subghz_protocol_decoder_came_twee_reset(void* context) {
 }
 
 void subghz_protocol_decoder_came_twee_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderCameTwee* instance = context;
     ManchesterEvent event = ManchesterEventReset;
     switch(instance->decoder.parser_step) {
@@ -410,7 +410,7 @@ void subghz_protocol_decoder_came_twee_feed(void* context, bool level, uint32_t 
 }
 
 uint8_t subghz_protocol_decoder_came_twee_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderCameTwee* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -420,14 +420,14 @@ SubGhzProtocolStatus subghz_protocol_decoder_came_twee_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderCameTwee* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_came_twee_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderCameTwee* instance = context;
     return subghz_block_generic_deserialize_check_count_bit(
         &instance->generic,
@@ -435,14 +435,14 @@ SubGhzProtocolStatus
         subghz_protocol_came_twee_const.min_count_bit_for_found);
 }
 
-void subghz_protocol_decoder_came_twee_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_came_twee_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderCameTwee* instance = context;
     subghz_protocol_came_twee_remote_controller(&instance->generic);
     uint32_t code_found_hi = instance->generic.data >> 32;
     uint32_t code_found_lo = instance->generic.data & 0x00000000ffffffff;
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %db\r\n"
         "Key:0x%lX%08lX\r\n"

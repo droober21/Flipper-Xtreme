@@ -21,41 +21,41 @@
 
 UpdateManifest* update_manifest_alloc() {
     UpdateManifest* update_manifest = malloc(sizeof(UpdateManifest));
-    update_manifest->version = furi_string_alloc();
-    update_manifest->firmware_dfu_image = furi_string_alloc();
-    update_manifest->radio_image = furi_string_alloc();
-    update_manifest->staged_loader_file = furi_string_alloc();
-    update_manifest->resource_bundle = furi_string_alloc();
-    update_manifest->splash_file = furi_string_alloc();
+    update_manifest->version = furry_string_alloc();
+    update_manifest->firmware_dfu_image = furry_string_alloc();
+    update_manifest->radio_image = furry_string_alloc();
+    update_manifest->staged_loader_file = furry_string_alloc();
+    update_manifest->resource_bundle = furry_string_alloc();
+    update_manifest->splash_file = furry_string_alloc();
     update_manifest->target = 0;
     update_manifest->manifest_version = 0;
-    memset(update_manifest->ob_reference.bytes, 0, FURI_HAL_FLASH_OB_RAW_SIZE_BYTES);
-    memset(update_manifest->ob_compare_mask.bytes, 0, FURI_HAL_FLASH_OB_RAW_SIZE_BYTES);
-    memset(update_manifest->ob_write_mask.bytes, 0, FURI_HAL_FLASH_OB_RAW_SIZE_BYTES);
+    memset(update_manifest->ob_reference.bytes, 0, FURRY_HAL_FLASH_OB_RAW_SIZE_BYTES);
+    memset(update_manifest->ob_compare_mask.bytes, 0, FURRY_HAL_FLASH_OB_RAW_SIZE_BYTES);
+    memset(update_manifest->ob_write_mask.bytes, 0, FURRY_HAL_FLASH_OB_RAW_SIZE_BYTES);
     update_manifest->valid = false;
     return update_manifest;
 }
 
 void update_manifest_free(UpdateManifest* update_manifest) {
-    furi_assert(update_manifest);
-    furi_string_free(update_manifest->version);
-    furi_string_free(update_manifest->firmware_dfu_image);
-    furi_string_free(update_manifest->radio_image);
-    furi_string_free(update_manifest->staged_loader_file);
-    furi_string_free(update_manifest->resource_bundle);
-    furi_string_free(update_manifest->splash_file);
+    furry_assert(update_manifest);
+    furry_string_free(update_manifest->version);
+    furry_string_free(update_manifest->firmware_dfu_image);
+    furry_string_free(update_manifest->radio_image);
+    furry_string_free(update_manifest->staged_loader_file);
+    furry_string_free(update_manifest->resource_bundle);
+    furry_string_free(update_manifest->splash_file);
     free(update_manifest);
 }
 
 static bool
     update_manifest_init_from_ff(UpdateManifest* update_manifest, FlipperFormat* flipper_file) {
-    furi_assert(update_manifest);
-    furi_assert(flipper_file);
+    furry_assert(update_manifest);
+    furry_assert(flipper_file);
 
-    FuriString* filetype;
+    FurryString* filetype;
 
     // TODO: compare filetype?
-    filetype = furi_string_alloc();
+    filetype = furry_string_alloc();
     update_manifest->valid =
         flipper_format_read_header(flipper_file, filetype, &update_manifest->manifest_version) &&
         flipper_format_read_string(flipper_file, MANIFEST_KEY_INFO, update_manifest->version) &&
@@ -68,7 +68,7 @@ static bool
             MANIFEST_KEY_LOADER_CRC,
             (uint8_t*)&update_manifest->staged_loader_crc,
             sizeof(uint32_t));
-    furi_string_free(filetype);
+    furry_string_free(filetype);
 
     if(update_manifest->valid) {
         /* Optional fields - we can have dfu, radio, resources, or any combination */
@@ -98,34 +98,34 @@ static bool
             flipper_file,
             MANIFEST_KEY_OB_REFERENCE,
             update_manifest->ob_reference.bytes,
-            FURI_HAL_FLASH_OB_RAW_SIZE_BYTES);
+            FURRY_HAL_FLASH_OB_RAW_SIZE_BYTES);
         flipper_format_read_hex(
             flipper_file,
             MANIFEST_KEY_OB_MASK,
             update_manifest->ob_compare_mask.bytes,
-            FURI_HAL_FLASH_OB_RAW_SIZE_BYTES);
+            FURRY_HAL_FLASH_OB_RAW_SIZE_BYTES);
         flipper_format_read_hex(
             flipper_file,
             MANIFEST_KEY_OB_WRITE_MASK,
             update_manifest->ob_write_mask.bytes,
-            FURI_HAL_FLASH_OB_RAW_SIZE_BYTES);
+            FURRY_HAL_FLASH_OB_RAW_SIZE_BYTES);
 
         flipper_format_read_string(
             flipper_file, MANIFEST_KEY_SPLASH_FILE, update_manifest->splash_file);
 
         update_manifest->valid =
-            (!furi_string_empty(update_manifest->firmware_dfu_image) ||
-             !furi_string_empty(update_manifest->radio_image) ||
-             !furi_string_empty(update_manifest->resource_bundle));
+            (!furry_string_empty(update_manifest->firmware_dfu_image) ||
+             !furry_string_empty(update_manifest->radio_image) ||
+             !furry_string_empty(update_manifest->resource_bundle));
     }
 
     return update_manifest->valid;
 }
 
 // Verifies that mask values are same for adjacent words (value & inverted)
-static bool ob_data_check_mask_valid(const FuriHalFlashRawOptionByteData* mask) {
+static bool ob_data_check_mask_valid(const FurryHalFlashRawOptionByteData* mask) {
     bool mask_valid = true;
-    for(size_t idx = 0; mask_valid && (idx < FURI_HAL_FLASH_OB_TOTAL_VALUES); ++idx) {
+    for(size_t idx = 0; mask_valid && (idx < FURRY_HAL_FLASH_OB_TOTAL_VALUES); ++idx) {
         mask_valid &= mask->obs[idx].values.base == mask->obs[idx].values.complementary_value;
     }
     return mask_valid;
@@ -133,10 +133,10 @@ static bool ob_data_check_mask_valid(const FuriHalFlashRawOptionByteData* mask) 
 
 // Verifies that all reference values have no unmasked bits
 static bool ob_data_check_masked_values_valid(
-    const FuriHalFlashRawOptionByteData* data,
-    const FuriHalFlashRawOptionByteData* mask) {
+    const FurryHalFlashRawOptionByteData* data,
+    const FurryHalFlashRawOptionByteData* mask) {
     bool valid = true;
-    for(size_t idx = 0; valid && (idx < FURI_HAL_FLASH_OB_TOTAL_VALUES); ++idx) {
+    for(size_t idx = 0; valid && (idx < FURRY_HAL_FLASH_OB_TOTAL_VALUES); ++idx) {
         valid &= (data->obs[idx].dword & mask->obs[idx].dword) == data->obs[idx].dword;
     }
     return valid;
@@ -145,7 +145,7 @@ static bool ob_data_check_masked_values_valid(
 bool update_manifest_has_obdata(UpdateManifest* update_manifest) {
     bool ob_data_valid = false;
     // do we have at least 1 value?
-    for(size_t idx = 0; !ob_data_valid && (idx < FURI_HAL_FLASH_OB_RAW_SIZE_BYTES); ++idx) {
+    for(size_t idx = 0; !ob_data_valid && (idx < FURRY_HAL_FLASH_OB_RAW_SIZE_BYTES); ++idx) {
         ob_data_valid |= update_manifest->ob_reference.bytes[idx] != 0;
     }
     // sanity checks
@@ -157,14 +157,14 @@ bool update_manifest_has_obdata(UpdateManifest* update_manifest) {
 }
 
 bool update_manifest_init(UpdateManifest* update_manifest, const char* manifest_filename) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* flipper_file = flipper_format_file_alloc(storage);
     if(flipper_format_file_open_existing(flipper_file, manifest_filename)) {
         update_manifest_init_from_ff(update_manifest, flipper_file);
     }
 
     flipper_format_free(flipper_file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return update_manifest->valid;
 }

@@ -10,7 +10,7 @@ extern "C" {
 /** Text input anonymous structure */
 typedef struct WIFI_TextInput WIFI_TextInput;
 typedef void (*WIFI_TextInputCallback)(void* context);
-typedef bool (*WIFI_TextInputValidatorCallback)(const char* text, FuriString* error, void* context);
+typedef bool (*WIFI_TextInputValidatorCallback)(const char* text, FurryString* error, void* context);
 
 /** Allocate and initialize text input 
  * 

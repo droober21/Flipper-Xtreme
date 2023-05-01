@@ -65,12 +65,12 @@ void ibtnfuzzer_center_displayed_key(iBtnFuzzerState* context, uint8_t index) {
         display_menu[15] = ' ';
     }
 
-    furi_string_reset(context->notification_msg);
-    furi_string_set(context->notification_msg, display_menu);
+    furry_string_reset(context->notification_msg);
+    furry_string_set(context->notification_msg, display_menu);
 }
 
 void ibtnfuzzer_scene_select_field_on_enter(iBtnFuzzerState* context) {
-    furi_string_reset(context->notification_msg);
+    furry_string_reset(context->notification_msg);
 }
 
 void ibtnfuzzer_scene_select_field_on_exit(iBtnFuzzerState* context) {
@@ -84,7 +84,7 @@ void ibtnfuzzer_scene_select_field_on_tick(iBtnFuzzerState* context) {
 void ibtnfuzzer_scene_select_field_on_event(iBtnFuzzerEvent event, iBtnFuzzerState* context) {
     if(event.evt_type == EventTypeKey) {
         if(event.input_type == InputTypeShort) {
-            const char* key_cstr = furi_string_get_cstr(context->data_str);
+            const char* key_cstr = furry_string_get_cstr(context->data_str);
             int data_len = sizeof(context->data) / sizeof(context->data[0]);
 
             // don't look, it's ugly but I'm a python dev so...
@@ -121,18 +121,18 @@ void ibtnfuzzer_scene_select_field_on_event(iBtnFuzzerEvent event, iBtnFuzzerSta
                 }
                 break;
             case InputKeyOk:
-                furi_string_reset(context->notification_msg);
+                furry_string_reset(context->notification_msg);
                 context->current_scene = SceneAttack;
                 break;
             case InputKeyBack:
                 context->key_index = 0;
-                furi_string_reset(context->notification_msg);
+                furry_string_reset(context->notification_msg);
                 context->current_scene = SceneSelectFile;
                 break;
             default:
                 break;
             }
-            FURI_LOG_D(TAG, "Position: %d/%d", context->key_index, nb_bytes);
+            FURRY_LOG_D(TAG, "Position: %d/%d", context->key_index, nb_bytes);
         }
     }
 }
@@ -156,5 +156,5 @@ void ibtnfuzzer_scene_select_field_on_draw(Canvas* canvas, iBtnFuzzerState* cont
     ibtnfuzzer_center_displayed_key(context, context->key_index);
     canvas_set_font(canvas, FontSecondary);
     canvas_draw_str_aligned(
-        canvas, 64, 45, AlignCenter, AlignTop, furi_string_get_cstr(context->notification_msg));
+        canvas, 64, 45, AlignCenter, AlignTop, furry_string_get_cstr(context->notification_msg));
 }

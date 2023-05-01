@@ -3,7 +3,7 @@
 #include "views/updater_main.h"
 #include "util/update_task.h"
 
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <gui/view_stack.h>
 #include <gui/view_dispatcher.h>
@@ -48,7 +48,7 @@ typedef struct {
 
     UpdateTask* update_task;
     Widget* widget;
-    FuriString* startup_arg;
+    FurryString* startup_arg;
     int32_t idle_ticks;
 } Updater;
 

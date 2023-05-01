@@ -1,7 +1,7 @@
 #pragma once
 
 #include <gui/gui.h>
-#include <furi.h>
+#include <furry.h>
 
 typedef struct {
     void (*callback)(void* state); //Callback for when the item is dequeued

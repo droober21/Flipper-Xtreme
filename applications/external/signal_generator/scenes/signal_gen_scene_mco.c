@@ -27,21 +27,21 @@ static const char* const mco_source_names[] = {
     "~48MHz",
 };
 
-static const FuriHalClockMcoSourceId mco_sources[] = {
-    FuriHalClockMcoLse,
-    FuriHalClockMcoSysclk,
-    FuriHalClockMcoMsi100k,
-    FuriHalClockMcoMsi200k,
-    FuriHalClockMcoMsi400k,
-    FuriHalClockMcoMsi800k,
-    FuriHalClockMcoMsi1m,
-    FuriHalClockMcoMsi2m,
-    FuriHalClockMcoMsi4m,
-    FuriHalClockMcoMsi8m,
-    FuriHalClockMcoMsi16m,
-    FuriHalClockMcoMsi24m,
-    FuriHalClockMcoMsi32m,
-    FuriHalClockMcoMsi48m,
+static const FurryHalClockMcoSourceId mco_sources[] = {
+    FurryHalClockMcoLse,
+    FurryHalClockMcoSysclk,
+    FurryHalClockMcoMsi100k,
+    FurryHalClockMcoMsi200k,
+    FurryHalClockMcoMsi400k,
+    FurryHalClockMcoMsi800k,
+    FurryHalClockMcoMsi1m,
+    FurryHalClockMcoMsi2m,
+    FurryHalClockMcoMsi4m,
+    FurryHalClockMcoMsi8m,
+    FurryHalClockMcoMsi16m,
+    FurryHalClockMcoMsi24m,
+    FurryHalClockMcoMsi32m,
+    FurryHalClockMcoMsi48m,
 };
 
 static const char* const mco_divisor_names[] = {
@@ -52,12 +52,12 @@ static const char* const mco_divisor_names[] = {
     "16",
 };
 
-static const FuriHalClockMcoDivisorId mco_divisors[] = {
-    FuriHalClockMcoDiv1,
-    FuriHalClockMcoDiv2,
-    FuriHalClockMcoDiv4,
-    FuriHalClockMcoDiv8,
-    FuriHalClockMcoDiv16,
+static const FurryHalClockMcoDivisorId mco_divisors[] = {
+    FurryHalClockMcoDiv1,
+    FurryHalClockMcoDiv2,
+    FurryHalClockMcoDiv4,
+    FurryHalClockMcoDiv8,
+    FurryHalClockMcoDiv16,
 };
 
 static void mco_source_list_change_callback(VariableItem* item) {
@@ -112,10 +112,10 @@ void signal_gen_scene_mco_on_enter(void* context) {
 
     view_dispatcher_switch_to_view(app->view_dispatcher, SignalGenViewVarItemList);
 
-    app->mco_src = FuriHalClockMcoLse;
-    app->mco_div = FuriHalClockMcoDiv1;
-    furi_hal_clock_mco_enable(app->mco_src, app->mco_div);
-    furi_hal_gpio_init_ex(
+    app->mco_src = FurryHalClockMcoLse;
+    app->mco_div = FurryHalClockMcoDiv1;
+    furry_hal_clock_mco_enable(app->mco_src, app->mco_div);
+    furry_hal_gpio_init_ex(
         &gpio_usart_tx, GpioModeAltFunctionPushPull, GpioPullUp, GpioSpeedVeryHigh, GpioAltFn0MCO);
 }
 
@@ -126,7 +126,7 @@ bool signal_gen_scene_mco_on_event(void* context, SceneManagerEvent event) {
     if(event.type == SceneManagerEventTypeCustom) {
         if(event.event == SignalGenMcoEventUpdate) {
             consumed = true;
-            furi_hal_clock_mco_enable(app->mco_src, app->mco_div);
+            furry_hal_clock_mco_enable(app->mco_src, app->mco_div);
         }
     }
     return consumed;
@@ -135,11 +135,11 @@ bool signal_gen_scene_mco_on_event(void* context, SceneManagerEvent event) {
 void signal_gen_scene_mco_on_exit(void* context) {
     SignalGenApp* app = context;
     variable_item_list_reset(app->var_item_list);
-    furi_hal_gpio_init_ex(
+    furry_hal_gpio_init_ex(
         &gpio_usart_tx,
         GpioModeAltFunctionPushPull,
         GpioPullUp,
         GpioSpeedVeryHigh,
         GpioAltFn7USART1);
-    furi_hal_clock_mco_disable();
+    furry_hal_clock_mco_disable();
 }

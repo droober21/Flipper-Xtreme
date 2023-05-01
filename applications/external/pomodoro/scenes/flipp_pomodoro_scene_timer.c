@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/scene_manager.h>
 #include <gui/view_dispatcher.h>
 #include "../flipp_pomodoro_app.h"
@@ -9,7 +9,7 @@ enum { SceneEventConusmed = true, SceneEventNotConusmed = false };
 uint8_t ExitSignal = 0;
 
 void flipp_pomodoro_scene_timer_sync_view_state(void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
 
     FlippPomodoroApp* app = ctx;
 
@@ -18,7 +18,7 @@ void flipp_pomodoro_scene_timer_sync_view_state(void* ctx) {
 };
 
 void flipp_pomodoro_scene_timer_on_next_stage(void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
 
     FlippPomodoroApp* app = ctx;
 
@@ -26,7 +26,7 @@ void flipp_pomodoro_scene_timer_on_next_stage(void* ctx) {
 };
 
 void flipp_pomodoro_scene_timer_on_enter(void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
 
     FlippPomodoroApp* app = ctx;
 
@@ -51,7 +51,7 @@ void flipp_pomodoro_scene_timer_handle_custom_event(
 };
 
 bool flipp_pomodoro_scene_timer_on_event(void* ctx, SceneManagerEvent event) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     FlippPomodoroApp* app = ctx;
 
     switch(event.type) {

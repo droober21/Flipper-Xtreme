@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <gui/view.h>
 #include <gui/scene_manager.h>

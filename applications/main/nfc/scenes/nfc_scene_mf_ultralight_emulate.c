@@ -56,8 +56,8 @@ bool nfc_scene_mf_ultralight_emulate_on_event(void* context, SceneManagerEvent e
             scene_manager_set_scene_state(
                 nfc->scene_manager, NfcSceneMfUltralightEmulate, NFC_MF_UL_DATA_NOT_CHANGED);
             // Save shadow file
-            if(furi_string_size(nfc->dev->load_path)) {
-                nfc_device_save_shadow(nfc->dev, furi_string_get_cstr(nfc->dev->load_path));
+            if(furry_string_size(nfc->dev->load_path)) {
+                nfc_device_save_shadow(nfc->dev, furry_string_get_cstr(nfc->dev->load_path));
             }
         }
         consumed = false;

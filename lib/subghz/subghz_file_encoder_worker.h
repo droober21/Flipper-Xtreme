@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 typedef void (*SubGhzFileEncoderWorkerCallbackEnd)(void* context);
 
@@ -35,7 +35,7 @@ void subghz_file_encoder_worker_free(SubGhzFileEncoderWorker* instance);
  */
 void subghz_file_encoder_worker_get_text_progress(
     SubGhzFileEncoderWorker* instance,
-    FuriString* output);
+    FurryString* output);
 
 /**
  * Getting the level and duration of the upload to be loaded into DMA.

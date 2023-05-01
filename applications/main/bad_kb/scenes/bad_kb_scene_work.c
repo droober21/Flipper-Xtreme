@@ -1,11 +1,11 @@
 #include "../helpers/ducky_script.h"
 #include "../bad_kb_app.h"
 #include "../views/bad_kb_view.h"
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include "toolbox/path.h"
 
 void bad_kb_scene_work_button_callback(InputKey key, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     BadKbApp* app = context;
     view_dispatcher_send_custom_event(app->view_dispatcher, key);
 }
@@ -33,17 +33,17 @@ bool bad_kb_scene_work_on_event(void* context, SceneManagerEvent event) {
 void bad_kb_scene_work_on_enter(void* context) {
     BadKbApp* app = context;
 
-    FuriString* file_name;
-    file_name = furi_string_alloc();
+    FurryString* file_name;
+    file_name = furry_string_alloc();
     path_extract_filename(app->file_path, file_name, true);
-    bad_kb_set_file_name(app->bad_kb_view, furi_string_get_cstr(file_name));
-    furi_string_free(file_name);
+    bad_kb_set_file_name(app->bad_kb_view, furry_string_get_cstr(file_name));
+    furry_string_free(file_name);
 
-    FuriString* layout;
-    layout = furi_string_alloc();
+    FurryString* layout;
+    layout = furry_string_alloc();
     path_extract_filename(app->keyboard_layout, layout, true);
-    bad_kb_set_layout(app->bad_kb_view, furi_string_get_cstr(layout));
-    furi_string_free(layout);
+    bad_kb_set_layout(app->bad_kb_view, furry_string_get_cstr(layout));
+    furry_string_free(layout);
 
     bad_kb_set_state(app->bad_kb_view, bad_kb_script_get_state(app->bad_kb_script));
 

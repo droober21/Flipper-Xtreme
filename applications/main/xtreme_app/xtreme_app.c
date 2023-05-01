@@ -1,7 +1,7 @@
 #include "xtreme_app.h"
 
 static bool xtreme_app_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     XtremeApp* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
@@ -12,7 +12,7 @@ void callback_reboot(void* context) {
 }
 
 bool xtreme_app_apply(XtremeApp* app) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     if(app->save_mainmenu_apps) {
         Stream* stream = file_stream_alloc(storage);
@@ -64,7 +64,7 @@ bool xtreme_app_apply(XtremeApp* app) {
     }
 
     if(app->save_subghz) {
-        furi_hal_subghz_set_extend_settings(app->subghz_extend, app->subghz_bypass);
+        furry_hal_subghz_set_extend_settings(app->subghz_extend, app->subghz_bypass);
     }
 
     if(app->save_name) {
@@ -98,12 +98,12 @@ bool xtreme_app_apply(XtremeApp* app) {
     }
 
     if(app->save_level) {
-        Dolphin* dolphin = furi_record_open(RECORD_DOLPHIN);
+        Dolphin* dolphin = furry_record_open(RECORD_DOLPHIN);
         int32_t xp = app->xp_level > 1 ? dolphin_get_levels()[app->xp_level - 2] : 0;
         dolphin->state->data.icounter = xp + 1;
         dolphin->state->dirty = true;
         dolphin_state_save(dolphin->state);
-        furi_record_close(RECORD_DOLPHIN);
+        furry_record_close(RECORD_DOLPHIN);
     }
 
     if(app->save_backlight) {
@@ -129,12 +129,12 @@ bool xtreme_app_apply(XtremeApp* app) {
         return true;
     }
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     return false;
 }
 
 static bool xtreme_app_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     XtremeApp* app = context;
 
     if(!scene_manager_has_previous_scene(app->scene_manager, XtremeAppSceneStart)) {
@@ -148,9 +148,9 @@ static bool xtreme_app_back_event_callback(void* context) {
 
 XtremeApp* xtreme_app_alloc() {
     XtremeApp* app = malloc(sizeof(XtremeApp));
-    app->gui = furi_record_open(RECORD_GUI);
-    app->dialogs = furi_record_open(RECORD_DIALOGS);
-    app->notification = furi_record_open(RECORD_NOTIFICATION);
+    app->gui = furry_record_open(RECORD_GUI);
+    app->dialogs = furry_record_open(RECORD_DIALOGS);
+    app->notification = furry_record_open(RECORD_NOTIFICATION);
 
     // View Dispatcher and Scene Manager
     app->view_dispatcher = view_dispatcher_alloc();
@@ -185,7 +185,7 @@ XtremeApp* xtreme_app_alloc() {
 
     app->asset_pack_index = 0;
     CharList_init(app->asset_pack_names);
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     File* folder = storage_file_alloc(storage);
     FileInfo info;
     char* name = malloc(XTREME_ASSETS_PACK_NAME_LEN);
@@ -219,17 +219,17 @@ XtremeApp* xtreme_app_alloc() {
     CharList_init(app->mainmenu_app_names);
     CharList_init(app->mainmenu_app_paths);
     Stream* stream = file_stream_alloc(storage);
-    FuriString* line = furi_string_alloc();
+    FurryString* line = furry_string_alloc();
     if(file_stream_open(stream, XTREME_APPS_PATH, FSAM_READ, FSOM_OPEN_EXISTING)) {
         while(stream_read_line(stream, line)) {
-            furi_string_replace_all(line, "\r", "");
-            furi_string_replace_all(line, "\n", "");
-            CharList_push_back(app->mainmenu_app_paths, strdup(furi_string_get_cstr(line)));
+            furry_string_replace_all(line, "\r", "");
+            furry_string_replace_all(line, "\n", "");
+            CharList_push_back(app->mainmenu_app_paths, strdup(furry_string_get_cstr(line)));
             fap_loader_load_name_and_icon(line, storage, NULL, line);
-            CharList_push_back(app->mainmenu_app_names, strdup(furi_string_get_cstr(line)));
+            CharList_push_back(app->mainmenu_app_names, strdup(furry_string_get_cstr(line)));
         }
     }
-    furi_string_free(line);
+    furry_string_free(line);
     file_stream_close(stream);
     stream_free(stream);
 
@@ -245,38 +245,38 @@ XtremeApp* xtreme_app_alloc() {
 
         if(!flipper_format_rewind(file)) break;
         while(flipper_format_read_uint32(file, "Frequency", &temp, 1)) {
-            if(furi_hal_subghz_is_frequency_valid(temp)) {
+            if(furry_hal_subghz_is_frequency_valid(temp)) {
                 FrequencyList_push_back(app->subghz_static_freqs, temp);
             }
         }
 
         if(!flipper_format_rewind(file)) break;
         while(flipper_format_read_uint32(file, "Hopper_frequency", &temp, 1)) {
-            if(furi_hal_subghz_is_frequency_valid(temp)) {
+            if(furry_hal_subghz_is_frequency_valid(temp)) {
                 FrequencyList_push_back(app->subghz_hopper_freqs, temp);
             }
         }
     } while(false);
     flipper_format_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
-    furi_hal_subghz_get_extend_settings(&app->subghz_extend, &app->subghz_bypass);
+    furry_hal_subghz_get_extend_settings(&app->subghz_extend, &app->subghz_bypass);
 
-    strlcpy(app->device_name, furi_hal_version_get_name_ptr(), NAMECHANGER_TEXT_STORE_SIZE);
+    strlcpy(app->device_name, furry_hal_version_get_name_ptr(), NAMECHANGER_TEXT_STORE_SIZE);
 
-    Dolphin* dolphin = furi_record_open(RECORD_DOLPHIN);
+    Dolphin* dolphin = furry_record_open(RECORD_DOLPHIN);
     DolphinStats stats = dolphin_stats(dolphin);
     app->xp_level = stats.level;
-    furi_record_close(RECORD_DOLPHIN);
+    furry_record_close(RECORD_DOLPHIN);
 
     app->version_tag =
-        furi_string_alloc_printf("%s  %s", version_get_version(NULL), version_get_builddate(NULL));
+        furry_string_alloc_printf("%s  %s", version_get_version(NULL), version_get_builddate(NULL));
 
     return app;
 }
 
 void xtreme_app_free(XtremeApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // Gui modules
     view_dispatcher_remove_view(app->view_dispatcher, XtremeAppViewVarItemList);
@@ -310,12 +310,12 @@ void xtreme_app_free(XtremeApp* app) {
     FrequencyList_clear(app->subghz_static_freqs);
     FrequencyList_clear(app->subghz_hopper_freqs);
 
-    furi_string_free(app->version_tag);
+    furry_string_free(app->version_tag);
 
     // Records
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_record_close(RECORD_DIALOGS);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_DIALOGS);
+    furry_record_close(RECORD_GUI);
     free(app);
 }
 

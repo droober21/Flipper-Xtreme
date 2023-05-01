@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <storage/storage.h>

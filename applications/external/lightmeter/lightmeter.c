@@ -4,21 +4,21 @@
 #define TAG "MAIN APP"
 
 static bool lightmeter_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     LightMeterApp* app = context;
 
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool lightmeter_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     LightMeterApp* app = context;
 
     return scene_manager_handle_back_event(app->scene_manager);
 }
 
 static void lightmeter_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     LightMeterApp* app = context;
 
     scene_manager_handle_tick_event(app->scene_manager);
@@ -41,8 +41,8 @@ LightMeterApp* lightmeter_app_alloc(uint32_t first_scene) {
     app->config->backlight = DEFAULT_BACKLIGHT;
 
     // Records
-    app->gui = furi_record_open(RECORD_GUI);
-    app->notifications = furi_record_open(RECORD_NOTIFICATION);
+    app->gui = furry_record_open(RECORD_GUI);
+    app->notifications = furry_record_open(RECORD_NOTIFICATION);
 
     // View dispatcher
     app->view_dispatcher = view_dispatcher_alloc();
@@ -54,7 +54,7 @@ LightMeterApp* lightmeter_app_alloc(uint32_t first_scene) {
     view_dispatcher_set_navigation_event_callback(
         app->view_dispatcher, lightmeter_back_event_callback);
     view_dispatcher_set_tick_event_callback(
-        app->view_dispatcher, lightmeter_tick_event_callback, furi_ms_to_ticks(200));
+        app->view_dispatcher, lightmeter_tick_event_callback, furry_ms_to_ticks(200));
     view_dispatcher_attach_to_gui(app->view_dispatcher, app->gui, ViewDispatcherTypeFullscreen);
 
     // Views
@@ -89,7 +89,7 @@ LightMeterApp* lightmeter_app_alloc(uint32_t first_scene) {
 }
 
 void lightmeter_app_free(LightMeterApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // Views
     view_dispatcher_remove_view(app->view_dispatcher, LightMeterAppViewMainView);
@@ -109,13 +109,13 @@ void lightmeter_app_free(LightMeterApp* app) {
     view_dispatcher_free(app->view_dispatcher);
 
     // Records
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     if(app->config->backlight != BACKLIGHT_AUTO) {
         notification_message(
             app->notifications,
             &sequence_display_backlight_enforce_auto); // set backlight back to auto
     }
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
 
     bh1750_set_power_state(0);
 

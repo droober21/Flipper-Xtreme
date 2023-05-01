@@ -8,8 +8,8 @@
 #include <lib/toolbox/level_duration.h>
 
 #include "environment.h"
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #define SUBGHZ_APP_FOLDER ANY_PATH("subghz")
 #define SUBGHZ_RAW_FOLDER EXT_PATH("subghz")
@@ -23,7 +23,7 @@
 
 // Radio Preset
 typedef struct {
-    FuriString* name;
+    FurryString* name;
     uint32_t frequency;
     uint8_t* data;
     size_t data_size;
@@ -64,7 +64,7 @@ typedef SubGhzProtocolStatus (*SubGhzDeserialize)(void* context, FlipperFormat* 
 typedef void (*SubGhzDecoderFeed)(void* decoder, bool level, uint32_t duration);
 typedef void (*SubGhzDecoderReset)(void* decoder);
 typedef uint8_t (*SubGhzGetHashData)(void* decoder);
-typedef void (*SubGhzGetString)(void* decoder, FuriString* output);
+typedef void (*SubGhzGetString)(void* decoder, FurryString* output);
 
 // Encoder specific
 typedef void (*SubGhzEncoderStop)(void* encoder);

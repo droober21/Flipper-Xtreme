@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <gui/scene_manager.h>
 #include <gui/view_stack.h>
 #include <stdint.h>
@@ -24,22 +24,22 @@ typedef struct {
 } DesktopScenePinInputState;
 
 static void desktop_scene_locked_light_red(bool value) {
-    NotificationApp* app = furi_record_open(RECORD_NOTIFICATION);
+    NotificationApp* app = furry_record_open(RECORD_NOTIFICATION);
     if(value) {
         notification_message(app, &sequence_set_only_red_255);
     } else {
         notification_message(app, &sequence_reset_red);
     }
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
 }
 
 static void
     desktop_scene_pin_input_set_timer(Desktop* desktop, bool enable, TickType_t new_period) {
-    furi_assert(desktop);
+    furry_assert(desktop);
 
     DesktopScenePinInputState* state = (DesktopScenePinInputState*)scene_manager_get_scene_state(
         desktop->scene_manager, DesktopScenePinInput);
-    furi_assert(state);
+    furry_assert(state);
     if(enable) {
         xTimerChangePeriod(state->timer, new_period, portMAX_DELAY);
     } else {
@@ -150,7 +150,7 @@ void desktop_scene_pin_input_on_exit(void* context) {
         desktop->scene_manager, DesktopScenePinInput);
     xTimerStop(state->timer, portMAX_DELAY);
     while(xTimerIsTimerActive(state->timer)) {
-        furi_delay_tick(1);
+        furry_delay_tick(1);
     }
     xTimerDelete(state->timer, portMAX_DELAY);
     free(state);

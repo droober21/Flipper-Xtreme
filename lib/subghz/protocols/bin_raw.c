@@ -25,10 +25,10 @@
 //#define BIN_RAW_DEBUG
 
 #ifdef BIN_RAW_DEBUG
-#define bin_raw_debug(...) FURI_LOG_RAW_D(__VA_ARGS__)
+#define bin_raw_debug(...) FURRY_LOG_RAW_D(__VA_ARGS__)
 #define bin_raw_debug_tag(tag, ...)                \
-    FURI_LOG_RAW_D("\033[0;32m[" tag "]\033[0m "); \
-    FURI_LOG_RAW_D(__VA_ARGS__)
+    FURRY_LOG_RAW_D("\033[0;32m[" tag "]\033[0m "); \
+    FURRY_LOG_RAW_D(__VA_ARGS__)
 #else
 #define bin_raw_debug(...)
 #define bin_raw_debug_tag(...)
@@ -150,7 +150,7 @@ void* subghz_protocol_encoder_bin_raw_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_encoder_bin_raw_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderBinRAW* instance = context;
     free(instance->encoder.upload);
     free(instance->data);
@@ -163,7 +163,7 @@ void subghz_protocol_encoder_bin_raw_free(void* context) {
  * @return true On success
  */
 static bool subghz_protocol_encoder_bin_raw_get_upload(SubGhzProtocolEncoderBinRAW* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     //we glue all the pieces of the package into 1 long sequence with left alignment,
     //in the uploaded data we have right alignment.
@@ -221,7 +221,7 @@ static bool subghz_protocol_encoder_bin_raw_get_upload(SubGhzProtocolEncoderBinR
 
 SubGhzProtocolStatus
     subghz_protocol_encoder_bin_raw_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolEncoderBinRAW* instance = context;
 
     SubGhzProtocolStatus res = SubGhzProtocolStatusError;
@@ -229,12 +229,12 @@ SubGhzProtocolStatus
 
     do {
         if(!flipper_format_rewind(flipper_format)) {
-            FURI_LOG_E(TAG, "Rewind error");
+            FURRY_LOG_E(TAG, "Rewind error");
             res = SubGhzProtocolStatusErrorParserOthers;
             break;
         }
         if(!flipper_format_read_uint32(flipper_format, "Bit", (uint32_t*)&temp_data, 1)) {
-            FURI_LOG_E(TAG, "Missing Bit");
+            FURRY_LOG_E(TAG, "Missing Bit");
             res = SubGhzProtocolStatusErrorParserBitCount;
             break;
         }
@@ -242,7 +242,7 @@ SubGhzProtocolStatus
         instance->generic.data_count_bit = (uint16_t)temp_data;
 
         if(!flipper_format_read_uint32(flipper_format, "TE", (uint32_t*)&instance->te, 1)) {
-            FURI_LOG_E(TAG, "Missing TE");
+            FURRY_LOG_E(TAG, "Missing TE");
             res = SubGhzProtocolStatusErrorParserTe;
             break;
         }
@@ -254,13 +254,13 @@ SubGhzProtocolStatus
         memset(instance->data_markup, 0x00, BIN_RAW_MAX_MARKUP_COUNT * sizeof(BinRAW_Markup));
         while(flipper_format_read_uint32(flipper_format, "Bit_RAW", (uint32_t*)&temp_data, 1)) {
             if(ind >= BIN_RAW_MAX_MARKUP_COUNT) {
-                FURI_LOG_E(TAG, "Markup overflow");
+                FURRY_LOG_E(TAG, "Markup overflow");
                 res = SubGhzProtocolStatusErrorParserOthers;
                 break;
             }
             byte_count += subghz_protocol_bin_raw_get_full_byte(temp_data);
             if(byte_count > BIN_RAW_BUF_DATA_SIZE) {
-                FURI_LOG_E(TAG, "Receive buffer overflow");
+                FURRY_LOG_E(TAG, "Receive buffer overflow");
                 res = SubGhzProtocolStatusErrorParserOthers;
                 break;
             }
@@ -275,7 +275,7 @@ SubGhzProtocolStatus
                    instance->data + instance->data_markup[ind].byte_bias,
                    subghz_protocol_bin_raw_get_full_byte(temp_data))) {
                 instance->data_markup[ind].bit_count = 0;
-                FURI_LOG_E(TAG, "Missing Data_RAW");
+                FURRY_LOG_E(TAG, "Missing Data_RAW");
                 res = SubGhzProtocolStatusErrorParserOthers;
                 break;
             }
@@ -303,7 +303,7 @@ SubGhzProtocolStatus
         bin_raw_debug("\r\n\r\n");
 #endif
         if(!flipper_format_rewind(flipper_format)) {
-            FURI_LOG_E(TAG, "Rewind error");
+            FURRY_LOG_E(TAG, "Rewind error");
             res = SubGhzProtocolStatusErrorParserOthers;
             break;
         }
@@ -360,7 +360,7 @@ void* subghz_protocol_decoder_bin_raw_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_bin_raw_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderBinRAW* instance = context;
     free(instance->data_raw);
     free(instance->data);
@@ -368,7 +368,7 @@ void subghz_protocol_decoder_bin_raw_free(void* context) {
 }
 
 void subghz_protocol_decoder_bin_raw_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderBinRAW* instance = context;
 #ifdef BIN_RAW_DEBUG
     UNUSED(instance);
@@ -379,7 +379,7 @@ void subghz_protocol_decoder_bin_raw_reset(void* context) {
 }
 
 void subghz_protocol_decoder_bin_raw_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderBinRAW* instance = context;
 
     if(instance->decoder.parser_step == BinRAWDecoderStepWrite) {
@@ -882,7 +882,7 @@ static bool
 void subghz_protocol_decoder_bin_raw_data_input_rssi(
     SubGhzProtocolDecoderBinRAW* instance,
     float rssi) {
-    furi_assert(instance);
+    furry_assert(instance);
     switch(instance->decoder.parser_step) {
     case BinRAWDecoderStepReset:
 
@@ -961,7 +961,7 @@ void subghz_protocol_decoder_bin_raw_data_input_rssi(
 }
 
 uint8_t subghz_protocol_decoder_bin_raw_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderBinRAW* instance = context;
     return subghz_protocol_blocks_add_bytes(
         instance->data + instance->data_markup[0].byte_bias,
@@ -972,64 +972,64 @@ SubGhzProtocolStatus subghz_protocol_decoder_bin_raw_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderBinRAW* instance = context;
 
     SubGhzProtocolStatus res = SubGhzProtocolStatusError;
-    FuriString* temp_str;
-    temp_str = furi_string_alloc();
+    FurryString* temp_str;
+    temp_str = furry_string_alloc();
     do {
         stream_clean(flipper_format_get_raw_stream(flipper_format));
         if(!flipper_format_write_header_cstr(
                flipper_format, SUBGHZ_KEY_FILE_TYPE, SUBGHZ_KEY_FILE_VERSION)) {
-            FURI_LOG_E(TAG, "Unable to add header");
+            FURRY_LOG_E(TAG, "Unable to add header");
             res = SubGhzProtocolStatusErrorParserHeader;
             break;
         }
 
         if(!flipper_format_write_uint32(flipper_format, "Frequency", &preset->frequency, 1)) {
-            FURI_LOG_E(TAG, "Unable to add Frequency");
+            FURRY_LOG_E(TAG, "Unable to add Frequency");
             res = SubGhzProtocolStatusErrorParserFrequency;
             break;
         }
 
-        subghz_block_generic_get_preset_name(furi_string_get_cstr(preset->name), temp_str);
+        subghz_block_generic_get_preset_name(furry_string_get_cstr(preset->name), temp_str);
         if(!flipper_format_write_string_cstr(
-               flipper_format, "Preset", furi_string_get_cstr(temp_str))) {
-            FURI_LOG_E(TAG, "Unable to add Preset");
+               flipper_format, "Preset", furry_string_get_cstr(temp_str))) {
+            FURRY_LOG_E(TAG, "Unable to add Preset");
             res = SubGhzProtocolStatusErrorParserPreset;
             break;
         }
-        if(!strcmp(furi_string_get_cstr(temp_str), "FuriHalSubGhzPresetCustom")) {
+        if(!strcmp(furry_string_get_cstr(temp_str), "FurryHalSubGhzPresetCustom")) {
             if(!flipper_format_write_string_cstr(
                    flipper_format, "Custom_preset_module", "CC1101")) {
-                FURI_LOG_E(TAG, "Unable to add Custom_preset_module");
+                FURRY_LOG_E(TAG, "Unable to add Custom_preset_module");
                 res = SubGhzProtocolStatusErrorParserCustomPreset;
                 break;
             }
             if(!flipper_format_write_hex(
                    flipper_format, "Custom_preset_data", preset->data, preset->data_size)) {
-                FURI_LOG_E(TAG, "Unable to add Custom_preset_data");
+                FURRY_LOG_E(TAG, "Unable to add Custom_preset_data");
                 res = SubGhzProtocolStatusErrorParserCustomPreset;
                 break;
             }
         }
         if(!flipper_format_write_string_cstr(
                flipper_format, "Protocol", instance->generic.protocol_name)) {
-            FURI_LOG_E(TAG, "Unable to add Protocol");
+            FURRY_LOG_E(TAG, "Unable to add Protocol");
             res = SubGhzProtocolStatusErrorParserProtocolName;
             break;
         }
 
         uint32_t temp = instance->generic.data_count_bit;
         if(!flipper_format_write_uint32(flipper_format, "Bit", &temp, 1)) {
-            FURI_LOG_E(TAG, "Unable to add Bit");
+            FURRY_LOG_E(TAG, "Unable to add Bit");
             res = SubGhzProtocolStatusErrorParserBitCount;
             break;
         }
 
         if(!flipper_format_write_uint32(flipper_format, "TE", &instance->te, 1)) {
-            FURI_LOG_E(TAG, "Unable to add TE");
+            FURRY_LOG_E(TAG, "Unable to add TE");
             res = SubGhzProtocolStatusErrorParserTe;
             break;
         }
@@ -1038,7 +1038,7 @@ SubGhzProtocolStatus subghz_protocol_decoder_bin_raw_serialize(
         while((i < BIN_RAW_MAX_MARKUP_COUNT) && (instance->data_markup[i].bit_count != 0)) {
             temp = instance->data_markup[i].bit_count;
             if(!flipper_format_write_uint32(flipper_format, "Bit_RAW", &temp, 1)) {
-                FURI_LOG_E(TAG, "Bit_RAW");
+                FURRY_LOG_E(TAG, "Bit_RAW");
                 res = SubGhzProtocolStatusErrorParserOthers;
                 break;
             }
@@ -1047,7 +1047,7 @@ SubGhzProtocolStatus subghz_protocol_decoder_bin_raw_serialize(
                    "Data_RAW",
                    instance->data + instance->data_markup[i].byte_bias,
                    subghz_protocol_bin_raw_get_full_byte(instance->data_markup[i].bit_count))) {
-                FURI_LOG_E(TAG, "Unable to add Data_RAW");
+                FURRY_LOG_E(TAG, "Unable to add Data_RAW");
                 res = SubGhzProtocolStatusErrorParserOthers;
                 break;
             }
@@ -1056,13 +1056,13 @@ SubGhzProtocolStatus subghz_protocol_decoder_bin_raw_serialize(
 
         res = SubGhzProtocolStatusOk;
     } while(false);
-    furi_string_free(temp_str);
+    furry_string_free(temp_str);
     return res;
 }
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_bin_raw_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderBinRAW* instance = context;
 
     SubGhzProtocolStatus res = SubGhzProtocolStatusError;
@@ -1070,12 +1070,12 @@ SubGhzProtocolStatus
 
     do {
         if(!flipper_format_rewind(flipper_format)) {
-            FURI_LOG_E(TAG, "Rewind error");
+            FURRY_LOG_E(TAG, "Rewind error");
             res = SubGhzProtocolStatusErrorParserOthers;
             break;
         }
         if(!flipper_format_read_uint32(flipper_format, "Bit", (uint32_t*)&temp_data, 1)) {
-            FURI_LOG_E(TAG, "Missing Bit");
+            FURRY_LOG_E(TAG, "Missing Bit");
             res = SubGhzProtocolStatusErrorParserBitCount;
             break;
         }
@@ -1083,7 +1083,7 @@ SubGhzProtocolStatus
         instance->generic.data_count_bit = (uint16_t)temp_data;
 
         if(!flipper_format_read_uint32(flipper_format, "TE", (uint32_t*)&instance->te, 1)) {
-            FURI_LOG_E(TAG, "Missing TE");
+            FURRY_LOG_E(TAG, "Missing TE");
             res = SubGhzProtocolStatusErrorParserTe;
             break;
         }
@@ -1095,13 +1095,13 @@ SubGhzProtocolStatus
         memset(instance->data_markup, 0x00, BIN_RAW_MAX_MARKUP_COUNT * sizeof(BinRAW_Markup));
         while(flipper_format_read_uint32(flipper_format, "Bit_RAW", (uint32_t*)&temp_data, 1)) {
             if(ind >= BIN_RAW_MAX_MARKUP_COUNT) {
-                FURI_LOG_E(TAG, "Markup overflow");
+                FURRY_LOG_E(TAG, "Markup overflow");
                 res = SubGhzProtocolStatusErrorParserOthers;
                 break;
             }
             byte_count += subghz_protocol_bin_raw_get_full_byte(temp_data);
             if(byte_count > BIN_RAW_BUF_DATA_SIZE) {
-                FURI_LOG_E(TAG, "Receive buffer overflow");
+                FURRY_LOG_E(TAG, "Receive buffer overflow");
                 res = SubGhzProtocolStatusErrorParserOthers;
                 break;
             }
@@ -1116,7 +1116,7 @@ SubGhzProtocolStatus
                    instance->data + instance->data_markup[ind].byte_bias,
                    subghz_protocol_bin_raw_get_full_byte(temp_data))) {
                 instance->data_markup[ind].bit_count = 0;
-                FURI_LOG_E(TAG, "Missing Data_RAW");
+                FURRY_LOG_E(TAG, "Missing Data_RAW");
                 res = SubGhzProtocolStatusErrorParserOthers;
                 break;
             }
@@ -1129,10 +1129,10 @@ SubGhzProtocolStatus
     return res;
 }
 
-void subghz_protocol_decoder_bin_raw_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_bin_raw_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderBinRAW* instance = context;
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %dbit\r\n"
         "Key:",
@@ -1141,8 +1141,8 @@ void subghz_protocol_decoder_bin_raw_get_string(void* context, FuriString* outpu
 
     uint16_t byte_count = subghz_protocol_bin_raw_get_full_byte(instance->generic.data_count_bit);
     for(size_t i = 0; (byte_count < 36 ? i < byte_count : i < 36); i++) {
-        furi_string_cat_printf(output, "%02X", instance->data[i]);
+        furry_string_cat_printf(output, "%02X", instance->data[i]);
     }
 
-    furi_string_cat_printf(output, "\r\nTe:%luus\r\n", instance->te);
+    furry_string_cat_printf(output, "\r\nTe:%luus\r\n", instance->te);
 }

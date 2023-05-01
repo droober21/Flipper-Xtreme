@@ -30,20 +30,20 @@ void picopass_scene_save_name_on_enter(void* context) {
         PICOPASS_DEV_NAME_MAX_LEN,
         dev_name_empty);
 
-    FuriString* folder_path;
-    folder_path = furi_string_alloc_set(STORAGE_APP_DATA_PATH_PREFIX);
+    FurryString* folder_path;
+    folder_path = furry_string_alloc_set(STORAGE_APP_DATA_PATH_PREFIX);
 
-    if(furi_string_end_with(picopass->dev->load_path, PICOPASS_APP_EXTENSION)) {
-        path_extract_dirname(furi_string_get_cstr(picopass->dev->load_path), folder_path);
+    if(furry_string_end_with(picopass->dev->load_path, PICOPASS_APP_EXTENSION)) {
+        path_extract_dirname(furry_string_get_cstr(picopass->dev->load_path), folder_path);
     }
 
     ValidatorIsFile* validator_is_file = validator_is_file_alloc_init(
-        furi_string_get_cstr(folder_path), PICOPASS_APP_EXTENSION, picopass->dev->dev_name);
+        furry_string_get_cstr(folder_path), PICOPASS_APP_EXTENSION, picopass->dev->dev_name);
     text_input_set_validator(text_input, validator_is_file_callback, validator_is_file);
 
     view_dispatcher_switch_to_view(picopass->view_dispatcher, PicopassViewTextInput);
 
-    furi_string_free(folder_path);
+    furry_string_free(folder_path);
 }
 
 bool picopass_scene_save_name_on_event(void* context, SceneManagerEvent event) {

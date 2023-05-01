@@ -1,5 +1,5 @@
 #include "../file_browser_app_i.h"
-#include <furi.h>
+#include <furry.h>
 
 #define DEFAULT_PATH "/"
 #define EXTENSION "*"
@@ -19,7 +19,7 @@ bool file_browser_scene_browser_on_event(void* context, SceneManagerEvent event)
 
 static void file_browser_callback(void* context) {
     FileBrowserApp* app = context;
-    furi_assert(app);
+    furry_assert(app);
     view_dispatcher_send_custom_event(app->view_dispatcher, SceneManagerEventTypeCustom);
 }
 

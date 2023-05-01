@@ -2,7 +2,7 @@
 
 #include "archive.h"
 #include <stdint.h>
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui_i.h>
 #include <gui/view_dispatcher.h>
 #include <gui/scene_manager.h>
@@ -34,9 +34,9 @@ struct ArchiveApp {
     Widget* widget;
     DialogsApp* dialogs;
     Loading* loading;
-    FuriPubSubSubscription* loader_stop_subscription;
+    FurryPubSubSubscription* loader_stop_subscription;
 
-    FuriString* fav_move_str;
+    FurryString* fav_move_str;
     char text_store[MAX_NAME_LEN];
     char file_extension[MAX_EXT_LEN + 1];
 };

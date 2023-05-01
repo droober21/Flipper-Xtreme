@@ -4,7 +4,7 @@ void ibutton_scene_add_type_on_enter(void* context) {
     iButton* ibutton = context;
     Submenu* submenu = ibutton->submenu;
 
-    FuriString* tmp = furi_string_alloc();
+    FurryString* tmp = furry_string_alloc();
 
     for(uint32_t protocol_id = 0; protocol_id < ibutton_protocols_get_protocol_count();
         ++protocol_id) {
@@ -13,18 +13,18 @@ void ibutton_scene_add_type_on_enter(void* context) {
                 ibutton_protocols_get_name(ibutton->protocols, protocol_id)) != 0) &&
            (strcmp(ibutton_protocols_get_manufacturer(ibutton->protocols, protocol_id), "N/A") !=
             0)) {
-            furi_string_printf(
+            furry_string_printf(
                 tmp,
                 "%s %s",
                 ibutton_protocols_get_manufacturer(ibutton->protocols, protocol_id),
                 ibutton_protocols_get_name(ibutton->protocols, protocol_id));
         } else {
-            furi_string_printf(
+            furry_string_printf(
                 tmp, "%s", ibutton_protocols_get_name(ibutton->protocols, protocol_id));
         }
 
         submenu_add_item(
-            submenu, furi_string_get_cstr(tmp), protocol_id, ibutton_submenu_callback, context);
+            submenu, furry_string_get_cstr(tmp), protocol_id, ibutton_submenu_callback, context);
     }
 
     const uint32_t prev_protocol_id =
@@ -32,7 +32,7 @@ void ibutton_scene_add_type_on_enter(void* context) {
     submenu_set_selected_item(submenu, prev_protocol_id);
 
     view_dispatcher_switch_to_view(ibutton->view_dispatcher, iButtonViewSubmenu);
-    furi_string_free(tmp);
+    furry_string_free(tmp);
 }
 
 bool ibutton_scene_add_type_on_event(void* context, SceneManagerEvent event) {

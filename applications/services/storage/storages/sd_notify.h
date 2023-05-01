@@ -1,5 +1,5 @@
 #pragma once
-#include <furi.h>
+#include <furry.h>
 #include <notification/notification_messages.h>
 
 #ifdef __cplusplus

@@ -104,13 +104,13 @@ void* ws_protocol_decoder_oregon2_alloc(SubGhzEnvironment* environment) {
 }
 
 void ws_protocol_decoder_oregon2_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderOregon2* instance = context;
     free(instance);
 }
 
 void ws_protocol_decoder_oregon2_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderOregon2* instance = context;
     instance->decoder.parser_step = Oregon2DecoderStepReset;
     instance->decoder.decode_data = 0UL;
@@ -204,7 +204,7 @@ static void ws_oregon2_decode_var_data(WSBlockGeneric* ws_b, uint16_t sensor_id,
 }
 
 void ws_protocol_decoder_oregon2_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderOregon2* instance = context;
     // oregon v2.1 signal is inverted
     ManchesterEvent event = level_and_duration_to_event(!level, duration);
@@ -296,7 +296,7 @@ void ws_protocol_decoder_oregon2_feed(void* context, bool level, uint32_t durati
 }
 
 uint8_t ws_protocol_decoder_oregon2_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderOregon2* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -306,14 +306,14 @@ SubGhzProtocolStatus ws_protocol_decoder_oregon2_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderOregon2* instance = context;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
     ret = ws_block_generic_serialize(&instance->generic, flipper_format, preset);
     if(ret != SubGhzProtocolStatusOk) return ret;
     uint32_t temp = instance->var_bits;
     if(!flipper_format_write_uint32(flipper_format, "VarBits", &temp, 1)) {
-        FURI_LOG_E(TAG, "Error adding VarBits");
+        FURRY_LOG_E(TAG, "Error adding VarBits");
         return SubGhzProtocolStatusErrorParserOthers;
     }
     if(!flipper_format_write_hex(
@@ -321,7 +321,7 @@ SubGhzProtocolStatus ws_protocol_decoder_oregon2_serialize(
            "VarData",
            (const uint8_t*)&instance->var_data,
            sizeof(instance->var_data))) {
-        FURI_LOG_E(TAG, "Error adding VarData");
+        FURRY_LOG_E(TAG, "Error adding VarData");
         return SubGhzProtocolStatusErrorParserOthers;
     }
     return ret;
@@ -329,7 +329,7 @@ SubGhzProtocolStatus ws_protocol_decoder_oregon2_serialize(
 
 SubGhzProtocolStatus
     ws_protocol_decoder_oregon2_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderOregon2* instance = context;
     uint32_t temp_data;
     SubGhzProtocolStatus ret = SubGhzProtocolStatusError;
@@ -339,7 +339,7 @@ SubGhzProtocolStatus
             break;
         }
         if(!flipper_format_read_uint32(flipper_format, "VarBits", &temp_data, 1)) {
-            FURI_LOG_E(TAG, "Missing VarLen");
+            FURRY_LOG_E(TAG, "Missing VarLen");
             ret = SubGhzProtocolStatusErrorParserOthers;
             break;
         }
@@ -349,12 +349,12 @@ SubGhzProtocolStatus
                "VarData",
                (uint8_t*)&instance->var_data,
                sizeof(instance->var_data))) { //-V1051
-            FURI_LOG_E(TAG, "Missing VarData");
+            FURRY_LOG_E(TAG, "Missing VarData");
             ret = SubGhzProtocolStatusErrorParserOthers;
             break;
         }
         if(instance->generic.data_count_bit != ws_oregon2_const.min_count_bit_for_found) {
-            FURI_LOG_E(TAG, "Wrong number of bits in key: %d", instance->generic.data_count_bit);
+            FURRY_LOG_E(TAG, "Wrong number of bits in key: %d", instance->generic.data_count_bit);
             ret = SubGhzProtocolStatusErrorValueBitCount;
             break;
         }
@@ -362,7 +362,7 @@ SubGhzProtocolStatus
     return ret;
 }
 
-static void oregon2_append_check_sum(uint32_t fix_data, uint32_t var_data, FuriString* output) {
+static void oregon2_append_check_sum(uint32_t fix_data, uint32_t var_data, FurryString* output) {
     uint8_t sum = fix_data & 0xF;
     uint8_t ref_sum = var_data & 0xFF;
     var_data >>= 8;
@@ -376,15 +376,15 @@ static void oregon2_append_check_sum(uint32_t fix_data, uint32_t var_data, FuriS
     // swap calculated sum nibbles
     sum = (((sum >> 4) & 0xF) | (sum << 4)) & 0xFF;
     if(sum == ref_sum)
-        furi_string_cat_printf(output, "Sum ok: 0x%hhX", ref_sum);
+        furry_string_cat_printf(output, "Sum ok: 0x%hhX", ref_sum);
     else
-        furi_string_cat_printf(output, "Sum err: 0x%hhX vs 0x%hhX", ref_sum, sum);
+        furry_string_cat_printf(output, "Sum err: 0x%hhX vs 0x%hhX", ref_sum, sum);
 }
 
-void ws_protocol_decoder_oregon2_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void ws_protocol_decoder_oregon2_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     WSProtocolDecoderOregon2* instance = context;
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s\r\n"
         "ID: 0x%04lX, ch: %d, bat: %d, rc: 0x%02lX\r\n",
@@ -395,7 +395,7 @@ void ws_protocol_decoder_oregon2_get_string(void* context, FuriString* output) {
         (uint32_t)(instance->generic.data >> 4) & 0xFF);
 
     if(instance->var_bits > 0) {
-        furi_string_cat_printf(
+        furry_string_cat_printf(
             output,
             "Temp:%d.%d C Hum:%d%%",
             (int16_t)instance->generic.temp,

@@ -72,22 +72,22 @@ static void subghz_scene_receiver_config_set_debug_counter(VariableItem* item) {
 
     switch(index) {
     case 0:
-        furi_hal_subghz_set_rolling_counter_mult(1);
+        furry_hal_subghz_set_rolling_counter_mult(1);
         break;
     case 1:
-        furi_hal_subghz_set_rolling_counter_mult(2);
+        furry_hal_subghz_set_rolling_counter_mult(2);
         break;
     case 2:
-        furi_hal_subghz_set_rolling_counter_mult(3);
+        furry_hal_subghz_set_rolling_counter_mult(3);
         break;
     case 3:
-        furi_hal_subghz_set_rolling_counter_mult(4);
+        furry_hal_subghz_set_rolling_counter_mult(4);
         break;
     case 4:
-        furi_hal_subghz_set_rolling_counter_mult(5);
+        furry_hal_subghz_set_rolling_counter_mult(5);
         break;
     case 5:
-        furi_hal_subghz_set_rolling_counter_mult(10);
+        furry_hal_subghz_set_rolling_counter_mult(10);
         break;
     default:
         break;
@@ -100,11 +100,11 @@ static void subghz_scene_receiver_config_set_ext_mod_power(VariableItem* item) {
 
     variable_item_set_current_value_text(item, ext_mod_power_text[index]);
 
-    furi_hal_subghz_set_external_power_disable(index == 1);
+    furry_hal_subghz_set_external_power_disable(index == 1);
     if(index == 1) {
-        furi_hal_subghz_disable_ext_power();
+        furry_hal_subghz_disable_ext_power();
     } else {
-        furi_hal_subghz_enable_ext_power();
+        furry_hal_subghz_enable_ext_power();
     }
 
     subghz->last_settings->external_module_power_5v_disable = index == 1;
@@ -117,7 +117,7 @@ static void subghz_scene_receiver_config_set_timestamp_file_names(VariableItem* 
 
     variable_item_set_current_value_text(item, timestamp_names_text[index]);
 
-    furi_hal_subghz_set_timestamp_file_names((index == 1));
+    furry_hal_subghz_set_timestamp_file_names((index == 1));
     subghz->last_settings->timestamp_file_names = (index == 1);
     subghz_last_settings_save(subghz->last_settings);
 }
@@ -127,7 +127,7 @@ void subghz_scene_ext_module_settings_on_enter(void* context) {
 
     VariableItemList* variable_item_list = subghz->variable_item_list;
 
-    value_index_exm = furi_hal_subghz.radio_type;
+    value_index_exm = furry_hal_subghz.radio_type;
     VariableItem* item = variable_item_list_add(
         variable_item_list, "Module", EXT_MODULES_COUNT, subghz_scene_ext_module_changed, subghz);
 
@@ -143,7 +143,7 @@ void subghz_scene_ext_module_settings_on_enter(void* context) {
         EXT_MOD_POWER_COUNT,
         subghz_scene_receiver_config_set_ext_mod_power,
         subghz);
-    value_index_pwr = furi_hal_subghz_get_external_power_disable();
+    value_index_pwr = furry_hal_subghz_get_external_power_disable();
     variable_item_set_current_value_index(item, value_index_pwr);
     variable_item_set_current_value_text(item, ext_mod_power_text[value_index_pwr]);
 
@@ -153,7 +153,7 @@ void subghz_scene_ext_module_settings_on_enter(void* context) {
         TIMESTAMP_NAMES_COUNT,
         subghz_scene_receiver_config_set_timestamp_file_names,
         subghz);
-    value_index_time = furi_hal_subghz_get_timestamp_file_names();
+    value_index_time = furry_hal_subghz_get_timestamp_file_names();
     variable_item_set_current_value_index(item, value_index_time);
     variable_item_set_current_value_text(item, timestamp_names_text[value_index_time]);
 
@@ -167,7 +167,7 @@ void subghz_scene_ext_module_settings_on_enter(void* context) {
     variable_item_set_current_value_index(item, value_index_dpin);
     variable_item_set_current_value_text(item, debug_pin_text[value_index_dpin]);
     variable_item_set_locked(
-        item, !furi_hal_rtc_is_flag_set(FuriHalRtcFlagDebug), "Enable\nDebug!");
+        item, !furry_hal_rtc_is_flag_set(FurryHalRtcFlagDebug), "Enable\nDebug!");
 
     item = variable_item_list_add(
         subghz->variable_item_list,
@@ -175,7 +175,7 @@ void subghz_scene_ext_module_settings_on_enter(void* context) {
         DEBUG_COUNTER_COUNT,
         subghz_scene_receiver_config_set_debug_counter,
         subghz);
-    switch(furi_hal_subghz_get_rolling_counter_mult()) {
+    switch(furry_hal_subghz_get_rolling_counter_mult()) {
     case 1:
         value_index_cnt = 0;
         break;
@@ -200,7 +200,7 @@ void subghz_scene_ext_module_settings_on_enter(void* context) {
     variable_item_set_current_value_index(item, value_index_cnt);
     variable_item_set_current_value_text(item, debug_counter_text[value_index_cnt]);
     variable_item_set_locked(
-        item, !furi_hal_rtc_is_flag_set(FuriHalRtcFlagDebug), "Enable\nDebug!");
+        item, !furry_hal_rtc_is_flag_set(FurryHalRtcFlagDebug), "Enable\nDebug!");
 
     view_dispatcher_switch_to_view(subghz->view_dispatcher, SubGhzViewIdVariableItemList);
 }
@@ -211,17 +211,17 @@ bool subghz_scene_ext_module_settings_on_event(void* context, SceneManagerEvent 
     UNUSED(event);
 
     // Set selected radio module
-    furi_hal_subghz_select_radio_type(value_index_exm);
-    furi_hal_subghz_init_radio_type(value_index_exm);
+    furry_hal_subghz_select_radio_type(value_index_exm);
+    furry_hal_subghz_init_radio_type(value_index_exm);
 
-    furi_hal_subghz_enable_ext_power();
+    furry_hal_subghz_enable_ext_power();
 
     // Check if module is present, if no -> show error
-    if(!furi_hal_subghz_check_radio()) {
+    if(!furry_hal_subghz_check_radio()) {
         value_index_exm = 0;
-        furi_hal_subghz_select_radio_type(SubGhzRadioInternal);
-        furi_hal_subghz_init_radio_type(SubGhzRadioInternal);
-        furi_string_set(subghz->error_str, "Please connect\nexternal radio");
+        furry_hal_subghz_select_radio_type(SubGhzRadioInternal);
+        furry_hal_subghz_init_radio_type(SubGhzRadioInternal);
+        furry_string_set(subghz->error_str, "Please connect\nexternal radio");
         scene_manager_next_scene(subghz->scene_manager, SubGhzSceneShowErrorSub);
     }
 

@@ -29,7 +29,7 @@ static bool decode(uint8_t* bits, uint32_t numbytes, uint32_t numbits, ProtoView
                                "01011010";
     uint64_t off = bitmap_seek_bits(bits, numbytes, 0, numbits, sync_pattern);
     if(off == BITMAP_SEEK_NOT_FOUND) return false;
-    FURI_LOG_E(TAG, "Schrader TPMS gap+preamble found");
+    FURRY_LOG_E(TAG, "Schrader TPMS gap+preamble found");
 
     info->start_off = off;
     off += 10; /* Skip just the long pulse and the first 3 bits of sync, so
@@ -40,14 +40,14 @@ static bool decode(uint8_t* bits, uint32_t numbytes, uint32_t numbits, ProtoView
     uint8_t id[4];
     uint32_t decoded = convert_from_line_code(
         raw, sizeof(raw), bits, numbytes, off, "01", "10"); /* Manchester code. */
-    FURI_LOG_E(TAG, "Schrader TPMS decoded bits: %lu", decoded);
+    FURRY_LOG_E(TAG, "Schrader TPMS decoded bits: %lu", decoded);
 
     if(decoded < 64) return false; /* Require the full 8 bytes. */
 
     raw[0] |= 0xf0; // Fix the preamble nibble for checksum computation.
     uint8_t cksum = crc8(raw, sizeof(raw) - 1, 0xf0, 0x7);
     if(cksum != raw[7]) {
-        FURI_LOG_E(TAG, "Schrader TPMS checksum mismatch");
+        FURRY_LOG_E(TAG, "Schrader TPMS checksum mismatch");
         return false;
     }
 

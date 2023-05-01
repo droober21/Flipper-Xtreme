@@ -4,7 +4,7 @@ void nfc_scene_nfca_read_success_widget_callback(
     GuiButtonType result,
     InputType type,
     void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Nfc* nfc = context;
 
     if(type == InputTypeShort) {
@@ -16,26 +16,26 @@ void nfc_scene_nfca_read_success_on_enter(void* context) {
     Nfc* nfc = context;
 
     // Setup view
-    FuriHalNfcDevData* data = &nfc->dev->dev_data.nfc_data;
+    FurryHalNfcDevData* data = &nfc->dev->dev_data.nfc_data;
     Widget* widget = nfc->widget;
 
-    FuriString* temp_str;
-    temp_str = furi_string_alloc_set("\e#Unknown ISO tag\n");
+    FurryString* temp_str;
+    temp_str = furry_string_alloc_set("\e#Unknown ISO tag\n");
 
     notification_message_block(nfc->notifications, &sequence_set_green_255);
 
-    char iso_type = FURI_BIT(data->a_data.sak, 5) ? '4' : '3';
-    furi_string_cat_printf(temp_str, "ISO 14443-%c (NFC-A)\n", iso_type);
-    furi_string_cat_printf(temp_str, "UID:");
+    char iso_type = FURRY_BIT(data->a_data.sak, 5) ? '4' : '3';
+    furry_string_cat_printf(temp_str, "ISO 14443-%c (NFC-A)\n", iso_type);
+    furry_string_cat_printf(temp_str, "UID:");
     for(size_t i = 0; i < data->uid_len; i++) {
-        furi_string_cat_printf(temp_str, " %02X", data->uid[i]);
+        furry_string_cat_printf(temp_str, " %02X", data->uid[i]);
     }
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         temp_str, "\nATQA: %02X %02X ", data->a_data.atqa[1], data->a_data.atqa[0]);
-    furi_string_cat_printf(temp_str, " SAK: %02X", data->a_data.sak);
+    furry_string_cat_printf(temp_str, " SAK: %02X", data->a_data.sak);
 
-    widget_add_text_scroll_element(widget, 0, 0, 128, 52, furi_string_get_cstr(temp_str));
-    furi_string_free(temp_str);
+    widget_add_text_scroll_element(widget, 0, 0, 128, 52, furry_string_get_cstr(temp_str));
+    furry_string_free(temp_str);
 
     widget_add_button_element(
         widget, GuiButtonTypeLeft, "Retry", nfc_scene_nfca_read_success_widget_callback, nfc);

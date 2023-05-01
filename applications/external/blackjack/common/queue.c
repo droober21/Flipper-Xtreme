@@ -8,7 +8,7 @@ void render_queue(const QueueState* queue_state, const void* app_state, Canvas* 
 bool run_queue(QueueState* queue_state, void* app_state) {
     if(queue_state->current != NULL) {
         queue_state->running = true;
-        if((furi_get_tick() - queue_state->start) >= queue_state->current->duration)
+        if((furry_get_tick() - queue_state->start) >= queue_state->current->duration)
             dequeue(queue_state, app_state);
 
         return true;
@@ -23,7 +23,7 @@ void dequeue(QueueState* queue_state, void* app_state) {
     free(f);
     if(queue_state->current != NULL) {
         if(queue_state->current->start != NULL) queue_state->current->start(app_state);
-        queue_state->start = furi_get_tick();
+        queue_state->start = furry_get_tick();
     } else {
         queue_state->running = false;
     }
@@ -48,7 +48,7 @@ void enqueue(
     uint32_t duration) {
     QueueItem* next;
     if(queue_state->current == NULL) {
-        queue_state->start = furi_get_tick();
+        queue_state->start = furry_get_tick();
         queue_state->current = malloc(sizeof(QueueItem));
         next = queue_state->current;
         if(next->start != NULL) next->start(app_state);

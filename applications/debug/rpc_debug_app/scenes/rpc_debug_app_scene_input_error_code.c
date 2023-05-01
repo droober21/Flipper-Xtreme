@@ -2,14 +2,14 @@
 
 static bool rpc_debug_app_scene_input_error_code_validator_callback(
     const char* text,
-    FuriString* error,
+    FurryString* error,
     void* context) {
     UNUSED(context);
 
     for(; *text; ++text) {
         const char c = *text;
         if(c < '0' || c > '9') {
-            furi_string_printf(error, "%s", "Please enter\na number!");
+            furry_string_printf(error, "%s", "Please enter\na number!");
             return false;
         }
     }

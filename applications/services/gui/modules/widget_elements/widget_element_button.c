@@ -3,25 +3,25 @@
 
 typedef struct {
     GuiButtonType button_type;
-    FuriString* text;
+    FurryString* text;
     ButtonCallback callback;
     void* context;
 } GuiButtonModel;
 
 static void gui_button_draw(Canvas* canvas, WidgetElement* element) {
-    furi_assert(canvas);
-    furi_assert(element);
+    furry_assert(canvas);
+    furry_assert(element);
     GuiButtonModel* model = element->model;
 
     canvas_set_color(canvas, ColorBlack);
     canvas_set_font(canvas, FontSecondary);
 
     if(model->button_type == GuiButtonTypeLeft) {
-        elements_button_left(canvas, furi_string_get_cstr(model->text));
+        elements_button_left(canvas, furry_string_get_cstr(model->text));
     } else if(model->button_type == GuiButtonTypeRight) {
-        elements_button_right(canvas, furi_string_get_cstr(model->text));
+        elements_button_right(canvas, furry_string_get_cstr(model->text));
     } else if(model->button_type == GuiButtonTypeCenter) {
-        elements_button_center(canvas, furi_string_get_cstr(model->text));
+        elements_button_center(canvas, furry_string_get_cstr(model->text));
     }
 }
 
@@ -46,10 +46,10 @@ static bool gui_button_input(InputEvent* event, WidgetElement* element) {
 }
 
 static void gui_button_free(WidgetElement* gui_button) {
-    furi_assert(gui_button);
+    furry_assert(gui_button);
 
     GuiButtonModel* model = gui_button->model;
-    furi_string_free(model->text);
+    furry_string_free(model->text);
     free(gui_button->model);
     free(gui_button);
 }
@@ -64,7 +64,7 @@ WidgetElement* widget_element_button_create(
     model->button_type = button_type;
     model->callback = callback;
     model->context = context;
-    model->text = furi_string_alloc_set(text);
+    model->text = furry_string_alloc_set(text);
 
     // Allocate and init Element
     WidgetElement* gui_button = malloc(sizeof(WidgetElement));

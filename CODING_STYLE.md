@@ -56,14 +56,14 @@ Almost everything in flipper firmware is built around this concept.
 
 Examples:
 
-	FuriHalUsb
+	FurryHalUsb
 	Gui
 	SubGhzKeystore
 
 
 ### Functions are snake_case
 
-	furi_hal_usb_init
+	furry_hal_usb_init
 	gui_add_view_port
 	subghz_keystore_read
 

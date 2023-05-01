@@ -4,27 +4,27 @@ void dtmf_dolphin_speaker_init() {
     LL_TIM_InitTypeDef TIM_InitStruct = {0};
     TIM_InitStruct.Prescaler = DTMF_DOLPHIN_HAL_DMA_PRESCALER;
     TIM_InitStruct.Autoreload = DTMF_DOLPHIN_HAL_DMA_AUTORELOAD;
-    LL_TIM_Init(FURI_HAL_SPEAKER_TIMER, &TIM_InitStruct);
+    LL_TIM_Init(FURRY_HAL_SPEAKER_TIMER, &TIM_InitStruct);
 
     LL_TIM_OC_InitTypeDef TIM_OC_InitStruct = {0};
     TIM_OC_InitStruct.OCMode = LL_TIM_OCMODE_PWM1;
     TIM_OC_InitStruct.OCState = LL_TIM_OCSTATE_ENABLE;
     TIM_OC_InitStruct.CompareValue = 127;
-    LL_TIM_OC_Init(FURI_HAL_SPEAKER_TIMER, FURI_HAL_SPEAKER_CHANNEL, &TIM_OC_InitStruct);
+    LL_TIM_OC_Init(FURRY_HAL_SPEAKER_TIMER, FURRY_HAL_SPEAKER_CHANNEL, &TIM_OC_InitStruct);
 }
 
 void dtmf_dolphin_speaker_start() {
-    LL_TIM_EnableAllOutputs(FURI_HAL_SPEAKER_TIMER);
-    LL_TIM_EnableCounter(FURI_HAL_SPEAKER_TIMER);
+    LL_TIM_EnableAllOutputs(FURRY_HAL_SPEAKER_TIMER);
+    LL_TIM_EnableCounter(FURRY_HAL_SPEAKER_TIMER);
 }
 
 void dtmf_dolphin_speaker_stop() {
-    LL_TIM_DisableAllOutputs(FURI_HAL_SPEAKER_TIMER);
-    LL_TIM_DisableCounter(FURI_HAL_SPEAKER_TIMER);
+    LL_TIM_DisableAllOutputs(FURRY_HAL_SPEAKER_TIMER);
+    LL_TIM_DisableCounter(FURRY_HAL_SPEAKER_TIMER);
 }
 
 void dtmf_dolphin_dma_init(uint32_t address, size_t size) {
-    uint32_t dma_dst = (uint32_t) & (FURI_HAL_SPEAKER_TIMER->CCR1);
+    uint32_t dma_dst = (uint32_t) & (FURRY_HAL_SPEAKER_TIMER->CCR1);
 
     LL_DMA_ConfigAddresses(DMA_INSTANCE, address, dma_dst, LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
     LL_DMA_SetDataLength(DMA_INSTANCE, size);
@@ -44,7 +44,7 @@ void dtmf_dolphin_dma_init(uint32_t address, size_t size) {
 
 void dtmf_dolphin_dma_start() {
     LL_DMA_EnableChannel(DMA_INSTANCE);
-    LL_TIM_EnableDMAReq_UPDATE(FURI_HAL_SPEAKER_TIMER);
+    LL_TIM_EnableDMAReq_UPDATE(FURRY_HAL_SPEAKER_TIMER);
 }
 
 void dtmf_dolphin_dma_stop() {

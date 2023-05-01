@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <furi.h> // Core API
+#include <furry.h> // Core API
 
 #include "wii_anal.h"
 #include "wii_ec.h"
@@ -105,7 +105,7 @@ void classic_decode(wiiEC_t* const pec) {
 //+============================================================================ ========================================
 // Give each button a unique character identifier
 //
-void classic_msg(wiiEC_t* const pec, FuriMessageQueue* const queue) {
+void classic_msg(wiiEC_t* const pec, FurryMessageQueue* const queue) {
     ecDecClassic_t* new = &pec->dec[pec->decN].classic;
     ecDecClassic_t* old = &pec->dec[!pec->decN].classic;
 

@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <stdlib.h>
@@ -37,7 +37,7 @@ typedef struct {
 } PluginEvent;
 
 typedef struct {
-    FuriMutex* mutex;
+    FurryMutex* mutex;
     Player player;
     Entity entity[MAX_ENTITIES];
     StaticEntity static_entity[MAX_STATIC_ENTITIES];
@@ -644,7 +644,7 @@ void renderEntities(double view_height, Canvas* const canvas, PluginState* const
             uint8_t sprite;
             if(plugin_state->entity[i].state == S_ALERT) {
                 // walking
-                sprite = ((int)furi_get_tick() / 500) % 2;
+                sprite = ((int)furry_get_tick() / 500) % 2;
             } else if(plugin_state->entity[i].state == S_FIRING) {
                 // fireball
                 sprite = 2;
@@ -722,9 +722,9 @@ void renderEntities(double view_height, Canvas* const canvas, PluginState* const
 
 void renderGun(uint8_t gun_pos, double amount_jogging, Canvas* const canvas) {
     // jogging
-    char x = 48 + sin((double)furi_get_tick() * (double)JOGGING_SPEED) * 10 * amount_jogging;
+    char x = 48 + sin((double)furry_get_tick() * (double)JOGGING_SPEED) * 10 * amount_jogging;
     char y = RENDER_HEIGHT - gun_pos +
-             fabs(cos((double)furi_get_tick() * (double)JOGGING_SPEED)) * 8 * amount_jogging;
+             fabs(cos((double)furry_get_tick() * (double)JOGGING_SPEED)) * 8 * amount_jogging;
 
     if(gun_pos > GUN_SHOT_POS - 2) {
         // Gun fire
@@ -771,9 +771,9 @@ void loopIntro(Canvas* const canvas) {
 }
 
 static void render_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     PluginState* plugin_state = ctx;
-    furi_mutex_acquire(plugin_state->mutex, FuriWaitForever);
+    furry_mutex_acquire(plugin_state->mutex, FurryWaitForever);
     if(plugin_state->init) setupDisplay(canvas);
 
     canvas_set_font(canvas, FontPrimary);
@@ -797,18 +797,18 @@ static void render_callback(Canvas* const canvas, void* ctx) {
         break;
     }
     }
-    furi_mutex_release(plugin_state->mutex);
+    furry_mutex_release(plugin_state->mutex);
 }
 
-static void input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     PluginEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, 0);
+    furry_message_queue_put(event_queue, &event, 0);
 }
 
 static void doom_state_init(PluginState* const plugin_state) {
-    plugin_state->notify = furi_record_open(RECORD_NOTIFICATION);
+    plugin_state->notify = furry_record_open(RECORD_NOTIFICATION);
     plugin_state->num_entities = 0;
     plugin_state->num_static_entities = 0;
 
@@ -837,7 +837,7 @@ static void doom_state_init(PluginState* const plugin_state) {
         MUSIC_PLAYER_SEMITONE_HISTORY_SIZE);
     plugin_state->music_instance->model->volume = 2;
 
-    plugin_state->music_instance->model_mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    plugin_state->music_instance->model_mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     //plugin_state->music_instance->view_port = view_port_alloc();
 
     plugin_state->music_instance->worker = music_player_worker_alloc();
@@ -850,11 +850,11 @@ static void doom_state_init(PluginState* const plugin_state) {
 #endif
 }
 
-static void doom_game_update_timer_callback(FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void doom_game_update_timer_callback(FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     PluginEvent event = {.type = EventTypeTick};
-    furi_message_queue_put(event_queue, &event, 0);
+    furry_message_queue_put(event_queue, &event, 0);
 }
 
 static void doom_game_tick(PluginState* const plugin_state) {
@@ -915,7 +915,7 @@ static void doom_game_tick(PluginState* const plugin_state) {
                 //plugin_state->left = false;
             }
             plugin_state->view_height =
-                fabs(sin((double)furi_get_tick() * (double)JOGGING_SPEED)) * 6 *
+                fabs(sin((double)furry_get_tick() * (double)JOGGING_SPEED)) * 6 *
                 plugin_state->jogging;
 
             if(plugin_state->gun_pos > GUN_TARGET_POS) {
@@ -924,7 +924,7 @@ static void doom_game_tick(PluginState* const plugin_state) {
             } else if(plugin_state->gun_pos < GUN_TARGET_POS) {
                 plugin_state->gun_pos += 2;
             } else if(!plugin_state->gun_fired && plugin_state->fired) {
-                //furi_hal_speaker_start(20480 / 10, 0.45f);
+                //furry_hal_speaker_start(20480 / 10, 0.45f);
                 /*#ifdef SOUND
         music_player_worker_start(plugin_state->music_instance->worker);
 #endif*/
@@ -934,7 +934,7 @@ static void doom_game_tick(PluginState* const plugin_state) {
                 fire(plugin_state);
 
             } else if(plugin_state->gun_fired && !plugin_state->fired) {
-                //furi_hal_speaker_stop();
+                //furry_hal_speaker_stop();
                 plugin_state->gun_fired = false;
 
                 notification_message(plugin_state->notify, &sequence_short_sound);
@@ -964,27 +964,27 @@ static void doom_game_tick(PluginState* const plugin_state) {
 }
 
 int32_t doom_app() {
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(PluginEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(PluginEvent));
     PluginState* plugin_state = malloc(sizeof(PluginState));
     doom_state_init(plugin_state);
-    plugin_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    plugin_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!plugin_state->mutex) {
-        FURI_LOG_E("Doom_game", "cannot create mutex\r\n");
-        furi_record_close(RECORD_NOTIFICATION);
-        furi_message_queue_free(event_queue);
+        FURRY_LOG_E("Doom_game", "cannot create mutex\r\n");
+        furry_record_close(RECORD_NOTIFICATION);
+        furry_message_queue_free(event_queue);
         free(plugin_state);
         return 255;
     }
-    FuriTimer* timer =
-        furi_timer_alloc(doom_game_update_timer_callback, FuriTimerTypePeriodic, event_queue);
-    furi_timer_start(timer, furi_kernel_get_tick_frequency() / 12);
+    FurryTimer* timer =
+        furry_timer_alloc(doom_game_update_timer_callback, FurryTimerTypePeriodic, event_queue);
+    furry_timer_start(timer, furry_kernel_get_tick_frequency() / 12);
     // Set system callbacks
     ViewPort* view_port = view_port_alloc();
     view_port_draw_callback_set(view_port, render_callback, plugin_state);
     view_port_input_callback_set(view_port, input_callback, event_queue);
 
     // Open GUI and register view_port
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     //////////////////////////////////
@@ -996,21 +996,21 @@ int32_t doom_app() {
     music_player_worker_start(plugin_state->music_instance->worker);
 #endif
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 100);
-        furi_mutex_acquire(plugin_state->mutex, FuriWaitForever);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 100);
+        furry_mutex_acquire(plugin_state->mutex, FurryWaitForever);
 #ifdef SOUND
-        furi_check(
-            furi_mutex_acquire(plugin_state->music_instance->model_mutex, FuriWaitForever) ==
-            FuriStatusOk);
+        furry_check(
+            furry_mutex_acquire(plugin_state->music_instance->model_mutex, FurryWaitForever) ==
+            FurryStatusOk);
 #endif
-        if(event_status == FuriStatusOk) {
+        if(event_status == FurryStatusOk) {
             // press events
             if(event.type == EventTypeKey) {
                 if(event.input.key == InputKeyBack) {
                     processing = false;
 #ifdef SOUND
                     if(plugin_state->intro_sound) {
-                        furi_mutex_release(plugin_state->music_instance->model_mutex);
+                        furry_mutex_release(plugin_state->music_instance->model_mutex);
                         music_player_worker_stop(plugin_state->music_instance->worker);
                     }
 #endif
@@ -1021,7 +1021,7 @@ int32_t doom_app() {
                         plugin_state->scene = GAME_PLAY;
                         initializeLevel(sto_level_1, plugin_state);
 #ifdef SOUND
-                        furi_mutex_release(plugin_state->music_instance->model_mutex);
+                        furry_mutex_release(plugin_state->music_instance->model_mutex);
                         music_player_worker_stop(plugin_state->music_instance->worker);
                         plugin_state->intro_sound = false;
 #endif
@@ -1084,25 +1084,25 @@ int32_t doom_app() {
             }
         }
 #ifdef SOUND
-        furi_mutex_release(plugin_state->music_instance->model_mutex);
+        furry_mutex_release(plugin_state->music_instance->model_mutex);
 #endif
         view_port_update(view_port);
-        furi_mutex_release(plugin_state->mutex);
+        furry_mutex_release(plugin_state->mutex);
     }
 #ifdef SOUND
     music_player_worker_free(plugin_state->music_instance->worker);
-    furi_mutex_free(plugin_state->music_instance->model_mutex);
+    furry_mutex_free(plugin_state->music_instance->model_mutex);
     free(plugin_state->music_instance->model);
     free(plugin_state->music_instance);
 #endif
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_timer_free(timer);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_timer_free(timer);
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(view_port);
-    furi_mutex_free(plugin_state->mutex);
-    furi_message_queue_free(event_queue);
+    furry_mutex_free(plugin_state->mutex);
+    furry_message_queue_free(event_queue);
     free(plugin_state);
     return 0;
 }

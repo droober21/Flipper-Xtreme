@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include "wifi_marauder_validators.h"
 #include <storage/storage.h>
 
@@ -8,8 +8,8 @@ struct ValidatorIsFile {
     char* current_name;
 };
 
-bool validator_is_file_callback(const char* text, FuriString* error, void* context) {
-    furi_assert(context);
+bool validator_is_file_callback(const char* text, FurryString* error, void* context) {
+    furry_assert(context);
     ValidatorIsFile* instance = context;
 
     if(instance->current_name != NULL) {
@@ -19,17 +19,17 @@ bool validator_is_file_callback(const char* text, FuriString* error, void* conte
     }
 
     bool ret = true;
-    FuriString* path = furi_string_alloc_printf(
+    FurryString* path = furry_string_alloc_printf(
         "%s/%s%s", instance->app_path_folder, text, instance->app_extension);
-    Storage* storage = furi_record_open(RECORD_STORAGE);
-    if(storage_common_stat(storage, furi_string_get_cstr(path), NULL) == FSE_OK) {
+    Storage* storage = furry_record_open(RECORD_STORAGE);
+    if(storage_common_stat(storage, furry_string_get_cstr(path), NULL) == FSE_OK) {
         ret = false;
-        furi_string_printf(error, "This name\nexists!\nChoose\nanother one.");
+        furry_string_printf(error, "This name\nexists!\nChoose\nanother one.");
     } else {
         ret = true;
     }
-    furi_string_free(path);
-    furi_record_close(RECORD_STORAGE);
+    furry_string_free(path);
+    furry_record_close(RECORD_STORAGE);
 
     return ret;
 }
@@ -50,7 +50,7 @@ ValidatorIsFile* validator_is_file_alloc_init(
 }
 
 void validator_is_file_free(ValidatorIsFile* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     free(instance->app_path_folder);
     free(instance->current_name);
     free(instance);

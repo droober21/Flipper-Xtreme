@@ -3,27 +3,27 @@
 #define TAG "LocaleSrv"
 
 LocaleMeasurementUnits locale_get_measurement_unit(void) {
-    return (LocaleMeasurementUnits)furi_hal_rtc_get_locale_units();
+    return (LocaleMeasurementUnits)furry_hal_rtc_get_locale_units();
 }
 
 void locale_set_measurement_unit(LocaleMeasurementUnits format) {
-    furi_hal_rtc_set_locale_units((FuriHalRtcLocaleUnits)format);
+    furry_hal_rtc_set_locale_units((FurryHalRtcLocaleUnits)format);
 }
 
 LocaleTimeFormat locale_get_time_format(void) {
-    return (LocaleTimeFormat)furi_hal_rtc_get_locale_timeformat();
+    return (LocaleTimeFormat)furry_hal_rtc_get_locale_timeformat();
 }
 
 void locale_set_time_format(LocaleTimeFormat format) {
-    furi_hal_rtc_set_locale_timeformat((FuriHalRtcLocaleTimeFormat)format);
+    furry_hal_rtc_set_locale_timeformat((FurryHalRtcLocaleTimeFormat)format);
 }
 
 LocaleDateFormat locale_get_date_format(void) {
-    return (LocaleDateFormat)furi_hal_rtc_get_locale_dateformat();
+    return (LocaleDateFormat)furry_hal_rtc_get_locale_dateformat();
 }
 
 void locale_set_date_format(LocaleDateFormat format) {
-    furi_hal_rtc_set_locale_dateformat((FuriHalRtcLocaleDateFormat)format);
+    furry_hal_rtc_set_locale_dateformat((FurryHalRtcLocaleDateFormat)format);
 }
 
 float locale_fahrenheit_to_celsius(float temp_f) {
@@ -35,12 +35,12 @@ float locale_celsius_to_fahrenheit(float temp_c) {
 }
 
 void locale_format_time(
-    FuriString* out_str,
-    const FuriHalRtcDateTime* datetime,
+    FurryString* out_str,
+    const FurryHalRtcDateTime* datetime,
     const LocaleTimeFormat format,
     const bool show_seconds) {
-    furi_assert(out_str);
-    furi_assert(datetime);
+    furry_assert(out_str);
+    furry_assert(datetime);
 
     uint8_t hours = datetime->hour;
     uint8_t am_pm = 0;
@@ -57,27 +57,27 @@ void locale_format_time(
     }
 
     if(show_seconds) {
-        furi_string_printf(out_str, "%02u:%02u:%02u", hours, datetime->minute, datetime->second);
+        furry_string_printf(out_str, "%02u:%02u:%02u", hours, datetime->minute, datetime->second);
     } else {
-        furi_string_printf(out_str, "%02u:%02u", hours, datetime->minute);
+        furry_string_printf(out_str, "%02u:%02u", hours, datetime->minute);
     }
 
     if(am_pm > 0) {
-        furi_string_cat_printf(out_str, " %s", (am_pm == 1) ? ("AM") : ("PM"));
+        furry_string_cat_printf(out_str, " %s", (am_pm == 1) ? ("AM") : ("PM"));
     }
 }
 
 void locale_format_date(
-    FuriString* out_str,
-    const FuriHalRtcDateTime* datetime,
+    FurryString* out_str,
+    const FurryHalRtcDateTime* datetime,
     const LocaleDateFormat format,
     const char* separator) {
-    furi_assert(out_str);
-    furi_assert(datetime);
-    furi_assert(separator);
+    furry_assert(out_str);
+    furry_assert(datetime);
+    furry_assert(separator);
 
     if(format == LocaleDateFormatDMY) {
-        furi_string_printf(
+        furry_string_printf(
             out_str,
             "%02u%s%02u%s%04u",
             datetime->day,
@@ -86,7 +86,7 @@ void locale_format_date(
             separator,
             datetime->year);
     } else if(format == LocaleDateFormatMDY) {
-        furi_string_printf(
+        furry_string_printf(
             out_str,
             "%02u%s%02u%s%04u",
             datetime->month,
@@ -95,7 +95,7 @@ void locale_format_date(
             separator,
             datetime->year);
     } else {
-        furi_string_printf(
+        furry_string_printf(
             out_str,
             "%04u%s%02u%s%02u",
             datetime->year,

@@ -77,4 +77,4 @@ SubGhzProtocolStatus
  * @param context Pointer to a WSProtocolDecoderOregon_V1 instance
  * @param output Resulting text
  */
-void ws_protocol_decoder_oregon_v1_get_string(void* context, FuriString* output);
+void ws_protocol_decoder_oregon_v1_get_string(void* context, FurryString* output);

@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <stdlib.h>
@@ -9,8 +9,8 @@
 typedef enum { EventTypeTick, EventTypeKey } EventType;
 
 typedef struct {
-    FuriMutex* mutex;
-    FuriTimer* timer;
+    FurryMutex* mutex;
+    FurryTimer* timer;
     uint8_t selBoxX;
     uint8_t selBoxY;
 
@@ -173,9 +173,9 @@ static void tictactoe_state_init(TicTacToeState* tictactoe_state) {
 }
 
 static void tictactoe_draw_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     TicTacToeState* ticst = ctx;
-    furi_mutex_acquire(ticst->mutex, FuriWaitForever);
+    furry_mutex_acquire(ticst->mutex, FurryWaitForever);
 
     if(ticst->selX > 3) {
         ticst->selX = 3;
@@ -284,34 +284,34 @@ static void tictactoe_draw_callback(Canvas* const canvas, void* ctx) {
 
     tictactoe_draw(canvas, ticst);
 
-    furi_mutex_release(ticst->mutex);
+    furry_mutex_release(ticst->mutex);
 }
 
-static void tictactoe_input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void tictactoe_input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     GameEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
-static void tictactoe_update_timer_callback(FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void tictactoe_update_timer_callback(FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     GameEvent event = {.type = EventTypeTick};
-    furi_message_queue_put(event_queue, &event, 0);
+    furry_message_queue_put(event_queue, &event, 0);
 }
 
 int32_t tictactoe_game_app(void* p) {
     UNUSED(p);
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(GameEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(GameEvent));
 
     TicTacToeState* tictactoe_state = malloc(sizeof(TicTacToeState));
 
-    tictactoe_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    tictactoe_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
 
     if(!tictactoe_state->mutex) {
-        FURI_LOG_E(TAG, "Cannot create mutex\r\n");
-        furi_message_queue_free(event_queue);
+        FURRY_LOG_E(TAG, "Cannot create mutex\r\n");
+        furry_message_queue_free(event_queue);
         free(tictactoe_state);
         return 255;
     }
@@ -322,21 +322,21 @@ int32_t tictactoe_game_app(void* p) {
     view_port_input_callback_set(view_port, tictactoe_input_callback, event_queue);
 
     tictactoe_state->timer =
-        furi_timer_alloc(tictactoe_update_timer_callback, FuriTimerTypePeriodic, event_queue);
-    furi_timer_start(tictactoe_state->timer, furi_kernel_get_tick_frequency() / 22);
+        furry_timer_alloc(tictactoe_update_timer_callback, FurryTimerTypePeriodic, event_queue);
+    furry_timer_start(tictactoe_state->timer, furry_kernel_get_tick_frequency() / 22);
 
     tictactoe_state_init(tictactoe_state);
 
     // Open GUI and register view_port
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     GameEvent event;
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 100);
-        furi_mutex_acquire(tictactoe_state->mutex, FuriWaitForever);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 100);
+        furry_mutex_acquire(tictactoe_state->mutex, FurryWaitForever);
 
-        if(event_status == FuriStatusOk) {
+        if(event_status == FurryStatusOk) {
             // Key events
             if(event.type == EventTypeKey) {
                 if(event.input.type == InputTypePress) {
@@ -367,16 +367,16 @@ int32_t tictactoe_game_app(void* p) {
         }
 
         view_port_update(view_port);
-        furi_mutex_release(tictactoe_state->mutex);
+        furry_mutex_release(tictactoe_state->mutex);
     }
 
-    furi_timer_free(tictactoe_state->timer);
+    furry_timer_free(tictactoe_state->timer);
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_mutex_free(tictactoe_state->mutex);
+    furry_message_queue_free(event_queue);
+    furry_mutex_free(tictactoe_state->mutex);
     free(tictactoe_state);
 
     return 0;

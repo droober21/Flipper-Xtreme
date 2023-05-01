@@ -27,18 +27,18 @@ SubGhzLastSettings* subghz_last_settings_alloc(void) {
 }
 
 void subghz_last_settings_free(SubGhzLastSettings* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     free(instance);
 }
 
 void subghz_last_settings_load(SubGhzLastSettings* instance, size_t preset_count) {
     UNUSED(preset_count);
-    furi_assert(instance);
-#ifdef FURI_DEBUG
-    FURI_LOG_I(TAG, "subghz_last_settings_load");
+    furry_assert(instance);
+#ifdef FURRY_DEBUG
+    FURRY_LOG_I(TAG, "subghz_last_settings_load");
 #endif
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* fff_data_file = flipper_format_file_alloc(storage);
 
     uint32_t temp_frequency = 0;
@@ -85,11 +85,11 @@ void subghz_last_settings_load(SubGhzLastSettings* instance, size_t preset_count
             1);
 
     } else {
-        FURI_LOG_E(TAG, "Error open file %s", SUBGHZ_LAST_SETTINGS_PATH);
+        FURRY_LOG_E(TAG, "Error open file %s", SUBGHZ_LAST_SETTINGS_PATH);
     }
 
-    if(temp_frequency == 0 || !furi_hal_subghz_is_tx_allowed(temp_frequency)) {
-        FURI_LOG_W(TAG, "Last used frequency not found or can't be used!");
+    if(temp_frequency == 0 || !furry_hal_subghz_is_tx_allowed(temp_frequency)) {
+        FURRY_LOG_W(TAG, "Last used frequency not found or can't be used!");
         instance->frequency = SUBGHZ_LAST_SETTING_DEFAULT_FREQUENCY;
         instance->preset = SUBGHZ_LAST_SETTING_DEFAULT_PRESET;
         instance->frequency_analyzer_feedback_level =
@@ -110,7 +110,7 @@ void subghz_last_settings_load(SubGhzLastSettings* instance, size_t preset_count
                                                    SUBGHZ_LAST_SETTING_FREQUENCY_ANALYZER_TRIGGER;
 
         /*if(temp_preset > (int32_t)preset_count - 1 || temp_preset < 0) {
-            FURI_LOG_W(TAG, "Last used preset no found");*/
+            FURRY_LOG_W(TAG, "Last used preset no found");*/
         instance->preset = SUBGHZ_LAST_SETTING_DEFAULT_PRESET;
 
         instance->external_module_enabled = temp_external_module_enabled;
@@ -120,17 +120,17 @@ void subghz_last_settings_load(SubGhzLastSettings* instance, size_t preset_count
         instance->timestamp_file_names = temp_timestamp_file_names;
 
         // Set globally
-        furi_hal_subghz_set_timestamp_file_names(instance->timestamp_file_names);
+        furry_hal_subghz_set_timestamp_file_names(instance->timestamp_file_names);
 
         if(instance->external_module_power_5v_disable) {
-            furi_hal_subghz_set_external_power_disable(true);
-            furi_hal_subghz_disable_ext_power();
+            furry_hal_subghz_set_external_power_disable(true);
+            furry_hal_subghz_disable_ext_power();
         }
 
         // Set selected radio module
         if(instance->external_module_enabled) {
-            furi_hal_subghz_select_radio_type(SubGhzRadioExternal);
-            furi_hal_subghz_init_radio_type(SubGhzRadioExternal);
+            furry_hal_subghz_select_radio_type(SubGhzRadioExternal);
+            furry_hal_subghz_init_radio_type(SubGhzRadioExternal);
         }
 
         /*/} else {
@@ -140,17 +140,17 @@ void subghz_last_settings_load(SubGhzLastSettings* instance, size_t preset_count
 
     flipper_format_file_close(fff_data_file);
     flipper_format_free(fff_data_file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 bool subghz_last_settings_save(SubGhzLastSettings* instance) {
-    furi_assert(instance);
-#ifdef FURI_DEBUG
-    FURI_LOG_I(TAG, "last_settings_save");
+    furry_assert(instance);
+#ifdef FURRY_DEBUG
+    FURRY_LOG_I(TAG, "last_settings_save");
 #endif
 
     bool saved = false;
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* file = flipper_format_file_alloc(storage);
 
     do {
@@ -214,12 +214,12 @@ bool subghz_last_settings_save(SubGhzLastSettings* instance) {
     } while(0);
 
     if(!saved) {
-        FURI_LOG_E(TAG, "Error save file %s", SUBGHZ_LAST_SETTINGS_PATH);
+        FURRY_LOG_E(TAG, "Error save file %s", SUBGHZ_LAST_SETTINGS_PATH);
     }
 
     flipper_format_file_close(file);
     flipper_format_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return saved;
 }

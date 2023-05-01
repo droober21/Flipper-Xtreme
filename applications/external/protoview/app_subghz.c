@@ -5,24 +5,24 @@
 #include "custom_presets.h"
 
 #include <flipper_format/flipper_format_i.h>
-#include <furi_hal_rtc.h>
-#include <furi_hal_spi.h>
-#include <furi_hal_interrupt.h>
+#include <furry_hal_rtc.h>
+#include <furry_hal_spi.h>
+#include <furry_hal_interrupt.h>
 
 void raw_sampling_timer_start(ProtoViewApp* app);
 void raw_sampling_timer_stop(ProtoViewApp* app);
 
 ProtoViewModulation ProtoViewModulations[] = {
-    {"OOK 650Khz", "FuriHalSubGhzPresetOok650Async", FuriHalSubGhzPresetOok650Async, NULL, 30},
-    {"OOK 270Khz", "FuriHalSubGhzPresetOok270Async", FuriHalSubGhzPresetOok270Async, NULL, 30},
+    {"OOK 650Khz", "FurryHalSubGhzPresetOok650Async", FurryHalSubGhzPresetOok650Async, NULL, 30},
+    {"OOK 270Khz", "FurryHalSubGhzPresetOok270Async", FurryHalSubGhzPresetOok270Async, NULL, 30},
     {"2FSK 2.38Khz",
-     "FuriHalSubGhzPreset2FSKDev238Async",
-     FuriHalSubGhzPreset2FSKDev238Async,
+     "FurryHalSubGhzPreset2FSKDev238Async",
+     FurryHalSubGhzPreset2FSKDev238Async,
      NULL,
      30},
     {"2FSK 47.6Khz",
-     "FuriHalSubGhzPreset2FSKDev476Async",
-     FuriHalSubGhzPreset2FSKDev476Async,
+     "FurryHalSubGhzPreset2FSKDev476Async",
+     FurryHalSubGhzPreset2FSKDev476Async,
      NULL,
      30},
     {"TPMS 1 (FSK)", NULL, 0, (uint8_t*)protoview_subghz_tpms1_fsk_async_regs, 30},
@@ -36,23 +36,23 @@ ProtoViewModulation ProtoViewModulations[] = {
 /* Called after the application initialization in order to setup the
  * subghz system and put it into idle state. */
 void radio_begin(ProtoViewApp* app) {
-    furi_assert(app);
-    furi_hal_subghz_reset();
-    furi_hal_subghz_idle();
+    furry_assert(app);
+    furry_hal_subghz_reset();
+    furry_hal_subghz_idle();
 
     /* Power circuits are noisy. Suppressing the charge while we use
      * ProtoView will improve the RF performances. */
-    furi_hal_power_suppress_charge_enter();
+    furry_hal_power_suppress_charge_enter();
 
     /* The CC1101 preset can be either one of the standard presets, if
      * the modulation "custom" field is NULL, or a custom preset we
      * defined in custom_presets.h. */
     if(ProtoViewModulations[app->modulation].custom == NULL) {
-        furi_hal_subghz_load_preset(ProtoViewModulations[app->modulation].preset);
+        furry_hal_subghz_load_preset(ProtoViewModulations[app->modulation].preset);
     } else {
-        furi_hal_subghz_load_custom_preset(ProtoViewModulations[app->modulation].custom);
+        furry_hal_subghz_load_custom_preset(ProtoViewModulations[app->modulation].custom);
     }
-    furi_hal_gpio_init(furi_hal_subghz.cc1101_g0_pin, GpioModeInput, GpioPullNo, GpioSpeedLow);
+    furry_hal_gpio_init(furry_hal_subghz.cc1101_g0_pin, GpioModeInput, GpioPullNo, GpioSpeedLow);
     app->txrx->txrx_state = TxRxStateIDLE;
 }
 
@@ -64,27 +64,27 @@ void protoview_rx_callback(bool level, uint32_t duration, void* context) {
     UNUSED(context);
     /* Add data to the circular buffer. */
     raw_samples_add(RawSamples, level, duration);
-    // FURI_LOG_E(TAG, "FEED: %d %d", (int)level, (int)duration);
+    // FURRY_LOG_E(TAG, "FEED: %d %d", (int)level, (int)duration);
     return;
 }
 
 /* Setup the CC1101 to start receiving using a background worker. */
 uint32_t radio_rx(ProtoViewApp* app) {
-    furi_assert(app);
-    if(!furi_hal_subghz_is_frequency_valid(app->frequency)) {
-        furi_crash(TAG " Incorrect RX frequency.");
+    furry_assert(app);
+    if(!furry_hal_subghz_is_frequency_valid(app->frequency)) {
+        furry_crash(TAG " Incorrect RX frequency.");
     }
 
     if(app->txrx->txrx_state == TxRxStateRx) return app->frequency;
 
-    furi_hal_subghz_idle(); /* Put it into idle state in case it is sleeping. */
-    uint32_t value = furi_hal_subghz_set_frequency_and_path(app->frequency);
-    FURI_LOG_E(TAG, "Switched to frequency: %lu", value);
-    furi_hal_gpio_init(furi_hal_subghz.cc1101_g0_pin, GpioModeInput, GpioPullNo, GpioSpeedLow);
-    furi_hal_subghz_flush_rx();
-    furi_hal_subghz_rx();
+    furry_hal_subghz_idle(); /* Put it into idle state in case it is sleeping. */
+    uint32_t value = furry_hal_subghz_set_frequency_and_path(app->frequency);
+    FURRY_LOG_E(TAG, "Switched to frequency: %lu", value);
+    furry_hal_gpio_init(furry_hal_subghz.cc1101_g0_pin, GpioModeInput, GpioPullNo, GpioSpeedLow);
+    furry_hal_subghz_flush_rx();
+    furry_hal_subghz_rx();
     if(!app->txrx->debug_timer_sampling) {
-        furi_hal_subghz_start_async_rx(protoview_rx_callback, NULL);
+        furry_hal_subghz_start_async_rx(protoview_rx_callback, NULL);
     } else {
         raw_sampling_worker_start(app);
     }
@@ -94,30 +94,30 @@ uint32_t radio_rx(ProtoViewApp* app) {
 
 /* Stop receiving (if active) and put the radio on idle state. */
 void radio_rx_end(ProtoViewApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     if(app->txrx->txrx_state == TxRxStateRx) {
         if(!app->txrx->debug_timer_sampling) {
-            furi_hal_subghz_stop_async_rx();
+            furry_hal_subghz_stop_async_rx();
         } else {
             raw_sampling_worker_stop(app);
         }
     }
-    furi_hal_subghz_idle();
+    furry_hal_subghz_idle();
     app->txrx->txrx_state = TxRxStateIDLE;
 }
 
 /* Put radio on sleep. */
 void radio_sleep(ProtoViewApp* app) {
-    furi_assert(app);
+    furry_assert(app);
     if(app->txrx->txrx_state == TxRxStateRx) {
         /* Stop the asynchronous receiving system before putting the
          * chip into sleep. */
         radio_rx_end(app);
     }
-    furi_hal_subghz_sleep();
+    furry_hal_subghz_sleep();
     app->txrx->txrx_state = TxRxStateSleep;
-    furi_hal_power_suppress_charge_exit();
+    furry_hal_power_suppress_charge_exit();
 }
 
 /* =============================== Transmission ============================= */
@@ -125,23 +125,23 @@ void radio_sleep(ProtoViewApp* app) {
 /* This function suspends the current RX state, switches to TX mode,
  * transmits the signal provided by the callback data_feeder, and later
  * restores the RX state if there was one. */
-void radio_tx_signal(ProtoViewApp* app, FuriHalSubGhzAsyncTxCallback data_feeder, void* ctx) {
+void radio_tx_signal(ProtoViewApp* app, FurryHalSubGhzAsyncTxCallback data_feeder, void* ctx) {
     TxRxState oldstate = app->txrx->txrx_state;
 
     if(oldstate == TxRxStateRx) radio_rx_end(app);
     radio_begin(app);
 
-    furi_hal_subghz_idle();
-    uint32_t value = furi_hal_subghz_set_frequency_and_path(app->frequency);
-    FURI_LOG_E(TAG, "Switched to frequency: %lu", value);
-    furi_hal_gpio_write(furi_hal_subghz.cc1101_g0_pin, false);
-    furi_hal_gpio_init(
-        furi_hal_subghz.cc1101_g0_pin, GpioModeOutputPushPull, GpioPullNo, GpioSpeedLow);
+    furry_hal_subghz_idle();
+    uint32_t value = furry_hal_subghz_set_frequency_and_path(app->frequency);
+    FURRY_LOG_E(TAG, "Switched to frequency: %lu", value);
+    furry_hal_gpio_write(furry_hal_subghz.cc1101_g0_pin, false);
+    furry_hal_gpio_init(
+        furry_hal_subghz.cc1101_g0_pin, GpioModeOutputPushPull, GpioPullNo, GpioSpeedLow);
 
-    furi_hal_subghz_start_async_tx(data_feeder, ctx);
-    while(!furi_hal_subghz_is_async_tx_complete()) furi_delay_ms(10);
-    furi_hal_subghz_stop_async_tx();
-    furi_hal_subghz_idle();
+    furry_hal_subghz_start_async_tx(data_feeder, ctx);
+    while(!furry_hal_subghz_is_async_tx_complete()) furry_delay_ms(10);
+    furry_hal_subghz_stop_async_tx();
+    furry_hal_subghz_idle();
 
     radio_begin(app);
     if(oldstate == TxRxStateRx) radio_rx(app);
@@ -157,11 +157,11 @@ void radio_tx_signal(ProtoViewApp* app, FuriHalSubGhzAsyncTxCallback data_feeder
 void protoview_timer_isr(void* ctx) {
     ProtoViewApp* app = ctx;
 
-    bool level = furi_hal_gpio_read(furi_hal_subghz.cc1101_g0_pin);
+    bool level = furry_hal_gpio_read(furry_hal_subghz.cc1101_g0_pin);
     if(app->txrx->last_g0_value != level) {
         uint32_t now = DWT->CYCCNT;
         uint32_t dur = now - app->txrx->last_g0_change_time;
-        dur /= furi_hal_cortex_instructions_per_microsecond();
+        dur /= furry_hal_cortex_instructions_per_microsecond();
         if(dur > 15000) dur = 15000;
         raw_samples_add(RawSamples, app->txrx->last_g0_value, dur);
         app->txrx->last_g0_value = level;
@@ -183,18 +183,18 @@ void raw_sampling_worker_start(ProtoViewApp* app) {
     LL_TIM_SetClockSource(TIM2, LL_TIM_CLOCKSOURCE_INTERNAL);
     LL_TIM_DisableCounter(TIM2);
     LL_TIM_SetCounter(TIM2, 0);
-    furi_hal_interrupt_set_isr(FuriHalInterruptIdTIM2, protoview_timer_isr, app);
+    furry_hal_interrupt_set_isr(FurryHalInterruptIdTIM2, protoview_timer_isr, app);
     LL_TIM_EnableIT_UPDATE(TIM2);
     LL_TIM_EnableCounter(TIM2);
-    FURI_LOG_E(TAG, "Timer enabled");
+    FURRY_LOG_E(TAG, "Timer enabled");
 }
 
 void raw_sampling_worker_stop(ProtoViewApp* app) {
     UNUSED(app);
-    FURI_CRITICAL_ENTER();
+    FURRY_CRITICAL_ENTER();
     LL_TIM_DisableCounter(TIM2);
     LL_TIM_DisableIT_UPDATE(TIM2);
-    furi_hal_interrupt_set_isr(FuriHalInterruptIdTIM2, NULL, NULL);
+    furry_hal_interrupt_set_isr(FurryHalInterruptIdTIM2, NULL, NULL);
     LL_TIM_DeInit(TIM2);
-    FURI_CRITICAL_EXIT();
+    FURRY_CRITICAL_EXIT();
 }

@@ -25,7 +25,7 @@ static void spi_mem_worker_run_callback(SPIMemWorker* worker, SPIMemCustomEventW
 
 static bool spi_mem_worker_await_chip_busy(SPIMemWorker* worker) {
     while(true) {
-        furi_delay_tick(10); // to give some time to OS
+        furry_delay_tick(10); // to give some time to OS
         if(spi_mem_worker_check_for_stop(worker)) return true;
         SPIMemChipStatus chip_status = spi_mem_tools_get_chip_status(worker->chip_info);
         if(chip_status == SPIMemChipStatusError) return false;
@@ -46,7 +46,7 @@ static size_t spi_mem_worker_modes_get_total_size(SPIMemWorker* worker) {
 static void spi_mem_worker_chip_detect_process(SPIMemWorker* worker) {
     SPIMemCustomEventWorker event;
     while(!spi_mem_tools_read_chip_info(worker->chip_info)) {
-        furi_delay_tick(10); // to give some time to OS
+        furry_delay_tick(10); // to give some time to OS
         if(spi_mem_worker_check_for_stop(worker)) return;
     }
     if(spi_mem_chip_find_all(worker->chip_info, *worker->found_chips)) {
@@ -64,7 +64,7 @@ static bool spi_mem_worker_read(SPIMemWorker* worker, SPIMemCustomEventWorker* e
     size_t offset = 0;
     bool success = true;
     while(true) {
-        furi_delay_tick(10); // to give some time to OS
+        furry_delay_tick(10); // to give some time to OS
         size_t block_size = SPI_MEM_FILE_BUFFER_SIZE;
         if(spi_mem_worker_check_for_stop(worker)) break;
         if(offset >= chip_size) break;
@@ -104,7 +104,7 @@ static bool
     size_t offset = 0;
     bool success = true;
     while(true) {
-        furi_delay_tick(10); // to give some time to OS
+        furry_delay_tick(10); // to give some time to OS
         size_t block_size = SPI_MEM_FILE_BUFFER_SIZE;
         if(spi_mem_worker_check_for_stop(worker)) break;
         if(offset >= total_size) break;
@@ -177,7 +177,7 @@ static bool
     size_t page_size = spi_mem_chip_get_page_size(worker->chip_info);
     size_t offset = 0;
     while(true) {
-        furi_delay_tick(10); // to give some time to OS
+        furry_delay_tick(10); // to give some time to OS
         size_t block_size = SPI_MEM_FILE_BUFFER_SIZE;
         if(spi_mem_worker_check_for_stop(worker)) break;
         if(offset >= total_size) break;

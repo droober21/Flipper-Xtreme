@@ -1,7 +1,7 @@
 #pragma once
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #define WS_VERSION_APP "0.8"
 #define WS_DEVELOPED "SkorP"

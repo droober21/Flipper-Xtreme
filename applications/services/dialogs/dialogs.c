@@ -19,7 +19,7 @@ void dialog_file_browser_set_basic_options(
 
 static DialogsApp* dialogs_app_alloc() {
     DialogsApp* app = malloc(sizeof(DialogsApp));
-    app->message_queue = furi_message_queue_alloc(8, sizeof(DialogsAppMessage));
+    app->message_queue = furry_message_queue_alloc(8, sizeof(DialogsAppMessage));
 
     return app;
 }
@@ -42,11 +42,11 @@ static void dialogs_app_process_message(DialogsApp* app, DialogsAppMessage* mess
 int32_t dialogs_srv(void* p) {
     UNUSED(p);
     DialogsApp* app = dialogs_app_alloc();
-    furi_record_create(RECORD_DIALOGS, app);
+    furry_record_create(RECORD_DIALOGS, app);
 
     DialogsAppMessage message;
     while(1) {
-        if(furi_message_queue_get(app->message_queue, &message, FuriWaitForever) == FuriStatusOk) {
+        if(furry_message_queue_get(app->message_queue, &message, FurryWaitForever) == FurryStatusOk) {
             dialogs_app_process_message(app, &message);
         }
     }

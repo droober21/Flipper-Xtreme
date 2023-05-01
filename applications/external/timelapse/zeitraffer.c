@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <notification/notification_messages.h>
@@ -97,19 +97,19 @@ static void draw_callback(Canvas* canvas, void* ctx) {
 
 static void input_callback(InputEvent* input_event, void* ctx) {
     // Проверяем, что контекст не нулевой
-    furi_assert(ctx);
-    FuriMessageQueue* event_queue = ctx;
+    furry_assert(ctx);
+    FurryMessageQueue* event_queue = ctx;
 
     ZeitrafferEvent event = {.type = EventTypeInput, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
-static void timer_callback(FuriMessageQueue* event_queue) {
+static void timer_callback(FurryMessageQueue* event_queue) {
     // Проверяем, что контекст не нулевой
-    furi_assert(event_queue);
+    furry_assert(event_queue);
 
     ZeitrafferEvent event = {.type = EventTypeTick};
-    furi_message_queue_put(event_queue, &event, 0);
+    furry_message_queue_put(event_queue, &event, 0);
 }
 
 int32_t zeitraffer_app(void* p) {
@@ -118,7 +118,7 @@ int32_t zeitraffer_app(void* p) {
     // Текущее событие типа кастомного типа ZeitrafferEvent
     ZeitrafferEvent event;
     // Очередь событий на 8 элементов размера ZeitrafferEvent
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(ZeitrafferEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(ZeitrafferEvent));
 
     // Создаем новый view port
     ViewPort* view_port = view_port_alloc();
@@ -129,7 +129,7 @@ int32_t zeitraffer_app(void* p) {
     view_port_input_callback_set(view_port, input_callback, event_queue);
 
     // Создаем GUI приложения
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     // Подключаем view port к GUI в полноэкранном режиме
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
@@ -138,14 +138,14 @@ int32_t zeitraffer_app(void* p) {
 
     // Создаем периодический таймер с коллбэком, куда в качестве
     // контекста будет передаваться наша очередь событий
-    FuriTimer* timer = furi_timer_alloc(timer_callback, FuriTimerTypePeriodic, event_queue);
+    FurryTimer* timer = furry_timer_alloc(timer_callback, FurryTimerTypePeriodic, event_queue);
     // Запускаем таймер
-    //furi_timer_start(timer, 1500);
+    //furry_timer_start(timer, 1500);
 
     // Включаем нотификации
-    NotificationApp* notifications = furi_record_open(RECORD_NOTIFICATION);
+    NotificationApp* notifications = furry_record_open(RECORD_NOTIFICATION);
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     // Загружаем настройки
     FlipperFormat* load = flipper_format_file_alloc(storage);
@@ -181,7 +181,7 @@ int32_t zeitraffer_app(void* p) {
     while(1) {
         // Выбираем событие из очереди в переменную event (ждем бесконечно долго, если очередь пуста)
         // и проверяем, что у нас получилось это сделать
-        furi_check(furi_message_queue_get(event_queue, &event, FuriWaitForever) == FuriStatusOk);
+        furry_check(furry_message_queue_get(event_queue, &event, FurryWaitForever) == FurryStatusOk);
 
         // Наше событие — это нажатие кнопки
         if(event.type == EventTypeInput) {
@@ -203,7 +203,7 @@ int32_t zeitraffer_app(void* p) {
                     }
                 }
                 if(event.input.key == InputKeyRight) {
-                    if(furi_timer_is_running(timer)) {
+                    if(furry_timer_is_running(timer)) {
                         notification_message(notifications, &sequence_error);
                     } else {
                         Count++;
@@ -211,7 +211,7 @@ int32_t zeitraffer_app(void* p) {
                     }
                 }
                 if(event.input.key == InputKeyLeft) {
-                    if(furi_timer_is_running(timer)) {
+                    if(furry_timer_is_running(timer)) {
                         notification_message(notifications, &sequence_error);
                     } else {
                         Count--;
@@ -219,7 +219,7 @@ int32_t zeitraffer_app(void* p) {
                     }
                 }
                 if(event.input.key == InputKeyUp) {
-                    if(furi_timer_is_running(timer)) {
+                    if(furry_timer_is_running(timer)) {
                         notification_message(notifications, &sequence_error);
                     } else {
                         Time++;
@@ -227,7 +227,7 @@ int32_t zeitraffer_app(void* p) {
                     }
                 }
                 if(event.input.key == InputKeyDown) {
-                    if(furi_timer_is_running(timer)) {
+                    if(furry_timer_is_running(timer)) {
                         notification_message(notifications, &sequence_error);
                     } else {
                         Time--;
@@ -235,12 +235,12 @@ int32_t zeitraffer_app(void* p) {
                     }
                 }
                 if(event.input.key == InputKeyOk) {
-                    if(furi_timer_is_running(timer)) {
+                    if(furry_timer_is_running(timer)) {
                         notification_message(notifications, &sequence_click);
-                        furi_timer_stop(timer);
+                        furry_timer_stop(timer);
                         Work = false;
                     } else {
-                        furi_timer_start(timer, 1000);
+                        furry_timer_start(timer, 1000);
                         Work = true;
 
                         if(WorkCount == 0) WorkCount = Count;
@@ -269,12 +269,12 @@ int32_t zeitraffer_app(void* p) {
             if(event.input.type == InputTypeLong) { // Длинные нажатия
                 // Если нажата кнопка "назад", то выходим из цикла, а следовательно и из приложения
                 if(event.input.key == InputKeyBack) {
-                    if(furi_timer_is_running(timer)) { // А если работает таймер - не выходим :D
+                    if(furry_timer_is_running(timer)) { // А если работает таймер - не выходим :D
                         notification_message(notifications, &sequence_error);
                     } else {
                         notification_message(notifications, &sequence_click);
                         gpio_item_set_all_pins(false);
-                        furi_timer_stop(timer);
+                        furry_timer_stop(timer);
                         notification_message(
                             notifications, &sequence_display_backlight_enforce_auto);
                         break;
@@ -289,28 +289,28 @@ int32_t zeitraffer_app(void* p) {
 
             if(event.input.type == InputTypeRepeat) { // Зажатые кнопки
                 if(event.input.key == InputKeyRight) {
-                    if(furi_timer_is_running(timer)) {
+                    if(furry_timer_is_running(timer)) {
                         notification_message(notifications, &sequence_error);
                     } else {
                         Count = Count + 10;
                     }
                 }
                 if(event.input.key == InputKeyLeft) {
-                    if(furi_timer_is_running(timer)) {
+                    if(furry_timer_is_running(timer)) {
                         notification_message(notifications, &sequence_error);
                     } else {
                         Count = Count - 10;
                     }
                 }
                 if(event.input.key == InputKeyUp) {
-                    if(furi_timer_is_running(timer)) {
+                    if(furry_timer_is_running(timer)) {
                         notification_message(notifications, &sequence_error);
                     } else {
                         Time = Time + 10;
                     }
                 }
                 if(event.input.key == InputKeyDown) {
-                    if(furi_timer_is_running(timer)) {
+                    if(furry_timer_is_running(timer)) {
                         notification_message(notifications, &sequence_error);
                     } else {
                         Time = Time - 10;
@@ -336,7 +336,7 @@ int32_t zeitraffer_app(void* p) {
                     //gpio_item_set_all_pins(true);
                     gpio_item_set_pin(4, true);
                     gpio_item_set_pin(5, true);
-                    furi_delay_ms(400); // На короткие нажатия фотик плохо реагирует
+                    furry_delay_ms(400); // На короткие нажатия фотик плохо реагирует
                     gpio_item_set_pin(4, false);
                     gpio_item_set_pin(5, false);
                     //gpio_item_set_all_pins(false);
@@ -354,7 +354,7 @@ int32_t zeitraffer_app(void* p) {
             if(WorkCount < 1) { // закончили
                 Work = false;
                 gpio_item_set_all_pins(false);
-                furi_timer_stop(timer);
+                furry_timer_stop(timer);
                 notification_message(notifications, &sequence_audiovisual_alert);
                 WorkTime = 3;
                 WorkCount = 0;
@@ -415,21 +415,21 @@ int32_t zeitraffer_app(void* p) {
 
     flipper_format_free(save);
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     // Очищаем таймер
-    furi_timer_free(timer);
+    furry_timer_free(timer);
 
     // Специальная очистка памяти, занимаемой очередью
-    furi_message_queue_free(event_queue);
+    furry_message_queue_free(event_queue);
 
     // Чистим созданные объекты, связанные с интерфейсом
     gui_remove_view_port(gui, view_port);
     view_port_free(view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
     // Очищаем нотификации
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
 
     return 0;
 }

@@ -11,20 +11,20 @@ void nfc_scene_generate_info_on_enter(void* context) {
     Nfc* nfc = context;
 
     // Setup dialog view
-    FuriHalNfcDevData* data = &nfc->dev->dev_data.nfc_data;
+    FurryHalNfcDevData* data = &nfc->dev->dev_data.nfc_data;
     DialogEx* dialog_ex = nfc->dialog_ex;
     dialog_ex_set_right_button_text(dialog_ex, "More");
 
     // Create info text
-    FuriString* info_str = furi_string_alloc_printf(
+    FurryString* info_str = furry_string_alloc_printf(
         "%s\n%s\nUID:", nfc->generator->name, nfc_get_dev_type(data->type));
 
     // Append UID
     for(int i = 0; i < data->uid_len; ++i) {
-        furi_string_cat_printf(info_str, " %02X", data->uid[i]);
+        furry_string_cat_printf(info_str, " %02X", data->uid[i]);
     }
-    nfc_text_store_set(nfc, furi_string_get_cstr(info_str));
-    furi_string_free(info_str);
+    nfc_text_store_set(nfc, furry_string_get_cstr(info_str));
+    furry_string_free(info_str);
 
     dialog_ex_set_text(dialog_ex, nfc->text_store, 0, 0, AlignLeft, AlignTop);
     dialog_ex_set_context(dialog_ex, nfc);

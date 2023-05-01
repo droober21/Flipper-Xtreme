@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #include <gui/gui.h>
 #include <input/input.h>
@@ -50,15 +50,15 @@ static void app_draw_callback(Canvas* canvas, void* ctx) {
 }
 
 static void app_input_callback(InputEvent* input_event, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
 
-    FuriMessageQueue* event_queue = ctx;
-    furi_message_queue_put(event_queue, input_event, FuriWaitForever);
+    FurryMessageQueue* event_queue = ctx;
+    furry_message_queue_put(event_queue, input_event, FurryWaitForever);
 }
 
 int32_t example_custom_font_main(void* p) {
     UNUSED(p);
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
 
     // Configure view port
     ViewPort* view_port = view_port_alloc();
@@ -66,7 +66,7 @@ int32_t example_custom_font_main(void* p) {
     view_port_input_callback_set(view_port, app_input_callback, event_queue);
 
     // Register view port in GUI
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     InputEvent event;
@@ -74,7 +74,7 @@ int32_t example_custom_font_main(void* p) {
     bool running = true;
 
     while(running) {
-        if(furi_message_queue_get(event_queue, &event, 100) == FuriStatusOk) {
+        if(furry_message_queue_get(event_queue, &event, 100) == FurryStatusOk) {
             if((event.type == InputTypePress) || (event.type == InputTypeRepeat)) {
                 switch(event.key) {
                 case InputKeyBack:
@@ -90,9 +90,9 @@ int32_t example_custom_font_main(void* p) {
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
+    furry_message_queue_free(event_queue);
 
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
     return 0;
 }

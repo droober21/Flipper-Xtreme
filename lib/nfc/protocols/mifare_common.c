@@ -1,7 +1,7 @@
 #include "mifare_common.h"
-#include "furi_hal_nfc.h"
+#include "furry_hal_nfc.h"
 
-MifareType mifare_common_get_type(FuriHalNfcADevData* data) {
+MifareType mifare_common_get_type(FurryHalNfcADevData* data) {
     uint8_t ATQA0 = data->atqa[0];
     uint8_t ATQA1 = data->atqa[1];
     uint8_t SAK = data->sak;

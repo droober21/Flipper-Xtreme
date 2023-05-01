@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include "../minunit.h"
 #include <toolbox/protocols/protocol_dict.h>
 #include <lfrfid/protocols/lfrfid_protocols.h>

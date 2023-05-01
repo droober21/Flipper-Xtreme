@@ -1,6 +1,6 @@
 #include "air_mouse.h"
 
-#include <furi.h>
+#include <furry.h>
 
 #include "tracking/imu/imu.h"
 
@@ -13,7 +13,7 @@ enum AirMouseSubmenuIndex {
 };
 
 void air_mouse_submenu_callback(void* context, uint32_t index) {
-    furi_assert(context);
+    furry_assert(context);
     AirMouse* app = context;
     if(index == AirMouseSubmenuIndexBtMouse) {
         app->view_id = AirMouseViewBtMouse;
@@ -28,7 +28,7 @@ void air_mouse_submenu_callback(void* context, uint32_t index) {
 }
 
 void air_mouse_dialog_callback(DialogExResult result, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     AirMouse* app = context;
     if(result == DialogExResultLeft) {
         view_dispatcher_switch_to_view(app->view_dispatcher, VIEW_NONE); // Exit
@@ -53,7 +53,7 @@ AirMouse* air_mouse_app_alloc() {
     AirMouse* app = malloc(sizeof(AirMouse));
 
     // Gui
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
 
     // View dispatcher
     app->view_dispatcher = view_dispatcher_alloc();
@@ -113,7 +113,7 @@ AirMouse* air_mouse_app_alloc() {
 }
 
 void air_mouse_app_free(AirMouse* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // Free views
     view_dispatcher_remove_view(app->view_dispatcher, AirMouseViewSubmenu);
@@ -129,7 +129,7 @@ void air_mouse_app_free(AirMouse* app) {
     view_dispatcher_free(app->view_dispatcher);
 
     // Close records
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     app->gui = NULL;
 
     // Free rest

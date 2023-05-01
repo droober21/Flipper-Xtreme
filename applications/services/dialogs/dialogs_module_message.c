@@ -3,7 +3,7 @@
 #include <gui/modules/dialog_ex.h>
 
 typedef struct {
-    FuriApiLock lock;
+    FurryApiLock lock;
     DialogMessageButton result;
 } DialogsAppMessageContext;
 
@@ -27,14 +27,14 @@ struct DialogMessage {
 };
 
 static void dialogs_app_message_back_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DialogsAppMessageContext* message_context = context;
     message_context->result = DialogMessageButtonBack;
     api_lock_unlock(message_context->lock);
 }
 
 static void dialogs_app_message_callback(DialogExResult result, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DialogsAppMessageContext* message_context = context;
     switch(result) {
     case DialogExResultLeft:
@@ -54,7 +54,7 @@ static void dialogs_app_message_callback(DialogExResult result, void* context) {
 
 DialogMessageButton dialogs_app_process_module_message(const DialogsAppMessageDataDialog* data) {
     DialogMessageButton ret = DialogMessageButtonBack;
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     const DialogMessage* message = data->message;
     DialogsAppMessageContext* message_context = malloc(sizeof(DialogsAppMessageContext));
     message_context->lock = api_lock_alloc_locked();
@@ -96,7 +96,7 @@ DialogMessageButton dialogs_app_process_module_message(const DialogsAppMessageDa
     dialog_ex_free(dialog_ex);
     api_lock_free(message_context->lock);
     free(message_context);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
     return ret;
 }

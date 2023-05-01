@@ -1,6 +1,6 @@
 #include "mifare_desfire.h"
-#include <furi.h>
-#include <furi_hal_nfc.h>
+#include <furry.h>
+#include <furry_hal_nfc.h>
 
 #define TAG "MifareDESFire"
 
@@ -42,14 +42,14 @@ void mf_df_clear(MifareDesfireData* data) {
     data->app_head = NULL;
 }
 
-void mf_df_cat_data(MifareDesfireData* data, FuriString* out) {
+void mf_df_cat_data(MifareDesfireData* data, FurryString* out) {
     mf_df_cat_card_info(data, out);
     for(MifareDesfireApplication* app = data->app_head; app; app = app->next) {
         mf_df_cat_application(app, out);
     }
 }
 
-void mf_df_cat_card_info(MifareDesfireData* data, FuriString* out) {
+void mf_df_cat_card_info(MifareDesfireData* data, FurryString* out) {
     mf_df_cat_version(&data->version, out);
     if(data->free_memory) {
         mf_df_cat_free_mem(data->free_memory, out);
@@ -59,8 +59,8 @@ void mf_df_cat_card_info(MifareDesfireData* data, FuriString* out) {
     }
 }
 
-void mf_df_cat_version(MifareDesfireVersion* version, FuriString* out) {
-    furi_string_cat_printf(
+void mf_df_cat_version(MifareDesfireVersion* version, FurryString* out) {
+    furry_string_cat_printf(
         out,
         "%02x:%02x:%02x:%02x:%02x:%02x:%02x\n",
         version->uid[0],
@@ -70,7 +70,7 @@ void mf_df_cat_version(MifareDesfireVersion* version, FuriString* out) {
         version->uid[4],
         version->uid[5],
         version->uid[6]);
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         out,
         "hw %02x type %02x sub %02x\n"
         " maj %02x min %02x\n"
@@ -82,7 +82,7 @@ void mf_df_cat_version(MifareDesfireVersion* version, FuriString* out) {
         version->hw_minor,
         version->hw_storage,
         version->hw_proto);
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         out,
         "sw %02x type %02x sub %02x\n"
         " maj %02x min %02x\n"
@@ -94,7 +94,7 @@ void mf_df_cat_version(MifareDesfireVersion* version, FuriString* out) {
         version->sw_minor,
         version->sw_storage,
         version->sw_proto);
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         out,
         "batch %02x:%02x:%02x:%02x:%02x\n"
         "week %d year %d\n",
@@ -107,40 +107,40 @@ void mf_df_cat_version(MifareDesfireVersion* version, FuriString* out) {
         version->prod_year);
 }
 
-void mf_df_cat_free_mem(MifareDesfireFreeMemory* free_mem, FuriString* out) {
-    furi_string_cat_printf(out, "freeMem %lu\n", free_mem->bytes);
+void mf_df_cat_free_mem(MifareDesfireFreeMemory* free_mem, FurryString* out) {
+    furry_string_cat_printf(out, "freeMem %lu\n", free_mem->bytes);
 }
 
-void mf_df_cat_key_settings(MifareDesfireKeySettings* ks, FuriString* out) {
-    furi_string_cat_printf(out, "changeKeyID %d\n", ks->change_key_id);
-    furi_string_cat_printf(out, "configChangeable %d\n", ks->config_changeable);
-    furi_string_cat_printf(out, "freeCreateDelete %d\n", ks->free_create_delete);
-    furi_string_cat_printf(out, "freeDirectoryList %d\n", ks->free_directory_list);
-    furi_string_cat_printf(out, "masterChangeable %d\n", ks->master_key_changeable);
+void mf_df_cat_key_settings(MifareDesfireKeySettings* ks, FurryString* out) {
+    furry_string_cat_printf(out, "changeKeyID %d\n", ks->change_key_id);
+    furry_string_cat_printf(out, "configChangeable %d\n", ks->config_changeable);
+    furry_string_cat_printf(out, "freeCreateDelete %d\n", ks->free_create_delete);
+    furry_string_cat_printf(out, "freeDirectoryList %d\n", ks->free_directory_list);
+    furry_string_cat_printf(out, "masterChangeable %d\n", ks->master_key_changeable);
     if(ks->flags) {
-        furi_string_cat_printf(out, "flags %d\n", ks->flags);
+        furry_string_cat_printf(out, "flags %d\n", ks->flags);
     }
-    furi_string_cat_printf(out, "maxKeys %d\n", ks->max_keys);
+    furry_string_cat_printf(out, "maxKeys %d\n", ks->max_keys);
     for(MifareDesfireKeyVersion* kv = ks->key_version_head; kv; kv = kv->next) {
-        furi_string_cat_printf(out, "key %d version %d\n", kv->id, kv->version);
+        furry_string_cat_printf(out, "key %d version %d\n", kv->id, kv->version);
     }
 }
 
-void mf_df_cat_application_info(MifareDesfireApplication* app, FuriString* out) {
-    furi_string_cat_printf(out, "Application %02x%02x%02x\n", app->id[0], app->id[1], app->id[2]);
+void mf_df_cat_application_info(MifareDesfireApplication* app, FurryString* out) {
+    furry_string_cat_printf(out, "Application %02x%02x%02x\n", app->id[0], app->id[1], app->id[2]);
     if(app->key_settings) {
         mf_df_cat_key_settings(app->key_settings, out);
     }
 }
 
-void mf_df_cat_application(MifareDesfireApplication* app, FuriString* out) {
+void mf_df_cat_application(MifareDesfireApplication* app, FurryString* out) {
     mf_df_cat_application_info(app, out);
     for(MifareDesfireFile* file = app->file_head; file; file = file->next) {
         mf_df_cat_file(file, out);
     }
 }
 
-void mf_df_cat_file(MifareDesfireFile* file, FuriString* out) {
+void mf_df_cat_file(MifareDesfireFile* file, FurryString* out) {
     char* type = "unknown";
     switch(file->type) {
     case MifareDesfireFileTypeStandard:
@@ -171,9 +171,9 @@ void mf_df_cat_file(MifareDesfireFile* file, FuriString* out) {
         comm = "enciphered";
         break;
     }
-    furi_string_cat_printf(out, "File %d\n", file->id);
-    furi_string_cat_printf(out, "%s %s\n", type, comm);
-    furi_string_cat_printf(
+    furry_string_cat_printf(out, "File %d\n", file->id);
+    furry_string_cat_printf(out, "%s %s\n", type, comm);
+    furry_string_cat_printf(
         out,
         "r %d w %d rw %d c %d\n",
         file->access_rights >> 12 & 0xF,
@@ -186,13 +186,13 @@ void mf_df_cat_file(MifareDesfireFile* file, FuriString* out) {
     case MifareDesfireFileTypeStandard:
     case MifareDesfireFileTypeBackup:
         size = file->settings.data.size;
-        furi_string_cat_printf(out, "size %d\n", size);
+        furry_string_cat_printf(out, "size %d\n", size);
         break;
     case MifareDesfireFileTypeValue:
         size = 4;
-        furi_string_cat_printf(
+        furry_string_cat_printf(
             out, "lo %lu hi %lu\n", file->settings.value.lo_limit, file->settings.value.hi_limit);
-        furi_string_cat_printf(
+        furry_string_cat_printf(
             out,
             "limit %lu enabled %d\n",
             file->settings.value.limited_credit_value,
@@ -202,39 +202,39 @@ void mf_df_cat_file(MifareDesfireFile* file, FuriString* out) {
     case MifareDesfireFileTypeCyclicRecord:
         size = file->settings.record.size;
         num = file->settings.record.cur;
-        furi_string_cat_printf(out, "size %d\n", size);
-        furi_string_cat_printf(out, "num %d max %lu\n", num, file->settings.record.max);
+        furry_string_cat_printf(out, "size %d\n", size);
+        furry_string_cat_printf(out, "num %d max %lu\n", num, file->settings.record.max);
         break;
     }
     uint8_t* data = file->contents;
     if(data) {
         for(int rec = 0; rec < num; rec++) {
-            furi_string_cat_printf(out, "record %d\n", rec);
+            furry_string_cat_printf(out, "record %d\n", rec);
             for(int ch = 0; ch < size; ch += 4) {
-                furi_string_cat_printf(out, "%03x|", ch);
+                furry_string_cat_printf(out, "%03x|", ch);
                 for(int i = 0; i < 4; i++) {
                     if(ch + i < size) {
-                        furi_string_cat_printf(out, "%02x ", data[rec * size + ch + i]);
+                        furry_string_cat_printf(out, "%02x ", data[rec * size + ch + i]);
                     } else {
-                        furi_string_cat_printf(out, "   ");
+                        furry_string_cat_printf(out, "   ");
                     }
                 }
                 for(int i = 0; i < 4 && ch + i < size; i++) {
                     const size_t data_index = rec * size + ch + i;
                     if(isprint(data[data_index])) {
-                        furi_string_cat_printf(out, "%c", data[data_index]);
+                        furry_string_cat_printf(out, "%c", data[data_index]);
                     } else {
-                        furi_string_cat_printf(out, ".");
+                        furry_string_cat_printf(out, ".");
                     }
                 }
-                furi_string_cat_printf(out, "\n");
+                furry_string_cat_printf(out, "\n");
             }
-            furi_string_cat_printf(out, " \n");
+            furry_string_cat_printf(out, " \n");
         }
     }
 }
 
-bool mf_df_check_card_type(FuriHalNfcADevData* data) {
+bool mf_df_check_card_type(FurryHalNfcADevData* data) {
     uint8_t ATQA0 = data->atqa[0];
     uint8_t ATQA1 = data->atqa[1];
     uint8_t SAK = data->sak;
@@ -473,29 +473,29 @@ bool mf_df_parse_read_data_response(uint8_t* buf, uint16_t len, MifareDesfireFil
     return true;
 }
 
-bool mf_df_read_card(FuriHalNfcTxRxContext* tx_rx, MifareDesfireData* data) {
-    furi_assert(tx_rx);
-    furi_assert(data);
+bool mf_df_read_card(FurryHalNfcTxRxContext* tx_rx, MifareDesfireData* data) {
+    furry_assert(tx_rx);
+    furry_assert(data);
 
     bool card_read = false;
     do {
         // Get version
         tx_rx->tx_bits = 8 * mf_df_prepare_get_version(tx_rx->tx_data);
-        if(!furi_hal_nfc_tx_rx_full(tx_rx)) {
-            FURI_LOG_W(TAG, "Bad exchange getting version");
+        if(!furry_hal_nfc_tx_rx_full(tx_rx)) {
+            FURRY_LOG_W(TAG, "Bad exchange getting version");
             break;
         }
         if(!mf_df_parse_get_version_response(tx_rx->rx_data, tx_rx->rx_bits / 8, &data->version)) {
-            FURI_LOG_W(TAG, "Bad DESFire GET_VERSION responce");
+            FURRY_LOG_W(TAG, "Bad DESFire GET_VERSION responce");
         }
 
         // Get free memory
         tx_rx->tx_bits = 8 * mf_df_prepare_get_free_memory(tx_rx->tx_data);
-        if(furi_hal_nfc_tx_rx_full(tx_rx)) {
+        if(furry_hal_nfc_tx_rx_full(tx_rx)) {
             data->free_memory = malloc(sizeof(MifareDesfireFreeMemory));
             if(!mf_df_parse_get_free_memory_response(
                    tx_rx->rx_data, tx_rx->rx_bits / 8, data->free_memory)) {
-                FURI_LOG_D(TAG, "Bad DESFire GET_FREE_MEMORY response (normal for pre-EV1 cards)");
+                FURRY_LOG_D(TAG, "Bad DESFire GET_FREE_MEMORY response (normal for pre-EV1 cards)");
                 free(data->free_memory);
                 data->free_memory = NULL;
             }
@@ -503,13 +503,13 @@ bool mf_df_read_card(FuriHalNfcTxRxContext* tx_rx, MifareDesfireData* data) {
 
         // Get key settings
         tx_rx->tx_bits = 8 * mf_df_prepare_get_key_settings(tx_rx->tx_data);
-        if(!furi_hal_nfc_tx_rx_full(tx_rx)) {
-            FURI_LOG_D(TAG, "Bad exchange getting key settings");
+        if(!furry_hal_nfc_tx_rx_full(tx_rx)) {
+            FURRY_LOG_D(TAG, "Bad exchange getting key settings");
         } else {
             data->master_key_settings = malloc(sizeof(MifareDesfireKeySettings));
             if(!mf_df_parse_get_key_settings_response(
                    tx_rx->rx_data, tx_rx->rx_bits / 8, data->master_key_settings)) {
-                FURI_LOG_W(TAG, "Bad DESFire GET_KEY_SETTINGS response");
+                FURRY_LOG_W(TAG, "Bad DESFire GET_KEY_SETTINGS response");
                 free(data->master_key_settings);
                 data->master_key_settings = NULL;
             } else {
@@ -517,8 +517,8 @@ bool mf_df_read_card(FuriHalNfcTxRxContext* tx_rx, MifareDesfireData* data) {
                     &data->master_key_settings->key_version_head;
                 for(uint8_t key_id = 0; key_id < data->master_key_settings->max_keys; key_id++) {
                     tx_rx->tx_bits = 8 * mf_df_prepare_get_key_version(tx_rx->tx_data, key_id);
-                    if(!furi_hal_nfc_tx_rx_full(tx_rx)) {
-                        FURI_LOG_W(TAG, "Bad exchange getting key version");
+                    if(!furry_hal_nfc_tx_rx_full(tx_rx)) {
+                        FURRY_LOG_W(TAG, "Bad exchange getting key version");
                         continue;
                     }
                     MifareDesfireKeyVersion* key_version = malloc(sizeof(MifareDesfireKeyVersion));
@@ -526,7 +526,7 @@ bool mf_df_read_card(FuriHalNfcTxRxContext* tx_rx, MifareDesfireData* data) {
                     key_version->id = key_id;
                     if(!mf_df_parse_get_key_version_response(
                            tx_rx->rx_data, tx_rx->rx_bits / 8, key_version)) {
-                        FURI_LOG_W(TAG, "Bad DESFire GET_KEY_VERSION response");
+                        FURRY_LOG_W(TAG, "Bad DESFire GET_KEY_VERSION response");
                         free(key_version);
                         continue;
                     }
@@ -538,34 +538,34 @@ bool mf_df_read_card(FuriHalNfcTxRxContext* tx_rx, MifareDesfireData* data) {
 
         // Get application IDs
         tx_rx->tx_bits = 8 * mf_df_prepare_get_application_ids(tx_rx->tx_data);
-        if(!furi_hal_nfc_tx_rx_full(tx_rx)) {
-            FURI_LOG_W(TAG, "Bad exchange getting application IDs");
+        if(!furry_hal_nfc_tx_rx_full(tx_rx)) {
+            FURRY_LOG_W(TAG, "Bad exchange getting application IDs");
             break;
         } else {
             if(!mf_df_parse_get_application_ids_response(
                    tx_rx->rx_data, tx_rx->rx_bits / 8, &data->app_head)) {
-                FURI_LOG_W(TAG, "Bad DESFire GET_APPLICATION_IDS response");
+                FURRY_LOG_W(TAG, "Bad DESFire GET_APPLICATION_IDS response");
                 break;
             }
         }
 
         for(MifareDesfireApplication* app = data->app_head; app; app = app->next) {
             tx_rx->tx_bits = 8 * mf_df_prepare_select_application(tx_rx->tx_data, app->id);
-            if(!furi_hal_nfc_tx_rx_full(tx_rx) ||
+            if(!furry_hal_nfc_tx_rx_full(tx_rx) ||
                !mf_df_parse_select_application_response(
                    tx_rx->rx_data, tx_rx->rx_bits / 8)) { //-V1051
-                FURI_LOG_W(TAG, "Bad exchange selecting application");
+                FURRY_LOG_W(TAG, "Bad exchange selecting application");
                 continue;
             }
             tx_rx->tx_bits = 8 * mf_df_prepare_get_key_settings(tx_rx->tx_data);
-            if(!furi_hal_nfc_tx_rx_full(tx_rx)) {
-                FURI_LOG_W(TAG, "Bad exchange getting key settings");
+            if(!furry_hal_nfc_tx_rx_full(tx_rx)) {
+                FURRY_LOG_W(TAG, "Bad exchange getting key settings");
             } else {
                 app->key_settings = malloc(sizeof(MifareDesfireKeySettings));
                 memset(app->key_settings, 0, sizeof(MifareDesfireKeySettings));
                 if(!mf_df_parse_get_key_settings_response(
                        tx_rx->rx_data, tx_rx->rx_bits / 8, app->key_settings)) {
-                    FURI_LOG_W(TAG, "Bad DESFire GET_KEY_SETTINGS response");
+                    FURRY_LOG_W(TAG, "Bad DESFire GET_KEY_SETTINGS response");
                     free(app->key_settings);
                     app->key_settings = NULL;
                     continue;
@@ -574,8 +574,8 @@ bool mf_df_read_card(FuriHalNfcTxRxContext* tx_rx, MifareDesfireData* data) {
                 MifareDesfireKeyVersion** key_version_head = &app->key_settings->key_version_head;
                 for(uint8_t key_id = 0; key_id < app->key_settings->max_keys; key_id++) {
                     tx_rx->tx_bits = 8 * mf_df_prepare_get_key_version(tx_rx->tx_data, key_id);
-                    if(!furi_hal_nfc_tx_rx_full(tx_rx)) {
-                        FURI_LOG_W(TAG, "Bad exchange getting key version");
+                    if(!furry_hal_nfc_tx_rx_full(tx_rx)) {
+                        FURRY_LOG_W(TAG, "Bad exchange getting key version");
                         continue;
                     }
                     MifareDesfireKeyVersion* key_version = malloc(sizeof(MifareDesfireKeyVersion));
@@ -583,7 +583,7 @@ bool mf_df_read_card(FuriHalNfcTxRxContext* tx_rx, MifareDesfireData* data) {
                     key_version->id = key_id;
                     if(!mf_df_parse_get_key_version_response(
                            tx_rx->rx_data, tx_rx->rx_bits / 8, key_version)) {
-                        FURI_LOG_W(TAG, "Bad DESFire GET_KEY_VERSION response");
+                        FURRY_LOG_W(TAG, "Bad DESFire GET_KEY_VERSION response");
                         free(key_version);
                         continue;
                     }
@@ -593,24 +593,24 @@ bool mf_df_read_card(FuriHalNfcTxRxContext* tx_rx, MifareDesfireData* data) {
             }
 
             tx_rx->tx_bits = 8 * mf_df_prepare_get_file_ids(tx_rx->tx_data);
-            if(!furi_hal_nfc_tx_rx_full(tx_rx)) {
-                FURI_LOG_W(TAG, "Bad exchange getting file IDs");
+            if(!furry_hal_nfc_tx_rx_full(tx_rx)) {
+                FURRY_LOG_W(TAG, "Bad exchange getting file IDs");
             } else {
                 if(!mf_df_parse_get_file_ids_response(
                        tx_rx->rx_data, tx_rx->rx_bits / 8, &app->file_head)) {
-                    FURI_LOG_W(TAG, "Bad DESFire GET_FILE_IDS response");
+                    FURRY_LOG_W(TAG, "Bad DESFire GET_FILE_IDS response");
                 }
             }
 
             for(MifareDesfireFile* file = app->file_head; file; file = file->next) {
                 tx_rx->tx_bits = 8 * mf_df_prepare_get_file_settings(tx_rx->tx_data, file->id);
-                if(!furi_hal_nfc_tx_rx_full(tx_rx)) {
-                    FURI_LOG_W(TAG, "Bad exchange getting file settings");
+                if(!furry_hal_nfc_tx_rx_full(tx_rx)) {
+                    FURRY_LOG_W(TAG, "Bad exchange getting file settings");
                     continue;
                 }
                 if(!mf_df_parse_get_file_settings_response(
                        tx_rx->rx_data, tx_rx->rx_bits / 8, file)) {
-                    FURI_LOG_W(TAG, "Bad DESFire GET_FILE_SETTINGS response");
+                    FURRY_LOG_W(TAG, "Bad DESFire GET_FILE_SETTINGS response");
                     continue;
                 }
                 switch(file->type) {
@@ -627,12 +627,12 @@ bool mf_df_read_card(FuriHalNfcTxRxContext* tx_rx, MifareDesfireData* data) {
                         8 * mf_df_prepare_read_records(tx_rx->tx_data, file->id, 0, 0);
                     break;
                 }
-                if(!furi_hal_nfc_tx_rx_full(tx_rx)) {
-                    FURI_LOG_W(TAG, "Bad exchange reading file %d", file->id);
+                if(!furry_hal_nfc_tx_rx_full(tx_rx)) {
+                    FURRY_LOG_W(TAG, "Bad exchange reading file %d", file->id);
                     continue;
                 }
                 if(!mf_df_parse_read_data_response(tx_rx->rx_data, tx_rx->rx_bits / 8, file)) {
-                    FURI_LOG_W(TAG, "Bad response reading file %d", file->id);
+                    FURRY_LOG_W(TAG, "Bad response reading file %d", file->id);
                     continue;
                 }
             }

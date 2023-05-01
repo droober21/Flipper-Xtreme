@@ -36,9 +36,9 @@ static bool dallas_ds1992_write_copy(OneWireHost*, iButtonProtocolData*);
 static void dallas_ds1992_emulate(OneWireSlave*, iButtonProtocolData*);
 static bool dallas_ds1992_load(FlipperFormat*, uint32_t, iButtonProtocolData*);
 static bool dallas_ds1992_save(FlipperFormat*, const iButtonProtocolData*);
-static void dallas_ds1992_render_data(FuriString*, const iButtonProtocolData*);
-static void dallas_ds1992_render_brief_data(FuriString*, const iButtonProtocolData*);
-static void dallas_ds1992_render_error(FuriString*, const iButtonProtocolData*);
+static void dallas_ds1992_render_data(FurryString*, const iButtonProtocolData*);
+static void dallas_ds1992_render_brief_data(FurryString*, const iButtonProtocolData*);
+static void dallas_ds1992_render_error(FurryString*, const iButtonProtocolData*);
 static bool dallas_ds1992_is_data_valid(const iButtonProtocolData*);
 static void dallas_ds1992_get_editable_data(iButtonEditableData*, iButtonProtocolData*);
 static void dallas_ds1992_apply_edits(iButtonProtocolData*);
@@ -88,7 +88,7 @@ bool dallas_ds1992_write_copy(OneWireHost* host, iButtonProtocolData* protocol_d
 }
 
 static bool dallas_ds1992_reset_callback(bool is_short, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DS1992ProtocolData* data = context;
 
     if(!is_short) {
@@ -100,7 +100,7 @@ static bool dallas_ds1992_reset_callback(bool is_short, void* context) {
 }
 
 static bool dallas_ds1992_command_callback(uint8_t command, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DS1992ProtocolData* data = context;
     OneWireSlave* bus = data->state.bus;
 
@@ -182,7 +182,7 @@ bool dallas_ds1992_save(FlipperFormat* ff, const iButtonProtocolData* protocol_d
     return success;
 }
 
-void dallas_ds1992_render_data(FuriString* result, const iButtonProtocolData* protocol_data) {
+void dallas_ds1992_render_data(FurryString* result, const iButtonProtocolData* protocol_data) {
     const DS1992ProtocolData* data = protocol_data;
     pretty_format_bytes_hex_canonical(
         result,
@@ -192,13 +192,13 @@ void dallas_ds1992_render_data(FuriString* result, const iButtonProtocolData* pr
         DS1992_SRAM_DATA_SIZE);
 }
 
-void dallas_ds1992_render_brief_data(FuriString* result, const iButtonProtocolData* protocol_data) {
+void dallas_ds1992_render_brief_data(FurryString* result, const iButtonProtocolData* protocol_data) {
     const DS1992ProtocolData* data = protocol_data;
     dallas_common_render_brief_data(
         result, &data->rom_data, data->sram_data, DS1992_SRAM_DATA_SIZE, DS1992_MEMORY_TYPE);
 }
 
-void dallas_ds1992_render_error(FuriString* result, const iButtonProtocolData* protocol_data) {
+void dallas_ds1992_render_error(FurryString* result, const iButtonProtocolData* protocol_data) {
     const DS1992ProtocolData* data = protocol_data;
 
     if(!dallas_common_is_valid_crc(&data->rom_data)) {

@@ -2,12 +2,12 @@
 
 bool wifi_marauder_scene_user_input_validator_number_callback(
     const char* text,
-    FuriString* error,
+    FurryString* error,
     void* context) {
     UNUSED(context);
     for(int i = 0; text[i] != '\0'; i++) {
         if(text[i] < '0' || text[i] > '9') {
-            furi_string_printf(error, "This is not\na valid\nnumber!");
+            furry_string_printf(error, "This is not\na valid\nnumber!");
             return false;
         }
     }
@@ -16,11 +16,11 @@ bool wifi_marauder_scene_user_input_validator_number_callback(
 
 bool wifi_marauder_scene_user_input_validator_file_callback(
     const char* text,
-    FuriString* error,
+    FurryString* error,
     void* context) {
     UNUSED(context);
     if(strlen(text) == 0) {
-        furi_string_printf(error, "File name\ncannot be\nblank!");
+        furry_string_printf(error, "File name\ncannot be\nblank!");
         return false;
     }
     return true;

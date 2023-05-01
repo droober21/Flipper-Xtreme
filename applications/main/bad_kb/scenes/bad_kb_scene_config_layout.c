@@ -1,17 +1,17 @@
 #include "../bad_kb_app.h"
-#include "furi_hal_power.h"
-#include "furi_hal_usb.h"
+#include "furry_hal_power.h"
+#include "furry_hal_usb.h"
 #include <storage/storage.h>
 
 static bool bad_kb_layout_select(BadKbApp* bad_kb) {
-    furi_assert(bad_kb);
+    furry_assert(bad_kb);
 
-    FuriString* predefined_path;
-    predefined_path = furi_string_alloc();
-    if(!furi_string_empty(bad_kb->keyboard_layout)) {
-        furi_string_set(predefined_path, bad_kb->keyboard_layout);
+    FurryString* predefined_path;
+    predefined_path = furry_string_alloc();
+    if(!furry_string_empty(bad_kb->keyboard_layout)) {
+        furry_string_set(predefined_path, bad_kb->keyboard_layout);
     } else {
-        furi_string_set(predefined_path, BAD_KB_APP_PATH_LAYOUT_FOLDER);
+        furry_string_set(predefined_path, BAD_KB_APP_PATH_LAYOUT_FOLDER);
     }
 
     DialogsFileBrowserOptions browser_options;
@@ -24,7 +24,7 @@ static bool bad_kb_layout_select(BadKbApp* bad_kb) {
     bool res = dialog_file_browser_show(
         bad_kb->dialogs, bad_kb->keyboard_layout, predefined_path, &browser_options);
 
-    furi_string_free(predefined_path);
+    furry_string_free(predefined_path);
     return res;
 }
 

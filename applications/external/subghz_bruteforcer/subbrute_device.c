@@ -22,7 +22,7 @@ SubBruteDevice* subbrute_device_alloc() {
     subghz_environment_set_protocol_registry(
         instance->environment, (void*)&subghz_protocol_registry);
 
-#ifdef FURI_DEBUG
+#ifdef FURRY_DEBUG
     subbrute_device_attack_set_default_values(instance, SubBruteAttackLoadFile);
 #else
     subbrute_device_attack_set_default_values(instance, SubBruteAttackCAME12bit433);
@@ -31,7 +31,7 @@ SubBruteDevice* subbrute_device_alloc() {
 }
 
 void subbrute_device_free(SubBruteDevice* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     // I don't know how to free this
     instance->decoder_result = NULL;
@@ -80,18 +80,18 @@ uint64_t subbrute_device_add_step(SubBruteDevice* instance, int8_t step) {
 }
 
 bool subbrute_device_save_file(SubBruteDevice* instance, const char* dev_file_name) {
-    furi_assert(instance);
+    furry_assert(instance);
 
-#ifdef FURI_DEBUG
-    FURI_LOG_D(TAG, "subbrute_device_save_file: %s", dev_file_name);
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(TAG, "subbrute_device_save_file: %s", dev_file_name);
 #endif
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* file = flipper_format_file_alloc(storage);
     bool result = false;
     do {
         if(!flipper_format_file_open_always(file, dev_file_name)) {
-            FURI_LOG_E(TAG, "Failed to open file: %s", dev_file_name);
+            FURRY_LOG_E(TAG, "Failed to open file: %s", dev_file_name);
             break;
         }
         Stream* stream = flipper_format_get_raw_stream(file);
@@ -122,12 +122,12 @@ bool subbrute_device_save_file(SubBruteDevice* instance, const char* dev_file_na
     } while(false);
 
     if(!result) {
-        FURI_LOG_E(TAG, "subbrute_device_save_file failed!");
+        FURRY_LOG_E(TAG, "subbrute_device_save_file failed!");
     }
 
     flipper_format_file_close(file);
     flipper_format_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return result;
 }
@@ -136,9 +136,9 @@ SubBruteFileResult subbrute_device_attack_set(
     SubBruteDevice* instance,
     SubBruteAttacks type,
     uint8_t extra_repeats) {
-    furi_assert(instance);
-#ifdef FURI_DEBUG
-    FURI_LOG_D(TAG, "subbrute_device_attack_set: %d, extra_repeats: %d", type, extra_repeats);
+    furry_assert(instance);
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(TAG, "subbrute_device_attack_set: %d, extra_repeats: %d", type, extra_repeats);
 #endif
     subbrute_device_attack_set_default_values(instance, type);
 
@@ -152,14 +152,14 @@ SubBruteFileResult subbrute_device_attack_set(
     // For non-file types we didn't set SubGhzProtocolDecoderBase
     instance->receiver = subghz_receiver_alloc_init(instance->environment);
     subghz_receiver_set_filter(instance->receiver, SubGhzProtocolFlag_Decodable);
-    furi_hal_subghz_reset();
+    furry_hal_subghz_reset();
 
     uint8_t protocol_check_result = SubBruteFileResultProtocolNotFound;
-#ifdef FURI_DEBUG
+#ifdef FURRY_DEBUG
     uint8_t bits;
     uint32_t te;
     uint8_t repeat;
-    FuriHalSubGhzPreset preset;
+    FurryHalSubGhzPreset preset;
     SubBruteFileProtocol file;
 #endif
     if(type != SubBruteAttackLoadFile) {
@@ -168,7 +168,7 @@ SubBruteFileResult subbrute_device_attack_set(
 
         if(!instance->decoder_result ||
            instance->decoder_result->protocol->type == SubGhzProtocolTypeDynamic) {
-            FURI_LOG_E(TAG, "Can't load SubGhzProtocolDecoderBase in phase non-file decoder set");
+            FURRY_LOG_E(TAG, "Can't load SubGhzProtocolDecoderBase in phase non-file decoder set");
         } else {
             protocol_check_result = SubBruteFileResultOk;
 
@@ -176,7 +176,7 @@ SubBruteFileResult subbrute_device_attack_set(
             instance->max_value = subbrute_protocol_calc_max_value(
                 instance->attack, instance->protocol_info->bits, instance->two_bytes);
         }
-#ifdef FURI_DEBUG
+#ifdef FURRY_DEBUG
         bits = instance->protocol_info->bits;
         te = instance->protocol_info->te;
         repeat = instance->protocol_info->repeat + instance->extra_repeats;
@@ -190,7 +190,7 @@ SubBruteFileResult subbrute_device_attack_set(
         // Calc max value
         instance->max_value = subbrute_protocol_calc_max_value(
             instance->attack, instance->file_protocol_info->bits, instance->two_bytes);
-#ifdef FURI_DEBUG
+#ifdef FURRY_DEBUG
         bits = instance->file_protocol_info->bits;
         te = instance->file_protocol_info->te;
         repeat = instance->file_protocol_info->repeat + instance->extra_repeats;
@@ -206,8 +206,8 @@ SubBruteFileResult subbrute_device_attack_set(
         return SubBruteFileResultProtocolNotFound;
     }
 
-#ifdef FURI_DEBUG
-    FURI_LOG_I(
+#ifdef FURRY_DEBUG
+    FURRY_LOG_I(
         TAG,
         "subbrute_device_attack_set: %s, bits: %d, preset: %s, file: %s, te: %ld, repeat: %d, max_value: %lld",
         subbrute_protocol_name(instance->attack),
@@ -223,53 +223,53 @@ SubBruteFileResult subbrute_device_attack_set(
 }
 
 uint8_t subbrute_device_load_from_file(SubBruteDevice* instance, const char* file_path) {
-    furi_assert(instance);
-#ifdef FURI_DEBUG
-    FURI_LOG_D(TAG, "subbrute_device_load_from_file: %s", file_path);
+    furry_assert(instance);
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(TAG, "subbrute_device_load_from_file: %s", file_path);
 #endif
     SubBruteFileResult result = SubBruteFileResultUnknown;
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* fff_data_file = flipper_format_file_alloc(storage);
 
     subbrute_device_free_protocol_info(instance);
     instance->file_protocol_info = malloc(sizeof(SubBruteProtocol));
 
-    FuriString* temp_str;
-    temp_str = furi_string_alloc();
+    FurryString* temp_str;
+    temp_str = furry_string_alloc();
     uint32_t temp_data32;
 
     instance->receiver = subghz_receiver_alloc_init(instance->environment);
     subghz_receiver_set_filter(instance->receiver, SubGhzProtocolFlag_Decodable);
-    furi_hal_subghz_reset();
+    furry_hal_subghz_reset();
 
     do {
         if(!flipper_format_file_open_existing(fff_data_file, file_path)) {
-            FURI_LOG_E(TAG, "Error open file %s", file_path);
+            FURRY_LOG_E(TAG, "Error open file %s", file_path);
             result = SubBruteFileResultErrorOpenFile;
             break;
         }
         if(!flipper_format_read_header(fff_data_file, temp_str, &temp_data32)) {
-            FURI_LOG_E(TAG, "Missing or incorrect header");
+            FURRY_LOG_E(TAG, "Missing or incorrect header");
             result = SubBruteFileResultMissingOrIncorrectHeader;
             break;
         }
 
         // Frequency
         if(!flipper_format_read_uint32(fff_data_file, "Frequency", &temp_data32, 1)) {
-            FURI_LOG_E(TAG, "Missing or incorrect Frequency");
+            FURRY_LOG_E(TAG, "Missing or incorrect Frequency");
             result = SubBruteFileResultMissingOrIncorrectFrequency;
             break;
         }
         instance->file_protocol_info->frequency = temp_data32;
-        if(!furi_hal_subghz_is_tx_allowed(instance->file_protocol_info->frequency)) {
+        if(!furry_hal_subghz_is_tx_allowed(instance->file_protocol_info->frequency)) {
             result = SubBruteFileResultFrequencyNotAllowed;
             break;
         }
 
         // Preset
         if(!flipper_format_read_string(fff_data_file, "Preset", temp_str)) {
-            FURI_LOG_E(TAG, "Preset FAIL");
+            FURRY_LOG_E(TAG, "Preset FAIL");
             result = SubBruteFileResultPresetInvalid;
             break;
         }
@@ -278,49 +278,49 @@ uint8_t subbrute_device_load_from_file(SubBruteDevice* instance, const char* fil
         const char* protocol_file = NULL;
         // Protocol
         if(!flipper_format_read_string(fff_data_file, "Protocol", temp_str)) {
-            FURI_LOG_E(TAG, "Missing Protocol");
+            FURRY_LOG_E(TAG, "Missing Protocol");
             result = SubBruteFileResultMissingProtocol;
             break;
         }
         instance->file_protocol_info->file = subbrute_protocol_file_protocol_name(temp_str);
         protocol_file = subbrute_protocol_file(instance->file_protocol_info->file);
-#ifdef FURI_DEBUG
-        FURI_LOG_D(TAG, "Protocol: %s", protocol_file);
+#ifdef FURRY_DEBUG
+        FURRY_LOG_D(TAG, "Protocol: %s", protocol_file);
 #endif
 
         instance->decoder_result = subghz_receiver_search_decoder_base_by_name(
-            instance->receiver, furi_string_get_cstr(temp_str));
+            instance->receiver, furry_string_get_cstr(temp_str));
 
         if((!instance->decoder_result) || (strcmp(protocol_file, "RAW") == 0) ||
            (strcmp(protocol_file, "Unknown") == 0)) {
-            FURI_LOG_E(TAG, "Protocol unsupported");
+            FURRY_LOG_E(TAG, "Protocol unsupported");
             result = SubBruteFileResultProtocolNotSupported;
             break;
         }
 
         if(instance->decoder_result->protocol->type == SubGhzProtocolTypeDynamic) {
-            FURI_LOG_E(TAG, "Protocol is dynamic - not supported");
+            FURRY_LOG_E(TAG, "Protocol is dynamic - not supported");
             result = SubBruteFileResultDynamicProtocolNotValid;
             break;
         }
-#ifdef FURI_DEBUG
-        FURI_LOG_D(TAG, "Decoder: %s", instance->decoder_result->protocol->name);
+#ifdef FURRY_DEBUG
+        FURRY_LOG_D(TAG, "Decoder: %s", instance->decoder_result->protocol->name);
 #endif
 
         // Bit
         if(!flipper_format_read_uint32(fff_data_file, "Bit", &temp_data32, 1)) {
-            FURI_LOG_E(TAG, "Missing or incorrect Bit");
+            FURRY_LOG_E(TAG, "Missing or incorrect Bit");
             result = SubBruteFileResultMissingOrIncorrectBit;
             break;
         }
         instance->file_protocol_info->bits = temp_data32;
-#ifdef FURI_DEBUG
-        FURI_LOG_D(TAG, "Bit: %d", instance->file_protocol_info->bits);
+#ifdef FURRY_DEBUG
+        FURRY_LOG_D(TAG, "Bit: %d", instance->file_protocol_info->bits);
 #endif
 
         uint8_t key_data[sizeof(uint64_t)] = {0};
         if(!flipper_format_read_hex(fff_data_file, "Key", key_data, sizeof(uint64_t))) {
-            FURI_LOG_E(TAG, "Missing Key");
+            FURRY_LOG_E(TAG, "Missing Key");
             result = SubBruteFileResultMissingOrIncorrectKey;
             break;
         }
@@ -328,14 +328,14 @@ uint8_t subbrute_device_load_from_file(SubBruteDevice* instance, const char* fil
         for(uint8_t i = 0; i < sizeof(uint64_t); i++) {
             data = (data << 8) | key_data[i];
         }
-#if FURI_DEBUG
-        FURI_LOG_D(TAG, "Key: %.16llX", data);
+#if FURRY_DEBUG
+        FURRY_LOG_D(TAG, "Key: %.16llX", data);
 #endif
         instance->key_from_file = data;
 
         // TE
         if(!flipper_format_read_uint32(fff_data_file, "TE", &temp_data32, 1)) {
-            FURI_LOG_E(TAG, "Missing or incorrect TE");
+            FURRY_LOG_E(TAG, "Missing or incorrect TE");
             //result = SubBruteFileResultMissingOrIncorrectTe;
             //break;
         } else {
@@ -344,13 +344,13 @@ uint8_t subbrute_device_load_from_file(SubBruteDevice* instance, const char* fil
 
         // Repeat
         if(flipper_format_read_uint32(fff_data_file, "Repeat", &temp_data32, 1)) {
-#ifdef FURI_DEBUG
-            FURI_LOG_D(TAG, "Repeat: %ld", temp_data32);
+#ifdef FURRY_DEBUG
+            FURRY_LOG_D(TAG, "Repeat: %ld", temp_data32);
 #endif
             instance->file_protocol_info->repeat = (uint8_t)temp_data32;
         } else {
-#ifdef FURI_DEBUG
-            FURI_LOG_D(TAG, "Repeat: 3 (default)");
+#ifdef FURRY_DEBUG
+            FURRY_LOG_D(TAG, "Repeat: 3 (default)");
 #endif
             instance->file_protocol_info->repeat = 3;
         }
@@ -358,10 +358,10 @@ uint8_t subbrute_device_load_from_file(SubBruteDevice* instance, const char* fil
         result = SubBruteFileResultOk;
     } while(0);
 
-    furi_string_free(temp_str);
+    furry_string_free(temp_str);
     flipper_format_file_close(fff_data_file);
     flipper_format_free(fff_data_file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     subghz_receiver_free(instance->receiver);
 
@@ -369,8 +369,8 @@ uint8_t subbrute_device_load_from_file(SubBruteDevice* instance, const char* fil
     instance->receiver = NULL;
 
     if(result == SubBruteFileResultOk) {
-#ifdef FURI_DEBUG
-        FURI_LOG_D(TAG, "Loaded successfully");
+#ifdef FURRY_DEBUG
+        FURRY_LOG_D(TAG, "Loaded successfully");
 #endif
     } else {
         subbrute_device_free_protocol_info(instance);
@@ -382,9 +382,9 @@ uint8_t subbrute_device_load_from_file(SubBruteDevice* instance, const char* fil
 void subbrute_device_attack_set_default_values(
     SubBruteDevice* instance,
     SubBruteAttacks default_attack) {
-    furi_assert(instance);
-#ifdef FURI_DEBUG
-    FURI_LOG_D(TAG, "subbrute_device_attack_set_default_values");
+    furry_assert(instance);
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(TAG, "subbrute_device_attack_set_default_values");
 #endif
     instance->attack = default_attack;
     instance->current_step = 0x00;
@@ -449,7 +449,7 @@ const char* subbrute_device_error_get_desc(SubBruteFileResult error_id) {
 }
 
 void subbrute_device_free_protocol_info(SubBruteDevice* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     instance->protocol_info = NULL;
     if(instance->file_protocol_info) {
         free(instance->file_protocol_info);

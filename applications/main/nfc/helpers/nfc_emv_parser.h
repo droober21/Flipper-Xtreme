@@ -15,7 +15,7 @@ bool nfc_emv_parser_get_aid_name(
     Storage* storage,
     uint8_t* aid,
     uint8_t aid_len,
-    FuriString* aid_name);
+    FurryString* aid_name);
 
 /** Get country name by country code
  * @param storage Storage instance
@@ -26,7 +26,7 @@ bool nfc_emv_parser_get_aid_name(
 bool nfc_emv_parser_get_country_name(
     Storage* storage,
     uint16_t country_code,
-    FuriString* country_name);
+    FurryString* country_name);
 
 /** Get currency name by currency code
  * @param storage Storage instance
@@ -37,4 +37,4 @@ bool nfc_emv_parser_get_country_name(
 bool nfc_emv_parser_get_currency_name(
     Storage* storage,
     uint16_t currency_code,
-    FuriString* currency_name);
+    FurryString* currency_name);

@@ -1,18 +1,18 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #include <cli/cli.h>
 #include <toolbox/args.h>
 
 #include <one_wire/one_wire_host.h>
 
-static void onewire_cli(Cli* cli, FuriString* args, void* context);
+static void onewire_cli(Cli* cli, FurryString* args, void* context);
 
 void onewire_on_system_start() {
 #ifdef SRV_CLI
-    Cli* cli = furi_record_open(RECORD_CLI);
+    Cli* cli = furry_record_open(RECORD_CLI);
     cli_add_command(cli, "onewire", CliCommandFlagDefault, onewire_cli, cli);
-    furi_record_close(RECORD_CLI);
+    furry_record_close(RECORD_CLI);
 #else
     UNUSED(onewire_cli);
 #endif
@@ -32,7 +32,7 @@ static void onewire_cli_search(Cli* cli) {
     printf("Search started\r\n");
 
     onewire_host_start(onewire);
-    furi_hal_power_enable_otg();
+    furry_hal_power_enable_otg();
 
     while(!done) {
         if(onewire_host_search(onewire, address, OneWireHostSearchModeNormal) != 1) {
@@ -46,27 +46,27 @@ static void onewire_cli_search(Cli* cli) {
             }
             printf("\r\n");
         }
-        furi_delay_ms(100);
+        furry_delay_ms(100);
     }
 
-    furi_hal_power_disable_otg();
+    furry_hal_power_disable_otg();
     onewire_host_free(onewire);
 }
 
-void onewire_cli(Cli* cli, FuriString* args, void* context) {
+void onewire_cli(Cli* cli, FurryString* args, void* context) {
     UNUSED(context);
-    FuriString* cmd;
-    cmd = furi_string_alloc();
+    FurryString* cmd;
+    cmd = furry_string_alloc();
 
     if(!args_read_string_and_trim(args, cmd)) {
-        furi_string_free(cmd);
+        furry_string_free(cmd);
         onewire_cli_print_usage();
         return;
     }
 
-    if(furi_string_cmp_str(cmd, "search") == 0) {
+    if(furry_string_cmp_str(cmd, "search") == 0) {
         onewire_cli_search(cli);
     }
 
-    furi_string_free(cmd);
+    furry_string_free(cmd);
 }

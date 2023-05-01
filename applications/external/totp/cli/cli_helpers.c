@@ -15,7 +15,7 @@ bool totp_cli_ensure_authenticated(const PluginState* plugin_state, Cli* cli) {
         while((plugin_state->current_scene == TotpSceneAuthentication ||
                plugin_state->current_scene == TotpSceneNone) &&
               !cli_cmd_interrupt_received(cli)) {
-            furi_delay_ms(100);
+            furry_delay_ms(100);
         }
 
         totp_cli_delete_last_line();
@@ -30,12 +30,12 @@ bool totp_cli_ensure_authenticated(const PluginState* plugin_state, Cli* cli) {
     return true;
 }
 
-void totp_cli_force_close_app(FuriMessageQueue* event_queue) {
+void totp_cli_force_close_app(FurryMessageQueue* event_queue) {
     PluginEvent event = {.type = EventForceCloseApp};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
-bool totp_cli_read_line(Cli* cli, FuriString* out_str, bool mask_user_input) {
+bool totp_cli_read_line(Cli* cli, FurryString* out_str, bool mask_user_input) {
     uint8_t c;
     while(cli_read(cli, &c, 1) == 1) {
         if(c == CliSymbolAsciiEsc) {
@@ -56,12 +56,12 @@ bool totp_cli_read_line(Cli* cli, FuriString* out_str, bool mask_user_input) {
                 putc(c, stdout);
             }
             fflush(stdout);
-            furi_string_push_back(out_str, c);
+            furry_string_push_back(out_str, c);
         } else if(c == CliSymbolAsciiBackspace || c == CliSymbolAsciiDel) {
-            size_t out_str_size = furi_string_size(out_str);
+            size_t out_str_size = furry_string_size(out_str);
             if(out_str_size > 0) {
                 totp_cli_delete_last_char();
-                furi_string_left(out_str, out_str_size - 1);
+                furry_string_left(out_str, out_str_size - 1);
             }
         } else if(c == CliSymbolAsciiCR) {
             cli_nl();
@@ -72,7 +72,7 @@ bool totp_cli_read_line(Cli* cli, FuriString* out_str, bool mask_user_input) {
     return true;
 }
 
-bool args_read_uint8_and_trim(FuriString* args, uint8_t* value) {
+bool args_read_uint8_and_trim(FurryString* args, uint8_t* value) {
     int int_value;
     if(!args_read_int_and_trim(args, &int_value) || int_value < 0 || int_value > UINT8_MAX) {
         return false;
@@ -82,12 +82,12 @@ bool args_read_uint8_and_trim(FuriString* args, uint8_t* value) {
     return true;
 }
 
-void furi_string_secure_free(FuriString* str) {
-    for(long i = furi_string_size(str) - 1; i >= 0; i--) {
-        furi_string_set_char(str, i, '\0');
+void furry_string_secure_free(FurryString* str) {
+    for(long i = furry_string_size(str) - 1; i >= 0; i--) {
+        furry_string_set_char(str, i, '\0');
     }
 
-    furi_string_free(str);
+    furry_string_free(str);
 }
 
 void totp_cli_print_invalid_arguments() {

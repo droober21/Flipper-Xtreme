@@ -17,7 +17,7 @@
 */
 
 #include "rgb_backlight.h"
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include <storage/storage.h>
 
 #define RGB_BACKLIGHT_SETTINGS_VERSION 5
@@ -63,16 +63,16 @@ const char* rgb_backlight_get_color_text(uint8_t index) {
 
 void rgb_backlight_load_settings(void) {
     //Не загружать данные из внутренней памяти при загрузке в режиме DFU
-    if(!furi_hal_is_normal_boot()) {
+    if(!furry_hal_is_normal_boot()) {
         rgb_settings.settings_is_loaded = true;
         return;
     }
 
     RGBBacklightSettings settings;
-    File* file = storage_file_alloc(furi_record_open(RECORD_STORAGE));
+    File* file = storage_file_alloc(furry_record_open(RECORD_STORAGE));
     const size_t settings_size = sizeof(RGBBacklightSettings);
 
-    FURI_LOG_I(TAG, "loading settings from \"%s\"", RGB_BACKLIGHT_SETTINGS_PATH);
+    FURRY_LOG_I(TAG, "loading settings from \"%s\"", RGB_BACKLIGHT_SETTINGS_PATH);
     bool fs_result =
         storage_file_open(file, RGB_BACKLIGHT_SETTINGS_PATH, FSAM_READ, FSOM_OPEN_EXISTING);
 
@@ -85,9 +85,9 @@ void rgb_backlight_load_settings(void) {
     }
 
     if(fs_result) {
-        FURI_LOG_I(TAG, "load success");
+        FURRY_LOG_I(TAG, "load success");
         if(settings.version != RGB_BACKLIGHT_SETTINGS_VERSION) {
-            FURI_LOG_E(
+            FURRY_LOG_E(
                 TAG,
                 "version(%d != %d) mismatch",
                 settings.version,
@@ -96,21 +96,21 @@ void rgb_backlight_load_settings(void) {
             memcpy(&rgb_settings, &settings, settings_size);
         }
     } else {
-        FURI_LOG_E(TAG, "load failed, %s", storage_file_get_error_desc(file));
+        FURRY_LOG_E(TAG, "load failed, %s", storage_file_get_error_desc(file));
     }
 
     storage_file_close(file);
     storage_file_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     rgb_settings.settings_is_loaded = true;
 };
 
 void rgb_backlight_save_settings(void) {
     RGBBacklightSettings settings;
-    File* file = storage_file_alloc(furi_record_open(RECORD_STORAGE));
+    File* file = storage_file_alloc(furry_record_open(RECORD_STORAGE));
     const size_t settings_size = sizeof(RGBBacklightSettings);
 
-    FURI_LOG_I(TAG, "saving settings to \"%s\"", RGB_BACKLIGHT_SETTINGS_PATH);
+    FURRY_LOG_I(TAG, "saving settings to \"%s\"", RGB_BACKLIGHT_SETTINGS_PATH);
 
     memcpy(&settings, &rgb_settings, settings_size);
 
@@ -126,14 +126,14 @@ void rgb_backlight_save_settings(void) {
     }
 
     if(fs_result) {
-        FURI_LOG_I(TAG, "save success");
+        FURRY_LOG_I(TAG, "save success");
     } else {
-        FURI_LOG_E(TAG, "save failed, %s", storage_file_get_error_desc(file));
+        FURRY_LOG_E(TAG, "save failed, %s", storage_file_get_error_desc(file));
     }
 
     storage_file_close(file);
     storage_file_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 };
 
 RGBBacklightSettings* rgb_backlight_get_settings(void) {

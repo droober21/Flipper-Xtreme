@@ -1,6 +1,6 @@
 #include "nfc_util.h"
 
-#include <furi.h>
+#include <furry.h>
 
 static const uint8_t nfc_util_odd_byte_parity[256] = {
     1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
@@ -14,8 +14,8 @@ static const uint8_t nfc_util_odd_byte_parity[256] = {
     1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1};
 
 void nfc_util_num2bytes(uint64_t src, uint8_t len, uint8_t* dest) {
-    furi_assert(dest);
-    furi_assert(len <= 8);
+    furry_assert(dest);
+    furry_assert(len <= 8);
 
     while(len--) {
         dest[len] = (uint8_t)src;
@@ -24,8 +24,8 @@ void nfc_util_num2bytes(uint64_t src, uint8_t len, uint8_t* dest) {
 }
 
 uint64_t nfc_util_bytes2num(const uint8_t* src, uint8_t len) {
-    furi_assert(src);
-    furi_assert(len <= 8);
+    furry_assert(src);
+    furry_assert(len <= 8);
 
     uint64_t res = 0;
     while(len--) {
@@ -47,8 +47,8 @@ uint8_t nfc_util_odd_parity8(uint8_t data) {
 }
 
 void nfc_util_odd_parity(const uint8_t* src, uint8_t* dst, uint8_t len) {
-    furi_assert(src);
-    furi_assert(dst);
+    furry_assert(src);
+    furry_assert(dst);
 
     uint8_t parity = 0;
     uint8_t bit = 0;

@@ -1,6 +1,6 @@
 #include "wiegand.h"
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 volatile unsigned long WIEGAND::_cardTempHigh = 0;
 volatile unsigned long WIEGAND::_cardTemp = 0;
@@ -31,9 +31,9 @@ int WIEGAND::getWiegandType() {
 
 bool WIEGAND::available() {
     bool ret;
-    FURI_CRITICAL_ENTER();
+    FURRY_CRITICAL_ENTER();
     ret = DoWiegandConversion();
-    FURI_CRITICAL_EXIT();
+    FURRY_CRITICAL_EXIT();
     return ret;
 }
 
@@ -55,19 +55,19 @@ void WIEGAND::begin() {
     _wiegandType = 0;
     _bitCount = 0;
 
-    furi_hal_gpio_init_simple(pinD0, GpioModeInterruptFall); // Set D0 pin as input
-    furi_hal_gpio_init_simple(pinD1, GpioModeInterruptFall); // Set D1 pin as input
+    furry_hal_gpio_init_simple(pinD0, GpioModeInterruptFall); // Set D0 pin as input
+    furry_hal_gpio_init_simple(pinD1, GpioModeInterruptFall); // Set D1 pin as input
 
-    furi_hal_gpio_add_int_callback(pinD0, input_isr_d0, this);
-    furi_hal_gpio_add_int_callback(pinD1, input_isr_d1, this);
+    furry_hal_gpio_add_int_callback(pinD0, input_isr_d0, this);
+    furry_hal_gpio_add_int_callback(pinD1, input_isr_d1, this);
 }
 
 void WIEGAND::end() {
-    furi_hal_gpio_remove_int_callback(pinD0);
-    furi_hal_gpio_remove_int_callback(pinD1);
+    furry_hal_gpio_remove_int_callback(pinD0);
+    furry_hal_gpio_remove_int_callback(pinD1);
 
-    furi_hal_gpio_init_simple(pinD0, GpioModeAnalog);
-    furi_hal_gpio_init_simple(pinD1, GpioModeAnalog);
+    furry_hal_gpio_init_simple(pinD0, GpioModeAnalog);
+    furry_hal_gpio_init_simple(pinD1, GpioModeAnalog);
 }
 
 void WIEGAND::ReadD0() {

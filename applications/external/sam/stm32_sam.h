@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 
 #ifndef __STM32SAM__
 #define __STM32SAM__

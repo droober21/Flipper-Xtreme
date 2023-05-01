@@ -11,7 +11,7 @@ static void spi_mem_scene_chip_detected_widget_callback(
 }
 
 static void spi_mem_scene_chip_detected_print_chip_info(Widget* widget, SPIMemChip* chip_info) {
-    FuriString* tmp_string = furi_string_alloc();
+    FurryString* tmp_string = furry_string_alloc();
     widget_add_string_element(
         widget,
         40,
@@ -22,25 +22,25 @@ static void spi_mem_scene_chip_detected_print_chip_info(Widget* widget, SPIMemCh
         spi_mem_chip_get_vendor_name(chip_info));
     widget_add_string_element(
         widget, 40, 20, AlignLeft, AlignTop, FontSecondary, spi_mem_chip_get_model_name(chip_info));
-    furi_string_printf(tmp_string, "Size: %zu KB", spi_mem_chip_get_size(chip_info) / 1024);
+    furry_string_printf(tmp_string, "Size: %zu KB", spi_mem_chip_get_size(chip_info) / 1024);
     widget_add_string_element(
-        widget, 40, 28, AlignLeft, AlignTop, FontSecondary, furi_string_get_cstr(tmp_string));
-    furi_string_free(tmp_string);
+        widget, 40, 28, AlignLeft, AlignTop, FontSecondary, furry_string_get_cstr(tmp_string));
+    furry_string_free(tmp_string);
 }
 
 static void spi_mem_scene_chip_detect_draw_next_button(SPIMemApp* app) {
-    FuriString* str = furi_string_alloc();
-    if(app->mode == SPIMemModeRead) furi_string_printf(str, "%s", "Read");
-    if(app->mode == SPIMemModeWrite) furi_string_printf(str, "%s", "Write");
-    if(app->mode == SPIMemModeErase) furi_string_printf(str, "%s", "Erase");
-    if(app->mode == SPIMemModeCompare) furi_string_printf(str, "%s", "Check");
+    FurryString* str = furry_string_alloc();
+    if(app->mode == SPIMemModeRead) furry_string_printf(str, "%s", "Read");
+    if(app->mode == SPIMemModeWrite) furry_string_printf(str, "%s", "Write");
+    if(app->mode == SPIMemModeErase) furry_string_printf(str, "%s", "Erase");
+    if(app->mode == SPIMemModeCompare) furry_string_printf(str, "%s", "Check");
     widget_add_button_element(
         app->widget,
         GuiButtonTypeRight,
-        furi_string_get_cstr(str),
+        furry_string_get_cstr(str),
         spi_mem_scene_chip_detected_widget_callback,
         app);
-    furi_string_free(str);
+    furry_string_free(str);
 }
 
 static void spi_mem_scene_chip_detected_set_previous_scene(SPIMemApp* app) {

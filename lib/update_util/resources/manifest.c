@@ -6,7 +6,7 @@
 struct ResourceManifestReader {
     Storage* storage;
     Stream* stream;
-    FuriString* linebuf;
+    FurryString* linebuf;
     ResourceManifestEntry entry;
 };
 
@@ -16,23 +16,23 @@ ResourceManifestReader* resource_manifest_reader_alloc(Storage* storage) {
     resource_manifest->storage = storage;
     resource_manifest->stream = buffered_file_stream_alloc(resource_manifest->storage);
     memset(&resource_manifest->entry, 0, sizeof(ResourceManifestEntry));
-    resource_manifest->entry.name = furi_string_alloc();
-    resource_manifest->linebuf = furi_string_alloc();
+    resource_manifest->entry.name = furry_string_alloc();
+    resource_manifest->linebuf = furry_string_alloc();
     return resource_manifest;
 }
 
 void resource_manifest_reader_free(ResourceManifestReader* resource_manifest) {
-    furi_assert(resource_manifest);
+    furry_assert(resource_manifest);
 
-    furi_string_free(resource_manifest->linebuf);
-    furi_string_free(resource_manifest->entry.name);
+    furry_string_free(resource_manifest->linebuf);
+    furry_string_free(resource_manifest->entry.name);
     buffered_file_stream_close(resource_manifest->stream);
     stream_free(resource_manifest->stream);
     free(resource_manifest);
 }
 
 bool resource_manifest_reader_open(ResourceManifestReader* resource_manifest, const char* filename) {
-    furi_assert(resource_manifest);
+    furry_assert(resource_manifest);
 
     return buffered_file_stream_open(
         resource_manifest->stream, filename, FSAM_READ, FSOM_OPEN_EXISTING);
@@ -43,9 +43,9 @@ bool resource_manifest_reader_open(ResourceManifestReader* resource_manifest, co
  * D:<name> 
  */
 ResourceManifestEntry* resource_manifest_reader_next(ResourceManifestReader* resource_manifest) {
-    furi_assert(resource_manifest);
+    furry_assert(resource_manifest);
 
-    furi_string_reset(resource_manifest->entry.name);
+    furry_string_reset(resource_manifest->entry.name);
     resource_manifest->entry.type = ResourceManifestEntryTypeUnknown;
     resource_manifest->entry.size = 0;
     memset(resource_manifest->entry.hash, 0, sizeof(resource_manifest->entry.hash));
@@ -56,9 +56,9 @@ ResourceManifestEntry* resource_manifest_reader_next(ResourceManifestReader* res
         }
 
         /* Trim end of line */
-        furi_string_trim(resource_manifest->linebuf);
+        furry_string_trim(resource_manifest->linebuf);
 
-        char type_code = furi_string_get_char(resource_manifest->linebuf, 0);
+        char type_code = furry_string_get_char(resource_manifest->linebuf, 0);
         switch(type_code) {
         case 'V':
             resource_manifest->entry.type = ResourceManifestEntryTypeVersion;
@@ -81,9 +81,9 @@ ResourceManifestEntry* resource_manifest_reader_next(ResourceManifestReader* res
               F:<hash>:<size>:<name> */
 
             /* Remove entry type code */
-            furi_string_right(resource_manifest->linebuf, 2);
+            furry_string_right(resource_manifest->linebuf, 2);
 
-            if(furi_string_search_char(resource_manifest->linebuf, ':') !=
+            if(furry_string_search_char(resource_manifest->linebuf, ':') !=
                sizeof(resource_manifest->entry.hash) * 2) {
                 /* Invalid hash */
                 continue;
@@ -91,27 +91,27 @@ ResourceManifestEntry* resource_manifest_reader_next(ResourceManifestReader* res
 
             /* Read hash */
             hex_chars_to_uint8(
-                furi_string_get_cstr(resource_manifest->linebuf), resource_manifest->entry.hash);
+                furry_string_get_cstr(resource_manifest->linebuf), resource_manifest->entry.hash);
 
             /* Remove hash */
-            furi_string_right(
+            furry_string_right(
                 resource_manifest->linebuf, sizeof(resource_manifest->entry.hash) * 2 + 1);
 
-            resource_manifest->entry.size = atoi(furi_string_get_cstr(resource_manifest->linebuf));
+            resource_manifest->entry.size = atoi(furry_string_get_cstr(resource_manifest->linebuf));
 
             /* Remove size */
-            size_t offs = furi_string_search_char(resource_manifest->linebuf, ':');
-            furi_string_right(resource_manifest->linebuf, offs + 1);
+            size_t offs = furry_string_search_char(resource_manifest->linebuf, ':');
+            furry_string_right(resource_manifest->linebuf, offs + 1);
 
-            furi_string_set(resource_manifest->entry.name, resource_manifest->linebuf);
+            furry_string_set(resource_manifest->entry.name, resource_manifest->linebuf);
         } else { //-V547
             /* Everything else is plain key value. Parse version, timestamp or directory entry
                <Type>:<Value> */
 
             /* Remove entry type code */
-            furi_string_right(resource_manifest->linebuf, 2);
+            furry_string_right(resource_manifest->linebuf, 2);
 
-            furi_string_set(resource_manifest->entry.name, resource_manifest->linebuf);
+            furry_string_set(resource_manifest->entry.name, resource_manifest->linebuf);
         }
 
         return &resource_manifest->entry;
@@ -122,7 +122,7 @@ ResourceManifestEntry* resource_manifest_reader_next(ResourceManifestReader* res
 
 ResourceManifestEntry*
     resource_manifest_reader_previous(ResourceManifestReader* resource_manifest) {
-    furi_assert(resource_manifest);
+    furry_assert(resource_manifest);
 
     // Snapshot position for rollback
     const size_t previous_position = stream_tell(resource_manifest->stream);

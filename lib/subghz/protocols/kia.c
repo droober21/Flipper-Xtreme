@@ -79,19 +79,19 @@ void* subghz_protocol_decoder_kia_alloc(SubGhzEnvironment* environment) {
 }
 
 void subghz_protocol_decoder_kia_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderKIA* instance = context;
     free(instance);
 }
 
 void subghz_protocol_decoder_kia_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderKIA* instance = context;
     instance->decoder.parser_step = KIADecoderStepReset;
 }
 
 void subghz_protocol_decoder_kia_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderKIA* instance = context;
 
     switch(instance->decoder.parser_step) {
@@ -224,7 +224,7 @@ static void subghz_protocol_kia_check_remote_controller(SubGhzBlockGeneric* inst
 }
 
 uint8_t subghz_protocol_decoder_kia_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderKIA* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -234,28 +234,28 @@ SubGhzProtocolStatus subghz_protocol_decoder_kia_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderKIA* instance = context;
     return subghz_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     subghz_protocol_decoder_kia_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     SubGhzProtocolDecoderKIA* instance = context;
     return subghz_block_generic_deserialize_check_count_bit(
         &instance->generic, flipper_format, subghz_protocol_kia_const.min_count_bit_for_found);
 }
 
-void subghz_protocol_decoder_kia_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void subghz_protocol_decoder_kia_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     SubGhzProtocolDecoderKIA* instance = context;
 
     subghz_protocol_kia_check_remote_controller(&instance->generic);
     uint32_t code_found_hi = instance->generic.data >> 32;
     uint32_t code_found_lo = instance->generic.data & 0x00000000ffffffff;
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         output,
         "%s %dbit\r\n"
         "Key:%08lX%08lX\r\n"

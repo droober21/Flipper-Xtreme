@@ -13,7 +13,7 @@ static const uint32_t repeat_timings[] = {
 };
 
 void infrared_encoder_samsung32_reset(void* encoder_ptr, const InfraredMessage* message) {
-    furi_assert(encoder_ptr);
+    furry_assert(encoder_ptr);
 
     InfraredCommonEncoder* encoder = encoder_ptr;
     infrared_common_encoder_reset(encoder);
@@ -35,13 +35,13 @@ InfraredStatus infrared_encoder_samsung32_encode_repeat(
     InfraredCommonEncoder* encoder,
     uint32_t* duration,
     bool* level) {
-    furi_assert(encoder);
+    furry_assert(encoder);
 
     /* space + 2 timings preambule + payload + stop bit */
     uint32_t timings_encoded_up_to_repeat = 1 + 2 + encoder->bits_encoded * 2 + 1;
     uint32_t repeat_cnt = encoder->timings_encoded - timings_encoded_up_to_repeat;
 
-    furi_assert(encoder->timings_encoded >= timings_encoded_up_to_repeat);
+    furry_assert(encoder->timings_encoded >= timings_encoded_up_to_repeat);
 
     if(repeat_cnt > 0)
         *duration = repeat_timings[repeat_cnt % COUNT_OF(repeat_timings)];

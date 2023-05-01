@@ -1,7 +1,7 @@
 #include "../avr_isp_app_i.h"
 
 void avr_isp_scene_load_on_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     AvrIspApp* app = context;
     if(avr_isp_load_from_file(app)) {

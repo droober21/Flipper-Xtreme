@@ -1,7 +1,7 @@
 #include "text_box.h"
 #include <gui/canvas.h>
 #include <gui/elements.h>
-#include <furi.h>
+#include <furry.h>
 #include <stdint.h>
 
 struct TextBox {
@@ -11,7 +11,7 @@ struct TextBox {
 typedef struct {
     const char* text;
     char* text_pos;
-    FuriString* text_formatted;
+    FurryString* text_formatted;
     int32_t scroll_pos;
     int32_t scroll_num;
     TextBoxFont font;
@@ -69,17 +69,17 @@ static void text_box_insert_endline(Canvas* canvas, TextBoxModel* model) {
             if(line_width + glyph_width > text_width) {
                 line_num++;
                 line_width = 0;
-                furi_string_push_back(model->text_formatted, '\n');
+                furry_string_push_back(model->text_formatted, '\n');
             }
             line_width += glyph_width;
         } else {
             line_num++;
             line_width = 0;
         }
-        furi_string_push_back(model->text_formatted, symb);
+        furry_string_push_back(model->text_formatted, symb);
     }
     line_num++;
-    model->text = furi_string_get_cstr(model->text_formatted);
+    model->text = furry_string_get_cstr(model->text_formatted);
     model->text_pos = (char*)model->text;
     if(model->focus == TextBoxFocusEnd && line_num > 5) {
         // Set text position to 5th line from the end
@@ -116,7 +116,7 @@ static void text_box_view_draw_callback(Canvas* canvas, void* _model) {
 }
 
 static bool text_box_view_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     TextBox* text_box = context;
     bool consumed = false;
@@ -145,7 +145,7 @@ TextBox* text_box_alloc() {
         TextBoxModel * model,
         {
             model->text = NULL;
-            model->text_formatted = furi_string_alloc_set("");
+            model->text_formatted = furry_string_alloc_set("");
             model->formatted = false;
             model->font = TextBoxFontText;
         },
@@ -155,28 +155,28 @@ TextBox* text_box_alloc() {
 }
 
 void text_box_free(TextBox* text_box) {
-    furi_assert(text_box);
+    furry_assert(text_box);
 
     with_view_model(
-        text_box->view, TextBoxModel * model, { furi_string_free(model->text_formatted); }, true);
+        text_box->view, TextBoxModel * model, { furry_string_free(model->text_formatted); }, true);
     view_free(text_box->view);
     free(text_box);
 }
 
 View* text_box_get_view(TextBox* text_box) {
-    furi_assert(text_box);
+    furry_assert(text_box);
     return text_box->view;
 }
 
 void text_box_reset(TextBox* text_box) {
-    furi_assert(text_box);
+    furry_assert(text_box);
 
     with_view_model(
         text_box->view,
         TextBoxModel * model,
         {
             model->text = NULL;
-            furi_string_set(model->text_formatted, "");
+            furry_string_set(model->text_formatted, "");
             model->font = TextBoxFontText;
             model->focus = TextBoxFocusStart;
         },
@@ -184,30 +184,30 @@ void text_box_reset(TextBox* text_box) {
 }
 
 void text_box_set_text(TextBox* text_box, const char* text) {
-    furi_assert(text_box);
-    furi_assert(text);
+    furry_assert(text_box);
+    furry_assert(text);
 
     with_view_model(
         text_box->view,
         TextBoxModel * model,
         {
             model->text = text;
-            furi_string_reset(model->text_formatted);
-            furi_string_reserve(model->text_formatted, strlen(text));
+            furry_string_reset(model->text_formatted);
+            furry_string_reserve(model->text_formatted, strlen(text));
             model->formatted = false;
         },
         true);
 }
 
 void text_box_set_font(TextBox* text_box, TextBoxFont font) {
-    furi_assert(text_box);
+    furry_assert(text_box);
 
     with_view_model(
         text_box->view, TextBoxModel * model, { model->font = font; }, true);
 }
 
 void text_box_set_focus(TextBox* text_box, TextBoxFocus focus) {
-    furi_assert(text_box);
+    furry_assert(text_box);
 
     with_view_model(
         text_box->view, TextBoxModel * model, { model->focus = focus; }, true);

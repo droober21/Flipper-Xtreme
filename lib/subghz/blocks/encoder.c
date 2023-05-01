@@ -2,7 +2,7 @@
 #include "math.h"
 #include <core/check.h>
 
-#include "furi.h"
+#include "furry.h"
 
 #define TAG "SubGhzBlockEncoder"
 
@@ -11,7 +11,7 @@ void subghz_protocol_blocks_set_bit_array(
     uint8_t data_array[],
     size_t set_index_bit,
     size_t max_size_array) {
-    furi_assert(set_index_bit < max_size_array * 8);
+    furry_assert(set_index_bit < max_size_array * 8);
     bit_write(data_array[set_index_bit >> 3], 7 - (set_index_bit & 0x7), bit_value);
 }
 
@@ -43,7 +43,7 @@ size_t subghz_protocol_blocks_get_upload_from_bit_array(
             duration += duration_bit;
         } else {
             if(size_upload > max_size_upload) {
-                furi_crash("SubGhz: Encoder buffer overflow");
+                furry_crash("SubGhz: Encoder buffer overflow");
             }
             upload[size_upload++] = level_duration_make(
                 subghz_protocol_blocks_get_bit_array(data_array, index_bit - 1), duration);

@@ -27,7 +27,7 @@ void nfc_scene_nfcv_unlock_popup_callback(void* context) {
 }
 
 void nfc_scene_nfcv_unlock_set_state(Nfc* nfc, NfcSceneNfcVUnlockState state) {
-    FuriHalNfcDevData* nfc_data = &(nfc->dev->dev_data.nfc_data);
+    FurryHalNfcDevData* nfc_data = &(nfc->dev->dev_data.nfc_data);
     NfcVData* nfcv_data = &(nfc->dev->dev_data.nfcv_data);
 
     uint32_t curr_state = scene_manager_get_scene_state(nfc->scene_manager, NfcSceneNfcVUnlock);

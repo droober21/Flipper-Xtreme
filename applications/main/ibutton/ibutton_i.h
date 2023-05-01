@@ -54,7 +54,7 @@ struct iButton {
     iButtonProtocols* protocols;
     iButtonWriteMode write_mode;
 
-    FuriString* file_path;
+    FurryString* file_path;
     char key_name[IBUTTON_KEY_NAME_SIZE + 1];
 
     Submenu* submenu;

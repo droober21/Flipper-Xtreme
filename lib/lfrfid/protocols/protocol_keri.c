@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <toolbox/protocols/protocol.h>
 #include <lfrfid/tools/bit_lib.h>
 #include "lfrfid_protocols.h"
@@ -212,13 +212,13 @@ LevelDuration protocol_keri_encoder_yield(ProtocolKeri* protocol) {
     return level_duration;
 };
 
-void protocol_keri_render_data(ProtocolKeri* protocol, FuriString* result) {
+void protocol_keri_render_data(ProtocolKeri* protocol, FurryString* result) {
     uint32_t data = bit_lib_get_bits_32(protocol->data, 0, 32);
     uint32_t internal_id = data & 0x7FFFFFFF;
     uint32_t fc = 0;
     uint32_t cn = 0;
     protocol_keri_descramble(&fc, &cn, &data);
-    furi_string_printf(result, "Internal ID: %lu\r\nFC: %lu, Card: %lu\r\n", internal_id, fc, cn);
+    furry_string_printf(result, "Internal ID: %lu\r\nFC: %lu, Card: %lu\r\n", internal_id, fc, cn);
 }
 
 bool protocol_keri_write_data(ProtocolKeri* protocol, void* data) {

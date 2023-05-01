@@ -1,14 +1,14 @@
 #include "bt_packet_test.h"
 #include "bt_test.h"
 #include "bt_test_types.h"
-#include <furi_hal_bt.h>
+#include <furry_hal_bt.h>
 
 struct BtPacketTest {
     BtTest* bt_test;
     BtTestMode mode;
     BtTestChannel channel;
     BtTestDataRate data_rate;
-    FuriTimer* timer;
+    FurryTimer* timer;
 };
 
 static BtTestParamValue bt_param_mode[] = {
@@ -28,28 +28,28 @@ static BtTestParamValue bt_param_data_rate[] = {
 };
 
 static void bt_packet_test_start(BtPacketTest* bt_packet_test) {
-    furi_assert(bt_packet_test);
+    furry_assert(bt_packet_test);
     if(bt_packet_test->mode == BtTestModeRx) {
-        furi_hal_bt_start_packet_rx(bt_packet_test->channel, bt_packet_test->data_rate);
-        furi_timer_start(bt_packet_test->timer, furi_kernel_get_tick_frequency() / 4);
+        furry_hal_bt_start_packet_rx(bt_packet_test->channel, bt_packet_test->data_rate);
+        furry_timer_start(bt_packet_test->timer, furry_kernel_get_tick_frequency() / 4);
     } else if(bt_packet_test->mode == BtTestModeTx) {
-        furi_hal_bt_start_packet_tx(bt_packet_test->channel, 1, bt_packet_test->data_rate);
+        furry_hal_bt_start_packet_tx(bt_packet_test->channel, 1, bt_packet_test->data_rate);
     }
 }
 
 static void bt_packet_test_stop(BtPacketTest* bt_packet_test) {
-    furi_assert(bt_packet_test);
+    furry_assert(bt_packet_test);
     if(bt_packet_test->mode == BtTestModeTx) {
-        furi_hal_bt_stop_packet_test();
-        bt_test_set_packets_tx(bt_packet_test->bt_test, furi_hal_bt_get_transmitted_packets());
+        furry_hal_bt_stop_packet_test();
+        bt_test_set_packets_tx(bt_packet_test->bt_test, furry_hal_bt_get_transmitted_packets());
     } else if(bt_packet_test->mode == BtTestModeRx) {
-        bt_test_set_packets_rx(bt_packet_test->bt_test, furi_hal_bt_stop_packet_test());
-        furi_timer_stop(bt_packet_test->timer);
+        bt_test_set_packets_rx(bt_packet_test->bt_test, furry_hal_bt_stop_packet_test());
+        furry_timer_stop(bt_packet_test->timer);
     }
 }
 
 static uint32_t bt_packet_test_param_changed(BtTestParam* param, BtTestParamValue* param_val) {
-    furi_assert(param);
+    furry_assert(param);
     uint8_t index = bt_test_get_current_value_index(param);
     bt_test_set_current_value_text(param, param_val[index].str);
     return param_val[index].value;
@@ -74,7 +74,7 @@ static void bt_packet_test_param_channel(BtTestParam* param) {
 }
 
 static void bt_packet_test_change_state_callback(BtTestState state, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     BtPacketTest* bt_packet_test = context;
     if(state == BtTestStateStarted) {
         bt_packet_test_start(bt_packet_test);
@@ -84,16 +84,16 @@ static void bt_packet_test_change_state_callback(BtTestState state, void* contex
 }
 
 static void bt_packet_test_exit_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     BtPacketTest* bt_packet_test = context;
     bt_packet_test_stop(bt_packet_test);
 }
 
 static void bt_test_packet_timer_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     BtPacketTest* bt_packet_test = context;
     if(bt_packet_test->mode == BtTestModeRx) {
-        bt_test_set_rssi(bt_packet_test->bt_test, furi_hal_bt_get_rssi());
+        bt_test_set_rssi(bt_packet_test->bt_test, furry_hal_bt_get_rssi());
     }
 }
 
@@ -137,19 +137,19 @@ BtPacketTest* bt_packet_test_alloc() {
     bt_packet_test->data_rate = BtDataRate1M;
 
     bt_packet_test->timer =
-        furi_timer_alloc(bt_test_packet_timer_callback, FuriTimerTypePeriodic, bt_packet_test);
+        furry_timer_alloc(bt_test_packet_timer_callback, FurryTimerTypePeriodic, bt_packet_test);
 
     return bt_packet_test;
 }
 
 void bt_packet_test_free(BtPacketTest* bt_packet_test) {
-    furi_assert(bt_packet_test);
+    furry_assert(bt_packet_test);
     bt_test_free(bt_packet_test->bt_test);
-    furi_timer_free(bt_packet_test->timer);
+    furry_timer_free(bt_packet_test->timer);
     free(bt_packet_test);
 }
 
 View* bt_packet_test_get_view(BtPacketTest* bt_packet_test) {
-    furi_assert(bt_packet_test);
+    furry_assert(bt_packet_test);
     return bt_test_get_view(bt_packet_test->bt_test);
 }

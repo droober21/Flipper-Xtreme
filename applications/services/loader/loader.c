@@ -1,5 +1,5 @@
 #include "applications.h"
-#include <furi.h>
+#include <furry.h>
 #include <storage/storage.h>
 #include "loader/loader.h"
 #include "loader_i.h"
@@ -40,31 +40,31 @@ static bool
     }
     loader_instance->application = application;
 
-    furi_assert(loader_instance->application_arguments == NULL);
+    furry_assert(loader_instance->application_arguments == NULL);
     if(arguments && strlen(arguments) > 0) {
         loader_instance->application_arguments = strdup(arguments);
     }
 
-    FURI_LOG_I(TAG, "Starting: %s", loader_instance->application->name);
+    FURRY_LOG_I(TAG, "Starting: %s", loader_instance->application->name);
 
-    FuriHalRtcHeapTrackMode mode = furi_hal_rtc_get_heap_track_mode();
-    if(mode > FuriHalRtcHeapTrackModeNone) {
-        furi_thread_enable_heap_trace(loader_instance->application_thread);
+    FurryHalRtcHeapTrackMode mode = furry_hal_rtc_get_heap_track_mode();
+    if(mode > FurryHalRtcHeapTrackModeNone) {
+        furry_thread_enable_heap_trace(loader_instance->application_thread);
     } else {
-        furi_thread_disable_heap_trace(loader_instance->application_thread);
+        furry_thread_disable_heap_trace(loader_instance->application_thread);
     }
 
-    furi_thread_set_name(loader_instance->application_thread, loader_instance->application->name);
-    furi_thread_set_appid(
+    furry_thread_set_name(loader_instance->application_thread, loader_instance->application->name);
+    furry_thread_set_appid(
         loader_instance->application_thread, loader_instance->application->appid);
-    furi_thread_set_stack_size(
+    furry_thread_set_stack_size(
         loader_instance->application_thread, loader_instance->application->stack_size);
-    furi_thread_set_context(
+    furry_thread_set_context(
         loader_instance->application_thread, loader_instance->application_arguments);
-    furi_thread_set_callback(
+    furry_thread_set_callback(
         loader_instance->application_thread, loader_instance->application->app);
 
-    furi_thread_start(loader_instance->application_thread);
+    furry_thread_start(loader_instance->application_thread);
 
     return true;
 }
@@ -88,11 +88,11 @@ static void loader_menu_callback(void* _ctx, uint32_t index) {
     UNUSED(index);
     const FlipperApplication* application = _ctx;
 
-    furi_assert(application->app);
-    furi_assert(application->name);
+    furry_assert(application->app);
+    furry_assert(application->name);
 
     if(!loader_lock(loader_instance)) {
-        FURI_LOG_E(TAG, "Loader is locked");
+        FURRY_LOG_E(TAG, "Loader is locked");
         return;
     }
 
@@ -105,10 +105,10 @@ static void loader_external_callback(void* _ctx, uint32_t index) {
     const FlipperApplication* app = loader_find_application_by_name_in_list(
         FAP_LOADER_APP_NAME, FLIPPER_APPS, FLIPPER_APPS_COUNT);
 
-    furi_assert(path);
+    furry_assert(path);
 
     if(!loader_lock(loader_instance)) {
-        FURI_LOG_E(TAG, "Loader is locked");
+        FURRY_LOG_E(TAG, "Loader is locked");
         return;
     }
 
@@ -130,20 +130,20 @@ static void loader_cli_print_usage() {
     printf("\tinfo\t - Show loader state\r\n");
 }
 
-static void loader_cli_open(Cli* cli, FuriString* args, Loader* instance) {
+static void loader_cli_open(Cli* cli, FurryString* args, Loader* instance) {
     UNUSED(cli);
     if(loader_is_locked(instance)) {
         if(instance->application) {
-            furi_assert(instance->application->name);
+            furry_assert(instance->application->name);
             printf("Can't start, %s application is running", instance->application->name);
         } else {
-            printf("Can't start, furi application is running");
+            printf("Can't start, furry application is running");
         }
         return;
     }
 
-    FuriString* application_name;
-    application_name = furi_string_alloc();
+    FurryString* application_name;
+    application_name = furry_string_alloc();
 
     do {
         if(!args_read_probably_quoted_string_and_trim(args, application_name)) {
@@ -152,29 +152,29 @@ static void loader_cli_open(Cli* cli, FuriString* args, Loader* instance) {
         }
 
         const FlipperApplication* application =
-            loader_find_application_by_name(furi_string_get_cstr(application_name));
+            loader_find_application_by_name(furry_string_get_cstr(application_name));
         if(!application) {
-            printf("%s doesn't exists\r\n", furi_string_get_cstr(application_name));
+            printf("%s doesn't exists\r\n", furry_string_get_cstr(application_name));
             break;
         }
 
-        furi_string_trim(args);
-        if(!loader_start_application(application, furi_string_get_cstr(args))) {
-            printf("Can't start, furi application is running");
+        furry_string_trim(args);
+        if(!loader_start_application(application, furry_string_get_cstr(args))) {
+            printf("Can't start, furry application is running");
             return;
         } else {
             // We must to increment lock counter to keep balance
             // TODO: rewrite whole thing, it's complex as hell
-            FURI_CRITICAL_ENTER();
+            FURRY_CRITICAL_ENTER();
             instance->lock_count++;
-            FURI_CRITICAL_EXIT();
+            FURRY_CRITICAL_EXIT();
         }
     } while(false);
 
-    furi_string_free(application_name);
+    furry_string_free(application_name);
 }
 
-static void loader_cli_list(Cli* cli, FuriString* args, Loader* instance) {
+static void loader_cli_list(Cli* cli, FurryString* args, Loader* instance) {
     UNUSED(cli);
     UNUSED(args);
     UNUSED(instance);
@@ -184,7 +184,7 @@ static void loader_cli_list(Cli* cli, FuriString* args, Loader* instance) {
     }
 }
 
-static void loader_cli_info(Cli* cli, FuriString* args, Loader* instance) {
+static void loader_cli_info(Cli* cli, FurryString* args, Loader* instance) {
     UNUSED(cli);
     UNUSED(args);
     if(!loader_is_locked(instance)) {
@@ -192,7 +192,7 @@ static void loader_cli_info(Cli* cli, FuriString* args, Loader* instance) {
     } else {
         printf("Running application: ");
         if(instance->application) {
-            furi_assert(instance->application->name);
+            furry_assert(instance->application->name);
             printf("%s\r\n", instance->application->name);
         } else {
             printf("unknown\r\n");
@@ -200,12 +200,12 @@ static void loader_cli_info(Cli* cli, FuriString* args, Loader* instance) {
     }
 }
 
-static void loader_cli(Cli* cli, FuriString* args, void* _ctx) {
-    furi_assert(_ctx);
+static void loader_cli(Cli* cli, FurryString* args, void* _ctx) {
+    furry_assert(_ctx);
     Loader* instance = _ctx;
 
-    FuriString* cmd;
-    cmd = furi_string_alloc();
+    FurryString* cmd;
+    cmd = furry_string_alloc();
 
     do {
         if(!args_read_string_and_trim(args, cmd)) {
@@ -213,17 +213,17 @@ static void loader_cli(Cli* cli, FuriString* args, void* _ctx) {
             break;
         }
 
-        if(furi_string_cmp_str(cmd, "list") == 0) {
+        if(furry_string_cmp_str(cmd, "list") == 0) {
             loader_cli_list(cli, args, instance);
             break;
         }
 
-        if(furi_string_cmp_str(cmd, "open") == 0) {
+        if(furry_string_cmp_str(cmd, "open") == 0) {
             loader_cli_open(cli, args, instance);
             break;
         }
 
-        if(furi_string_cmp_str(cmd, "info") == 0) {
+        if(furry_string_cmp_str(cmd, "info") == 0) {
             loader_cli_info(cli, args, instance);
             break;
         }
@@ -231,22 +231,22 @@ static void loader_cli(Cli* cli, FuriString* args, void* _ctx) {
         loader_cli_print_usage();
     } while(false);
 
-    furi_string_free(cmd);
+    furry_string_free(cmd);
 }
 
 LoaderStatus loader_start(Loader* instance, const char* name, const char* args) {
     UNUSED(instance);
-    furi_assert(name);
+    furry_assert(name);
 
     const FlipperApplication* application = loader_find_application_by_name(name);
 
     if(!application) {
-        FURI_LOG_E(TAG, "Can't find application with name %s", name);
+        FURRY_LOG_E(TAG, "Can't find application with name %s", name);
         return LoaderStatusErrorUnknownApp;
     }
 
     if(!loader_lock(loader_instance)) {
-        FURI_LOG_E(TAG, "Loader is locked");
+        FURRY_LOG_E(TAG, "Loader is locked");
         return LoaderStatusErrorAppStarted;
     }
 
@@ -258,41 +258,41 @@ LoaderStatus loader_start(Loader* instance, const char* name, const char* args) 
 }
 
 bool loader_lock(Loader* instance) {
-    FURI_CRITICAL_ENTER();
+    FURRY_CRITICAL_ENTER();
     bool result = false;
     if(instance->lock_count == 0) {
         instance->lock_count++;
         result = true;
     }
-    FURI_CRITICAL_EXIT();
+    FURRY_CRITICAL_EXIT();
     return result;
 }
 
 void loader_unlock(Loader* instance) {
-    FURI_CRITICAL_ENTER();
+    FURRY_CRITICAL_ENTER();
     if(instance->lock_count > 0) instance->lock_count--;
-    FURI_CRITICAL_EXIT();
+    FURRY_CRITICAL_EXIT();
 }
 
 bool loader_is_locked(const Loader* instance) {
     return instance->lock_count > 0;
 }
 
-static void loader_thread_state_callback(FuriThreadState thread_state, void* context) {
-    furi_assert(context);
+static void loader_thread_state_callback(FurryThreadState thread_state, void* context) {
+    furry_assert(context);
 
     Loader* instance = context;
     LoaderEvent event;
 
-    if(thread_state == FuriThreadStateRunning) {
+    if(thread_state == FurryThreadStateRunning) {
         event.type = LoaderEventTypeApplicationStarted;
-        furi_pubsub_publish(loader_instance->pubsub, &event);
+        furry_pubsub_publish(loader_instance->pubsub, &event);
 
         if(!(loader_instance->application->flags & FlipperApplicationFlagInsomniaSafe)) {
-            furi_hal_power_insomnia_enter();
+            furry_hal_power_insomnia_enter();
         }
-    } else if(thread_state == FuriThreadStateStopped) {
-        FURI_LOG_I(TAG, "Application stopped. Free heap: %zu", memmgr_get_free_heap());
+    } else if(thread_state == FurryThreadStateStopped) {
+        FURRY_LOG_I(TAG, "Application stopped. Free heap: %zu", memmgr_get_free_heap());
 
         if(loader_instance->application_arguments) {
             free(loader_instance->application_arguments);
@@ -300,12 +300,12 @@ static void loader_thread_state_callback(FuriThreadState thread_state, void* con
         }
 
         if(!(loader_instance->application->flags & FlipperApplicationFlagInsomniaSafe)) {
-            furi_hal_power_insomnia_exit();
+            furry_hal_power_insomnia_exit();
         }
         loader_unlock(instance);
 
         event.type = LoaderEventTypeApplicationStopped;
-        furi_pubsub_publish(loader_instance->pubsub, &event);
+        furry_pubsub_publish(loader_instance->pubsub, &event);
     }
 }
 
@@ -315,7 +315,7 @@ static uint32_t loader_hide_menu(void* context) {
 }
 
 static uint32_t loader_back_to_primary_menu(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Submenu* submenu = context;
     submenu_set_selected_item(submenu, 0);
     return LoaderMenuViewPrimary;
@@ -324,25 +324,25 @@ static uint32_t loader_back_to_primary_menu(void* context) {
 static Loader* loader_alloc() {
     Loader* instance = malloc(sizeof(Loader));
 
-    instance->application_thread = furi_thread_alloc();
+    instance->application_thread = furry_thread_alloc();
 
-    furi_thread_set_state_context(instance->application_thread, instance);
-    furi_thread_set_state_callback(instance->application_thread, loader_thread_state_callback);
+    furry_thread_set_state_context(instance->application_thread, instance);
+    furry_thread_set_state_callback(instance->application_thread, loader_thread_state_callback);
 
-    instance->pubsub = furi_pubsub_alloc();
+    instance->pubsub = furry_pubsub_alloc();
 
 #ifdef SRV_CLI
-    instance->cli = furi_record_open(RECORD_CLI);
+    instance->cli = furry_record_open(RECORD_CLI);
     cli_add_command(
         instance->cli, RECORD_LOADER, CliCommandFlagParallelSafe, loader_cli, instance);
 #else
     UNUSED(loader_cli);
 #endif
 
-    instance->loader_thread = furi_thread_get_current_id();
+    instance->loader_thread = furry_thread_get_current_id();
 
     // Gui
-    instance->gui = furi_record_open(RECORD_GUI);
+    instance->gui = furry_record_open(RECORD_GUI);
     instance->view_dispatcher = view_dispatcher_alloc();
     view_dispatcher_attach_to_gui(
         instance->view_dispatcher, instance->gui, ViewDispatcherTypeFullscreen);
@@ -367,15 +367,15 @@ static Loader* loader_alloc() {
 }
 
 static void loader_free(Loader* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     if(instance->cli) {
-        furi_record_close(RECORD_CLI);
+        furry_record_close(RECORD_CLI);
     }
 
-    furi_pubsub_free(instance->pubsub);
+    furry_pubsub_free(instance->pubsub);
 
-    furi_thread_free(instance->application_thread);
+    furry_thread_free(instance->application_thread);
 
     menu_free(loader_instance->primary_menu);
     view_dispatcher_remove_view(loader_instance->view_dispatcher, LoaderMenuViewPrimary);
@@ -383,13 +383,13 @@ static void loader_free(Loader* instance) {
     view_dispatcher_remove_view(loader_instance->view_dispatcher, LoaderMenuViewSettings);
     view_dispatcher_free(loader_instance->view_dispatcher);
 
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
     free(instance);
     instance = NULL;
 }
 
-bool loader_load_fap_meta(Storage* storage, FuriString* path, FuriString* name, const Icon** icon) {
+bool loader_load_fap_meta(Storage* storage, FurryString* path, FurryString* name, const Icon** icon) {
     *icon = NULL;
     uint8_t* icon_buf = malloc(CUSTOM_ICON_MAX_SIZE);
     if(!fap_loader_load_name_and_icon(path, storage, &icon_buf, name)) {
@@ -398,17 +398,17 @@ bool loader_load_fap_meta(Storage* storage, FuriString* path, FuriString* name, 
         return false;
     }
     *icon = malloc(sizeof(Icon));
-    FURI_CONST_ASSIGN((*icon)->frame_count, 1);
-    FURI_CONST_ASSIGN((*icon)->frame_rate, 0);
-    FURI_CONST_ASSIGN((*icon)->width, 10);
-    FURI_CONST_ASSIGN((*icon)->height, 10);
-    FURI_CONST_ASSIGN_PTR((*icon)->frames, malloc(sizeof(const uint8_t*)));
-    FURI_CONST_ASSIGN_PTR((*icon)->frames[0], icon_buf);
+    FURRY_CONST_ASSIGN((*icon)->frame_count, 1);
+    FURRY_CONST_ASSIGN((*icon)->frame_rate, 0);
+    FURRY_CONST_ASSIGN((*icon)->width, 10);
+    FURRY_CONST_ASSIGN((*icon)->height, 10);
+    FURRY_CONST_ASSIGN_PTR((*icon)->frames, malloc(sizeof(const uint8_t*)));
+    FURRY_CONST_ASSIGN_PTR((*icon)->frames[0], icon_buf);
     return true;
 }
 
 static void loader_build_menu() {
-    FURI_LOG_I(TAG, "Building main menu");
+    FURRY_LOG_I(TAG, "Building main menu");
     size_t i;
     for(i = 0; i < FLIPPER_APPS_COUNT; i++) {
         menu_add_item(
@@ -427,34 +427,34 @@ static void loader_build_menu() {
         loader_submenu_callback,
         (void*)LoaderMenuViewSettings);
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
-    FuriString* path = furi_string_alloc();
-    FuriString* name = furi_string_alloc();
+    Storage* storage = furry_record_open(RECORD_STORAGE);
+    FurryString* path = furry_string_alloc();
+    FurryString* name = furry_string_alloc();
     Stream* stream = file_stream_alloc(storage);
     if(file_stream_open(stream, XTREME_APPS_PATH, FSAM_READ, FSOM_OPEN_EXISTING)) {
         while(stream_read_line(stream, path)) {
-            furi_string_replace_all(path, "\r", "");
-            furi_string_replace_all(path, "\n", "");
+            furry_string_replace_all(path, "\r", "");
+            furry_string_replace_all(path, "\n", "");
             const Icon* icon;
             if(!loader_load_fap_meta(storage, path, name, &icon)) continue;
             menu_add_item(
                 loader_instance->primary_menu,
-                strdup(furi_string_get_cstr(name)),
+                strdup(furry_string_get_cstr(name)),
                 icon,
                 i++,
                 loader_external_callback,
-                (void*)strdup(furi_string_get_cstr(path)));
+                (void*)strdup(furry_string_get_cstr(path)));
         }
     }
     file_stream_close(stream);
     stream_free(stream);
-    furi_string_free(name);
-    furi_string_free(path);
-    furi_record_close(RECORD_STORAGE);
+    furry_string_free(name);
+    furry_string_free(path);
+    furry_record_close(RECORD_STORAGE);
 }
 
 static void loader_build_submenu() {
-    FURI_LOG_I(TAG, "Building settings menu");
+    FURRY_LOG_I(TAG, "Building settings menu");
     for(size_t i = 0; i < FLIPPER_SETTINGS_APPS_COUNT; i++) {
         submenu_add_item(
             loader_instance->settings_menu,
@@ -466,13 +466,13 @@ static void loader_build_submenu() {
 }
 
 void loader_show_menu() {
-    furi_assert(loader_instance);
-    furi_thread_flags_set(loader_instance->loader_thread, LOADER_THREAD_FLAG_SHOW_MENU);
+    furry_assert(loader_instance);
+    furry_thread_flags_set(loader_instance->loader_thread, LOADER_THREAD_FLAG_SHOW_MENU);
 }
 
 void loader_show_settings() {
-    furi_assert(loader_instance);
-    furi_thread_flags_set(loader_instance->loader_thread, LOADER_THREAD_FLAG_SHOW_SETTINGS);
+    furry_assert(loader_instance);
+    furry_thread_flags_set(loader_instance->loader_thread, LOADER_THREAD_FLAG_SHOW_SETTINGS);
 }
 
 void loader_update_menu() {
@@ -482,20 +482,20 @@ void loader_update_menu() {
 
 int32_t loader_srv(void* p) {
     UNUSED(p);
-    FURI_LOG_I(TAG, "Executing system start hooks");
+    FURRY_LOG_I(TAG, "Executing system start hooks");
     for(size_t i = 0; i < FLIPPER_ON_SYSTEM_START_COUNT; i++) {
         FLIPPER_ON_SYSTEM_START[i]();
     }
 
-    FURI_LOG_I(TAG, "Starting");
+    FURRY_LOG_I(TAG, "Starting");
     loader_instance = loader_alloc();
 
     loader_build_menu();
     loader_build_submenu();
 
-    FURI_LOG_I(TAG, "Started");
+    FURRY_LOG_I(TAG, "Started");
 
-    furi_record_create(RECORD_LOADER, loader_instance);
+    furry_record_create(RECORD_LOADER, loader_instance);
 
     if(FLIPPER_AUTORUN_APP_NAME && strlen(FLIPPER_AUTORUN_APP_NAME)) {
         loader_start(loader_instance, FLIPPER_AUTORUN_APP_NAME, NULL);
@@ -503,7 +503,7 @@ int32_t loader_srv(void* p) {
 
     while(1) {
         uint32_t flags =
-            furi_thread_flags_wait(LOADER_THREAD_FLAG_ALL, FuriFlagWaitAny, FuriWaitForever);
+            furry_thread_flags_wait(LOADER_THREAD_FLAG_ALL, FurryFlagWaitAny, FurryWaitForever);
         if(flags & LOADER_THREAD_FLAG_SHOW_MENU) {
             menu_set_selected_item(loader_instance->primary_menu, 0);
             view_dispatcher_switch_to_view(
@@ -521,12 +521,12 @@ int32_t loader_srv(void* p) {
         }
     }
 
-    furi_record_destroy(RECORD_LOADER);
+    furry_record_destroy(RECORD_LOADER);
     loader_free(loader_instance);
 
     return 0;
 }
 
-FuriPubSub* loader_get_pubsub(Loader* instance) {
+FurryPubSub* loader_get_pubsub(Loader* instance) {
     return instance->pubsub;
 }

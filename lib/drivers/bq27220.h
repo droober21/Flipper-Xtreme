@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <furi_hal_i2c.h>
+#include <furry_hal_i2c.h>
 
 #define BQ27220_ERROR 0x0
 #define BQ27220_SUCCESS 0x1
@@ -100,37 +100,37 @@ typedef struct {
 /** Initialize Driver
  * @return true on success, false otherwise
  */
-bool bq27220_init(FuriHalI2cBusHandle* handle, const ParamCEDV* cedv);
+bool bq27220_init(FurryHalI2cBusHandle* handle, const ParamCEDV* cedv);
 
 /** Get battery voltage in mV or error */
-uint16_t bq27220_get_voltage(FuriHalI2cBusHandle* handle);
+uint16_t bq27220_get_voltage(FurryHalI2cBusHandle* handle);
 
 /** Get current in mA or error*/
-int16_t bq27220_get_current(FuriHalI2cBusHandle* handle);
+int16_t bq27220_get_current(FurryHalI2cBusHandle* handle);
 
 /** Get battery status */
-uint8_t bq27220_get_battery_status(FuriHalI2cBusHandle* handle, BatteryStatus* battery_status);
+uint8_t bq27220_get_battery_status(FurryHalI2cBusHandle* handle, BatteryStatus* battery_status);
 
 /** Get operation status */
 uint8_t
-    bq27220_get_operation_status(FuriHalI2cBusHandle* handle, OperationStatus* operation_status);
+    bq27220_get_operation_status(FurryHalI2cBusHandle* handle, OperationStatus* operation_status);
 
 /** Get temperature in units of 0.1°K */
-uint16_t bq27220_get_temperature(FuriHalI2cBusHandle* handle);
+uint16_t bq27220_get_temperature(FurryHalI2cBusHandle* handle);
 
 /** Get compensated full charge capacity in in mAh */
-uint16_t bq27220_get_full_charge_capacity(FuriHalI2cBusHandle* handle);
+uint16_t bq27220_get_full_charge_capacity(FurryHalI2cBusHandle* handle);
 
 /** Get design capacity in mAh */
-uint16_t bq27220_get_design_capacity(FuriHalI2cBusHandle* handle);
+uint16_t bq27220_get_design_capacity(FurryHalI2cBusHandle* handle);
 
 /** Get remaining capacity in in mAh */
-uint16_t bq27220_get_remaining_capacity(FuriHalI2cBusHandle* handle);
+uint16_t bq27220_get_remaining_capacity(FurryHalI2cBusHandle* handle);
 
 /** Get predicted remaining battery capacity in percents */
-uint16_t bq27220_get_state_of_charge(FuriHalI2cBusHandle* handle);
+uint16_t bq27220_get_state_of_charge(FurryHalI2cBusHandle* handle);
 
 /** Get ratio of full charge capacity over design capacity in percents */
-uint16_t bq27220_get_state_of_health(FuriHalI2cBusHandle* handle);
+uint16_t bq27220_get_state_of_health(FurryHalI2cBusHandle* handle);
 
-void bq27220_change_design_capacity(FuriHalI2cBusHandle* handle, uint16_t capacity);
+void bq27220_change_design_capacity(FurryHalI2cBusHandle* handle, uint16_t capacity);

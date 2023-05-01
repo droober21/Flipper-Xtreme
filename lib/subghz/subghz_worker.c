@@ -1,12 +1,12 @@
 #include "subghz_worker.h"
 
-#include <furi.h>
+#include <furry.h>
 
 #define TAG "SubGhzWorker"
 
 struct SubGhzWorker {
-    FuriThread* thread;
-    FuriStreamBuffer* stream;
+    FurryThread* thread;
+    FurryStreamBuffer* stream;
 
     volatile bool running;
     volatile bool overrun;
@@ -34,7 +34,7 @@ void subghz_worker_rx_callback(bool level, uint32_t duration, void* context) {
         level_duration = level_duration_reset();
     }
     size_t ret =
-        furi_stream_buffer_send(instance->stream, &level_duration, sizeof(LevelDuration), 0);
+        furry_stream_buffer_send(instance->stream, &level_duration, sizeof(LevelDuration), 0);
     if(sizeof(LevelDuration) != ret) instance->overrun = true;
 }
 
@@ -48,11 +48,11 @@ static int32_t subghz_worker_thread_callback(void* context) {
 
     LevelDuration level_duration;
     while(instance->running) {
-        int ret = furi_stream_buffer_receive(
+        int ret = furry_stream_buffer_receive(
             instance->stream, &level_duration, sizeof(LevelDuration), 10);
         if(ret == sizeof(LevelDuration)) {
             if(level_duration_is_reset(level_duration)) {
-                FURI_LOG_E(TAG, "Overrun buffer");
+                FURRY_LOG_E(TAG, "Overrun buffer");
                 if(instance->overrun_callback) instance->overrun_callback(instance->context);
             } else {
                 bool level = level_duration_get_level(level_duration);
@@ -83,10 +83,10 @@ SubGhzWorker* subghz_worker_alloc() {
     SubGhzWorker* instance = malloc(sizeof(SubGhzWorker));
 
     instance->thread =
-        furi_thread_alloc_ex("SubGhzWorker", 2048, subghz_worker_thread_callback, instance);
+        furry_thread_alloc_ex("SubGhzWorker", 2048, subghz_worker_thread_callback, instance);
 
     instance->stream =
-        furi_stream_buffer_alloc(sizeof(LevelDuration) * 4096, sizeof(LevelDuration));
+        furry_stream_buffer_alloc(sizeof(LevelDuration) * 4096, sizeof(LevelDuration));
 
     //setting default filter in us
     instance->filter_duration = 30;
@@ -95,10 +95,10 @@ SubGhzWorker* subghz_worker_alloc() {
 }
 
 void subghz_worker_free(SubGhzWorker* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
-    furi_stream_buffer_free(instance->stream);
-    furi_thread_free(instance->thread);
+    furry_stream_buffer_free(instance->stream);
+    furry_thread_free(instance->thread);
 
     free(instance);
 }
@@ -106,44 +106,44 @@ void subghz_worker_free(SubGhzWorker* instance) {
 void subghz_worker_set_overrun_callback(
     SubGhzWorker* instance,
     SubGhzWorkerOverrunCallback callback) {
-    furi_assert(instance);
+    furry_assert(instance);
     instance->overrun_callback = callback;
 }
 
 void subghz_worker_set_pair_callback(SubGhzWorker* instance, SubGhzWorkerPairCallback callback) {
-    furi_assert(instance);
+    furry_assert(instance);
     instance->pair_callback = callback;
 }
 
 void subghz_worker_set_context(SubGhzWorker* instance, void* context) {
-    furi_assert(instance);
+    furry_assert(instance);
     instance->context = context;
 }
 
 void subghz_worker_start(SubGhzWorker* instance) {
-    furi_assert(instance);
-    furi_assert(!instance->running);
+    furry_assert(instance);
+    furry_assert(!instance->running);
 
     instance->running = true;
 
-    furi_thread_start(instance->thread);
+    furry_thread_start(instance->thread);
 }
 
 void subghz_worker_stop(SubGhzWorker* instance) {
-    furi_assert(instance);
-    furi_assert(instance->running);
+    furry_assert(instance);
+    furry_assert(instance->running);
 
     instance->running = false;
 
-    furi_thread_join(instance->thread);
+    furry_thread_join(instance->thread);
 }
 
 bool subghz_worker_is_running(SubGhzWorker* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     return instance->running;
 }
 
 void subghz_worker_set_filter(SubGhzWorker* instance, uint16_t timeout) {
-    furi_assert(instance);
+    furry_assert(instance);
     instance->filter_duration = timeout;
 }

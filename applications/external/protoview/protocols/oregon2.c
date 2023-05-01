@@ -17,7 +17,7 @@ static bool decode(uint8_t* bits, uint32_t numbytes, uint32_t numbits, ProtoView
                                "10010110";
     uint64_t off = bitmap_seek_bits(bits, numbytes, 0, numbits, sync_pattern);
     if(off == BITMAP_SEEK_NOT_FOUND) return false;
-    FURI_LOG_E(TAG, "Oregon2 preamble+sync found");
+    FURRY_LOG_E(TAG, "Oregon2 preamble+sync found");
 
     info->start_off = off;
     off += 32; /* Skip preamble. */
@@ -25,7 +25,7 @@ static bool decode(uint8_t* bits, uint32_t numbytes, uint32_t numbits, ProtoView
     uint8_t buffer[8], raw[8] = {0};
     uint32_t decoded =
         convert_from_line_code(buffer, sizeof(buffer), bits, numbytes, off, "1001", "0110");
-    FURI_LOG_E(TAG, "Oregon2 decoded bits: %lu", decoded);
+    FURRY_LOG_E(TAG, "Oregon2 decoded bits: %lu", decoded);
 
     if(decoded < 11 * 4) return false; /* Minimum len to extract some data. */
     info->pulses_count = (off + 11 * 4 * 4) - info->start_off;
@@ -37,7 +37,7 @@ static bool decode(uint8_t* bits, uint32_t numbytes, uint32_t numbits, ProtoView
         nib[0] =
             (bitmap_get(buffer, 8, j + 0) | bitmap_get(buffer, 8, j + 1) << 1 |
              bitmap_get(buffer, 8, j + 2) << 2 | bitmap_get(buffer, 8, j + 3) << 3);
-        if(DEBUG_MSG) FURI_LOG_E(TAG, "Not inverted nibble[%d]: %x", j / 4, (unsigned int)nib[0]);
+        if(DEBUG_MSG) FURRY_LOG_E(TAG, "Not inverted nibble[%d]: %x", j / 4, (unsigned int)nib[0]);
         raw[j / 8] |= nib[0] << (4 - (j % 4));
         switch(j / 4) {
         case 1:

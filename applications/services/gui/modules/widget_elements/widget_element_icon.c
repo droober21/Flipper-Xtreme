@@ -7,8 +7,8 @@ typedef struct {
 } GuiIconModel;
 
 static void gui_icon_draw(Canvas* canvas, WidgetElement* element) {
-    furi_assert(canvas);
-    furi_assert(element);
+    furry_assert(canvas);
+    furry_assert(element);
     GuiIconModel* model = element->model;
 
     if(model->icon) {
@@ -17,14 +17,14 @@ static void gui_icon_draw(Canvas* canvas, WidgetElement* element) {
 }
 
 static void gui_icon_free(WidgetElement* gui_icon) {
-    furi_assert(gui_icon);
+    furry_assert(gui_icon);
 
     free(gui_icon->model);
     free(gui_icon);
 }
 
 WidgetElement* widget_element_icon_create(uint8_t x, uint8_t y, const Icon* icon) {
-    furi_assert(icon);
+    furry_assert(icon);
 
     // Allocate and init model
     GuiIconModel* model = malloc(sizeof(GuiIconModel));

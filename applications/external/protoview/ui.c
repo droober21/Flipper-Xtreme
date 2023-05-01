@@ -77,7 +77,7 @@ void ui_dismiss_keyboard(ProtoViewApp* app) {
 /* Set an alert message to be shown over any currently active view, for
  * the specified amount of time of 'ttl' milliseconds. */
 void ui_show_alert(ProtoViewApp* app, const char* text, uint32_t ttl) {
-    app->alert_dismiss_time = furi_get_tick() + furi_ms_to_ticks(ttl);
+    app->alert_dismiss_time = furry_get_tick() + furry_ms_to_ticks(ttl);
     snprintf(app->alert_text, ALERT_MAX_LEN, "%s", text);
 }
 
@@ -93,7 +93,7 @@ void ui_draw_alert_if_needed(Canvas* canvas, ProtoViewApp* app) {
     if(app->alert_dismiss_time == 0) {
         /* No active alert. */
         return;
-    } else if(app->alert_dismiss_time < furi_get_tick()) {
+    } else if(app->alert_dismiss_time < furry_get_tick()) {
         /* Alert just expired. */
         ui_dismiss_alert(app);
         return;

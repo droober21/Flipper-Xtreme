@@ -7,7 +7,7 @@ void ibutton_scene_read_success_on_enter(void* context) {
     iButtonKey* key = ibutton->key;
     Widget* widget = ibutton->widget;
 
-    FuriString* tmp = furi_string_alloc();
+    FurryString* tmp = furry_string_alloc();
 
     const iButtonProtocolId protocol_id = ibutton_key_get_protocol_id(key);
 
@@ -16,25 +16,25 @@ void ibutton_scene_read_success_on_enter(void* context) {
     widget_add_button_element(
         widget, GuiButtonTypeRight, "More", ibutton_widget_callback, context);
 
-    furi_string_printf(
+    furry_string_printf(
         tmp,
         "%s[%s]",
         ibutton_protocols_get_name(ibutton->protocols, protocol_id),
         ibutton_protocols_get_manufacturer(ibutton->protocols, protocol_id));
 
     widget_add_string_element(
-        widget, 0, 2, AlignLeft, AlignTop, FontPrimary, furi_string_get_cstr(tmp));
+        widget, 0, 2, AlignLeft, AlignTop, FontPrimary, furry_string_get_cstr(tmp));
 
-    furi_string_reset(tmp);
+    furry_string_reset(tmp);
     ibutton_protocols_render_brief_data(ibutton->protocols, key, tmp);
 
     widget_add_string_multiline_element(
-        widget, 0, 16, AlignLeft, AlignTop, FontSecondary, furi_string_get_cstr(tmp));
+        widget, 0, 16, AlignLeft, AlignTop, FontSecondary, furry_string_get_cstr(tmp));
 
     view_dispatcher_switch_to_view(ibutton->view_dispatcher, iButtonViewWidget);
     ibutton_notification_message(ibutton, iButtonNotificationMessageGreenOn);
 
-    furi_string_free(tmp);
+    furry_string_free(tmp);
 }
 
 bool ibutton_scene_read_success_on_event(void* context, SceneManagerEvent event) {

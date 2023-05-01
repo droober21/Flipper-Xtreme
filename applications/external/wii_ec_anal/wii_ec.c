@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <furi.h> // Core API
+#include <furry.h> // Core API
 
 #include "wii_anal.h"
 #include "wii_i2c.h"
@@ -164,16 +164,16 @@ void ecCalibrate(wiiEC_t* const pec, ecCalib_t c) {
 }
 
 //+============================================================================ ========================================
-void ecPoll(wiiEC_t* const pec, FuriMessageQueue* const queue) {
+void ecPoll(wiiEC_t* const pec, FurryMessageQueue* const queue) {
     ENTER;
-    furi_assert(queue);
+    furry_assert(queue);
 
     if(!pec->init) {
         // Attempt to initialise
         if(ecInit(pec, NULL)) { //! need a way to auto-start with encryption enabled
             eventMsg_t msg = {
                 .id = EVID_WIIEC, .wiiEc = {.type = WIIEC_CONN, .in = '<', .val = pec->pidx}};
-            furi_message_queue_put(queue, &msg, 0);
+            furry_message_queue_put(queue, &msg, 0);
         }
 
     } else {
@@ -182,12 +182,12 @@ void ecPoll(wiiEC_t* const pec, FuriMessageQueue* const queue) {
         case 2: { // device gone
             eventMsg_t msg = {
                 .id = EVID_WIIEC, .wiiEc = {.type = WIIEC_DISCONN, .in = '>', .val = pec->pidx}};
-            furi_message_queue_put(queue, &msg, 0);
+            furry_message_queue_put(queue, &msg, 0);
             break;
         }
 
         case 0: { // read OK
-            void (*fn)(wiiEC_t*, FuriMessageQueue*) = ecId[pec->pidx].check;
+            void (*fn)(wiiEC_t*, FurryMessageQueue*) = ecId[pec->pidx].check;
             if(fn) fn(pec, queue);
             break;
         }

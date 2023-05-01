@@ -43,14 +43,14 @@ const UART_TerminalItem items[NUM_MENU_ITEMS] = {
 };
 
 static void uart_terminal_scene_start_var_list_enter_callback(void* context, uint32_t index) {
-    furi_assert(context);
+    furry_assert(context);
     UART_TerminalApp* app = context;
 
-    furi_assert(index < NUM_MENU_ITEMS);
+    furry_assert(index < NUM_MENU_ITEMS);
     const UART_TerminalItem* item = &items[index];
 
     const int selected_option_index = app->selected_option_index[index];
-    furi_assert(selected_option_index < item->num_options_menu);
+    furry_assert(selected_option_index < item->num_options_menu);
     app->selected_tx_string = item->actual_commands[selected_option_index];
     app->is_command = (1 <= index);
     app->is_custom_tx_string = false;
@@ -70,14 +70,14 @@ static void uart_terminal_scene_start_var_list_enter_callback(void* context, uin
 }
 
 static void uart_terminal_scene_start_var_list_change_callback(VariableItem* item) {
-    furi_assert(item);
+    furry_assert(item);
 
     UART_TerminalApp* app = variable_item_get_context(item);
-    furi_assert(app);
+    furry_assert(app);
 
     const UART_TerminalItem* menu_item = &items[app->selected_menu_index];
     uint8_t item_index = variable_item_get_current_value_index(item);
-    furi_assert(item_index < menu_item->num_options_menu);
+    furry_assert(item_index < menu_item->num_options_menu);
     variable_item_set_current_value_text(item, menu_item->options_menu[item_index]);
     app->selected_option_index[app->selected_menu_index] = item_index;
 }

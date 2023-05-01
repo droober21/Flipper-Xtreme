@@ -2,11 +2,11 @@
 #include <gui/elements.h>
 #include "ESP32_WiFi_Marauder_icons.h"
 #include "wifi_marauder_app_i.h"
-#include <furi.h>
+#include <furry.h>
 
 struct WIFI_TextInput {
     View* view;
-    FuriTimer* timer;
+    FurryTimer* timer;
 };
 
 typedef struct {
@@ -29,7 +29,7 @@ typedef struct {
 
     WIFI_TextInputValidatorCallback validator_callback;
     void* validator_callback_context;
-    FuriString* validator_text;
+    FurryString* validator_text;
     bool valadator_message_visible;
 } WIFI_TextInputModel;
 
@@ -309,7 +309,7 @@ static void wifi_text_input_view_draw_callback(Canvas* canvas, void* _model) {
         canvas_draw_icon(canvas, 10, 14, &I_WarningDolphin_45x42);
         canvas_draw_rframe(canvas, 8, 8, 112, 50, 3);
         canvas_draw_rframe(canvas, 9, 9, 110, 48, 2);
-        elements_multiline_text(canvas, 62, 20, furi_string_get_cstr(model->validator_text));
+        elements_multiline_text(canvas, 62, 20, furry_string_get_cstr(model->validator_text));
         canvas_set_font(canvas, FontKeyboard);
     }
 }
@@ -372,7 +372,7 @@ static void wifi_text_input_handle_ok(
            (!model->validator_callback(
                model->text_buffer, model->validator_text, model->validator_callback_context))) {
             model->valadator_message_visible = true;
-            furi_timer_start(wifi_text_input->timer, furi_kernel_get_tick_frequency() * 4);
+            furry_timer_start(wifi_text_input->timer, furry_kernel_get_tick_frequency() * 4);
         } else if(model->callback != 0 && text_length > 0) {
             model->callback(model->callback_context);
         }
@@ -392,7 +392,7 @@ static void wifi_text_input_handle_ok(
 
 static bool wifi_text_input_view_input_callback(InputEvent* event, void* context) {
     WIFI_TextInput* wifi_text_input = context;
-    furi_assert(wifi_text_input);
+    furry_assert(wifi_text_input);
 
     bool consumed = false;
 
@@ -481,7 +481,7 @@ static bool wifi_text_input_view_input_callback(InputEvent* event, void* context
 }
 
 void wifi_text_input_timer_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WIFI_TextInput* wifi_text_input = context;
 
     with_view_model(
@@ -500,12 +500,12 @@ WIFI_TextInput* wifi_text_input_alloc() {
     view_set_input_callback(wifi_text_input->view, wifi_text_input_view_input_callback);
 
     wifi_text_input->timer =
-        furi_timer_alloc(wifi_text_input_timer_callback, FuriTimerTypeOnce, wifi_text_input);
+        furry_timer_alloc(wifi_text_input_timer_callback, FurryTimerTypeOnce, wifi_text_input);
 
     with_view_model(
         wifi_text_input->view,
         WIFI_TextInputModel * model,
-        { model->validator_text = furi_string_alloc(); },
+        { model->validator_text = furry_string_alloc(); },
         false);
 
     wifi_text_input_reset(wifi_text_input);
@@ -514,17 +514,17 @@ WIFI_TextInput* wifi_text_input_alloc() {
 }
 
 void wifi_text_input_free(WIFI_TextInput* wifi_text_input) {
-    furi_assert(wifi_text_input);
+    furry_assert(wifi_text_input);
     with_view_model(
         wifi_text_input->view,
         WIFI_TextInputModel * model,
-        { furi_string_free(model->validator_text); },
+        { furry_string_free(model->validator_text); },
         false);
 
     // Send stop command
-    furi_timer_stop(wifi_text_input->timer);
+    furry_timer_stop(wifi_text_input->timer);
     // Release allocated memory
-    furi_timer_free(wifi_text_input->timer);
+    furry_timer_free(wifi_text_input->timer);
 
     view_free(wifi_text_input->view);
 
@@ -532,7 +532,7 @@ void wifi_text_input_free(WIFI_TextInput* wifi_text_input) {
 }
 
 void wifi_text_input_reset(WIFI_TextInput* wifi_text_input) {
-    furi_assert(wifi_text_input);
+    furry_assert(wifi_text_input);
     with_view_model(
         wifi_text_input->view,
         WIFI_TextInputModel * model,
@@ -548,14 +548,14 @@ void wifi_text_input_reset(WIFI_TextInput* wifi_text_input) {
             model->callback_context = NULL;
             model->validator_callback = NULL;
             model->validator_callback_context = NULL;
-            furi_string_reset(model->validator_text);
+            furry_string_reset(model->validator_text);
             model->valadator_message_visible = false;
         },
         true);
 }
 
 View* wifi_text_input_get_view(WIFI_TextInput* wifi_text_input) {
-    furi_assert(wifi_text_input);
+    furry_assert(wifi_text_input);
     return wifi_text_input->view;
 }
 

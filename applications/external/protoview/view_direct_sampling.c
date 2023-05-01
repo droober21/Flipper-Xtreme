@@ -88,14 +88,14 @@ void view_enter_direct_sampling(ProtoViewApp* app) {
     privdata->show_usage_info = true;
 
     if(app->txrx->txrx_state == TxRxStateRx && !app->txrx->debug_timer_sampling) {
-        furi_hal_subghz_stop_async_rx();
+        furry_hal_subghz_stop_async_rx();
 
         /* To read data asynchronously directly from the view, we need
          * to put the CC1101 back into reception mode (the previous call
          * to stop the async RX will put it into idle) and configure the
          * G0 pin for reading. */
-        furi_hal_subghz_rx();
-        furi_hal_gpio_init(furi_hal_subghz.cc1101_g0_pin, GpioModeInput, GpioPullNo, GpioSpeedLow);
+        furry_hal_subghz_rx();
+        furry_hal_gpio_init(furry_hal_subghz.cc1101_g0_pin, GpioModeInput, GpioPullNo, GpioSpeedLow);
     } else {
         raw_sampling_worker_stop(app);
     }
@@ -114,7 +114,7 @@ void view_exit_direct_sampling(ProtoViewApp* app) {
 
     /* Restart normal data feeding. */
     if(app->txrx->txrx_state == TxRxStateRx && !app->txrx->debug_timer_sampling) {
-        furi_hal_subghz_start_async_rx(protoview_rx_callback, NULL);
+        furry_hal_subghz_start_async_rx(protoview_rx_callback, NULL);
     } else {
         raw_sampling_worker_start(app);
     }
@@ -127,7 +127,7 @@ static void ds_timer_isr(void* ctx) {
     DirectSamplingViewPrivData* privdata = app->view_privdata;
 
     if(app->direct_sampling_enabled) {
-        bool level = furi_hal_gpio_read(furi_hal_subghz.cc1101_g0_pin);
+        bool level = furry_hal_gpio_read(furry_hal_subghz.cc1101_g0_pin);
         bitmap_set(privdata->captured, CAPTURED_BITMAP_BYTES, privdata->captured_idx, level);
         privdata->captured_idx = (privdata->captured_idx + 1) % CAPTURED_BITMAP_BITS;
     }
@@ -146,17 +146,17 @@ static void direct_sampling_timer_start(ProtoViewApp* app) {
     LL_TIM_SetClockSource(TIM2, LL_TIM_CLOCKSOURCE_INTERNAL);
     LL_TIM_DisableCounter(TIM2);
     LL_TIM_SetCounter(TIM2, 0);
-    furi_hal_interrupt_set_isr(FuriHalInterruptIdTIM2, ds_timer_isr, app);
+    furry_hal_interrupt_set_isr(FurryHalInterruptIdTIM2, ds_timer_isr, app);
     LL_TIM_EnableIT_UPDATE(TIM2);
     LL_TIM_EnableCounter(TIM2);
 }
 
 static void direct_sampling_timer_stop(ProtoViewApp* app) {
     UNUSED(app);
-    FURI_CRITICAL_ENTER();
+    FURRY_CRITICAL_ENTER();
     LL_TIM_DisableCounter(TIM2);
     LL_TIM_DisableIT_UPDATE(TIM2);
-    furi_hal_interrupt_set_isr(FuriHalInterruptIdTIM2, NULL, NULL);
+    furry_hal_interrupt_set_isr(FurryHalInterruptIdTIM2, NULL, NULL);
     LL_TIM_DeInit(TIM2);
-    FURI_CRITICAL_EXIT();
+    FURRY_CRITICAL_EXIT();
 }

@@ -48,15 +48,15 @@ static void lfrfid_clear_t5577_password_and_config_to_EM(LfRfid* app) {
     notification_message(app->notifications, &sequence_blink_start_magenta);
 
     for(uint8_t i = 0; i < default_passwords_len; i++) {
-        FURI_CRITICAL_ENTER();
+        FURRY_CRITICAL_ENTER();
         snprintf(curr_buf, sizeof(curr_buf), "Pass %d of %d", i, default_passwords_len);
         view_dispatcher_switch_to_view(app->view_dispatcher, LfRfidViewPopup);
         writer_start();
         write_block(t55xxtiming, 0, 0, false, em_config_block_data, true, default_passwords[i]);
         write_reset(t55xxtiming);
         writer_stop();
-        FURI_CRITICAL_EXIT();
-        furi_delay_ms(8);
+        FURRY_CRITICAL_EXIT();
+        furry_delay_ms(8);
     }
     notification_message(app->notifications, &sequence_blink_stop);
     popup_reset(app->popup);

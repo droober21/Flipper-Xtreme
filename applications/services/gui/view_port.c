@@ -1,8 +1,8 @@
 #include "view_port_i.h"
 
-#include <furi.h>
-#include <furi_hal.h>
-#include <furi_hal_rtc.h>
+#include <furry.h>
+#include <furry_hal.h>
+#include <furry_hal_rtc.h>
 
 #include "gui.h"
 #include "gui_i.h"
@@ -62,7 +62,7 @@ static const CanvasOrientation view_port_orientation_mapping[ViewPortOrientation
 
 // Remaps directional pad buttons on Flipper based on ViewPort orientation
 static void view_port_map_input(InputEvent* event, ViewPortOrientation orientation) {
-    furi_assert(orientation < ViewPortOrientationMAX && event->key < InputKeyMAX);
+    furry_assert(orientation < ViewPortOrientationMAX && event->key < InputKeyMAX);
 
     if(event->sequence_source != INPUT_SEQUENCE_SOURCE_HARDWARE) {
         return;
@@ -70,7 +70,7 @@ static void view_port_map_input(InputEvent* event, ViewPortOrientation orientati
 
     if(orientation == ViewPortOrientationHorizontal ||
        orientation == ViewPortOrientationHorizontalFlip) {
-        if(furi_hal_rtc_is_flag_set(FuriHalRtcFlagHandOrient)) {
+        if(furry_hal_rtc_is_flag_set(FurryHalRtcFlagHandOrient)) {
             event->key = view_port_left_hand_input_mapping[event->key];
         }
     }
@@ -80,7 +80,7 @@ static void view_port_map_input(InputEvent* event, ViewPortOrientation orientati
 static void view_port_setup_canvas_orientation(const ViewPort* view_port, Canvas* canvas) {
     CanvasOrientation orientation = view_port_orientation_mapping[view_port->orientation];
 
-    if(furi_hal_rtc_is_flag_set(FuriHalRtcFlagHandOrient)) {
+    if(furry_hal_rtc_is_flag_set(FurryHalRtcFlagHandOrient)) {
         if(orientation == CanvasOrientationHorizontal) {
             orientation = CanvasOrientationHorizontalFlip;
         } else if(orientation == CanvasOrientationHorizontalFlip) {
@@ -99,33 +99,33 @@ ViewPort* view_port_alloc() {
 }
 
 void view_port_free(ViewPort* view_port) {
-    furi_assert(view_port);
-    furi_check(view_port->gui == NULL);
+    furry_assert(view_port);
+    furry_check(view_port->gui == NULL);
     free(view_port);
 }
 
 void view_port_set_width(ViewPort* view_port, uint8_t width) {
-    furi_assert(view_port);
+    furry_assert(view_port);
     view_port->width = width;
 }
 
 uint8_t view_port_get_width(const ViewPort* view_port) {
-    furi_assert(view_port);
+    furry_assert(view_port);
     return view_port->width;
 }
 
 void view_port_set_height(ViewPort* view_port, uint8_t height) {
-    furi_assert(view_port);
+    furry_assert(view_port);
     view_port->height = height;
 }
 
 uint8_t view_port_get_height(const ViewPort* view_port) {
-    furi_assert(view_port);
+    furry_assert(view_port);
     return view_port->height;
 }
 
 void view_port_enabled_set(ViewPort* view_port, bool enabled) {
-    furi_assert(view_port);
+    furry_assert(view_port);
     if(view_port->is_enabled != enabled) {
         view_port->is_enabled = enabled;
         if(view_port->gui) gui_update(view_port->gui);
@@ -133,12 +133,12 @@ void view_port_enabled_set(ViewPort* view_port, bool enabled) {
 }
 
 bool view_port_is_enabled(const ViewPort* view_port) {
-    furi_assert(view_port);
+    furry_assert(view_port);
     return view_port->is_enabled;
 }
 
 void view_port_draw_callback_set(ViewPort* view_port, ViewPortDrawCallback callback, void* context) {
-    furi_assert(view_port);
+    furry_assert(view_port);
     view_port->draw_callback = callback;
     view_port->draw_callback_context = context;
 }
@@ -147,25 +147,25 @@ void view_port_input_callback_set(
     ViewPort* view_port,
     ViewPortInputCallback callback,
     void* context) {
-    furi_assert(view_port);
+    furry_assert(view_port);
     view_port->input_callback = callback;
     view_port->input_callback_context = context;
 }
 
 void view_port_update(ViewPort* view_port) {
-    furi_assert(view_port);
+    furry_assert(view_port);
     if(view_port->gui && view_port->is_enabled) gui_update(view_port->gui);
 }
 
 void view_port_gui_set(ViewPort* view_port, Gui* gui) {
-    furi_assert(view_port);
+    furry_assert(view_port);
     view_port->gui = gui;
 }
 
 void view_port_draw(ViewPort* view_port, Canvas* canvas) {
-    furi_assert(view_port);
-    furi_assert(canvas);
-    furi_check(view_port->gui);
+    furry_assert(view_port);
+    furry_assert(canvas);
+    furry_check(view_port->gui);
 
     if(view_port->draw_callback) {
         view_port_setup_canvas_orientation(view_port, canvas);
@@ -174,9 +174,9 @@ void view_port_draw(ViewPort* view_port, Canvas* canvas) {
 }
 
 void view_port_input(ViewPort* view_port, InputEvent* event) {
-    furi_assert(view_port);
-    furi_assert(event);
-    furi_check(view_port->gui);
+    furry_assert(view_port);
+    furry_assert(event);
+    furry_check(view_port->gui);
 
     if(view_port->input_callback) {
         ViewPortOrientation orientation = view_port_get_orientation(view_port);
@@ -186,7 +186,7 @@ void view_port_input(ViewPort* view_port, InputEvent* event) {
 }
 
 void view_port_set_orientation(ViewPort* view_port, ViewPortOrientation orientation) {
-    furi_assert(view_port);
+    furry_assert(view_port);
     view_port->orientation = orientation;
 }
 

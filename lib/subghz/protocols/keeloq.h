@@ -160,7 +160,7 @@ SubGhzProtocolStatus
  * @param context Pointer to a SubGhzProtocolDecoderKeeloq instance
  * @param output Resulting text
  */
-void subghz_protocol_decoder_keeloq_get_string(void* context, FuriString* output);
+void subghz_protocol_decoder_keeloq_get_string(void* context, FurryString* output);
 
 #ifdef __cplusplus
 }

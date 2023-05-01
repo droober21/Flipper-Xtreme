@@ -2,10 +2,10 @@
 #include "updater_scene.h"
 
 #include <update_util/update_operation.h>
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 void updater_scene_loadcfg_apply_callback(GuiButtonType result, InputType type, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Updater* updater = context;
     if(type != InputTypeShort) {
         return;
@@ -23,7 +23,7 @@ void updater_scene_loadcfg_on_enter(void* context) {
     Updater* updater = (Updater*)context;
     UpdateManifest* loaded_manifest = updater->loaded_manifest = update_manifest_alloc();
 
-    if(update_manifest_init(loaded_manifest, furi_string_get_cstr(updater->startup_arg))) {
+    if(update_manifest_init(loaded_manifest, furry_string_get_cstr(updater->startup_arg))) {
         widget_add_string_element(
             updater->widget, 64, 12, AlignCenter, AlignCenter, FontPrimary, "Update");
 
@@ -35,7 +35,7 @@ void updater_scene_loadcfg_on_enter(void* context) {
             32,
             AlignCenter,
             AlignCenter,
-            furi_string_get_cstr(loaded_manifest->version),
+            furry_string_get_cstr(loaded_manifest->version),
             true);
 
         widget_add_button_element(
@@ -70,11 +70,11 @@ bool updater_scene_loadcfg_on_event(void* context, SceneManagerEvent event) {
         switch(event.event) {
         case UpdaterCustomEventStartUpdate:
             updater->preparation_result =
-                update_operation_prepare(furi_string_get_cstr(updater->startup_arg));
+                update_operation_prepare(furry_string_get_cstr(updater->startup_arg));
             if(updater->preparation_result == UpdatePrepareResultOK) {
-                furi_hal_power_reset();
+                furry_hal_power_reset();
             } else {
-#ifndef FURI_RAM_EXEC
+#ifndef FURRY_RAM_EXEC
                 scene_manager_next_scene(updater->scene_manager, UpdaterSceneError);
 #endif
             }
@@ -93,7 +93,7 @@ bool updater_scene_loadcfg_on_event(void* context, SceneManagerEvent event) {
 }
 
 void updater_scene_loadcfg_on_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Updater* updater = (Updater*)context;
 
     widget_reset(updater->widget);

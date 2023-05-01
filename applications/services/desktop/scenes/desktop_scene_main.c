@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <applications.h>
 #include <assets_icons.h>
 #include <loader/loader.h>
@@ -14,21 +14,21 @@
 #define TAG "DesktopSrv"
 
 static void desktop_scene_main_new_idle_animation_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Desktop* desktop = context;
     view_dispatcher_send_custom_event(
         desktop->view_dispatcher, DesktopAnimationEventNewIdleAnimation);
 }
 
 static void desktop_scene_main_check_animation_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Desktop* desktop = context;
     view_dispatcher_send_custom_event(
         desktop->view_dispatcher, DesktopAnimationEventCheckAnimation);
 }
 
 static void desktop_scene_main_interact_animation_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Desktop* desktop = context;
     view_dispatcher_send_custom_event(
         desktop->view_dispatcher, DesktopAnimationEventInteractAnimation);
@@ -36,28 +36,28 @@ static void desktop_scene_main_interact_animation_callback(void* context) {
 
 #ifdef APP_ARCHIVE
 static void desktop_switch_to_app(Desktop* desktop, const FlipperApplication* flipper_app) {
-    furi_assert(desktop);
-    furi_assert(flipper_app);
-    furi_assert(flipper_app->app);
-    furi_assert(flipper_app->name);
+    furry_assert(desktop);
+    furry_assert(flipper_app);
+    furry_assert(flipper_app->app);
+    furry_assert(flipper_app->name);
 
-    if(furi_thread_get_state(desktop->scene_thread) != FuriThreadStateStopped) {
-        FURI_LOG_E("Desktop", "Thread is already running");
+    if(furry_thread_get_state(desktop->scene_thread) != FurryThreadStateStopped) {
+        FURRY_LOG_E("Desktop", "Thread is already running");
         return;
     }
 
-    FuriHalRtcHeapTrackMode mode = furi_hal_rtc_get_heap_track_mode();
-    if(mode > FuriHalRtcHeapTrackModeNone) {
-        furi_thread_enable_heap_trace(desktop->scene_thread);
+    FurryHalRtcHeapTrackMode mode = furry_hal_rtc_get_heap_track_mode();
+    if(mode > FurryHalRtcHeapTrackModeNone) {
+        furry_thread_enable_heap_trace(desktop->scene_thread);
     } else {
-        furi_thread_disable_heap_trace(desktop->scene_thread);
+        furry_thread_disable_heap_trace(desktop->scene_thread);
     }
 
-    furi_thread_set_name(desktop->scene_thread, flipper_app->name);
-    furi_thread_set_stack_size(desktop->scene_thread, flipper_app->stack_size);
-    furi_thread_set_callback(desktop->scene_thread, flipper_app->app);
+    furry_thread_set_name(desktop->scene_thread, flipper_app->name);
+    furry_thread_set_stack_size(desktop->scene_thread, flipper_app->stack_size);
+    furry_thread_set_callback(desktop->scene_thread, flipper_app->app);
 
-    furi_thread_start(desktop->scene_thread);
+    furry_thread_start(desktop->scene_thread);
 }
 #endif
 
@@ -124,7 +124,7 @@ bool desktop_scene_main_on_event(void* context, SceneManagerEvent event) {
         case DesktopMainEventOpenPowerOff: {
             LoaderStatus status = loader_start(desktop->loader, "Power", "off");
             if(status != LoaderStatusOk) {
-                FURI_LOG_E(TAG, "loader_start failed: %d", status);
+                FURRY_LOG_E(TAG, "loader_start failed: %d", status);
             }
             consumed = true;
             break;
@@ -137,13 +137,13 @@ bool desktop_scene_main_on_event(void* context, SceneManagerEvent event) {
                     FAP_LOADER_APP_NAME,
                     desktop->settings.favorite_primary.name_or_path);
                 if(status != LoaderStatusOk) {
-                    FURI_LOG_E(TAG, "loader_start failed: %d", status);
+                    FURRY_LOG_E(TAG, "loader_start failed: %d", status);
                 }
             } else {
                 LoaderStatus status = loader_start(
                     desktop->loader, desktop->settings.favorite_primary.name_or_path, NULL);
                 if(status != LoaderStatusOk) {
-                    FURI_LOG_E(TAG, "loader_start failed: %d", status);
+                    FURRY_LOG_E(TAG, "loader_start failed: %d", status);
                 }
             }
             consumed = true;
@@ -156,13 +156,13 @@ bool desktop_scene_main_on_event(void* context, SceneManagerEvent event) {
                     FAP_LOADER_APP_NAME,
                     desktop->settings.favorite_secondary.name_or_path);
                 if(status != LoaderStatusOk) {
-                    FURI_LOG_E(TAG, "loader_start failed: %d", status);
+                    FURRY_LOG_E(TAG, "loader_start failed: %d", status);
                 }
             } else {
                 LoaderStatus status = loader_start(
                     desktop->loader, desktop->settings.favorite_secondary.name_or_path, NULL);
                 if(status != LoaderStatusOk) {
-                    FURI_LOG_E(TAG, "loader_start failed: %d", status);
+                    FURRY_LOG_E(TAG, "loader_start failed: %d", status);
                 }
             }
             consumed = true;
@@ -179,7 +179,7 @@ bool desktop_scene_main_on_event(void* context, SceneManagerEvent event) {
             if(!animation_manager_interact_process(desktop->animation_manager)) {
                 LoaderStatus status = loader_start(desktop->loader, "Passport", NULL);
                 if(status != LoaderStatusOk) {
-                    FURI_LOG_E(TAG, "loader_start failed: %d", status);
+                    FURRY_LOG_E(TAG, "loader_start failed: %d", status);
                 }
             }
             consumed = true;
@@ -187,7 +187,7 @@ bool desktop_scene_main_on_event(void* context, SceneManagerEvent event) {
         case DesktopMainEventOpenPassport: {
             LoaderStatus status = loader_start(desktop->loader, "Passport", NULL);
             if(status != LoaderStatusOk) {
-                FURI_LOG_E(TAG, "loader_start failed: %d", status);
+                FURRY_LOG_E(TAG, "loader_start failed: %d", status);
             }
             break;
         }
@@ -195,7 +195,7 @@ bool desktop_scene_main_on_event(void* context, SceneManagerEvent event) {
             LoaderStatus status = loader_start(
                 desktop->loader, FAP_LOADER_APP_NAME, EXT_PATH("apps/Misc/Nightstand.fap"));
             if(status != LoaderStatusOk) {
-                FURI_LOG_E(TAG, "loader_start failed: %d", status);
+                FURRY_LOG_E(TAG, "loader_start failed: %d", status);
             }
             break;
         }

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <furi.h>
+#include <furry.h>
 #include <stm32wbxx_ll_rtc.h>
 
 void set_random_name(char* name, uint8_t max_name_size) {

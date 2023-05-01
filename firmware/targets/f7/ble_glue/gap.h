@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <furi_hal_version.h>
+#include <furry_hal_version.h>
 
 #define GAP_MAC_ADDR_SIZE (6)
 
@@ -67,7 +67,7 @@ typedef struct {
     bool bonding_mode;
     GapPairing pairing_method;
     uint8_t mac_address[GAP_MAC_ADDR_SIZE];
-    char adv_name[FURI_HAL_VERSION_DEVICE_NAME_LENGTH];
+    char adv_name[FURRY_HAL_VERSION_DEVICE_NAME_LENGTH];
     GapConnectionParamsRequest conn_param;
 } GapConfig;
 

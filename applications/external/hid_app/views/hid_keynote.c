@@ -36,7 +36,7 @@ static void hid_keynote_draw_arrow(Canvas* canvas, uint8_t x, uint8_t y, CanvasD
 }
 
 static void hid_keynote_draw_callback(Canvas* canvas, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     HidKeynoteModel* model = context;
 
     // Header
@@ -167,7 +167,7 @@ static void hid_keynote_process(HidKeynote* hid_keynote, InputEvent* event) {
 }
 
 static bool hid_keynote_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     HidKeynote* hid_keynote = context;
     bool consumed = false;
 
@@ -197,18 +197,18 @@ HidKeynote* hid_keynote_alloc(Hid* hid) {
 }
 
 void hid_keynote_free(HidKeynote* hid_keynote) {
-    furi_assert(hid_keynote);
+    furry_assert(hid_keynote);
     view_free(hid_keynote->view);
     free(hid_keynote);
 }
 
 View* hid_keynote_get_view(HidKeynote* hid_keynote) {
-    furi_assert(hid_keynote);
+    furry_assert(hid_keynote);
     return hid_keynote->view;
 }
 
 void hid_keynote_set_connected_status(HidKeynote* hid_keynote, bool connected) {
-    furi_assert(hid_keynote);
+    furry_assert(hid_keynote);
     with_view_model(
         hid_keynote->view, HidKeynoteModel * model, { model->connected = connected; }, true);
 }

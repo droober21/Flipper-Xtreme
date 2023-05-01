@@ -36,7 +36,7 @@ void nfc_scene_start_on_enter(void* context) {
         SubmenuIndexDebug,
         nfc_scene_start_submenu_callback,
         nfc,
-        !furi_hal_rtc_is_flag_set(FuriHalRtcFlagDebug),
+        !furry_hal_rtc_is_flag_set(FurryHalRtcFlagDebug),
         "Enable\nDebug!");
 
     submenu_set_selected_item(

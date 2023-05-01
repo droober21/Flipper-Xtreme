@@ -2,7 +2,7 @@
 #include "../gpio_item.h"
 
 #include <gui/elements.h>
-#include <furi_hal_resources.h>
+#include <furry_hal_resources.h>
 
 struct GpioReader {
     View* view;
@@ -51,7 +51,7 @@ static void gpio_reader_draw_callback(Canvas* canvas, void* _model) {
 }
 
 static bool gpio_reader_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     GpioReader* gpio_reader = context;
     bool consumed = false;
 
@@ -132,13 +132,13 @@ GpioReader* gpio_reader_alloc() {
 }
 
 void gpio_reader_free(GpioReader* gpio_reader) {
-    furi_assert(gpio_reader);
+    furry_assert(gpio_reader);
     view_free(gpio_reader->view);
     free(gpio_reader);
 }
 
 View* gpio_reader_get_view(GpioReader* gpio_reader) {
-    furi_assert(gpio_reader);
+    furry_assert(gpio_reader);
     return gpio_reader->view;
 }
 
@@ -146,8 +146,8 @@ void gpio_reader_set_ok_callback(
     GpioReader* gpio_reader,
     GpioReaderOkCallback callback,
     void* context) {
-    furi_assert(gpio_reader);
-    furi_assert(callback);
+    furry_assert(gpio_reader);
+    furry_assert(callback);
     with_view_model(
         gpio_reader->view,
         GpioReaderModel * model,

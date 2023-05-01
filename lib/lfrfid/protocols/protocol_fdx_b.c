@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include "toolbox/level_duration.h"
 #include "protocol_fdx_b.h"
 #include <toolbox/manchester_decoder.h>
@@ -273,7 +273,7 @@ static bool protocol_fdx_b_get_temp(const uint8_t* data, float* temp) {
     }
 }
 
-void protocol_fdx_b_render_data(ProtocolFDXB* protocol, FuriString* result) {
+void protocol_fdx_b_render_data(ProtocolFDXB* protocol, FurryString* result) {
     // 38 bits of national code
     uint64_t national_code = protocol_fdx_b_get_national_code(protocol->data);
 
@@ -287,19 +287,19 @@ void protocol_fdx_b_render_data(ProtocolFDXB* protocol, FuriString* result) {
     uint8_t replacement_number = bit_lib_get_bits(protocol->data, 60, 3);
     bool animal_flag = bit_lib_get_bit(protocol->data, 63);
 
-    furi_string_printf(result, "ID: %03u-%012llu\r\n", country_code, national_code);
-    furi_string_cat_printf(result, "Animal: %s, ", animal_flag ? "Yes" : "No");
+    furry_string_printf(result, "ID: %03u-%012llu\r\n", country_code, national_code);
+    furry_string_cat_printf(result, "Animal: %s, ", animal_flag ? "Yes" : "No");
 
     float temperature;
     if(protocol_fdx_b_get_temp(protocol->data, &temperature)) {
         float temperature_c = (temperature - 32) / 1.8;
-        furi_string_cat_printf(
+        furry_string_cat_printf(
             result, "T: %.2fF, %.2fC\r\n", (double)temperature, (double)temperature_c);
     } else {
-        furi_string_cat_printf(result, "T: ---\r\n");
+        furry_string_cat_printf(result, "T: ---\r\n");
     }
 
-    furi_string_cat_printf(
+    furry_string_cat_printf(
         result,
         "Bits: %X-%X-%X-%X-%X",
         block_status,
@@ -309,7 +309,7 @@ void protocol_fdx_b_render_data(ProtocolFDXB* protocol, FuriString* result) {
         replacement_number);
 };
 
-void protocol_fdx_b_render_brief_data(ProtocolFDXB* protocol, FuriString* result) {
+void protocol_fdx_b_render_brief_data(ProtocolFDXB* protocol, FurryString* result) {
     // 38 bits of national code
     uint64_t national_code = protocol_fdx_b_get_national_code(protocol->data);
 
@@ -318,15 +318,15 @@ void protocol_fdx_b_render_brief_data(ProtocolFDXB* protocol, FuriString* result
 
     bool animal_flag = bit_lib_get_bit(protocol->data, 63);
 
-    furi_string_printf(result, "ID: %03u-%012llu\r\n", country_code, national_code);
-    furi_string_cat_printf(result, "Animal: %s, ", animal_flag ? "Yes" : "No");
+    furry_string_printf(result, "ID: %03u-%012llu\r\n", country_code, national_code);
+    furry_string_cat_printf(result, "Animal: %s, ", animal_flag ? "Yes" : "No");
 
     float temperature;
     if(protocol_fdx_b_get_temp(protocol->data, &temperature)) {
         float temperature_c = (temperature - 32) / 1.8;
-        furi_string_cat_printf(result, "T: %.2fC", (double)temperature_c);
+        furry_string_cat_printf(result, "T: %.2fC", (double)temperature_c);
     } else {
-        furi_string_cat_printf(result, "T: ---");
+        furry_string_cat_printf(result, "T: ---");
     }
 };
 

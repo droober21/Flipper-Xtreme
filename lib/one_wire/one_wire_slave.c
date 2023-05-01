@@ -1,7 +1,7 @@
 #include "one_wire_slave.h"
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #define TH_TIMEOUT_MAX 15000 /* Maximum time before general timeout */
 
@@ -80,13 +80,13 @@ static const OneWireSlaveTimings onewire_slave_timings_overdrive = {
 static bool
     onewire_slave_wait_while_gpio_is(OneWireSlave* bus, uint32_t time_us, const bool pin_value) {
     const uint32_t time_start = DWT->CYCCNT;
-    const uint32_t time_ticks = time_us * furi_hal_cortex_instructions_per_microsecond();
+    const uint32_t time_ticks = time_us * furry_hal_cortex_instructions_per_microsecond();
 
     uint32_t time_elapsed;
 
     do { //-V1044
         time_elapsed = DWT->CYCCNT - time_start;
-        if(furi_hal_gpio_read(bus->gpio_pin) != pin_value) {
+        if(furry_hal_gpio_read(bus->gpio_pin) != pin_value) {
             return time_ticks >= time_elapsed;
         }
     } while(time_elapsed < time_ticks);
@@ -99,12 +99,12 @@ static inline bool onewire_slave_show_presence(OneWireSlave* bus) {
     // wait until the bus is high (might return immediately)
     onewire_slave_wait_while_gpio_is(bus, timings->trstl_max, false);
     // wait while master delay presence check
-    furi_delay_us(timings->tpdh_typ);
+    furry_delay_us(timings->tpdh_typ);
 
     // show presence
-    furi_hal_gpio_write(bus->gpio_pin, false);
-    furi_delay_us(timings->tpdl_min);
-    furi_hal_gpio_write(bus->gpio_pin, true);
+    furry_hal_gpio_write(bus->gpio_pin, false);
+    furry_delay_us(timings->tpdl_min);
+    furry_hal_gpio_write(bus->gpio_pin, true);
 
     // somebody also can show presence
     const uint32_t wait_low_time = timings->tpdl_max - timings->tpdl_min;
@@ -132,7 +132,7 @@ static inline bool onewire_slave_receive_and_process_command(OneWireSlave* bus) 
             bus->is_first_reset = false;
         }
 
-        furi_assert(bus->reset_callback);
+        furry_assert(bus->reset_callback);
 
         if(bus->reset_callback(bus->is_short_reset, bus->reset_callback_context)) {
             if(onewire_slave_show_presence(bus)) {
@@ -144,7 +144,7 @@ static inline bool onewire_slave_receive_and_process_command(OneWireSlave* bus) 
     } else if(bus->error == OneWireSlaveErrorNone) {
         uint8_t command;
         if(onewire_slave_receive(bus, &command, sizeof(command))) {
-            furi_assert(bus->command_callback);
+            furry_assert(bus->command_callback);
             if(bus->command_callback(command, bus->command_callback_context)) {
                 return true;
             }
@@ -157,16 +157,16 @@ static inline bool onewire_slave_receive_and_process_command(OneWireSlave* bus) 
 }
 
 static inline bool onewire_slave_bus_start(OneWireSlave* bus) {
-    FURI_CRITICAL_ENTER();
-    furi_hal_gpio_init(bus->gpio_pin, GpioModeOutputOpenDrain, GpioPullNo, GpioSpeedLow);
+    FURRY_CRITICAL_ENTER();
+    furry_hal_gpio_init(bus->gpio_pin, GpioModeOutputOpenDrain, GpioPullNo, GpioSpeedLow);
 
     while(onewire_slave_receive_and_process_command(bus))
         ;
 
     const bool result = (bus->error == OneWireSlaveErrorNone);
 
-    furi_hal_gpio_init(bus->gpio_pin, GpioModeInterruptRiseFall, GpioPullNo, GpioSpeedLow);
-    FURI_CRITICAL_EXIT();
+    furry_hal_gpio_init(bus->gpio_pin, GpioModeInterruptRiseFall, GpioPullNo, GpioSpeedLow);
+    FURRY_CRITICAL_EXIT();
 
     return result;
 }
@@ -174,12 +174,12 @@ static inline bool onewire_slave_bus_start(OneWireSlave* bus) {
 static void onewire_slave_exti_callback(void* context) {
     OneWireSlave* bus = context;
 
-    const volatile bool input_state = furi_hal_gpio_read(bus->gpio_pin);
+    const volatile bool input_state = furry_hal_gpio_read(bus->gpio_pin);
     static uint32_t pulse_start = 0;
 
     if(input_state) {
         const uint32_t pulse_length =
-            (DWT->CYCCNT - pulse_start) / furi_hal_cortex_instructions_per_microsecond();
+            (DWT->CYCCNT - pulse_start) / furry_hal_cortex_instructions_per_microsecond();
 
         if((pulse_length >= onewire_slave_timings_overdrive.trstl_min) &&
            (pulse_length <= onewire_slave_timings_normal.trstl_max)) {
@@ -220,15 +220,15 @@ void onewire_slave_free(OneWireSlave* bus) {
 }
 
 void onewire_slave_start(OneWireSlave* bus) {
-    furi_hal_gpio_add_int_callback(bus->gpio_pin, onewire_slave_exti_callback, bus);
-    furi_hal_gpio_write(bus->gpio_pin, true);
-    furi_hal_gpio_init(bus->gpio_pin, GpioModeInterruptRiseFall, GpioPullNo, GpioSpeedLow);
+    furry_hal_gpio_add_int_callback(bus->gpio_pin, onewire_slave_exti_callback, bus);
+    furry_hal_gpio_write(bus->gpio_pin, true);
+    furry_hal_gpio_init(bus->gpio_pin, GpioModeInterruptRiseFall, GpioPullNo, GpioSpeedLow);
 }
 
 void onewire_slave_stop(OneWireSlave* bus) {
-    furi_hal_gpio_write(bus->gpio_pin, true);
-    furi_hal_gpio_init(bus->gpio_pin, GpioModeAnalog, GpioPullNo, GpioSpeedLow);
-    furi_hal_gpio_remove_int_callback(bus->gpio_pin);
+    furry_hal_gpio_write(bus->gpio_pin, true);
+    furry_hal_gpio_init(bus->gpio_pin, GpioModeAnalog, GpioPullNo, GpioSpeedLow);
+    furry_hal_gpio_remove_int_callback(bus->gpio_pin);
 }
 
 void onewire_slave_set_reset_callback(
@@ -291,21 +291,21 @@ bool onewire_slave_send_bit(OneWireSlave* bus, bool value) {
     uint32_t time;
 
     if(!value) {
-        furi_hal_gpio_write(bus->gpio_pin, false);
+        furry_hal_gpio_write(bus->gpio_pin, false);
         time = timings->trl_tmsr_max;
     } else {
         time = timings->tslot_min;
     }
 
     // hold line for ZERO or ONE time
-    furi_delay_us(time);
-    furi_hal_gpio_write(bus->gpio_pin, true);
+    furry_delay_us(time);
+    furry_hal_gpio_write(bus->gpio_pin, true);
 
     return true;
 }
 
 bool onewire_slave_send(OneWireSlave* bus, const uint8_t* data, size_t data_size) {
-    furi_hal_gpio_write(bus->gpio_pin, true);
+    furry_hal_gpio_write(bus->gpio_pin, true);
 
     size_t bytes_sent = 0;
 
@@ -324,7 +324,7 @@ bool onewire_slave_send(OneWireSlave* bus, const uint8_t* data, size_t data_size
 }
 
 bool onewire_slave_receive(OneWireSlave* bus, uint8_t* data, size_t data_size) {
-    furi_hal_gpio_write(bus->gpio_pin, true);
+    furry_hal_gpio_write(bus->gpio_pin, true);
 
     size_t bytes_received = 0;
 

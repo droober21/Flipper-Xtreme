@@ -10,9 +10,9 @@
 #define IBTNFUZZER_APP_FOLDER "/ext/ibtnfuzzer"
 
 static void ibtnfuzzer_draw_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     iBtnFuzzerState* ibtnfuzzer_state = ctx;
-    furi_mutex_acquire(ibtnfuzzer_state->mutex, FuriWaitForever);
+    furry_mutex_acquire(ibtnfuzzer_state->mutex, FurryWaitForever);
 
     // Draw correct Canvas
     switch(ibtnfuzzer_state->current_scene) {
@@ -34,38 +34,38 @@ static void ibtnfuzzer_draw_callback(Canvas* const canvas, void* ctx) {
         break;
     }
 
-    furi_mutex_release(ibtnfuzzer_state->mutex);
+    furry_mutex_release(ibtnfuzzer_state->mutex);
 }
 
-void ibtnfuzzer_input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+void ibtnfuzzer_input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     iBtnFuzzerEvent event = {
         .evt_type = EventTypeKey, .key = input_event->key, .input_type = input_event->type};
-    furi_message_queue_put(event_queue, &event, 25);
+    furry_message_queue_put(event_queue, &event, 25);
 }
 
-static void ibtnfuzzer_timer_callback(FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void ibtnfuzzer_timer_callback(FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
     iBtnFuzzerEvent event = {
         .evt_type = EventTypeTick, .key = InputKeyUp, .input_type = InputTypeRelease};
-    furi_message_queue_put(event_queue, &event, 25);
+    furry_message_queue_put(event_queue, &event, 25);
 }
 
 iBtnFuzzerState* ibtnfuzzer_alloc() {
     iBtnFuzzerState* ibtnfuzzer = malloc(sizeof(iBtnFuzzerState));
-    ibtnfuzzer->notification_msg = furi_string_alloc();
-    ibtnfuzzer->attack_name = furi_string_alloc();
-    ibtnfuzzer->proto_name = furi_string_alloc();
-    ibtnfuzzer->data_str = furi_string_alloc();
+    ibtnfuzzer->notification_msg = furry_string_alloc();
+    ibtnfuzzer->attack_name = furry_string_alloc();
+    ibtnfuzzer->proto_name = furry_string_alloc();
+    ibtnfuzzer->data_str = furry_string_alloc();
 
-    ibtnfuzzer->main_menu_items[0] = furi_string_alloc_set("Default Values");
-    ibtnfuzzer->main_menu_items[1] = furi_string_alloc_set("Load File");
-    ibtnfuzzer->main_menu_items[2] = furi_string_alloc_set("Load UIDs from file");
+    ibtnfuzzer->main_menu_items[0] = furry_string_alloc_set("Default Values");
+    ibtnfuzzer->main_menu_items[1] = furry_string_alloc_set("Load File");
+    ibtnfuzzer->main_menu_items[2] = furry_string_alloc_set("Load UIDs from file");
 
-    ibtnfuzzer->main_menu_proto_items[0] = furi_string_alloc_set("DS1990");
-    ibtnfuzzer->main_menu_proto_items[1] = furi_string_alloc_set("Metakom");
-    ibtnfuzzer->main_menu_proto_items[2] = furi_string_alloc_set("Cyfral");
+    ibtnfuzzer->main_menu_proto_items[0] = furry_string_alloc_set("DS1990");
+    ibtnfuzzer->main_menu_proto_items[1] = furry_string_alloc_set("Metakom");
+    ibtnfuzzer->main_menu_proto_items[2] = furry_string_alloc_set("Cyfral");
 
     ibtnfuzzer->previous_scene = NoneScene;
     ibtnfuzzer->current_scene = SceneEntryPoint;
@@ -76,7 +76,7 @@ iBtnFuzzerState* ibtnfuzzer_alloc() {
     ibtnfuzzer->menu_proto_index = 0;
 
     ibtnfuzzer->attack = iBtnFuzzerAttackDefaultValues;
-    ibtnfuzzer->notify = furi_record_open(RECORD_NOTIFICATION);
+    ibtnfuzzer->notify = furry_record_open(RECORD_NOTIFICATION);
 
     ibtnfuzzer->data[0] = 0x00;
     ibtnfuzzer->data[1] = 0x00;
@@ -97,28 +97,28 @@ iBtnFuzzerState* ibtnfuzzer_alloc() {
     ibtnfuzzer->payload[7] = 0x00;
 
     //Dialog
-    ibtnfuzzer->dialogs = furi_record_open(RECORD_DIALOGS);
+    ibtnfuzzer->dialogs = furry_record_open(RECORD_DIALOGS);
 
     return ibtnfuzzer;
 }
 
 void ibtnfuzzer_free(iBtnFuzzerState* ibtnfuzzer) {
     //Dialog
-    furi_record_close(RECORD_DIALOGS);
+    furry_record_close(RECORD_DIALOGS);
     notification_message(ibtnfuzzer->notify, &sequence_blink_stop);
 
     // Strings
-    furi_string_free(ibtnfuzzer->notification_msg);
-    furi_string_free(ibtnfuzzer->attack_name);
-    furi_string_free(ibtnfuzzer->proto_name);
-    furi_string_free(ibtnfuzzer->data_str);
+    furry_string_free(ibtnfuzzer->notification_msg);
+    furry_string_free(ibtnfuzzer->attack_name);
+    furry_string_free(ibtnfuzzer->proto_name);
+    furry_string_free(ibtnfuzzer->data_str);
 
     for(uint32_t i = 0; i < 3; i++) {
-        furi_string_free(ibtnfuzzer->main_menu_items[i]);
+        furry_string_free(ibtnfuzzer->main_menu_items[i]);
     }
 
     for(uint32_t i = 0; i < 3; i++) {
-        furi_string_free(ibtnfuzzer->main_menu_proto_items[i]);
+        furry_string_free(ibtnfuzzer->main_menu_proto_items[i]);
     }
 
     free(ibtnfuzzer->data);
@@ -132,50 +132,50 @@ void ibtnfuzzer_free(iBtnFuzzerState* ibtnfuzzer) {
 int32_t ibtnfuzzer_start(void* p) {
     UNUSED(p);
     // Input
-    FURI_LOG_I(TAG, "Initializing input");
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(iBtnFuzzerEvent));
+    FURRY_LOG_I(TAG, "Initializing input");
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(iBtnFuzzerEvent));
     iBtnFuzzerState* ibtnfuzzer_state = ibtnfuzzer_alloc();
 
     DOLPHIN_DEED(DolphinDeedPluginStart);
-    ibtnfuzzer_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    ibtnfuzzer_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!ibtnfuzzer_state->mutex) {
-        FURI_LOG_E(TAG, "cannot create mutex\r\n");
-        furi_message_queue_free(event_queue);
-        furi_record_close(RECORD_NOTIFICATION);
+        FURRY_LOG_E(TAG, "cannot create mutex\r\n");
+        furry_message_queue_free(event_queue);
+        furry_record_close(RECORD_NOTIFICATION);
         ibtnfuzzer_free(ibtnfuzzer_state);
         return 255;
     }
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     if(!storage_simply_mkdir(storage, IBTNFUZZER_APP_FOLDER)) {
-        FURI_LOG_E(TAG, "Could not create folder %s", IBTNFUZZER_APP_FOLDER);
+        FURRY_LOG_E(TAG, "Could not create folder %s", IBTNFUZZER_APP_FOLDER);
     }
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     // Configure view port
-    FURI_LOG_I(TAG, "Initializing viewport");
+    FURRY_LOG_I(TAG, "Initializing viewport");
     ViewPort* view_port = view_port_alloc();
     view_port_draw_callback_set(view_port, ibtnfuzzer_draw_callback, ibtnfuzzer_state);
     view_port_input_callback_set(view_port, ibtnfuzzer_input_callback, event_queue);
 
     // Configure timer
-    FURI_LOG_I(TAG, "Initializing timer");
-    FuriTimer* timer =
-        furi_timer_alloc(ibtnfuzzer_timer_callback, FuriTimerTypePeriodic, event_queue);
-    furi_timer_start(timer, furi_kernel_get_tick_frequency() / 10); // 10 times per second
+    FURRY_LOG_I(TAG, "Initializing timer");
+    FurryTimer* timer =
+        furry_timer_alloc(ibtnfuzzer_timer_callback, FurryTimerTypePeriodic, event_queue);
+    furry_timer_start(timer, furry_kernel_get_tick_frequency() / 10); // 10 times per second
 
     // Register view port in GUI
-    FURI_LOG_I(TAG, "Initializing gui");
-    Gui* gui = (Gui*)furi_record_open(RECORD_GUI);
+    FURRY_LOG_I(TAG, "Initializing gui");
+    Gui* gui = (Gui*)furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
     // Init values
     iBtnFuzzerEvent event;
     while(ibtnfuzzer_state->is_running) {
         // Get next event
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 25);
-        //furi_mutex_acquire(ibtnfuzzer_state->mutex, FuriWaitForever);
-        if(event_status == FuriStatusOk) {
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 25);
+        //furry_mutex_acquire(ibtnfuzzer_state->mutex, FurryWaitForever);
+        if(event_status == FurryStatusOk) {
             if(event.evt_type == EventTypeKey) {
                 //Handle event key
                 switch(ibtnfuzzer_state->current_scene) {
@@ -265,20 +265,20 @@ int32_t ibtnfuzzer_start(void* p) {
                 view_port_update(view_port);
             }
         }
-        //furi_mutex_release(ibtnfuzzer_state->mutex);
+        //furry_mutex_release(ibtnfuzzer_state->mutex);
     }
 
     // Cleanup
-    furi_timer_stop(timer);
-    furi_timer_free(timer);
+    furry_timer_stop(timer);
+    furry_timer_free(timer);
 
-    FURI_LOG_I(TAG, "Cleaning up");
+    FURRY_LOG_I(TAG, "Cleaning up");
     gui_remove_view_port(gui, view_port);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_NOTIFICATION);
-    furi_mutex_free(ibtnfuzzer_state->mutex);
+    furry_message_queue_free(event_queue);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
+    furry_mutex_free(ibtnfuzzer_state->mutex);
     ibtnfuzzer_free(ibtnfuzzer_state);
 
     return 0;

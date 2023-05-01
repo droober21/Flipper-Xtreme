@@ -1,7 +1,7 @@
 #include "hid_media.h"
-#include <furi.h>
-#include <furi_hal_bt_hid.h>
-#include <furi_hal_usb_hid.h>
+#include <furry.h>
+#include <furry_hal_bt_hid.h>
+#include <furry_hal_usb_hid.h>
 #include <gui/elements.h>
 #include "../hid.h"
 
@@ -39,7 +39,7 @@ static void hid_media_draw_arrow(Canvas* canvas, uint8_t x, uint8_t y, CanvasDir
 }
 
 static void hid_media_draw_callback(Canvas* canvas, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     HidMediaModel* model = context;
 
     // Header
@@ -182,7 +182,7 @@ static void hid_media_process_release(HidMedia* hid_media, InputEvent* event) {
 }
 
 static bool hid_media_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     HidMedia* hid_media = context;
     bool consumed = false;
 
@@ -212,18 +212,18 @@ HidMedia* hid_media_alloc(Hid* hid) {
 }
 
 void hid_media_free(HidMedia* hid_media) {
-    furi_assert(hid_media);
+    furry_assert(hid_media);
     view_free(hid_media->view);
     free(hid_media);
 }
 
 View* hid_media_get_view(HidMedia* hid_media) {
-    furi_assert(hid_media);
+    furry_assert(hid_media);
     return hid_media->view;
 }
 
 void hid_media_set_connected_status(HidMedia* hid_media, bool connected) {
-    furi_assert(hid_media);
+    furry_assert(hid_media);
     with_view_model(
         hid_media->view, HidMediaModel * model, { model->connected = connected; }, true);
 }

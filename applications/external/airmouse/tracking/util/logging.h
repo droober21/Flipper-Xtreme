@@ -16,8 +16,8 @@
 #ifndef CARDBOARD_SDK_UTIL_LOGGING_H_
 #define CARDBOARD_SDK_UTIL_LOGGING_H_
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 #if defined(__ANDROID__)
 
@@ -30,8 +30,8 @@
 
 #else
 
-#define CARDBOARD_LOGI(...) // FURI_LOG_I("CardboardSDK", __VA_ARGS__)
-#define CARDBOARD_LOGE(...) // FURI_LOG_E("CardboardSDK", __VA_ARGS__)
+#define CARDBOARD_LOGI(...) // FURRY_LOG_I("CardboardSDK", __VA_ARGS__)
+#define CARDBOARD_LOGE(...) // FURRY_LOG_E("CardboardSDK", __VA_ARGS__)
 
 #endif
 

@@ -4,8 +4,8 @@
 // TODO: Handle back button correctly
 // TODO: Add keys to top of the user dictionary, not the bottom
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include "time.h"
 #include <gui/gui.h>
 #include <gui/elements.h>
@@ -82,7 +82,7 @@ typedef enum {
 } MfkeyState;
 
 typedef struct {
-    FuriMutex* mutex;
+    FurryMutex* mutex;
     MfkeyError err;
     MfkeyState mfkey_state;
     int cracked;
@@ -92,7 +92,7 @@ typedef struct {
     int search;
     bool is_thread_running;
     bool close_thread_please;
-    FuriThread* mfkeythread;
+    FurryThread* mfkeythread;
 } ProgramState;
 
 // TODO: Merge this with Crypto1Params?
@@ -441,7 +441,7 @@ int calculate_msb_tables(
     struct Msb* even_msbs,
     unsigned int* temp_states_odd,
     unsigned int* temp_states_even) {
-    //FURI_LOG_I(TAG, "MSB GO %i", msb_iter); // DEBUG
+    //FURRY_LOG_I(TAG, "MSB GO %i", msb_iter); // DEBUG
     unsigned int msb_head = (MSB_LIMIT * msb_round); // msb_iter ranges from 0 to (256/MSB_LIMIT)-1
     unsigned int msb_tail = (MSB_LIMIT * (msb_round + 1));
     int states_tail = 0, tail = 0;
@@ -453,7 +453,7 @@ int calculate_msb_tables(
 
     for(semi_state = 1 << 20; semi_state >= 0; semi_state--) {
         //if (main_iter % 2048 == 0) {
-        //    FURI_LOG_I(TAG, "On main_iter %i", main_iter); // DEBUG
+        //    FURRY_LOG_I(TAG, "On main_iter %i", main_iter); // DEBUG
         //}
         if(filter(semi_state) == (oks & 1)) {
             states_buffer[0] = semi_state;
@@ -546,7 +546,7 @@ int recover(struct Crypto1Params* p, int ks2, ProgramState* const program_state)
     for(i = 30; i >= 0; i -= 2) {
         eks = eks << 1 | BEBIT(ks2, i);
     }
-    int bench_start = furi_hal_rtc_get_timestamp();
+    int bench_start = furry_hal_rtc_get_timestamp();
     for(msb = 0; msb <= ((256 / MSB_LIMIT) - 1); msb++) {
         //printf("MSB: %i\n", msb);
         program_state->search = msb;
@@ -560,8 +560,8 @@ int recover(struct Crypto1Params* p, int ks2, ProgramState* const program_state)
                even_msbs,
                temp_states_odd,
                temp_states_even)) {
-            int bench_stop = furi_hal_rtc_get_timestamp();
-            FURI_LOG_I(TAG, "Cracked in %i seconds", bench_stop - bench_start);
+            int bench_stop = furry_hal_rtc_get_timestamp();
+            FURRY_LOG_I(TAG, "Cracked in %i seconds", bench_stop - bench_start);
             free(states_buffer);
             free(odd_msbs);
             free(even_msbs);
@@ -574,7 +574,7 @@ int recover(struct Crypto1Params* p, int ks2, ProgramState* const program_state)
 }
 
 bool napi_mf_classic_dict_check_presence(MfClassicDictType dict_type) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     bool dict_present = false;
     if(dict_type == MfClassicDictTypeSystem) {
@@ -583,16 +583,16 @@ bool napi_mf_classic_dict_check_presence(MfClassicDictType dict_type) {
         dict_present = storage_common_stat(storage, MF_CLASSIC_DICT_USER_PATH, NULL) == FSE_OK;
     }
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return dict_present;
 }
 
 MfClassicDict* napi_mf_classic_dict_alloc(MfClassicDictType dict_type) {
     MfClassicDict* dict = malloc(sizeof(MfClassicDict));
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     dict->stream = buffered_file_stream_alloc(storage);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     bool dict_loaded = false;
     do {
@@ -619,34 +619,34 @@ MfClassicDict* napi_mf_classic_dict_alloc(MfClassicDictType dict_type) {
             uint8_t last_char = 0;
             if(stream_read(dict->stream, &last_char, 1) != 1) break;
             if(last_char != '\n') {
-                FURI_LOG_D(TAG, "Adding new line ending");
+                FURRY_LOG_D(TAG, "Adding new line ending");
                 if(stream_write_char(dict->stream, '\n') != 1) break;
             }
             if(!stream_rewind(dict->stream)) break;
         }
 
         // Read total amount of keys
-        FuriString* next_line;
-        next_line = furi_string_alloc();
+        FurryString* next_line;
+        next_line = furry_string_alloc();
         while(true) {
             if(!stream_read_line(dict->stream, next_line)) {
-                FURI_LOG_T(TAG, "No keys left in dict");
+                FURRY_LOG_T(TAG, "No keys left in dict");
                 break;
             }
-            FURI_LOG_T(
+            FURRY_LOG_T(
                 TAG,
                 "Read line: %s, len: %zu",
-                furi_string_get_cstr(next_line),
-                furi_string_size(next_line));
-            if(furi_string_get_char(next_line, 0) == '#') continue;
-            if(furi_string_size(next_line) != NFC_MF_CLASSIC_KEY_LEN) continue;
+                furry_string_get_cstr(next_line),
+                furry_string_size(next_line));
+            if(furry_string_get_char(next_line, 0) == '#') continue;
+            if(furry_string_size(next_line) != NFC_MF_CLASSIC_KEY_LEN) continue;
             dict->total_keys++;
         }
-        furi_string_free(next_line);
+        furry_string_free(next_line);
         stream_rewind(dict->stream);
 
         dict_loaded = true;
-        FURI_LOG_I(TAG, "Loaded dictionary with %lu keys", dict->total_keys);
+        FURRY_LOG_I(TAG, "Loaded dictionary with %lu keys", dict->total_keys);
     } while(false);
 
     if(!dict_loaded) {
@@ -658,12 +658,12 @@ MfClassicDict* napi_mf_classic_dict_alloc(MfClassicDictType dict_type) {
     return dict;
 }
 
-bool napi_mf_classic_dict_add_key_str(MfClassicDict* dict, FuriString* key) {
-    furi_assert(dict);
-    furi_assert(dict->stream);
-    FURI_LOG_I(TAG, "Saving key: %s", furi_string_get_cstr(key));
+bool napi_mf_classic_dict_add_key_str(MfClassicDict* dict, FurryString* key) {
+    furry_assert(dict);
+    furry_assert(dict->stream);
+    FURRY_LOG_I(TAG, "Saving key: %s", furry_string_get_cstr(key));
 
-    furi_string_cat_printf(key, "\n");
+    furry_string_cat_printf(key, "\n");
 
     bool key_added = false;
     do {
@@ -673,61 +673,61 @@ bool napi_mf_classic_dict_add_key_str(MfClassicDict* dict, FuriString* key) {
         key_added = true;
     } while(false);
 
-    furi_string_left(key, 12);
+    furry_string_left(key, 12);
     return key_added;
 }
 
 void napi_mf_classic_dict_free(MfClassicDict* dict) {
-    furi_assert(dict);
-    furi_assert(dict->stream);
+    furry_assert(dict);
+    furry_assert(dict->stream);
 
     buffered_file_stream_close(dict->stream);
     stream_free(dict->stream);
     free(dict);
 }
 
-static void napi_mf_classic_dict_int_to_str(uint8_t* key_int, FuriString* key_str) {
-    furi_string_reset(key_str);
+static void napi_mf_classic_dict_int_to_str(uint8_t* key_int, FurryString* key_str) {
+    furry_string_reset(key_str);
     for(size_t i = 0; i < 6; i++) {
-        furi_string_cat_printf(key_str, "%02X", key_int[i]);
+        furry_string_cat_printf(key_str, "%02X", key_int[i]);
     }
 }
 
-static void napi_mf_classic_dict_str_to_int(FuriString* key_str, uint64_t* key_int) {
+static void napi_mf_classic_dict_str_to_int(FurryString* key_str, uint64_t* key_int) {
     uint8_t key_byte_tmp;
 
     *key_int = 0ULL;
     for(uint8_t i = 0; i < 12; i += 2) {
         args_char_to_hex(
-            furi_string_get_char(key_str, i), furi_string_get_char(key_str, i + 1), &key_byte_tmp);
+            furry_string_get_char(key_str, i), furry_string_get_char(key_str, i + 1), &key_byte_tmp);
         *key_int |= (uint64_t)key_byte_tmp << (8 * (5 - i / 2));
     }
 }
 
 uint32_t napi_mf_classic_dict_get_total_keys(MfClassicDict* dict) {
-    furi_assert(dict);
+    furry_assert(dict);
 
     return dict->total_keys;
 }
 
 bool napi_mf_classic_dict_rewind(MfClassicDict* dict) {
-    furi_assert(dict);
-    furi_assert(dict->stream);
+    furry_assert(dict);
+    furry_assert(dict->stream);
 
     return stream_rewind(dict->stream);
 }
 
-bool napi_mf_classic_dict_get_next_key_str(MfClassicDict* dict, FuriString* key) {
-    furi_assert(dict);
-    furi_assert(dict->stream);
+bool napi_mf_classic_dict_get_next_key_str(MfClassicDict* dict, FurryString* key) {
+    furry_assert(dict);
+    furry_assert(dict->stream);
 
     bool key_read = false;
-    furi_string_reset(key);
+    furry_string_reset(key);
     while(!key_read) {
         if(!stream_read_line(dict->stream, key)) break;
-        if(furi_string_get_char(key, 0) == '#') continue;
-        if(furi_string_size(key) != NFC_MF_CLASSIC_KEY_LEN) continue;
-        furi_string_left(key, 12);
+        if(furry_string_get_char(key, 0) == '#') continue;
+        if(furry_string_size(key) != NFC_MF_CLASSIC_KEY_LEN) continue;
+        furry_string_left(key, 12);
         key_read = true;
     }
 
@@ -735,48 +735,48 @@ bool napi_mf_classic_dict_get_next_key_str(MfClassicDict* dict, FuriString* key)
 }
 
 bool napi_mf_classic_dict_get_next_key(MfClassicDict* dict, uint64_t* key) {
-    furi_assert(dict);
-    furi_assert(dict->stream);
+    furry_assert(dict);
+    furry_assert(dict->stream);
 
-    FuriString* temp_key;
-    temp_key = furi_string_alloc();
+    FurryString* temp_key;
+    temp_key = furry_string_alloc();
     bool key_read = napi_mf_classic_dict_get_next_key_str(dict, temp_key);
     if(key_read) {
         napi_mf_classic_dict_str_to_int(temp_key, key);
     }
-    furi_string_free(temp_key);
+    furry_string_free(temp_key);
     return key_read;
 }
 
-bool napi_mf_classic_dict_is_key_present_str(MfClassicDict* dict, FuriString* key) {
-    furi_assert(dict);
-    furi_assert(dict->stream);
+bool napi_mf_classic_dict_is_key_present_str(MfClassicDict* dict, FurryString* key) {
+    furry_assert(dict);
+    furry_assert(dict->stream);
 
-    FuriString* next_line;
-    next_line = furi_string_alloc();
+    FurryString* next_line;
+    next_line = furry_string_alloc();
 
     bool key_found = false;
     stream_rewind(dict->stream);
     while(!key_found) { //-V654
         if(!stream_read_line(dict->stream, next_line)) break;
-        if(furi_string_get_char(next_line, 0) == '#') continue;
-        if(furi_string_size(next_line) != NFC_MF_CLASSIC_KEY_LEN) continue;
-        furi_string_left(next_line, 12);
-        if(!furi_string_equal(key, next_line)) continue;
+        if(furry_string_get_char(next_line, 0) == '#') continue;
+        if(furry_string_size(next_line) != NFC_MF_CLASSIC_KEY_LEN) continue;
+        furry_string_left(next_line, 12);
+        if(!furry_string_equal(key, next_line)) continue;
         key_found = true;
     }
 
-    furi_string_free(next_line);
+    furry_string_free(next_line);
     return key_found;
 }
 
 bool napi_mf_classic_dict_is_key_present(MfClassicDict* dict, uint8_t* key) {
-    FuriString* temp_key;
+    FurryString* temp_key;
 
-    temp_key = furi_string_alloc();
+    temp_key = furry_string_alloc();
     napi_mf_classic_dict_int_to_str(key, temp_key);
     bool key_found = napi_mf_classic_dict_is_key_present_str(dict, temp_key);
-    furi_string_free(temp_key);
+    furry_string_free(temp_key);
     return key_found;
 }
 
@@ -807,11 +807,11 @@ bool napi_key_already_found_for_nonce(
 }
 
 bool napi_mf_classic_nonces_check_presence() {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
 
     bool nonces_present = storage_common_stat(storage, MF_CLASSIC_NONCE_PATH, NULL) == FSE_OK;
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return nonces_present;
 }
@@ -825,9 +825,9 @@ MfClassicNonceArray* napi_mf_classic_nonce_array_alloc(
     MfClassicNonceArray* nonce_array = malloc(sizeof(MfClassicNonceArray));
     MfClassicNonce* remaining_nonce_array_init = malloc(sizeof(MfClassicNonce) * 1);
     nonce_array->remaining_nonce_array = remaining_nonce_array_init;
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     nonce_array->stream = buffered_file_stream_alloc(storage);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     bool array_loaded = false;
     do {
@@ -844,27 +844,27 @@ MfClassicNonceArray* napi_mf_classic_nonce_array_alloc(
             uint8_t last_char = 0;
             if(stream_read(nonce_array->stream, &last_char, 1) != 1) break;
             if(last_char != '\n') {
-                FURI_LOG_D(TAG, "Adding new line ending");
+                FURRY_LOG_D(TAG, "Adding new line ending");
                 if(stream_write_char(nonce_array->stream, '\n') != 1) break;
             }
             if(!stream_rewind(nonce_array->stream)) break;
         }
 
         // Read total amount of nonces
-        FuriString* next_line;
-        next_line = furi_string_alloc();
+        FurryString* next_line;
+        next_line = furry_string_alloc();
         while(true) {
             if(!stream_read_line(nonce_array->stream, next_line)) {
-                FURI_LOG_T(TAG, "No nonces left");
+                FURRY_LOG_T(TAG, "No nonces left");
                 break;
             }
-            FURI_LOG_T(
+            FURRY_LOG_T(
                 TAG,
                 "Read line: %s, len: %zu",
-                furi_string_get_cstr(next_line),
-                furi_string_size(next_line));
-            if(!furi_string_start_with_str(next_line, "Sec")) continue;
-            const char* next_line_cstr = furi_string_get_cstr(next_line);
+                furry_string_get_cstr(next_line),
+                furry_string_size(next_line));
+            if(!furry_string_start_with_str(next_line, "Sec")) continue;
+            const char* next_line_cstr = furry_string_get_cstr(next_line);
             MfClassicNonce res = {0};
             char token[20];
             int i = 0;
@@ -913,7 +913,7 @@ MfClassicNonceArray* napi_mf_classic_nonce_array_alloc(
                 (program_state->cracked)++;
                 continue;
             }
-            FURI_LOG_I(TAG, "No key found for %lx %lx", res.uid, res.ar1_enc);
+            FURRY_LOG_I(TAG, "No key found for %lx %lx", res.uid, res.ar1_enc);
             // TODO: Refactor
             nonce_array->remaining_nonce_array = realloc(
                 nonce_array->remaining_nonce_array,
@@ -922,11 +922,11 @@ MfClassicNonceArray* napi_mf_classic_nonce_array_alloc(
             nonce_array->remaining_nonce_array[(nonce_array->remaining_nonces) - 1] = res;
             nonce_array->total_nonces++;
         }
-        furi_string_free(next_line);
+        furry_string_free(next_line);
         stream_rewind(nonce_array->stream);
 
         array_loaded = true;
-        FURI_LOG_I(TAG, "Loaded %lu nonces", nonce_array->total_nonces);
+        FURRY_LOG_I(TAG, "Loaded %lu nonces", nonce_array->total_nonces);
     } while(false);
 
     if(!array_loaded) {
@@ -939,8 +939,8 @@ MfClassicNonceArray* napi_mf_classic_nonce_array_alloc(
 }
 
 void napi_mf_classic_nonce_array_free(MfClassicNonceArray* nonce_array) {
-    furi_assert(nonce_array);
-    furi_assert(nonce_array->stream);
+    furry_assert(nonce_array);
+    furry_assert(nonce_array->stream);
 
     buffered_file_stream_close(nonce_array->stream);
     stream_free(nonce_array->stream);
@@ -949,13 +949,13 @@ void napi_mf_classic_nonce_array_free(MfClassicNonceArray* nonce_array) {
 
 static void finished_beep() {
     // Beep to indicate completion if the speaker is available
-    if(furi_hal_speaker_acquire(1000)) { // Wait up to a second for the speaker
+    if(furry_hal_speaker_acquire(1000)) { // Wait up to a second for the speaker
         float freq = 3000;
         float volume = 1.0f; // 100% volume
-        furi_hal_speaker_start(freq, volume);
-        furi_delay_ms(75);
-        furi_hal_speaker_stop();
-        furi_hal_speaker_release();
+        furry_hal_speaker_start(freq, volume);
+        furry_delay_ms(75);
+        furry_hal_speaker_stop();
+        furry_hal_speaker_release();
     }
 }
 
@@ -1028,7 +1028,7 @@ void mfkey32(ProgramState* const program_state) {
             (program_state->cracked)++;
             continue;
         }
-        FURI_LOG_I(TAG, "Cracking %lx %lx", next_nonce.uid, next_nonce.ar1_enc);
+        FURRY_LOG_I(TAG, "Cracking %lx %lx", next_nonce.uid, next_nonce.ar1_enc);
         struct Crypto1Params p = {
             0,
             next_nonce.nr0_enc,
@@ -1060,20 +1060,20 @@ void mfkey32(ProgramState* const program_state) {
     }
     // TODO: Update display to show all keys were found
     // TODO: Prepend found key(s) to user dictionary file
-    //FURI_LOG_I(TAG, "Unique keys found:");
+    //FURRY_LOG_I(TAG, "Unique keys found:");
     for(i = 0; i < keyarray_size; i++) {
-        //FURI_LOG_I(TAG, "%012" PRIx64, keyarray[i]);
-        FuriString* temp_key = furi_string_alloc();
-        furi_string_cat_printf(temp_key, "%012" PRIX64, keyarray[i]);
+        //FURRY_LOG_I(TAG, "%012" PRIx64, keyarray[i]);
+        FurryString* temp_key = furry_string_alloc();
+        furry_string_cat_printf(temp_key, "%012" PRIX64, keyarray[i]);
         napi_mf_classic_dict_add_key_str(user_dict, temp_key);
-        furi_string_free(temp_key);
+        furry_string_free(temp_key);
     }
     napi_mf_classic_nonce_array_free(nonce_arr);
     if(user_dict_exists) {
         napi_mf_classic_dict_free(user_dict);
     }
     free(keyarray);
-    //FURI_LOG_I(TAG, "mfkey32 function completed normally"); // DEBUG
+    //FURRY_LOG_I(TAG, "mfkey32 function completed normally"); // DEBUG
     program_state->mfkey_state = Complete;
     finished_beep();
     return;
@@ -1081,9 +1081,9 @@ void mfkey32(ProgramState* const program_state) {
 
 // Screen is 128x64 px
 static void render_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     const ProgramState* program_state = ctx;
-    furi_mutex_acquire(program_state->mutex, FuriWaitForever);
+    furry_mutex_acquire(program_state->mutex, FurryWaitForever);
     char draw_str[32] = {};
     canvas_clear(canvas);
     canvas_draw_frame(canvas, 0, 0, 128, 64);
@@ -1151,14 +1151,14 @@ static void render_callback(Canvas* const canvas, void* ctx) {
     } else {
         // Unhandled program state
     }
-    furi_mutex_release(program_state->mutex);
+    furry_mutex_release(program_state->mutex);
 }
 
-static void input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     PluginEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 static void mfkey32_state_init(ProgramState* const program_state) {
@@ -1175,7 +1175,7 @@ static int32_t mfkey32_worker_thread(void* ctx) {
     ProgramState* program_state = ctx;
     program_state->is_thread_running = true;
     program_state->mfkey_state = Initializing;
-    //FURI_LOG_I(TAG, "Hello from the mfkey32 worker thread"); // DEBUG
+    //FURRY_LOG_I(TAG, "Hello from the mfkey32 worker thread"); // DEBUG
     mfkey32(program_state);
     program_state->is_thread_running = false;
     return 0;
@@ -1183,21 +1183,21 @@ static int32_t mfkey32_worker_thread(void* ctx) {
 
 void start_mfkey32_thread(ProgramState* program_state) {
     if(!program_state->is_thread_running) {
-        furi_thread_start(program_state->mfkeythread);
+        furry_thread_start(program_state->mfkeythread);
     }
 }
 
 int32_t mfkey32_main() {
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(PluginEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(PluginEvent));
 
     DOLPHIN_DEED(DolphinDeedPluginStart);
     ProgramState* program_state = malloc(sizeof(ProgramState));
 
     mfkey32_state_init(program_state);
 
-    program_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    program_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!program_state->mutex) {
-        FURI_LOG_E(TAG, "cannot create mutex\r\n");
+        FURRY_LOG_E(TAG, "cannot create mutex\r\n");
         free(program_state);
         return 255;
     }
@@ -1208,22 +1208,22 @@ int32_t mfkey32_main() {
     view_port_input_callback_set(view_port, input_callback, event_queue);
 
     // Open GUI and register view_port
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
-    program_state->mfkeythread = furi_thread_alloc();
-    furi_thread_set_name(program_state->mfkeythread, "Mfkey32 Worker");
-    furi_thread_set_stack_size(program_state->mfkeythread, 2048);
-    furi_thread_set_context(program_state->mfkeythread, program_state);
-    furi_thread_set_callback(program_state->mfkeythread, mfkey32_worker_thread);
+    program_state->mfkeythread = furry_thread_alloc();
+    furry_thread_set_name(program_state->mfkeythread, "Mfkey32 Worker");
+    furry_thread_set_stack_size(program_state->mfkeythread, 2048);
+    furry_thread_set_context(program_state->mfkeythread, program_state);
+    furry_thread_set_callback(program_state->mfkeythread, mfkey32_worker_thread);
 
     PluginEvent event;
     for(bool main_loop = true; main_loop;) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 100);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 100);
 
-        furi_mutex_acquire(program_state->mutex, FuriWaitForever);
+        furry_mutex_acquire(program_state->mutex, FurryWaitForever);
 
-        if(event_status == FuriStatusOk) {
+        if(event_status == FurryStatusOk) {
             // press events
             if(event.type == EventTypeKey) {
                 if(event.input.type == InputTypePress) {
@@ -1257,7 +1257,7 @@ int32_t mfkey32_main() {
                             program_state->close_thread_please = true;
                             if(program_state->is_thread_running && program_state->mfkeythread) {
                                 // Wait until thread is finished
-                                furi_thread_join(program_state->mfkeythread);
+                                furry_thread_join(program_state->mfkeythread);
                             }
                             program_state->close_thread_please = false;
                             main_loop = false;
@@ -1271,16 +1271,16 @@ int32_t mfkey32_main() {
         }
 
         view_port_update(view_port);
-        furi_mutex_release(program_state->mutex);
+        furry_mutex_release(program_state->mutex);
     }
 
-    furi_thread_free(program_state->mfkeythread);
+    furry_thread_free(program_state->mfkeythread);
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close("gui");
+    furry_record_close("gui");
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_mutex_free(program_state->mutex);
+    furry_message_queue_free(event_queue);
+    furry_mutex_free(program_state->mutex);
     free(program_state);
 
     return 0;

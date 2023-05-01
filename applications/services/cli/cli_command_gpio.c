@@ -1,8 +1,8 @@
 #include "cli_command_gpio.h"
 
 #include "core/string.h"
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <lib/toolbox/args.h>
 
 void cli_command_gpio_print_usage() {
@@ -14,10 +14,10 @@ void cli_command_gpio_print_usage() {
     printf("\tread <pin_name>\t - Read gpio value\r\n");
 }
 
-static bool pin_name_to_int(FuriString* pin_name, size_t* result) {
-    bool is_debug_mode = furi_hal_rtc_is_flag_set(FuriHalRtcFlagDebug);
+static bool pin_name_to_int(FurryString* pin_name, size_t* result) {
+    bool is_debug_mode = furry_hal_rtc_is_flag_set(FurryHalRtcFlagDebug);
     for(size_t i = 0; i < gpio_pins_count; i++) {
-        if(furi_string_equal(pin_name, gpio_pins[i].name)) {
+        if(furry_string_equal(pin_name, gpio_pins[i].name)) {
             if(!gpio_pins[i].debug || is_debug_mode) {
                 *result = i;
                 return true;
@@ -30,7 +30,7 @@ static bool pin_name_to_int(FuriString* pin_name, size_t* result) {
 
 static void gpio_print_pins(void) {
     printf("Wrong pin name. Available pins: ");
-    bool is_debug_mode = furi_hal_rtc_is_flag_set(FuriHalRtcFlagDebug);
+    bool is_debug_mode = furry_hal_rtc_is_flag_set(FurryHalRtcFlagDebug);
     for(size_t i = 0; i < gpio_pins_count; i++) {
         if(!gpio_pins[i].debug || is_debug_mode) {
             printf("%s ", gpio_pins[i].name);
@@ -45,9 +45,9 @@ typedef enum {
     GpioParseReturnValueError
 } GpioParseReturn;
 
-static GpioParseReturn gpio_command_parse(FuriString* args, size_t* pin_num, uint8_t* value) {
+static GpioParseReturn gpio_command_parse(FurryString* args, size_t* pin_num, uint8_t* value) {
     GpioParseReturn ret = GpioParseReturnOk;
-    FuriString* pin_name = furi_string_alloc();
+    FurryString* pin_name = furry_string_alloc();
 
     do {
         if(!args_read_string_and_trim(args, pin_name)) {
@@ -67,11 +67,11 @@ static GpioParseReturn gpio_command_parse(FuriString* args, size_t* pin_num, uin
         *value = pin_mode;
     } while(false);
 
-    furi_string_free(pin_name);
+    furry_string_free(pin_name);
     return ret;
 }
 
-void cli_command_gpio_mode(Cli* cli, FuriString* args, void* context) {
+void cli_command_gpio_mode(Cli* cli, FurryString* args, void* context) {
     UNUSED(cli);
     UNUSED(context);
 
@@ -81,7 +81,7 @@ void cli_command_gpio_mode(Cli* cli, FuriString* args, void* context) {
     GpioParseReturn err = gpio_command_parse(args, &num, &value);
 
     if(err == GpioParseReturnCmdSyntaxError) {
-        cli_print_usage("gpio mode", "<pin_name> <0|1>", furi_string_get_cstr(args));
+        cli_print_usage("gpio mode", "<pin_name> <0|1>", furry_string_get_cstr(args));
         return;
     } else if(err == GpioParseReturnPinError) { //-V547
         gpio_print_pins();
@@ -102,16 +102,16 @@ void cli_command_gpio_mode(Cli* cli, FuriString* args, void* context) {
     }
 
     if(value == 1) { // output
-        furi_hal_gpio_write(gpio_pins[num].pin, false);
-        furi_hal_gpio_init_simple(gpio_pins[num].pin, GpioModeOutputPushPull);
+        furry_hal_gpio_write(gpio_pins[num].pin, false);
+        furry_hal_gpio_init_simple(gpio_pins[num].pin, GpioModeOutputPushPull);
         printf("Pin %s is now an output (low)", gpio_pins[num].name);
     } else { // input
-        furi_hal_gpio_init_simple(gpio_pins[num].pin, GpioModeInput);
+        furry_hal_gpio_init_simple(gpio_pins[num].pin, GpioModeInput);
         printf("Pin %s is now an input", gpio_pins[num].name);
     }
 }
 
-void cli_command_gpio_read(Cli* cli, FuriString* args, void* context) {
+void cli_command_gpio_read(Cli* cli, FurryString* args, void* context) {
     UNUSED(cli);
     UNUSED(context);
 
@@ -127,12 +127,12 @@ void cli_command_gpio_read(Cli* cli, FuriString* args, void* context) {
         return;
     }
 
-    uint8_t val = !!furi_hal_gpio_read(gpio_pins[num].pin);
+    uint8_t val = !!furry_hal_gpio_read(gpio_pins[num].pin);
 
     printf("Pin %s <= %u", gpio_pins[num].name, val);
 }
 
-void cli_command_gpio_set(Cli* cli, FuriString* args, void* context) {
+void cli_command_gpio_set(Cli* cli, FurryString* args, void* context) {
     UNUSED(context);
 
     size_t num = 0;
@@ -140,7 +140,7 @@ void cli_command_gpio_set(Cli* cli, FuriString* args, void* context) {
     GpioParseReturn err = gpio_command_parse(args, &num, &value);
 
     if(err == GpioParseReturnCmdSyntaxError) {
-        cli_print_usage("gpio set", "<pin_name> <0|1>", furi_string_get_cstr(args));
+        cli_print_usage("gpio set", "<pin_name> <0|1>", furry_string_get_cstr(args));
         return;
     } else if(err == GpioParseReturnPinError) { //-V547
         gpio_print_pins();
@@ -167,13 +167,13 @@ void cli_command_gpio_set(Cli* cli, FuriString* args, void* context) {
         }
     }
 
-    furi_hal_gpio_write(gpio_pins[num].pin, !!value);
+    furry_hal_gpio_write(gpio_pins[num].pin, !!value);
     printf("Pin %s => %u", gpio_pins[num].name, !!value);
 }
 
-void cli_command_gpio(Cli* cli, FuriString* args, void* context) {
-    FuriString* cmd;
-    cmd = furi_string_alloc();
+void cli_command_gpio(Cli* cli, FurryString* args, void* context) {
+    FurryString* cmd;
+    cmd = furry_string_alloc();
 
     do {
         if(!args_read_string_and_trim(args, cmd)) {
@@ -181,17 +181,17 @@ void cli_command_gpio(Cli* cli, FuriString* args, void* context) {
             break;
         }
 
-        if(furi_string_cmp_str(cmd, "mode") == 0) {
+        if(furry_string_cmp_str(cmd, "mode") == 0) {
             cli_command_gpio_mode(cli, args, context);
             break;
         }
 
-        if(furi_string_cmp_str(cmd, "set") == 0) {
+        if(furry_string_cmp_str(cmd, "set") == 0) {
             cli_command_gpio_set(cli, args, context);
             break;
         }
 
-        if(furi_string_cmp_str(cmd, "read") == 0) {
+        if(furry_string_cmp_str(cmd, "read") == 0) {
             cli_command_gpio_read(cli, args, context);
             break;
         }
@@ -199,5 +199,5 @@ void cli_command_gpio(Cli* cli, FuriString* args, void* context) {
         cli_command_gpio_print_usage();
     } while(false);
 
-    furi_string_free(cmd);
+    furry_string_free(cmd);
 }

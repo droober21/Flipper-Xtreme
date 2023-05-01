@@ -1,22 +1,22 @@
 #include "signal_gen_app_i.h"
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 
 static bool signal_gen_app_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     SignalGenApp* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool signal_gen_app_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SignalGenApp* app = context;
     return scene_manager_handle_back_event(app->scene_manager);
 }
 
 static void signal_gen_app_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SignalGenApp* app = context;
     scene_manager_handle_tick_event(app->scene_manager);
 }
@@ -24,7 +24,7 @@ static void signal_gen_app_tick_event_callback(void* context) {
 SignalGenApp* signal_gen_app_alloc() {
     SignalGenApp* app = malloc(sizeof(SignalGenApp));
 
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
 
     app->view_dispatcher = view_dispatcher_alloc();
     app->scene_manager = scene_manager_alloc(&signal_gen_scene_handlers, app);
@@ -60,7 +60,7 @@ SignalGenApp* signal_gen_app_alloc() {
 }
 
 void signal_gen_app_free(SignalGenApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // Views
     view_dispatcher_remove_view(app->view_dispatcher, SignalGenViewVarItemList);
@@ -76,7 +76,7 @@ void signal_gen_app_free(SignalGenApp* app) {
     scene_manager_free(app->scene_manager);
 
     // Close records
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
     free(app);
 }

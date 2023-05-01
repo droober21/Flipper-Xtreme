@@ -1,14 +1,14 @@
-#include <furi.h>
+#include <furry.h>
 #include "u2f_hid.h"
 #include "u2f.h"
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <lib/toolbox/args.h>
-#include <furi_hal_usb_hid_u2f.h>
+#include <furry_hal_usb_hid_u2f.h>
 #include <storage/storage.h>
 
-#include <furi_hal_console.h>
+#include <furry_hal_console.h>
 
 #define TAG "U2FHID"
 #define WORKER_TAG TAG "Worker"
@@ -56,8 +56,8 @@ struct U2fHid_packet {
 };
 
 struct U2fHid {
-    FuriThread* thread;
-    FuriTimer* lock_timer;
+    FurryThread* thread;
+    FurryTimer* lock_timer;
     uint8_t seq_id_last;
     uint16_t req_buf_ptr;
     uint32_t req_len_left;
@@ -68,22 +68,22 @@ struct U2fHid {
 };
 
 static void u2f_hid_event_callback(HidU2fEvent ev, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     U2fHid* u2f_hid = context;
 
     if(ev == HidU2fDisconnected)
-        furi_thread_flags_set(furi_thread_get_id(u2f_hid->thread), WorkerEvtDisconnect);
+        furry_thread_flags_set(furry_thread_get_id(u2f_hid->thread), WorkerEvtDisconnect);
     else if(ev == HidU2fConnected)
-        furi_thread_flags_set(furi_thread_get_id(u2f_hid->thread), WorkerEvtConnect);
+        furry_thread_flags_set(furry_thread_get_id(u2f_hid->thread), WorkerEvtConnect);
     else if(ev == HidU2fRequest)
-        furi_thread_flags_set(furi_thread_get_id(u2f_hid->thread), WorkerEvtRequest);
+        furry_thread_flags_set(furry_thread_get_id(u2f_hid->thread), WorkerEvtRequest);
 }
 
 static void u2f_hid_lock_timeout_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     U2fHid* u2f_hid = context;
 
-    furi_thread_flags_set(furi_thread_get_id(u2f_hid->thread), WorkerEvtUnlock);
+    furry_thread_flags_set(furry_thread_get_id(u2f_hid->thread), WorkerEvtUnlock);
 }
 
 static void u2f_hid_send_response(U2fHid* u2f_hid) {
@@ -102,7 +102,7 @@ static void u2f_hid_send_response(U2fHid* u2f_hid) {
     packet_buf[6] = (u2f_hid->packet.len & 0xFF);
     len_cur = (len_remain < (HID_U2F_PACKET_LEN - 7)) ? (len_remain) : (HID_U2F_PACKET_LEN - 7);
     if(len_cur > 0) memcpy(&packet_buf[7], u2f_hid->packet.payload, len_cur);
-    furi_hal_hid_u2f_send_response(packet_buf, HID_U2F_PACKET_LEN);
+    furry_hal_hid_u2f_send_response(packet_buf, HID_U2F_PACKET_LEN);
     data_ptr = len_cur;
     len_remain -= len_cur;
 
@@ -113,7 +113,7 @@ static void u2f_hid_send_response(U2fHid* u2f_hid) {
         len_cur = (len_remain < (HID_U2F_PACKET_LEN - 5)) ? (len_remain) :
                                                             (HID_U2F_PACKET_LEN - 5);
         memcpy(&packet_buf[5], &(u2f_hid->packet.payload[data_ptr]), len_cur);
-        furi_hal_hid_u2f_send_response(packet_buf, HID_U2F_PACKET_LEN);
+        furry_hal_hid_u2f_send_response(packet_buf, HID_U2F_PACKET_LEN);
         seq_cnt++;
         len_remain -= len_cur;
         data_ptr += len_cur;
@@ -128,7 +128,7 @@ static void u2f_hid_send_error(U2fHid* u2f_hid, uint8_t error) {
 }
 
 static bool u2f_hid_parse_request(U2fHid* u2f_hid) {
-    FURI_LOG_D(
+    FURRY_LOG_D(
         WORKER_TAG,
         "Req cid=%lX cmd=%x len=%u",
         u2f_hid->packet.cid,
@@ -157,7 +157,7 @@ static bool u2f_hid_parse_request(U2fHid* u2f_hid) {
         } else { // Lock on
             u2f_hid->lock = true;
             u2f_hid->lock_cid = u2f_hid->packet.cid;
-            furi_timer_start(u2f_hid->lock_timer, lock_timeout * 1000);
+            furry_timer_start(u2f_hid->lock_timer, lock_timeout * 1000);
         }
 
     } else if(u2f_hid->packet.cmd == U2F_HID_INIT) { // INIT - channel initialization request
@@ -165,7 +165,7 @@ static bool u2f_hid_parse_request(U2fHid* u2f_hid) {
            (u2f_hid->lock == true))
             return false;
         u2f_hid->packet.len = 17;
-        uint32_t random_cid = furi_hal_random_get();
+        uint32_t random_cid = furry_hal_random_get();
         memcpy(&(u2f_hid->packet.payload[8]), &random_cid, sizeof(uint32_t)); //-V1086
         u2f_hid->packet.payload[12] = 2; // Protocol version
         u2f_hid->packet.payload[13] = 1; // Device version major
@@ -188,33 +188,33 @@ static int32_t u2f_hid_worker(void* context) {
     U2fHid* u2f_hid = context;
     uint8_t packet_buf[HID_U2F_PACKET_LEN];
 
-    FURI_LOG_D(WORKER_TAG, "Init");
+    FURRY_LOG_D(WORKER_TAG, "Init");
 
-    FuriHalUsbInterface* usb_mode_prev = furi_hal_usb_get_config();
-    furi_check(furi_hal_usb_set_config(&usb_hid_u2f, NULL) == true);
+    FurryHalUsbInterface* usb_mode_prev = furry_hal_usb_get_config();
+    furry_check(furry_hal_usb_set_config(&usb_hid_u2f, NULL) == true);
 
     u2f_hid->lock_timer =
-        furi_timer_alloc(u2f_hid_lock_timeout_callback, FuriTimerTypeOnce, u2f_hid);
+        furry_timer_alloc(u2f_hid_lock_timeout_callback, FurryTimerTypeOnce, u2f_hid);
 
-    furi_hal_hid_u2f_set_callback(u2f_hid_event_callback, u2f_hid);
+    furry_hal_hid_u2f_set_callback(u2f_hid_event_callback, u2f_hid);
 
     while(1) {
-        uint32_t flags = furi_thread_flags_wait(
+        uint32_t flags = furry_thread_flags_wait(
             WorkerEvtStop | WorkerEvtConnect | WorkerEvtDisconnect | WorkerEvtRequest,
-            FuriFlagWaitAny,
-            FuriWaitForever);
-        furi_check(!(flags & FuriFlagError));
+            FurryFlagWaitAny,
+            FurryWaitForever);
+        furry_check(!(flags & FurryFlagError));
         if(flags & WorkerEvtStop) break;
         if(flags & WorkerEvtConnect) {
             u2f_set_state(u2f_hid->u2f_instance, 1);
-            FURI_LOG_D(WORKER_TAG, "Connect");
+            FURRY_LOG_D(WORKER_TAG, "Connect");
         }
         if(flags & WorkerEvtDisconnect) {
             u2f_set_state(u2f_hid->u2f_instance, 0);
-            FURI_LOG_D(WORKER_TAG, "Disconnect");
+            FURRY_LOG_D(WORKER_TAG, "Disconnect");
         }
         if(flags & WorkerEvtRequest) {
-            uint32_t len_cur = furi_hal_hid_u2f_get_request(packet_buf);
+            uint32_t len_cur = furry_hal_hid_u2f_get_request(packet_buf);
             do {
                 if(len_cur == 0) {
                     break;
@@ -282,12 +282,12 @@ static int32_t u2f_hid_worker(void* context) {
             u2f_hid->lock_cid = 0;
         }
     }
-    furi_timer_stop(u2f_hid->lock_timer);
-    furi_timer_free(u2f_hid->lock_timer);
+    furry_timer_stop(u2f_hid->lock_timer);
+    furry_timer_free(u2f_hid->lock_timer);
 
-    furi_hal_hid_u2f_set_callback(NULL, NULL);
-    furi_hal_usb_set_config(usb_mode_prev, NULL);
-    FURI_LOG_D(WORKER_TAG, "End");
+    furry_hal_hid_u2f_set_callback(NULL, NULL);
+    furry_hal_usb_set_config(usb_mode_prev, NULL);
+    FURRY_LOG_D(WORKER_TAG, "End");
 
     return 0;
 }
@@ -297,15 +297,15 @@ U2fHid* u2f_hid_start(U2fData* u2f_inst) {
 
     u2f_hid->u2f_instance = u2f_inst;
 
-    u2f_hid->thread = furi_thread_alloc_ex("U2fHidWorker", 2048, u2f_hid_worker, u2f_hid);
-    furi_thread_start(u2f_hid->thread);
+    u2f_hid->thread = furry_thread_alloc_ex("U2fHidWorker", 2048, u2f_hid_worker, u2f_hid);
+    furry_thread_start(u2f_hid->thread);
     return u2f_hid;
 }
 
 void u2f_hid_stop(U2fHid* u2f_hid) {
-    furi_assert(u2f_hid);
-    furi_thread_flags_set(furi_thread_get_id(u2f_hid->thread), WorkerEvtStop);
-    furi_thread_join(u2f_hid->thread);
-    furi_thread_free(u2f_hid->thread);
+    furry_assert(u2f_hid);
+    furry_thread_flags_set(furry_thread_get_id(u2f_hid->thread), WorkerEvtStop);
+    furry_thread_join(u2f_hid->thread);
+    furry_thread_free(u2f_hid->thread);
     free(u2f_hid);
 }

@@ -37,7 +37,7 @@ bool AccessorSceneStart::on_event(AccessorApp* app, AccessorEvent* event) {
                 data[i] = wiegand->getCodeHigh() >> ((i - 4) * 8);
             }
         } else {
-            FURI_CRITICAL_ENTER();
+            FURRY_CRITICAL_ENTER();
             if(onewire_host_reset(onewire_host)) {
                 type = 255;
                 onewire_host_write(onewire_host, 0x33);
@@ -49,7 +49,7 @@ bool AccessorSceneStart::on_event(AccessorApp* app, AccessorEvent* event) {
                     data[i] = data[i + 1];
                 }
             }
-            FURI_CRITICAL_EXIT();
+            FURRY_CRITICAL_EXIT();
         }
 
         if(type > 0) {

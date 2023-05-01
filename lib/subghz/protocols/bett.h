@@ -106,4 +106,4 @@ SubGhzProtocolStatus
  * @param context Pointer to a SubGhzProtocolDecoderBETT instance
  * @param output Resulting text
  */
-void subghz_protocol_decoder_bett_get_string(void* context, FuriString* output);
+void subghz_protocol_decoder_bett_get_string(void* context, FurryString* output);

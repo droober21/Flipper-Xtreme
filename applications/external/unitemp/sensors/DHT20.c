@@ -67,11 +67,11 @@ static void DHT20_reset_reg(I2CSensor* i2c_sensor, uint8_t addr) {
 
     unitemp_i2c_writeArray(i2c_sensor, 3, data);
 
-    furi_delay_ms(5);
+    furry_delay_ms(5);
 
     unitemp_i2c_readArray(i2c_sensor, 3, data);
 
-    furi_delay_ms(10);
+    furry_delay_ms(10);
 
     data[0] = 0xB0 | addr;
     unitemp_i2c_writeArray(i2c_sensor, 3, data);
@@ -98,11 +98,11 @@ bool unitemp_DHT20_init(Sensor* sensor) {
 
     uint8_t data[3] = {0xA8, 0x00, 0x00};
     if(!unitemp_i2c_writeArray(i2c_sensor, 3, data)) return false;
-    furi_delay_ms(10);
+    furry_delay_ms(10);
     data[0] = (sensor->type == &DHT20) ? 0xBE : 0xE1;
     data[1] = 0x08;
     if(!unitemp_i2c_writeArray(i2c_sensor, 3, data)) return false;
-    furi_delay_ms(10);
+    furry_delay_ms(10);
 
     return true;
 }
@@ -121,14 +121,14 @@ UnitempStatus unitemp_DHT20_I2C_update(Sensor* sensor) {
         DHT20_reset_reg(i2c_sensor, 0x1C);
         DHT20_reset_reg(i2c_sensor, 0x1E);
     }
-    furi_delay_ms(10);
+    furry_delay_ms(10);
 
     uint8_t data[7] = {0xAC, 0x33, 0x00};
     if(!unitemp_i2c_writeArray(i2c_sensor, 3, data)) return UT_SENSORSTATUS_TIMEOUT;
-    furi_delay_ms(80);
-    uint32_t t = furi_get_tick();
+    furry_delay_ms(80);
+    uint32_t t = furry_get_tick();
     while(DHT20_get_status(i2c_sensor) == 0x80) {
-        if(furi_get_tick() - t > 10) return UT_SENSORSTATUS_TIMEOUT;
+        if(furry_get_tick() - t > 10) return UT_SENSORSTATUS_TIMEOUT;
     }
 
     if(!unitemp_i2c_readArray(i2c_sensor, 7, data)) return UT_SENSORSTATUS_TIMEOUT;

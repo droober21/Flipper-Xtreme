@@ -16,7 +16,7 @@ int32_t app_main(void* p) {
 }
 
 static uint32_t view_exit(void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
 
     return VIEW_NONE;
 }
@@ -25,7 +25,7 @@ CountDownTimerApp* countdown_app_new(void) {
     CountDownTimerApp* app = (CountDownTimerApp*)(malloc(sizeof(CountDownTimerApp)));
 
     // 1.1 open gui
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
 
     // 2.1 setup view dispatcher
     app->view_dispatcher = view_dispatcher_alloc();
@@ -46,7 +46,7 @@ CountDownTimerApp* countdown_app_new(void) {
 }
 
 void countdown_app_delete(CountDownTimerApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // delete views
     view_dispatcher_remove_view(app->view_dispatcher, 0xff);
@@ -54,7 +54,7 @@ void countdown_app_delete(CountDownTimerApp* app) {
 
     // delete view dispatcher
     view_dispatcher_free(app->view_dispatcher);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
     // self
     free(app);

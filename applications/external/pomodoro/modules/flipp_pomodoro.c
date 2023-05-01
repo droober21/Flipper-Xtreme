@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include "../helpers/time.h"
 #include "flipp_pomodoro.h"
 
@@ -35,23 +35,23 @@ PomodoroStage flipp_pomodoro__stage_by_index(int index) {
 }
 
 void flipp_pomodoro__toggle_stage(FlippPomodoroState* state) {
-    furi_assert(state);
+    furry_assert(state);
     state->current_stage_index = state->current_stage_index + 1;
     state->started_at_timestamp = time_now();
 };
 
 PomodoroStage flipp_pomodoro__get_stage(FlippPomodoroState* state) {
-    furi_assert(state);
+    furry_assert(state);
     return flipp_pomodoro__stage_by_index(state->current_stage_index);
 };
 
 char* flipp_pomodoro__current_stage_label(FlippPomodoroState* state) {
-    furi_assert(state);
+    furry_assert(state);
     return current_stage_label[flipp_pomodoro__get_stage(state)];
 };
 
 char* flipp_pomodoro__next_stage_label(FlippPomodoroState* state) {
-    furi_assert(state);
+    furry_assert(state);
     return next_stage_label[flipp_pomodoro__stage_by_index(state->current_stage_index + 1)];
 };
 

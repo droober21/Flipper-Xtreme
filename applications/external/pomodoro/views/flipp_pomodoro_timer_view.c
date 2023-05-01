@@ -1,5 +1,5 @@
 #include "flipp_pomodoro_timer_view.h"
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <gui/elements.h>
 #include <gui/view.h>
@@ -46,9 +46,9 @@ static void
     elements_bold_rounded_frame(
         canvas, countdown_box_x, countdown_box_y, countdown_box_width, countdown_box_height);
 
-    FuriString* timer_string = furi_string_alloc();
-    furi_string_printf(timer_string, "%02u:%02u", remaining_time.minutes, remaining_time.seconds);
-    const char* remaining_stage_time_string = furi_string_get_cstr(timer_string);
+    FurryString* timer_string = furry_string_alloc();
+    furry_string_printf(timer_string, "%02u:%02u", remaining_time.minutes, remaining_time.seconds);
+    const char* remaining_stage_time_string = furry_string_get_cstr(timer_string);
     canvas_draw_str_aligned(
         canvas,
         countdown_box_x + (countdown_box_width / 2),
@@ -57,7 +57,7 @@ static void
         AlignCenter,
         remaining_stage_time_string);
 
-    furi_string_free(timer_string);
+    furry_string_free(timer_string);
 };
 
 static void draw_str_with_drop_shadow(
@@ -112,8 +112,8 @@ static void flipp_pomodoro_view_timer_draw_callback(Canvas* canvas, void* _model
 };
 
 bool flipp_pomodoro_view_timer_input_callback(InputEvent* event, void* ctx) {
-    furi_assert(ctx);
-    furi_assert(event);
+    furry_assert(ctx);
+    furry_assert(event);
     FlippPomodoroTimerView* timer = ctx;
 
     const bool should_trigger_right_event_cb = (event->type == InputTypePress) &&
@@ -121,8 +121,8 @@ bool flipp_pomodoro_view_timer_input_callback(InputEvent* event, void* ctx) {
                                                (timer->right_cb != NULL);
 
     if(should_trigger_right_event_cb) {
-        furi_assert(timer->right_cb);
-        furi_assert(timer->right_cb_ctx);
+        furry_assert(timer->right_cb);
+        furry_assert(timer->right_cb_ctx);
         timer->right_cb(timer->right_cb_ctx);
         return ViewInputConsumed;
     };
@@ -131,7 +131,7 @@ bool flipp_pomodoro_view_timer_input_callback(InputEvent* event, void* ctx) {
 };
 
 View* flipp_pomodoro_view_timer_get_view(FlippPomodoroTimerView* timer) {
-    furi_assert(timer);
+    furry_assert(timer);
     return timer->view;
 };
 
@@ -140,7 +140,7 @@ void flipp_pomodoro_view_timer_assign_animation(View* view) {
         view,
         FlippPomodoroTimerViewModel * model,
         {
-            furi_assert(model->state);
+            furry_assert(model->state);
             if(model->icon) {
                 icon_animation_free(model->icon);
             }
@@ -168,22 +168,22 @@ void flipp_pomodoro_view_timer_set_on_right_cb(
     FlippPomodoroTimerView* timer,
     FlippPomodoroTimerViewInputCb right_cb,
     void* right_cb_ctx) {
-    furi_assert(right_cb);
-    furi_assert(right_cb_ctx);
+    furry_assert(right_cb);
+    furry_assert(right_cb_ctx);
     timer->right_cb = right_cb;
     timer->right_cb_ctx = right_cb_ctx;
 };
 
 void flipp_pomodoro_view_timer_set_state(View* view, FlippPomodoroState* state) {
-    furi_assert(view);
-    furi_assert(state);
+    furry_assert(view);
+    furry_assert(state);
     with_view_model(
         view, FlippPomodoroTimerViewModel * model, { model->state = state; }, false);
     flipp_pomodoro_view_timer_assign_animation(view);
 };
 
 void flipp_pomodoro_view_timer_free(FlippPomodoroTimerView* timer) {
-    furi_assert(timer);
+    furry_assert(timer);
     with_view_model(
         timer->view,
         FlippPomodoroTimerViewModel * model,

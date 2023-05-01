@@ -1,6 +1,6 @@
 #include <toolbox/version.h>
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <dolphin/helpers/dolphin_state.h>
 #include <dolphin/dolphin.h>
 
@@ -11,8 +11,8 @@ void desktop_debug_set_callback(
     DesktopDebugView* debug_view,
     DesktopDebugViewCallback callback,
     void* context) {
-    furi_assert(debug_view);
-    furi_assert(callback);
+    furry_assert(debug_view);
+    furry_assert(callback);
     debug_view->callback = callback;
     debug_view->context = context;
 }
@@ -33,21 +33,21 @@ void desktop_debug_render(Canvas* canvas, void* model) {
 
     if(m->screen != DesktopViewStatsMeta) {
         // Hardware version
-        const char* my_name = furi_hal_version_get_name_ptr();
+        const char* my_name = furry_hal_version_get_name_ptr();
         snprintf(
             buffer,
             sizeof(buffer),
             "%d.F%dB%dC%d %s:%s %s",
-            furi_hal_version_get_hw_version(),
-            furi_hal_version_get_hw_target(),
-            furi_hal_version_get_hw_body(),
-            furi_hal_version_get_hw_connect(),
-            furi_hal_version_get_hw_region_name_otp(),
-            furi_hal_region_get_name(),
+            furry_hal_version_get_hw_version(),
+            furry_hal_version_get_hw_target(),
+            furry_hal_version_get_hw_body(),
+            furry_hal_version_get_hw_connect(),
+            furry_hal_version_get_hw_region_name_otp(),
+            furry_hal_region_get_name(),
             my_name ? my_name : "Unknown");
         canvas_draw_str(canvas, 0, 19 + STATUS_BAR_Y_SHIFT, buffer);
 
-        ver = furi_hal_version_get_firmware_version();
+        ver = furry_hal_version_get_firmware_version();
         const BleGlueC2Info* c2_ver = NULL;
 #ifdef SRV_BT
         c2_ver = ble_glue_get_c2_info();
@@ -80,9 +80,9 @@ void desktop_debug_render(Canvas* canvas, void* model) {
         canvas_draw_str(canvas, 0, 50 + STATUS_BAR_Y_SHIFT, buffer);
 
     } else {
-        Dolphin* dolphin = furi_record_open(RECORD_DOLPHIN);
+        Dolphin* dolphin = furry_record_open(RECORD_DOLPHIN);
         DolphinStats stats = dolphin_stats(dolphin);
-        furi_record_close(RECORD_DOLPHIN);
+        furry_record_close(RECORD_DOLPHIN);
 
         uint32_t current_lvl = stats.level;
         uint32_t remaining = dolphin_state_xp_to_levelup(m->icounter);
@@ -99,7 +99,7 @@ void desktop_debug_render(Canvas* canvas, void* model) {
             (remaining == (uint32_t)(-1) ? remaining : 0));
         canvas_draw_str(canvas, 5, 29 + STATUS_BAR_Y_SHIFT, buffer);
 
-        // even if timestamp is uint64_t, it's safe to cast it to uint32_t, because furi_hal_rtc_datetime_to_timestamp only returns uint32_t
+        // even if timestamp is uint64_t, it's safe to cast it to uint32_t, because furry_hal_rtc_datetime_to_timestamp only returns uint32_t
         snprintf(buffer, sizeof(buffer), "%lu", (uint32_t)m->timestamp);
 
         canvas_draw_str(canvas, 5, 39 + STATUS_BAR_Y_SHIFT, buffer);
@@ -108,13 +108,13 @@ void desktop_debug_render(Canvas* canvas, void* model) {
 }
 
 View* desktop_debug_get_view(DesktopDebugView* debug_view) {
-    furi_assert(debug_view);
+    furry_assert(debug_view);
     return debug_view->view;
 }
 
 bool desktop_debug_input(InputEvent* event, void* context) {
-    furi_assert(event);
-    furi_assert(context);
+    furry_assert(event);
+    furry_assert(context);
 
     DesktopDebugView* debug_view = context;
 
@@ -172,14 +172,14 @@ DesktopDebugView* desktop_debug_alloc() {
 }
 
 void desktop_debug_free(DesktopDebugView* debug_view) {
-    furi_assert(debug_view);
+    furry_assert(debug_view);
 
     view_free(debug_view->view);
     free(debug_view);
 }
 
 void desktop_debug_get_dolphin_data(DesktopDebugView* debug_view) {
-    Dolphin* dolphin = furi_record_open(RECORD_DOLPHIN);
+    Dolphin* dolphin = furry_record_open(RECORD_DOLPHIN);
     DolphinStats stats = dolphin_stats(dolphin);
     with_view_model(
         debug_view->view,
@@ -191,7 +191,7 @@ void desktop_debug_get_dolphin_data(DesktopDebugView* debug_view) {
         },
         true);
 
-    furi_record_close(RECORD_DOLPHIN);
+    furry_record_close(RECORD_DOLPHIN);
 }
 
 void desktop_debug_reset_screen_idx(DesktopDebugView* debug_view) {

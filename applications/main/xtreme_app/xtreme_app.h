@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <gui/view.h>
 #include <gui/view_dispatcher.h>
@@ -54,7 +54,7 @@ typedef struct {
     bool subghz_bypass;
     char device_name[NAMECHANGER_TEXT_STORE_SIZE];
     int32_t xp_level;
-    FuriString* version_tag;
+    FurryString* version_tag;
 
     bool save_mainmenu_apps;
     bool save_subghz_frequencies;

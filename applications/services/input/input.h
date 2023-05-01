@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <furi_hal_resources.h>
+#include <furry_hal_resources.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,7 +27,7 @@ typedef enum {
     InputTypeMAX, /**< Special value for exceptional */
 } InputType;
 
-/** Input Event, dispatches with FuriPubSub */
+/** Input Event, dispatches with FurryPubSub */
 typedef struct {
     union {
         uint32_t sequence;

@@ -3,9 +3,9 @@
 #include "nfcv.h"
 #include "slix.h"
 #include "nfc_util.h"
-#include <furi.h>
-#include "furi_hal_nfc.h"
-#include <furi_hal_random.h>
+#include <furry.h>
+#include "furry_hal_nfc.h"
+#include <furry_hal_random.h>
 
 #define TAG "SLIX"
 
@@ -20,11 +20,11 @@ static uint32_t slix_read_be(uint8_t* data, uint32_t length) {
     return value;
 }
 
-uint8_t slix_get_ti(FuriHalNfcDevData* nfc_data) {
+uint8_t slix_get_ti(FurryHalNfcDevData* nfc_data) {
     return (nfc_data->uid[3] >> 3) & 3;
 }
 
-bool slix_check_card_type(FuriHalNfcDevData* nfc_data) {
+bool slix_check_card_type(FurryHalNfcDevData* nfc_data) {
     if((nfc_data->uid[0] == 0xE0) && (nfc_data->uid[1] == 0x04) && (nfc_data->uid[2] == 0x01) &&
        slix_get_ti(nfc_data) == 2) {
         return true;
@@ -32,7 +32,7 @@ bool slix_check_card_type(FuriHalNfcDevData* nfc_data) {
     return false;
 }
 
-bool slix2_check_card_type(FuriHalNfcDevData* nfc_data) {
+bool slix2_check_card_type(FurryHalNfcDevData* nfc_data) {
     if((nfc_data->uid[0] == 0xE0) && (nfc_data->uid[1] == 0x04) && (nfc_data->uid[2] == 0x01) &&
        slix_get_ti(nfc_data) == 1) {
         return true;
@@ -40,14 +40,14 @@ bool slix2_check_card_type(FuriHalNfcDevData* nfc_data) {
     return false;
 }
 
-bool slix_s_check_card_type(FuriHalNfcDevData* nfc_data) {
+bool slix_s_check_card_type(FurryHalNfcDevData* nfc_data) {
     if((nfc_data->uid[0] == 0xE0) && (nfc_data->uid[1] == 0x04) && (nfc_data->uid[2] == 0x02)) {
         return true;
     }
     return false;
 }
 
-bool slix_l_check_card_type(FuriHalNfcDevData* nfc_data) {
+bool slix_l_check_card_type(FurryHalNfcDevData* nfc_data) {
     if((nfc_data->uid[0] == 0xE0) && (nfc_data->uid[1] == 0x04) && (nfc_data->uid[2] == 0x03)) {
         return true;
     }
@@ -83,7 +83,7 @@ ReturnCode slix_get_random(NfcVData* data) {
 }
 
 ReturnCode slix_unlock(NfcVData* data, uint32_t password_id) {
-    furi_assert(rand);
+    furry_assert(rand);
 
     uint16_t received = 0;
     uint8_t rxBuf[32];
@@ -138,13 +138,13 @@ ReturnCode slix_unlock(NfcVData* data, uint32_t password_id) {
 }
 
 bool slix_generic_protocol_filter(
-    FuriHalNfcTxRxContext* tx_rx,
-    FuriHalNfcDevData* nfc_data,
+    FurryHalNfcTxRxContext* tx_rx,
+    FurryHalNfcDevData* nfc_data,
     void* nfcv_data_in,
     uint32_t password_supported) {
-    furi_assert(tx_rx);
-    furi_assert(nfc_data);
-    furi_assert(nfcv_data_in);
+    furry_assert(tx_rx);
+    furry_assert(nfc_data);
+    furry_assert(nfcv_data_in);
 
     NfcVData* nfcv_data = (NfcVData*)nfcv_data_in;
     NfcVEmuProtocolCtx* ctx = nfcv_data->emu_protocol_ctx;
@@ -157,7 +157,7 @@ bool slix_generic_protocol_filter(
             sizeof(nfcv_data->last_command),
             "command 0x%02X ignored, privacy mode",
             ctx->command);
-        FURI_LOG_D(TAG, "%s", nfcv_data->last_command);
+        FURRY_LOG_D(TAG, "%s", nfcv_data->last_command);
         return true;
     }
 
@@ -165,8 +165,8 @@ bool slix_generic_protocol_filter(
 
     switch(ctx->command) {
     case ISO15693_CMD_NXP_GET_RANDOM_NUMBER: {
-        slix->rand[0] = furi_hal_random_get();
-        slix->rand[1] = furi_hal_random_get();
+        slix->rand[0] = furry_hal_random_get();
+        slix->rand[1] = furry_hal_random_get();
 
         ctx->response_buffer[0] = ISO15693_NOERROR;
         ctx->response_buffer[1] = slix->rand[1];
@@ -239,7 +239,7 @@ bool slix_generic_protocol_filter(
                 nfcv_data->modified = true;
                 break;
             case SLIX_PASS_DESTROY:
-                FURI_LOG_D(TAG, "Pooof! Got destroyed");
+                FURRY_LOG_D(TAG, "Pooof! Got destroyed");
                 break;
             case SLIX_PASS_EASAFI:
                 break;
@@ -288,12 +288,12 @@ bool slix_generic_protocol_filter(
 }
 
 bool slix_l_protocol_filter(
-    FuriHalNfcTxRxContext* tx_rx,
-    FuriHalNfcDevData* nfc_data,
+    FurryHalNfcTxRxContext* tx_rx,
+    FurryHalNfcDevData* nfc_data,
     void* nfcv_data_in) {
-    furi_assert(tx_rx);
-    furi_assert(nfc_data);
-    furi_assert(nfcv_data_in);
+    furry_assert(tx_rx);
+    furry_assert(nfc_data);
+    furry_assert(nfcv_data_in);
 
     bool handled = false;
 
@@ -310,24 +310,24 @@ bool slix_l_protocol_filter(
 }
 
 void slix_l_prepare(NfcVData* nfcv_data) {
-    FURI_LOG_D(
+    FURRY_LOG_D(
         TAG, "  Privacy pass: 0x%08lX", slix_read_be(nfcv_data->sub_data.slix.key_privacy, 4));
-    FURI_LOG_D(
+    FURRY_LOG_D(
         TAG, "  Destroy pass: 0x%08lX", slix_read_be(nfcv_data->sub_data.slix.key_destroy, 4));
-    FURI_LOG_D(TAG, "  EAS     pass: 0x%08lX", slix_read_be(nfcv_data->sub_data.slix.key_eas, 4));
-    FURI_LOG_D(TAG, "  Privacy mode: %s", nfcv_data->sub_data.slix.privacy ? "ON" : "OFF");
+    FURRY_LOG_D(TAG, "  EAS     pass: 0x%08lX", slix_read_be(nfcv_data->sub_data.slix.key_eas, 4));
+    FURRY_LOG_D(TAG, "  Privacy mode: %s", nfcv_data->sub_data.slix.privacy ? "ON" : "OFF");
 
     NfcVEmuProtocolCtx* ctx = nfcv_data->emu_protocol_ctx;
     ctx->emu_protocol_filter = &slix_l_protocol_filter;
 }
 
 bool slix_s_protocol_filter(
-    FuriHalNfcTxRxContext* tx_rx,
-    FuriHalNfcDevData* nfc_data,
+    FurryHalNfcTxRxContext* tx_rx,
+    FurryHalNfcDevData* nfc_data,
     void* nfcv_data_in) {
-    furi_assert(tx_rx);
-    furi_assert(nfc_data);
-    furi_assert(nfcv_data_in);
+    furry_assert(tx_rx);
+    furry_assert(nfc_data);
+    furry_assert(nfcv_data_in);
 
     bool handled = false;
 
@@ -340,24 +340,24 @@ bool slix_s_protocol_filter(
 }
 
 void slix_s_prepare(NfcVData* nfcv_data) {
-    FURI_LOG_D(
+    FURRY_LOG_D(
         TAG, "  Privacy pass: 0x%08lX", slix_read_be(nfcv_data->sub_data.slix.key_privacy, 4));
-    FURI_LOG_D(
+    FURRY_LOG_D(
         TAG, "  Destroy pass: 0x%08lX", slix_read_be(nfcv_data->sub_data.slix.key_destroy, 4));
-    FURI_LOG_D(TAG, "  EAS     pass: 0x%08lX", slix_read_be(nfcv_data->sub_data.slix.key_eas, 4));
-    FURI_LOG_D(TAG, "  Privacy mode: %s", nfcv_data->sub_data.slix.privacy ? "ON" : "OFF");
+    FURRY_LOG_D(TAG, "  EAS     pass: 0x%08lX", slix_read_be(nfcv_data->sub_data.slix.key_eas, 4));
+    FURRY_LOG_D(TAG, "  Privacy mode: %s", nfcv_data->sub_data.slix.privacy ? "ON" : "OFF");
 
     NfcVEmuProtocolCtx* ctx = nfcv_data->emu_protocol_ctx;
     ctx->emu_protocol_filter = &slix_s_protocol_filter;
 }
 
 bool slix_protocol_filter(
-    FuriHalNfcTxRxContext* tx_rx,
-    FuriHalNfcDevData* nfc_data,
+    FurryHalNfcTxRxContext* tx_rx,
+    FurryHalNfcDevData* nfc_data,
     void* nfcv_data_in) {
-    furi_assert(tx_rx);
-    furi_assert(nfc_data);
-    furi_assert(nfcv_data_in);
+    furry_assert(tx_rx);
+    furry_assert(nfc_data);
+    furry_assert(nfcv_data_in);
 
     bool handled = false;
 
@@ -370,24 +370,24 @@ bool slix_protocol_filter(
 }
 
 void slix_prepare(NfcVData* nfcv_data) {
-    FURI_LOG_D(
+    FURRY_LOG_D(
         TAG, "  Privacy pass: 0x%08lX", slix_read_be(nfcv_data->sub_data.slix.key_privacy, 4));
-    FURI_LOG_D(
+    FURRY_LOG_D(
         TAG, "  Destroy pass: 0x%08lX", slix_read_be(nfcv_data->sub_data.slix.key_destroy, 4));
-    FURI_LOG_D(TAG, "  EAS     pass: 0x%08lX", slix_read_be(nfcv_data->sub_data.slix.key_eas, 4));
-    FURI_LOG_D(TAG, "  Privacy mode: %s", nfcv_data->sub_data.slix.privacy ? "ON" : "OFF");
+    FURRY_LOG_D(TAG, "  EAS     pass: 0x%08lX", slix_read_be(nfcv_data->sub_data.slix.key_eas, 4));
+    FURRY_LOG_D(TAG, "  Privacy mode: %s", nfcv_data->sub_data.slix.privacy ? "ON" : "OFF");
 
     NfcVEmuProtocolCtx* ctx = nfcv_data->emu_protocol_ctx;
     ctx->emu_protocol_filter = &slix_protocol_filter;
 }
 
 bool slix2_protocol_filter(
-    FuriHalNfcTxRxContext* tx_rx,
-    FuriHalNfcDevData* nfc_data,
+    FurryHalNfcTxRxContext* tx_rx,
+    FurryHalNfcDevData* nfc_data,
     void* nfcv_data_in) {
-    furi_assert(tx_rx);
-    furi_assert(nfc_data);
-    furi_assert(nfcv_data_in);
+    furry_assert(tx_rx);
+    furry_assert(nfc_data);
+    furry_assert(nfcv_data_in);
 
     bool handled = false;
 
@@ -400,12 +400,12 @@ bool slix2_protocol_filter(
 }
 
 void slix2_prepare(NfcVData* nfcv_data) {
-    FURI_LOG_D(
+    FURRY_LOG_D(
         TAG, "  Privacy pass: 0x%08lX", slix_read_be(nfcv_data->sub_data.slix.key_privacy, 4));
-    FURI_LOG_D(
+    FURRY_LOG_D(
         TAG, "  Destroy pass: 0x%08lX", slix_read_be(nfcv_data->sub_data.slix.key_destroy, 4));
-    FURI_LOG_D(TAG, "  EAS     pass: 0x%08lX", slix_read_be(nfcv_data->sub_data.slix.key_eas, 4));
-    FURI_LOG_D(TAG, "  Privacy mode: %s", nfcv_data->sub_data.slix.privacy ? "ON" : "OFF");
+    FURRY_LOG_D(TAG, "  EAS     pass: 0x%08lX", slix_read_be(nfcv_data->sub_data.slix.key_eas, 4));
+    FURRY_LOG_D(TAG, "  Privacy mode: %s", nfcv_data->sub_data.slix.privacy ? "ON" : "OFF");
 
     NfcVEmuProtocolCtx* ctx = nfcv_data->emu_protocol_ctx;
     ctx->emu_protocol_filter = &slix2_protocol_filter;

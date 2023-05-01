@@ -8,7 +8,7 @@ const char* CONFIG_FILE_PATH = "/ext/ifttt/config/config.settings";
 typedef enum ESerialCommand { ESerialCommand_Config } ESerialCommand;
 
 Settings save_settings(Settings settings) {
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* file = flipper_format_file_alloc(storage);
     if(flipper_format_file_open_existing(file, CONFIG_FILE_PATH)) {
         flipper_format_update_string_cstr(file, CONF_SSID, settings.save_ssid);
@@ -19,7 +19,7 @@ Settings save_settings(Settings settings) {
     }
     flipper_format_file_close(file);
     flipper_format_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     return settings;
 }
 
@@ -38,19 +38,19 @@ void save_settings_file(FlipperFormat* file, Settings* settings) {
 Settings* load_settings() {
     Settings* settings = malloc(sizeof(Settings));
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FlipperFormat* file = flipper_format_file_alloc(storage);
 
-    FuriString* string_value;
-    string_value = furi_string_alloc();
-    FuriString* text_ssid_value;
-    text_ssid_value = furi_string_alloc();
-    FuriString* text_password_value;
-    text_password_value = furi_string_alloc();
-    FuriString* text_key_value;
-    text_key_value = furi_string_alloc();
-    FuriString* text_event_value;
-    text_event_value = furi_string_alloc();
+    FurryString* string_value;
+    string_value = furry_string_alloc();
+    FurryString* text_ssid_value;
+    text_ssid_value = furry_string_alloc();
+    FurryString* text_password_value;
+    text_password_value = furry_string_alloc();
+    FurryString* text_key_value;
+    text_key_value = furry_string_alloc();
+    FurryString* text_event_value;
+    text_event_value = furry_string_alloc();
 
     if(storage_common_stat(storage, CONFIG_FILE_PATH, NULL) != FSE_OK) {
         if(!flipper_format_file_open_new(file, CONFIG_FILE_PATH)) {
@@ -77,32 +77,32 @@ Settings* load_settings() {
             if(!flipper_format_read_header(file, string_value, &value)) {
             } else {
                 if(flipper_format_read_string(file, CONF_SSID, text_ssid_value)) {
-                    settings->save_ssid = malloc(furi_string_size(text_ssid_value) + 1);
-                    strcpy(settings->save_ssid, furi_string_get_cstr(text_ssid_value));
+                    settings->save_ssid = malloc(furry_string_size(text_ssid_value) + 1);
+                    strcpy(settings->save_ssid, furry_string_get_cstr(text_ssid_value));
                 }
                 if(flipper_format_read_string(file, CONF_PASSWORD, text_password_value)) {
-                    settings->save_password = malloc(furi_string_size(text_password_value) + 1);
-                    strcpy(settings->save_password, furi_string_get_cstr(text_password_value));
+                    settings->save_password = malloc(furry_string_size(text_password_value) + 1);
+                    strcpy(settings->save_password, furry_string_get_cstr(text_password_value));
                 }
                 if(flipper_format_read_string(file, CONF_KEY, text_key_value)) {
-                    settings->save_key = malloc(furi_string_size(text_key_value) + 1);
-                    strcpy(settings->save_key, furi_string_get_cstr(text_key_value));
+                    settings->save_key = malloc(furry_string_size(text_key_value) + 1);
+                    strcpy(settings->save_key, furry_string_get_cstr(text_key_value));
                 }
                 if(flipper_format_read_string(file, CONF_EVENT, text_event_value)) {
-                    settings->save_event = malloc(furi_string_size(text_event_value) + 1);
-                    strcpy(settings->save_event, furi_string_get_cstr(text_event_value));
+                    settings->save_event = malloc(furry_string_size(text_event_value) + 1);
+                    strcpy(settings->save_event, furry_string_get_cstr(text_event_value));
                 }
             }
             flipper_format_file_close(file);
         }
     }
 
-    furi_string_free(text_ssid_value);
-    furi_string_free(text_password_value);
-    furi_string_free(text_key_value);
-    furi_string_free(text_event_value);
+    furry_string_free(text_ssid_value);
+    furry_string_free(text_password_value);
+    furry_string_free(text_key_value);
+    furry_string_free(text_event_value);
     flipper_format_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
     return settings;
 }
 
@@ -141,24 +141,24 @@ void send_serial_command_config(ESerialCommand command, Settings* settings) {
             return;
         };
 
-        furi_hal_uart_tx(FuriHalUartIdUSART1, data, 1);
+        furry_hal_uart_tx(FurryHalUartIdUSART1, data, 1);
     }
 }
 
 static bool ifttt_virtual_button_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     VirtualButtonApp* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool ifttt_virtual_button_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     VirtualButtonApp* app = context;
     return scene_manager_handle_back_event(app->scene_manager);
 }
 
 static void ifttt_virtual_button_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     VirtualButtonApp* app = context;
     scene_manager_handle_tick_event(app->scene_manager);
 }
@@ -167,8 +167,8 @@ VirtualButtonApp* ifttt_virtual_button_app_alloc(uint32_t first_scene) {
     VirtualButtonApp* app = malloc(sizeof(VirtualButtonApp));
 
     // Records
-    app->gui = furi_record_open(RECORD_GUI);
-    app->power = furi_record_open(RECORD_POWER);
+    app->gui = furry_record_open(RECORD_GUI);
+    app->power = furry_record_open(RECORD_POWER);
 
     // View dispatcher
     app->view_dispatcher = view_dispatcher_alloc();
@@ -205,7 +205,7 @@ VirtualButtonApp* ifttt_virtual_button_app_alloc(uint32_t first_scene) {
 }
 
 void ifttt_virtual_button_app_free(VirtualButtonApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     free(app->settings.save_ssid);
     free(app->settings.save_password);
@@ -224,8 +224,8 @@ void ifttt_virtual_button_app_free(VirtualButtonApp* app) {
     view_dispatcher_free(app->view_dispatcher);
     scene_manager_free(app->scene_manager);
     // Records
-    furi_record_close(RECORD_POWER);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_POWER);
+    furry_record_close(RECORD_GUI);
 
     free(app);
 }
@@ -233,12 +233,12 @@ void ifttt_virtual_button_app_free(VirtualButtonApp* app) {
 int32_t ifttt_virtual_button_app(void* p) {
     UNUSED(p);
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     if(!storage_simply_mkdir(storage, IFTTT_FOLDER)) {
     }
     if(!storage_simply_mkdir(storage, IFTTT_CONFIG_FOLDER)) {
     }
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     uint32_t first_scene = VirtualButtonAppSceneStart;
     VirtualButtonApp* app = ifttt_virtual_button_app_alloc(first_scene);

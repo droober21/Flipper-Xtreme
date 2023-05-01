@@ -1,6 +1,6 @@
 #pragma once
 
-#include <furi.h>
+#include <furry.h>
 #include <power/power_service/power.h>
 #include <gui/gui.h>
 #include <gui/view.h>
@@ -27,7 +27,7 @@ typedef struct {
     PowerInfo info;
     VariableItemList* variable_item_list;
     uint32_t shutdown_idle_delay_ms;
-    FuriPubSub* settings_events;
+    FurryPubSub* settings_events;
 } PowerSettingsApp;
 
 typedef enum {

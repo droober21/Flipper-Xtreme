@@ -1,6 +1,6 @@
 #include "u8g2_glue.h"
 
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 uint8_t u8g2_gpio_and_delay_stm32(u8x8_t* u8x8, uint8_t msg, uint8_t arg_int, void* arg_ptr) {
     UNUSED(u8x8);
@@ -10,16 +10,16 @@ uint8_t u8g2_gpio_and_delay_stm32(u8x8_t* u8x8, uint8_t msg, uint8_t arg_int, vo
         /* HAL initialization contains all what we need so we can skip this part. */
         break;
     case U8X8_MSG_DELAY_MILLI:
-        furi_delay_ms(arg_int);
+        furry_delay_ms(arg_int);
         break;
     case U8X8_MSG_DELAY_10MICRO:
-        furi_delay_us(10);
+        furry_delay_us(10);
         break;
     case U8X8_MSG_DELAY_100NANO:
         asm("nop");
         break;
     case U8X8_MSG_GPIO_RESET:
-        furi_hal_gpio_write(&gpio_display_rst_n, arg_int);
+        furry_hal_gpio_write(&gpio_display_rst_n, arg_int);
         break;
     default:
         return 0;
@@ -32,18 +32,18 @@ uint8_t u8x8_hw_spi_stm32(u8x8_t* u8x8, uint8_t msg, uint8_t arg_int, void* arg_
     UNUSED(u8x8);
     switch(msg) {
     case U8X8_MSG_BYTE_SEND:
-        furi_hal_spi_bus_tx(&furi_hal_spi_bus_handle_display, (uint8_t*)arg_ptr, arg_int, 10000);
+        furry_hal_spi_bus_tx(&furry_hal_spi_bus_handle_display, (uint8_t*)arg_ptr, arg_int, 10000);
         break;
     case U8X8_MSG_BYTE_SET_DC:
-        furi_hal_gpio_write(&gpio_display_di, arg_int);
+        furry_hal_gpio_write(&gpio_display_di, arg_int);
         break;
     case U8X8_MSG_BYTE_INIT:
         break;
     case U8X8_MSG_BYTE_START_TRANSFER:
-        furi_hal_spi_acquire(&furi_hal_spi_bus_handle_display);
+        furry_hal_spi_acquire(&furry_hal_spi_bus_handle_display);
         break;
     case U8X8_MSG_BYTE_END_TRANSFER:
-        furi_hal_spi_release(&furi_hal_spi_bus_handle_display);
+        furry_hal_spi_release(&furry_hal_spi_bus_handle_display);
         break;
     default:
         return 0;
@@ -217,8 +217,8 @@ uint8_t u8x8_d_st756x_flipper(u8x8_t* u8x8, uint8_t msg, uint8_t arg_int, void* 
             break;
         case U8X8_MSG_DISPLAY_INIT:
             u8x8_d_helper_display_init(u8x8);
-            FuriHalVersionDisplay display = furi_hal_version_get_hw_display();
-            if(display == FuriHalVersionDisplayMgg) {
+            FurryHalVersionDisplay display = furry_hal_version_get_hw_display();
+            if(display == FurryHalVersionDisplayMgg) {
                 /* MGG v0+(ST7567)
                  * EV = 32
                  * RR = V0 / ((1 - (63 - EV) / 162) * 2.1)

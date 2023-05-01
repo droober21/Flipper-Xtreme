@@ -1,6 +1,6 @@
 #include "t5577.h"
-#include <furi.h>
-#include <furi_hal_rfid.h>
+#include <furry.h>
+#include <furry_hal_rfid.h>
 
 #define T5577_TIMING_WAIT_TIME 400
 #define T5577_TIMING_START_GAP 30
@@ -14,31 +14,31 @@
 #define T5577_OPCODE_RESET 0b00
 
 static void t5577_start() {
-    furi_hal_rfid_tim_read(125000, 0.5);
-    furi_hal_rfid_pins_read();
-    furi_hal_rfid_tim_read_start();
+    furry_hal_rfid_tim_read(125000, 0.5);
+    furry_hal_rfid_pins_read();
+    furry_hal_rfid_tim_read_start();
 
     // do not ground the antenna
-    furi_hal_rfid_pin_pull_release();
+    furry_hal_rfid_pin_pull_release();
 }
 
 static void t5577_stop() {
-    furi_hal_rfid_tim_read_stop();
-    furi_hal_rfid_tim_reset();
-    furi_hal_rfid_pins_reset();
+    furry_hal_rfid_tim_read_stop();
+    furry_hal_rfid_tim_reset();
+    furry_hal_rfid_pins_reset();
 }
 
 static void t5577_write_gap(uint32_t gap_time) {
-    furi_hal_rfid_tim_read_stop();
-    furi_delay_us(gap_time * 8);
-    furi_hal_rfid_tim_read_start();
+    furry_hal_rfid_tim_read_stop();
+    furry_delay_us(gap_time * 8);
+    furry_hal_rfid_tim_read_start();
 }
 
 static void t5577_write_bit(bool value) {
     if(value) {
-        furi_delay_us(T5577_TIMING_DATA_1 * 8);
+        furry_delay_us(T5577_TIMING_DATA_1 * 8);
     } else {
-        furi_delay_us(T5577_TIMING_DATA_0 * 8);
+        furry_delay_us(T5577_TIMING_DATA_0 * 8);
     }
     t5577_write_gap(T5577_TIMING_WRITE_GAP);
 }
@@ -55,7 +55,7 @@ static void t5577_write_reset() {
 }
 
 static void t5577_write_block(uint8_t block, bool lock_bit, uint32_t data) {
-    furi_delay_us(T5577_TIMING_WAIT_TIME * 8);
+    furry_delay_us(T5577_TIMING_WAIT_TIME * 8);
 
     // start gap
     t5577_write_gap(T5577_TIMING_START_GAP);
@@ -76,19 +76,19 @@ static void t5577_write_block(uint8_t block, bool lock_bit, uint32_t data) {
     t5577_write_bit((block >> 1) & 1);
     t5577_write_bit((block >> 0) & 1);
 
-    furi_delay_us(T5577_TIMING_PROGRAM * 8);
+    furry_delay_us(T5577_TIMING_PROGRAM * 8);
 
-    furi_delay_us(T5577_TIMING_WAIT_TIME * 8);
+    furry_delay_us(T5577_TIMING_WAIT_TIME * 8);
     t5577_write_reset();
 }
 
 void t5577_write(LFRFIDT5577* data) {
     t5577_start();
-    FURI_CRITICAL_ENTER();
+    FURRY_CRITICAL_ENTER();
     for(size_t i = 0; i < data->blocks_to_write; i++) {
         t5577_write_block(i, false, data->block[i]);
     }
     t5577_write_reset();
-    FURI_CRITICAL_EXIT();
+    FURRY_CRITICAL_EXIT();
     t5577_stop();
 }

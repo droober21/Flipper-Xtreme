@@ -42,7 +42,7 @@ void totp_cli_command_list_handle(PluginState* plugin_state, Cli* cli) {
         TOTP_CLI_PRINTF(
             "| %-3" PRIu16 " | %-25.25s | %-6s | %-2" PRIu8 " | %-3" PRIu8 " |\r\n",
             i + 1,
-            furi_string_get_cstr(token_info->name),
+            furry_string_get_cstr(token_info->name),
             token_info_get_algo_as_cstr(token_info),
             token_info->digits,
             token_info->duration);

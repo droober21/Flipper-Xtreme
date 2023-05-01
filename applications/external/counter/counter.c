@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <stdlib.h>
@@ -12,10 +12,10 @@
 #define OFFSET_Y 9
 
 typedef struct {
-    FuriMessageQueue* input_queue;
+    FurryMessageQueue* input_queue;
     ViewPort* view_port;
     Gui* gui;
-    FuriMutex** mutex;
+    FurryMutex** mutex;
 
     int count;
     bool pressed;
@@ -24,23 +24,23 @@ typedef struct {
 
 void state_free(Counter* c) {
     gui_remove_view_port(c->gui, c->view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(c->view_port);
-    furi_message_queue_free(c->input_queue);
-    furi_mutex_free(c->mutex);
+    furry_message_queue_free(c->input_queue);
+    furry_mutex_free(c->mutex);
     free(c);
 }
 
 static void input_callback(InputEvent* input_event, void* ctx) {
     Counter* c = ctx;
     if(input_event->type == InputTypeShort) {
-        furi_message_queue_put(c->input_queue, input_event, 0);
+        furry_message_queue_put(c->input_queue, input_event, 0);
     }
 }
 
 static void render_callback(Canvas* canvas, void* ctx) {
     Counter* c = ctx;
-    furi_check(furi_mutex_acquire(c->mutex, FuriWaitForever) == FuriStatusOk);
+    furry_check(furry_mutex_acquire(c->mutex, FurryWaitForever) == FurryStatusOk);
     canvas_clear(canvas);
     canvas_set_color(canvas, ColorBlack);
     canvas_set_font(canvas, FontPrimary);
@@ -61,15 +61,15 @@ static void render_callback(Canvas* canvas, void* ctx) {
     }
     snprintf(scount, sizeof(scount), "%d", c->count);
     canvas_draw_str_aligned(canvas, 64, 32 + OFFSET_Y, AlignCenter, AlignCenter, scount);
-    furi_mutex_release(c->mutex);
+    furry_mutex_release(c->mutex);
 }
 
 Counter* state_init() {
     Counter* c = malloc(sizeof(Counter));
-    c->input_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
+    c->input_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
     c->view_port = view_port_alloc();
-    c->gui = furi_record_open(RECORD_GUI);
-    c->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    c->gui = furry_record_open(RECORD_GUI);
+    c->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     c->count = 0;
     c->boxtimer = 0;
     view_port_input_callback_set(c->view_port, input_callback, c);
@@ -83,11 +83,11 @@ int32_t counterapp(void) {
 
     while(1) {
         InputEvent input;
-        while(furi_message_queue_get(c->input_queue, &input, FuriWaitForever) == FuriStatusOk) {
-            furi_check(furi_mutex_acquire(c->mutex, FuriWaitForever) == FuriStatusOk);
+        while(furry_message_queue_get(c->input_queue, &input, FurryWaitForever) == FurryStatusOk) {
+            furry_check(furry_mutex_acquire(c->mutex, FurryWaitForever) == FurryStatusOk);
 
             if(input.key == InputKeyBack) {
-                furi_mutex_release(c->mutex);
+                furry_mutex_release(c->mutex);
                 state_free(c);
                 return 0;
             } else if((input.key == InputKeyUp || input.key == InputKeyOk) && c->count < MAX_COUNT) {
@@ -99,7 +99,7 @@ int32_t counterapp(void) {
                 c->boxtimer = BOXTIME;
                 c->count--;
             }
-            furi_mutex_release(c->mutex);
+            furry_mutex_release(c->mutex);
             view_port_update(c->view_port);
         }
     }

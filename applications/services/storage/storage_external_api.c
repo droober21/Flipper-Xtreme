@@ -13,16 +13,16 @@
 
 #define TAG "StorageAPI"
 
-#define S_API_PROLOGUE FuriApiLock lock = api_lock_alloc_locked();
+#define S_API_PROLOGUE FurryApiLock lock = api_lock_alloc_locked();
 
 #define S_FILE_API_PROLOGUE           \
     Storage* storage = file->storage; \
-    furi_assert(storage);
+    furry_assert(storage);
 
 #define S_API_EPILOGUE                                                               \
-    furi_check(                                                                      \
-        furi_message_queue_put(storage->message_queue, &message, FuriWaitForever) == \
-        FuriStatusOk);                                                               \
+    furry_check(                                                                      \
+        furry_message_queue_put(storage->message_queue, &message, FurryWaitForever) == \
+        FurryStatusOk);                                                               \
     api_lock_wait_unlock_and_free(lock)
 
 #define S_API_MESSAGE(_command)      \
@@ -65,7 +65,7 @@ static bool storage_file_open_internal(
             .path = path,
             .access_mode = access_mode,
             .open_mode = open_mode,
-            .thread_id = furi_thread_get_current_id(),
+            .thread_id = furry_thread_get_current_id(),
         }};
 
     file->type = FileTypeOpenFile;
@@ -81,9 +81,9 @@ static void storage_file_close_callback(const void* message, void* context) {
 
     if(storage_event->type == StorageEventTypeFileClose ||
        storage_event->type == StorageEventTypeDirClose) {
-        furi_assert(context);
-        FuriEventFlag* event = context;
-        furi_event_flag_set(event, StorageEventFlagFileClose);
+        furry_assert(context);
+        FurryEventFlag* event = context;
+        furry_event_flag_set(event, StorageEventFlagFileClose);
     }
 }
 
@@ -93,25 +93,25 @@ bool storage_file_open(
     FS_AccessMode access_mode,
     FS_OpenMode open_mode) {
     bool result;
-    FuriEventFlag* event = furi_event_flag_alloc();
-    FuriPubSubSubscription* subscription = furi_pubsub_subscribe(
+    FurryEventFlag* event = furry_event_flag_alloc();
+    FurryPubSubSubscription* subscription = furry_pubsub_subscribe(
         storage_get_pubsub(file->storage), storage_file_close_callback, event);
 
     do {
         result = storage_file_open_internal(file, path, access_mode, open_mode);
 
         if(!result && file->error_id == FSE_ALREADY_OPEN) {
-            furi_event_flag_wait(
-                event, StorageEventFlagFileClose, FuriFlagWaitAny, FuriWaitForever);
+            furry_event_flag_wait(
+                event, StorageEventFlagFileClose, FurryFlagWaitAny, FurryWaitForever);
         } else {
             break;
         }
     } while(true);
 
-    furi_pubsub_unsubscribe(storage_get_pubsub(file->storage), subscription);
-    furi_event_flag_free(event);
+    furry_pubsub_unsubscribe(storage_get_pubsub(file->storage), subscription);
+    furry_event_flag_free(event);
 
-    FURI_LOG_T(
+    FURRY_LOG_T(
         TAG,
         "File %p - %p open (%s)",
         (void*)((uint32_t)file - SRAM_BASE),
@@ -129,7 +129,7 @@ bool storage_file_close(File* file) {
     S_API_MESSAGE(StorageCommandFileClose);
     S_API_EPILOGUE;
 
-    FURI_LOG_T(
+    FURRY_LOG_T(
         TAG,
         "File %p - %p closed",
         (void*)((uint32_t)file - SRAM_BASE),
@@ -282,7 +282,7 @@ static bool storage_dir_open_internal(File* file, const char* path) {
         .dopen = {
             .file = file,
             .path = path,
-            .thread_id = furi_thread_get_current_id(),
+            .thread_id = furry_thread_get_current_id(),
         }};
 
     file->type = FileTypeOpenDir;
@@ -294,25 +294,25 @@ static bool storage_dir_open_internal(File* file, const char* path) {
 
 bool storage_dir_open(File* file, const char* path) {
     bool result;
-    FuriEventFlag* event = furi_event_flag_alloc();
-    FuriPubSubSubscription* subscription = furi_pubsub_subscribe(
+    FurryEventFlag* event = furry_event_flag_alloc();
+    FurryPubSubSubscription* subscription = furry_pubsub_subscribe(
         storage_get_pubsub(file->storage), storage_file_close_callback, event);
 
     do {
         result = storage_dir_open_internal(file, path);
 
         if(!result && file->error_id == FSE_ALREADY_OPEN) {
-            furi_event_flag_wait(
-                event, StorageEventFlagFileClose, FuriFlagWaitAny, FuriWaitForever);
+            furry_event_flag_wait(
+                event, StorageEventFlagFileClose, FurryFlagWaitAny, FurryWaitForever);
         } else {
             break;
         }
     } while(true);
 
-    furi_pubsub_unsubscribe(storage_get_pubsub(file->storage), subscription);
-    furi_event_flag_free(event);
+    furry_pubsub_unsubscribe(storage_get_pubsub(file->storage), subscription);
+    furry_event_flag_free(event);
 
-    FURI_LOG_T(
+    FURRY_LOG_T(
         TAG,
         "Dir %p - %p open (%s)",
         (void*)((uint32_t)file - SRAM_BASE),
@@ -329,7 +329,7 @@ bool storage_dir_close(File* file) {
     S_API_MESSAGE(StorageCommandDirClose);
     S_API_EPILOGUE;
 
-    FURI_LOG_T(
+    FURRY_LOG_T(
         TAG,
         "Dir %p - %p closed",
         (void*)((uint32_t)file - SRAM_BASE),
@@ -386,7 +386,7 @@ FS_Error storage_common_timestamp(Storage* storage, const char* path, uint32_t* 
         .ctimestamp = {
             .path = path,
             .timestamp = timestamp,
-            .thread_id = furi_thread_get_current_id(),
+            .thread_id = furry_thread_get_current_id(),
         }};
 
     S_API_MESSAGE(StorageCommandCommonTimestamp);
@@ -400,7 +400,7 @@ FS_Error storage_common_stat(Storage* storage, const char* path, FileInfo* filei
         .cstat = {
             .path = path,
             .fileinfo = fileinfo,
-            .thread_id = furi_thread_get_current_id(),
+            .thread_id = furry_thread_get_current_id(),
         }};
 
     S_API_MESSAGE(StorageCommandCommonStat);
@@ -413,7 +413,7 @@ FS_Error storage_common_remove(Storage* storage, const char* path) {
     SAData data = {
         .path = {
             .path = path,
-            .thread_id = furi_thread_get_current_id(),
+            .thread_id = furry_thread_get_current_id(),
         }};
 
     S_API_MESSAGE(StorageCommandCommonRemove);
@@ -436,13 +436,13 @@ static FS_Error
     storage_copy_recursive(Storage* storage, const char* old_path, const char* new_path) {
     FS_Error error = storage_common_mkdir(storage, new_path);
     DirWalk* dir_walk = dir_walk_alloc(storage);
-    FuriString* path;
-    FuriString* tmp_new_path;
-    FuriString* tmp_old_path;
+    FurryString* path;
+    FurryString* tmp_new_path;
+    FurryString* tmp_old_path;
     FileInfo fileinfo;
-    path = furi_string_alloc();
-    tmp_new_path = furi_string_alloc();
-    tmp_old_path = furi_string_alloc();
+    path = furry_string_alloc();
+    tmp_new_path = furry_string_alloc();
+    tmp_old_path = furry_string_alloc();
 
     do {
         if(error != FSE_OK) break;
@@ -461,17 +461,17 @@ static FS_Error
             } else if(res == DirWalkLast) {
                 break;
             } else {
-                furi_string_set(tmp_old_path, path);
-                furi_string_right(path, strlen(old_path));
-                furi_string_printf(tmp_new_path, "%s%s", new_path, furi_string_get_cstr(path));
+                furry_string_set(tmp_old_path, path);
+                furry_string_right(path, strlen(old_path));
+                furry_string_printf(tmp_new_path, "%s%s", new_path, furry_string_get_cstr(path));
 
                 if(file_info_is_dir(&fileinfo)) {
-                    error = storage_common_mkdir(storage, furi_string_get_cstr(tmp_new_path));
+                    error = storage_common_mkdir(storage, furry_string_get_cstr(tmp_new_path));
                 } else {
                     error = storage_common_copy(
                         storage,
-                        furi_string_get_cstr(tmp_old_path),
-                        furi_string_get_cstr(tmp_new_path));
+                        furry_string_get_cstr(tmp_old_path),
+                        furry_string_get_cstr(tmp_new_path));
                 }
 
                 if(error != FSE_OK) break;
@@ -480,9 +480,9 @@ static FS_Error
 
     } while(false);
 
-    furi_string_free(tmp_new_path);
-    furi_string_free(tmp_old_path);
-    furi_string_free(path);
+    furry_string_free(tmp_new_path);
+    furry_string_free(tmp_old_path);
+    furry_string_free(path);
     dir_walk_free(dir_walk);
     return error;
 }
@@ -523,11 +523,11 @@ static FS_Error
     storage_merge_recursive(Storage* storage, const char* old_path, const char* new_path) {
     FS_Error error = FSE_OK;
     DirWalk* dir_walk = dir_walk_alloc(storage);
-    FuriString *path, *file_basename, *tmp_new_path;
+    FurryString *path, *file_basename, *tmp_new_path;
     FileInfo fileinfo;
-    path = furi_string_alloc();
-    file_basename = furi_string_alloc();
-    tmp_new_path = furi_string_alloc();
+    path = furry_string_alloc();
+    file_basename = furry_string_alloc();
+    tmp_new_path = furry_string_alloc();
 
     do {
         if(!storage_simply_mkdir(storage, new_path)) break;
@@ -547,15 +547,15 @@ static FS_Error
             } else if(res == DirWalkLast) {
                 break;
             } else {
-                path_extract_basename(furi_string_get_cstr(path), file_basename);
-                path_concat(new_path, furi_string_get_cstr(file_basename), tmp_new_path);
+                path_extract_basename(furry_string_get_cstr(path), file_basename);
+                path_concat(new_path, furry_string_get_cstr(file_basename), tmp_new_path);
 
                 if(file_info_is_dir(&fileinfo)) {
                     if(storage_common_stat(
-                           storage, furi_string_get_cstr(tmp_new_path), &fileinfo) == FSE_OK) {
+                           storage, furry_string_get_cstr(tmp_new_path), &fileinfo) == FSE_OK) {
                         if(file_info_is_dir(&fileinfo)) {
                             error =
-                                storage_common_mkdir(storage, furi_string_get_cstr(tmp_new_path));
+                                storage_common_mkdir(storage, furry_string_get_cstr(tmp_new_path));
                             if(error != FSE_OK && error != FSE_EXIST) {
                                 break;
                             }
@@ -563,7 +563,7 @@ static FS_Error
                     }
                 }
                 error = storage_common_merge(
-                    storage, furi_string_get_cstr(path), furi_string_get_cstr(tmp_new_path));
+                    storage, furry_string_get_cstr(path), furry_string_get_cstr(tmp_new_path));
 
                 if(error != FSE_OK) {
                     break;
@@ -573,9 +573,9 @@ static FS_Error
 
     } while(false);
 
-    furi_string_free(tmp_new_path);
-    furi_string_free(file_basename);
-    furi_string_free(path);
+    furry_string_free(tmp_new_path);
+    furry_string_free(file_basename);
+    furry_string_free(path);
     dir_walk_free(dir_walk);
     return error;
 }
@@ -583,8 +583,8 @@ static FS_Error
 FS_Error storage_common_merge(Storage* storage, const char* old_path, const char* new_path) {
     FS_Error error;
     const char* new_path_tmp = NULL;
-    FuriString* new_path_next = NULL;
-    new_path_next = furi_string_alloc();
+    FurryString* new_path_next = NULL;
+    new_path_next = furry_string_alloc();
 
     FileInfo fileinfo;
     error = storage_common_stat(storage, old_path, &fileinfo);
@@ -595,13 +595,13 @@ FS_Error storage_common_merge(Storage* storage, const char* old_path, const char
         } else {
             error = storage_common_stat(storage, new_path, &fileinfo);
             if(error == FSE_OK) {
-                furi_string_set(new_path_next, new_path);
-                FuriString* dir_path;
-                FuriString* filename;
+                furry_string_set(new_path_next, new_path);
+                FurryString* dir_path;
+                FurryString* filename;
                 char extension[MAX_EXT_LEN] = {0};
 
-                dir_path = furi_string_alloc();
-                filename = furi_string_alloc();
+                dir_path = furry_string_alloc();
+                filename = furry_string_alloc();
 
                 path_extract_filename(new_path_next, filename, true);
                 path_extract_dirname(new_path, dir_path);
@@ -609,18 +609,18 @@ FS_Error storage_common_merge(Storage* storage, const char* old_path, const char
 
                 storage_get_next_filename(
                     storage,
-                    furi_string_get_cstr(dir_path),
-                    furi_string_get_cstr(filename),
+                    furry_string_get_cstr(dir_path),
+                    furry_string_get_cstr(filename),
                     extension,
                     new_path_next,
                     255);
-                furi_string_cat_printf(
-                    dir_path, "/%s%s", furi_string_get_cstr(new_path_next), extension);
-                furi_string_set(new_path_next, dir_path);
+                furry_string_cat_printf(
+                    dir_path, "/%s%s", furry_string_get_cstr(new_path_next), extension);
+                furry_string_set(new_path_next, dir_path);
 
-                furi_string_free(dir_path);
-                furi_string_free(filename);
-                new_path_tmp = furi_string_get_cstr(new_path_next);
+                furry_string_free(dir_path);
+                furry_string_free(filename);
+                new_path_tmp = furry_string_get_cstr(new_path_next);
             } else {
                 new_path_tmp = new_path;
             }
@@ -643,7 +643,7 @@ FS_Error storage_common_merge(Storage* storage, const char* old_path, const char
         }
     }
 
-    furi_string_free(new_path_next);
+    furry_string_free(new_path_next);
 
     return error;
 }
@@ -653,7 +653,7 @@ FS_Error storage_common_mkdir(Storage* storage, const char* path) {
     SAData data = {
         .path = {
             .path = path,
-            .thread_id = furi_thread_get_current_id(),
+            .thread_id = furry_thread_get_current_id(),
         }};
 
     S_API_MESSAGE(StorageCommandCommonMkDir);
@@ -673,7 +673,7 @@ FS_Error storage_common_fs_info(
             .fs_path = fs_path,
             .total_space = total_space,
             .free_space = free_space,
-            .thread_id = furi_thread_get_current_id(),
+            .thread_id = furry_thread_get_current_id(),
         }};
 
     S_API_MESSAGE(StorageCommandCommonFSInfo);
@@ -681,13 +681,13 @@ FS_Error storage_common_fs_info(
     return S_RETURN_ERROR;
 }
 
-void storage_common_resolve_path_and_ensure_app_directory(Storage* storage, FuriString* path) {
+void storage_common_resolve_path_and_ensure_app_directory(Storage* storage, FurryString* path) {
     S_API_PROLOGUE;
 
     SAData data = {
         .cresolvepath = {
             .path = path,
-            .thread_id = furi_thread_get_current_id(),
+            .thread_id = furry_thread_get_current_id(),
         }};
 
     S_API_MESSAGE(StorageCommandCommonResolvePath);
@@ -720,17 +720,17 @@ const char* storage_error_get_desc(FS_Error error_id) {
 }
 
 FS_Error storage_file_get_error(File* file) {
-    furi_check(file != NULL);
+    furry_check(file != NULL);
     return file->error_id;
 }
 
 int32_t storage_file_get_internal_error(File* file) {
-    furi_check(file != NULL);
+    furry_check(file != NULL);
     return file->internal_error_id;
 }
 
 const char* storage_file_get_error_desc(File* file) {
-    furi_check(file != NULL);
+    furry_check(file != NULL);
     return filesystem_api_error_get_desc(file->error_id);
 }
 
@@ -776,7 +776,7 @@ File* storage_file_alloc(Storage* storage) {
     file->type = FileTypeClosed;
     file->storage = storage;
 
-    FURI_LOG_T(TAG, "File/Dir %p alloc", (void*)((uint32_t)file - SRAM_BASE));
+    FURRY_LOG_T(TAG, "File/Dir %p alloc", (void*)((uint32_t)file - SRAM_BASE));
 
     return file;
 }
@@ -798,21 +798,21 @@ void storage_file_free(File* file) {
         }
     }
 
-    FURI_LOG_T(TAG, "File/Dir %p free", (void*)((uint32_t)file - SRAM_BASE));
+    FURRY_LOG_T(TAG, "File/Dir %p free", (void*)((uint32_t)file - SRAM_BASE));
     free(file);
 }
 
-FuriPubSub* storage_get_pubsub(Storage* storage) {
+FurryPubSub* storage_get_pubsub(Storage* storage) {
     return storage->pubsub;
 }
 
 bool storage_simply_remove_recursive(Storage* storage, const char* path) {
-    furi_assert(storage);
-    furi_assert(path);
+    furry_assert(storage);
+    furry_assert(path);
     FileInfo fileinfo;
     bool result = false;
-    FuriString* fullname;
-    FuriString* cur_dir;
+    FurryString* fullname;
+    FurryString* cur_dir;
 
     if(storage_simply_remove(storage, path)) {
         return true;
@@ -820,26 +820,26 @@ bool storage_simply_remove_recursive(Storage* storage, const char* path) {
 
     char* name = malloc(MAX_NAME_LENGTH + 1); //-V799
     File* dir = storage_file_alloc(storage);
-    cur_dir = furi_string_alloc_set(path);
+    cur_dir = furry_string_alloc_set(path);
     bool go_deeper = false;
 
     while(1) {
-        if(!storage_dir_open(dir, furi_string_get_cstr(cur_dir))) {
+        if(!storage_dir_open(dir, furry_string_get_cstr(cur_dir))) {
             storage_dir_close(dir);
             break;
         }
 
         while(storage_dir_read(dir, &fileinfo, name, MAX_NAME_LENGTH)) {
             if(file_info_is_dir(&fileinfo)) {
-                furi_string_cat_printf(cur_dir, "/%s", name);
+                furry_string_cat_printf(cur_dir, "/%s", name);
                 go_deeper = true;
                 break;
             }
 
-            fullname = furi_string_alloc_printf("%s/%s", furi_string_get_cstr(cur_dir), name);
-            FS_Error error = storage_common_remove(storage, furi_string_get_cstr(fullname));
-            furi_check(error == FSE_OK);
-            furi_string_free(fullname);
+            fullname = furry_string_alloc_printf("%s/%s", furry_string_get_cstr(cur_dir), name);
+            FS_Error error = storage_common_remove(storage, furry_string_get_cstr(fullname));
+            furry_check(error == FSE_OK);
+            furry_string_free(fullname);
         }
         storage_dir_close(dir);
 
@@ -848,13 +848,13 @@ bool storage_simply_remove_recursive(Storage* storage, const char* path) {
             continue;
         }
 
-        FS_Error error = storage_common_remove(storage, furi_string_get_cstr(cur_dir));
-        furi_check(error == FSE_OK);
+        FS_Error error = storage_common_remove(storage, furry_string_get_cstr(cur_dir));
+        furry_check(error == FSE_OK);
 
-        if(furi_string_cmp(cur_dir, path)) {
-            size_t last_char = furi_string_search_rchar(cur_dir, '/');
-            furi_assert(last_char != FURI_STRING_FAILURE);
-            furi_string_left(cur_dir, last_char);
+        if(furry_string_cmp(cur_dir, path)) {
+            size_t last_char = furry_string_search_rchar(cur_dir, '/');
+            furry_assert(last_char != FURRY_STRING_FAILURE);
+            furry_string_left(cur_dir, last_char);
         } else {
             result = true;
             break;
@@ -862,7 +862,7 @@ bool storage_simply_remove_recursive(Storage* storage, const char* path) {
     }
 
     storage_file_free(dir);
-    furi_string_free(cur_dir);
+    furry_string_free(cur_dir);
     free(name);
     return result;
 } //-V773
@@ -884,22 +884,22 @@ void storage_get_next_filename(
     const char* dirname,
     const char* filename,
     const char* fileextension,
-    FuriString* nextfilename,
+    FurryString* nextfilename,
     uint8_t max_len) {
-    FuriString* temp_str;
+    FurryString* temp_str;
     uint16_t num = 0;
 
-    temp_str = furi_string_alloc_printf("%s/%s%s", dirname, filename, fileextension);
+    temp_str = furry_string_alloc_printf("%s/%s%s", dirname, filename, fileextension);
 
-    while(storage_common_stat(storage, furi_string_get_cstr(temp_str), NULL) == FSE_OK) {
+    while(storage_common_stat(storage, furry_string_get_cstr(temp_str), NULL) == FSE_OK) {
         num++;
-        furi_string_printf(temp_str, "%s/%s%d%s", dirname, filename, num, fileextension);
+        furry_string_printf(temp_str, "%s/%s%d%s", dirname, filename, num, fileextension);
     }
     if(num && (max_len > strlen(filename))) {
-        furi_string_printf(nextfilename, "%s%d", filename, num);
+        furry_string_printf(nextfilename, "%s%d", filename, num);
     } else {
-        furi_string_printf(nextfilename, "%s", filename);
+        furry_string_printf(nextfilename, "%s", filename);
     }
 
-    furi_string_free(temp_str);
+    furry_string_free(temp_str);
 }

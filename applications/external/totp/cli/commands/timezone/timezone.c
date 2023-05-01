@@ -23,15 +23,15 @@ void totp_cli_command_timezone_docopt_arguments() {
                     "      Timezone offset in hours to be set\r\n");
 }
 
-void totp_cli_command_timezone_handle(PluginState* plugin_state, FuriString* args, Cli* cli) {
+void totp_cli_command_timezone_handle(PluginState* plugin_state, FurryString* args, Cli* cli) {
     if(!totp_cli_ensure_authenticated(plugin_state, cli)) {
         return;
     }
 
-    FuriString* temp_str = furi_string_alloc();
+    FurryString* temp_str = furry_string_alloc();
     if(args_read_string_and_trim(args, temp_str)) {
         char* strtof_endptr;
-        float tz = strtof(furi_string_get_cstr(temp_str), &strtof_endptr);
+        float tz = strtof(furry_string_get_cstr(temp_str), &strtof_endptr);
         if(*strtof_endptr == 0 && tz >= -12.75f && tz <= 12.75f) {
             TOTP_CLI_LOCK_UI(plugin_state);
             plugin_state->timezone_offset = tz;
@@ -48,5 +48,5 @@ void totp_cli_command_timezone_handle(PluginState* plugin_state, FuriString* arg
         TOTP_CLI_PRINTF_INFO(
             "Current timezone offset is %f\r\n", (double)plugin_state->timezone_offset);
     }
-    furi_string_free(temp_str);
+    furry_string_free(temp_str);
 }

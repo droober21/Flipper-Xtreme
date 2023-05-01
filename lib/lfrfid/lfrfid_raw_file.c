@@ -108,18 +108,18 @@ bool lfrfid_raw_file_read_pair(
 
         length = stream_read(file->stream, (uint8_t*)&file->buffer_size, sizeof(size_t));
         if(length != sizeof(size_t)) {
-            FURI_LOG_E(TAG, "read pair: failed to read size");
+            FURRY_LOG_E(TAG, "read pair: failed to read size");
             return false;
         }
 
         if(file->buffer_size > file->max_buffer_size) {
-            FURI_LOG_E(TAG, "read pair: buffer size is too big");
+            FURRY_LOG_E(TAG, "read pair: buffer size is too big");
             return false;
         }
 
         length = stream_read(file->stream, file->buffer, file->buffer_size);
         if(length != file->buffer_size) {
-            FURI_LOG_E(TAG, "read pair: failed to read data");
+            FURRY_LOG_E(TAG, "read pair: failed to read data");
             return false;
         }
 
@@ -137,7 +137,7 @@ bool lfrfid_raw_file_read_pair(
     if(result) {
         file->buffer_counter += size;
     } else {
-        FURI_LOG_E(TAG, "read pair: buffer is too small");
+        FURRY_LOG_E(TAG, "read pair: buffer is too small");
         return false;
     }
 

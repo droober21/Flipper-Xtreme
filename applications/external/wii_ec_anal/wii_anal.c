@@ -10,7 +10,7 @@
 #include <ctype.h>
 
 // FlipperZero libs
-#include <furi.h> // Core API
+#include <furry.h> // Core API
 #include <gui/gui.h> // GUI (screen/keyboard) API
 #include <input/input.h> // GUI Input extensions
 #include <notification/notification_messages.h>
@@ -44,12 +44,12 @@
 // OS Callback : Timer tick
 // We register this function to be called when the OS signals a timer 'tick' event
 //
-static void cbTimer(FuriMessageQueue* queue) {
+static void cbTimer(FurryMessageQueue* queue) {
     ENTER;
-    furi_assert(queue);
+    furry_assert(queue);
 
     eventMsg_t message = {.id = EVID_TICK};
-    furi_message_queue_put(queue, &message, 0);
+    furry_message_queue_put(queue, &message, 0);
 
     LEAVE;
     return;
@@ -59,14 +59,14 @@ static void cbTimer(FuriMessageQueue* queue) {
 // OS Callback : Keypress
 // We register this function to be called when the OS detects a keypress
 //
-static void cbInput(InputEvent* event, FuriMessageQueue* queue) {
+static void cbInput(InputEvent* event, FurryMessageQueue* queue) {
     ENTER;
-    furi_assert(queue);
-    furi_assert(event);
+    furry_assert(queue);
+    furry_assert(event);
 
     // Put an "input" event message on the message queue
     eventMsg_t message = {.id = EVID_KEY, .input = *event};
-    furi_message_queue_put(queue, &message, FuriWaitForever);
+    furry_message_queue_put(queue, &message, FurryWaitForever);
 
     LEAVE;
     return;
@@ -91,12 +91,12 @@ static void showVer(Canvas* const canvas) {
 //
 static void cbDraw(Canvas* const canvas, void* ctx) {
     ENTER;
-    furi_assert(canvas);
-    furi_assert(ctx);
+    furry_assert(canvas);
+    furry_assert(ctx);
 
     // Try to acquire the mutex for the plugin state variables, timeout = 25mS
     state_t* state = ctx;
-    furi_mutex_acquire(state->mutex, FuriWaitForever);
+    furry_mutex_acquire(state->mutex, FurryWaitForever);
 
     switch(state->scene) {
     //---------------------------------------------------------------------
@@ -181,7 +181,7 @@ static void cbDraw(Canvas* const canvas, void* ctx) {
     }
 
     // Release    the  mutex
-    furi_mutex_release(state->mutex);
+    furry_mutex_release(state->mutex);
 
     LEAVE;
     return;
@@ -200,7 +200,7 @@ static void cbDraw(Canvas* const canvas, void* ctx) {
 //
 static inline bool stateInit(state_t* const state) {
     ENTER;
-    furi_assert(state);
+    furry_assert(state);
 
     bool rv = true; // assume success
 
@@ -210,7 +210,7 @@ static inline bool stateInit(state_t* const state) {
     // Timer
     state->timerEn = false;
     state->timer = NULL;
-    state->timerHz = furi_kernel_get_tick_frequency();
+    state->timerHz = furry_kernel_get_tick_frequency();
     state->fps = 30;
 
     // Scene
@@ -261,7 +261,7 @@ static inline bool stateInit(state_t* const state) {
 //
 void timerEn(state_t* state, bool on) {
     ENTER;
-    furi_assert(state);
+    furry_assert(state);
 
     // ENable scanning
     if(on) {
@@ -269,7 +269,7 @@ void timerEn(state_t* state, bool on) {
             WARN(wii_errs[WARN_SCAN_START]);
         } else {
             // Set the timer to fire at 'fps' times/second
-            if(furi_timer_start(state->timer, state->timerHz / state->fps) == FuriStatusOk) {
+            if(furry_timer_start(state->timer, state->timerHz / state->fps) == FurryStatusOk) {
                 state->timerEn = true;
                 INFO("%s : monitor started", __func__);
             } else {
@@ -283,7 +283,7 @@ void timerEn(state_t* state, bool on) {
             WARN(wii_errs[WARN_SCAN_STOP]);
         } else {
             // Stop the timer
-            if(furi_timer_stop(state->timer) == FuriStatusOk) {
+            if(furry_timer_stop(state->timer) == FurryStatusOk) {
                 state->timerEn = false;
                 INFO("%s : monitor stopped", __func__);
             } else {
@@ -307,7 +307,7 @@ int32_t wii_ec_anal(void) {
     Gui* gui = NULL;
     ViewPort* vpp = NULL;
     state_t* state = NULL;
-    FuriMessageQueue* queue = NULL;
+    FurryMessageQueue* queue = NULL;
     const uint32_t queueSz = 20; // maximum messages in queue
     uint32_t tmo = (3.5f * 1000); // timeout splash screen after N seconds
 
@@ -319,14 +319,14 @@ int32_t wii_ec_anal(void) {
 
     // ===== Message queue =====
     // 1. Create a message queue (for up to 8 (keyboard) event messages)
-    if(!(queue = furi_message_queue_alloc(queueSz, sizeof(msg)))) {
+    if(!(queue = furry_message_queue_alloc(queueSz, sizeof(msg)))) {
         ERROR(wii_errs[(error = ERR_MALLOC_QUEUE)]);
         goto bail;
     }
 
     // ===== Create GUI Interface =====
     // 2. Create a GUI interface
-    if(!(gui = furi_record_open("gui"))) {
+    if(!(gui = furry_record_open("gui"))) {
         ERROR(wii_errs[(error = ERR_NO_GUI)]);
         goto bail;
     }
@@ -344,7 +344,7 @@ int32_t wii_ec_anal(void) {
         goto bail;
     }
     // 5. Create a mutex for (reading/writing) the plugin state variables
-    state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!state->mutex) {
         ERROR(wii_errs[(error = ERR_NO_MUTEX)]);
         goto bail;
@@ -367,14 +367,14 @@ int32_t wii_ec_anal(void) {
 
     // ===== Timer =====
     // 9. Allocate a timer
-    if(!(state->timer = furi_timer_alloc(cbTimer, FuriTimerTypePeriodic, queue))) {
+    if(!(state->timer = furry_timer_alloc(cbTimer, FurryTimerTypePeriodic, queue))) {
         ERROR(wii_errs[(error = ERR_NO_TIMER)]);
         goto bail;
     }
 
     // === System Notifications ===
     // 10. Acquire a handle for the system notification queue
-    if(!(state->notify = furi_record_open(RECORD_NOTIFICATION))) {
+    if(!(state->notify = furry_record_open(RECORD_NOTIFICATION))) {
         ERROR(wii_errs[(error = ERR_NO_NOTIFY)]);
         goto bail;
     }
@@ -386,44 +386,44 @@ int32_t wii_ec_anal(void) {
 
     if(state->run) do {
             bool redraw = false;
-            FuriStatus status = FuriStatusErrorTimeout;
+            FurryStatus status = FurryStatusErrorTimeout;
 
             // Wait for a message
-            //		while ((status = furi_message_queue_get(queue, &msg, tmo)) == FuriStatusErrorTimeout) ;
-            status = furi_message_queue_get(queue, &msg, tmo);
+            //		while ((status = furry_message_queue_get(queue, &msg, tmo)) == FurryStatusErrorTimeout) ;
+            status = furry_message_queue_get(queue, &msg, tmo);
 
             // Clear splash screen
             if((state->scene == SCENE_SPLASH) &&
                (state->scenePrev == SCENE_NONE) && // Initial splash
-               ((status == FuriStatusErrorTimeout) || // timeout
+               ((status == FurryStatusErrorTimeout) || // timeout
                 ((msg.id == EVID_KEY) && (msg.input.type == InputTypeShort))) // or <any> key-short
             ) {
                 tmo = 60 * 1000; // increase message-wait timeout to 60secs
                 timerEn(state, true); // start scanning the i2c bus
-                status = FuriStatusOk; // pass status check
+                status = FurryStatusOk; // pass status check
                 msg.id = EVID_NONE; // valid msg ID
                 sceneSet(state, SCENE_WAIT); // move to wait screen
             }
 
             // Check for queue errors
-            if(status != FuriStatusOk) {
+            if(status != FurryStatusOk) {
                 switch(status) {
-                case FuriStatusErrorTimeout:
+                case FurryStatusErrorTimeout:
                     DEBUG(wii_errs[DEBUG_QUEUE_TIMEOUT]);
                     continue;
-                case FuriStatusError:
+                case FurryStatusError:
                     ERROR(wii_errs[(error = ERR_QUEUE_RTOS)]);
                     goto bail;
-                case FuriStatusErrorResource:
+                case FurryStatusErrorResource:
                     ERROR(wii_errs[(error = ERR_QUEUE_RESOURCE)]);
                     goto bail;
-                case FuriStatusErrorParameter:
+                case FurryStatusErrorParameter:
                     ERROR(wii_errs[(error = ERR_QUEUE_BADPRM)]);
                     goto bail;
-                case FuriStatusErrorNoMemory:
+                case FurryStatusErrorNoMemory:
                     ERROR(wii_errs[(error = ERR_QUEUE_NOMEM)]);
                     goto bail;
-                case FuriStatusErrorISR:
+                case FurryStatusErrorISR:
                     ERROR(wii_errs[(error = ERR_QUEUE_ISR)]);
                     goto bail;
                 default:
@@ -434,7 +434,7 @@ int32_t wii_ec_anal(void) {
             // Read successful
 
             // *** Try to lock the plugin state variables ***
-            furi_mutex_acquire(state->mutex, FuriWaitForever);
+            furry_mutex_acquire(state->mutex, FurryWaitForever);
 
             // *** Handle events ***
             switch(msg.id) {
@@ -472,7 +472,7 @@ int32_t wii_ec_anal(void) {
             if(redraw) view_port_update(vpp);
 
             // *** Try to release the plugin state variables ***
-            furi_mutex_release(state->mutex);
+            furry_mutex_release(state->mutex);
         } while(state->run);
 
     // ===== Game Over =====
@@ -481,14 +481,14 @@ int32_t wii_ec_anal(void) {
 bail:
     // 10. Release system notification queue
     if(state->notify) {
-        furi_record_close(RECORD_NOTIFICATION);
+        furry_record_close(RECORD_NOTIFICATION);
         state->notify = NULL;
     }
 
     // 9. Stop the timer
     if(state->timer) {
-        (void)furi_timer_stop(state->timer);
-        furi_timer_free(state->timer);
+        (void)furry_timer_stop(state->timer);
+        furry_timer_free(state->timer);
         state->timer = NULL;
         state->timerEn = false;
     }
@@ -507,7 +507,7 @@ bail:
     }
 
     // 5. Free the mutex
-    furi_mutex_free(state->mutex);
+    furry_mutex_free(state->mutex);
 
     // 4. Free up state pointer(s)
     // none
@@ -519,11 +519,11 @@ bail:
     }
 
     // 2. Close the GUI
-    furi_record_close("gui");
+    furry_record_close("gui");
 
     // 1. Destroy the message queue
     if(queue) {
-        furi_message_queue_free(queue);
+        furry_message_queue_free(queue);
         queue = NULL;
     }
 

@@ -1,8 +1,8 @@
 #ifndef __COUNTDOWN_VIEW_H__
 #define __COUNTDOWN_VIEW_H__
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <gui/view.h>
 #include <gui/elements.h>
 
@@ -39,7 +39,7 @@ typedef struct {
 
 typedef struct {
     View* view;
-    FuriTimer* timer; // 1Hz tick timer
+    FurryTimer* timer; // 1Hz tick timer
     bool counting;
 
 } CountDownTimView;

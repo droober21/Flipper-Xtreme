@@ -35,9 +35,9 @@ static bool dallas_ds1971_write_copy(OneWireHost*, iButtonProtocolData*);
 static void dallas_ds1971_emulate(OneWireSlave*, iButtonProtocolData*);
 static bool dallas_ds1971_load(FlipperFormat*, uint32_t, iButtonProtocolData*);
 static bool dallas_ds1971_save(FlipperFormat*, const iButtonProtocolData*);
-static void dallas_ds1971_render_data(FuriString*, const iButtonProtocolData*);
-static void dallas_ds1971_render_brief_data(FuriString*, const iButtonProtocolData*);
-static void dallas_ds1971_render_error(FuriString*, const iButtonProtocolData*);
+static void dallas_ds1971_render_data(FurryString*, const iButtonProtocolData*);
+static void dallas_ds1971_render_brief_data(FurryString*, const iButtonProtocolData*);
+static void dallas_ds1971_render_error(FurryString*, const iButtonProtocolData*);
 static bool dallas_ds1971_is_data_valid(const iButtonProtocolData*);
 static void dallas_ds1971_get_editable_data(iButtonEditableData*, iButtonProtocolData*);
 static void dallas_ds1971_apply_edits(iButtonProtocolData*);
@@ -107,7 +107,7 @@ bool dallas_ds1971_write_copy(OneWireHost* host, iButtonProtocolData* protocol_d
             onewire_host_write(host, DALLAS_COMMON_CMD_COPY_SCRATCH);
             onewire_host_write(host, DS1971_CMD_FINALIZATION);
 
-            furi_delay_us(DS1971_COPY_SCRATCH_DELAY_US);
+            furry_delay_us(DS1971_COPY_SCRATCH_DELAY_US);
         }
     }
 
@@ -115,7 +115,7 @@ bool dallas_ds1971_write_copy(OneWireHost* host, iButtonProtocolData* protocol_d
 }
 
 static bool dallas_ds1971_reset_callback(bool is_short, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DS1971ProtocolData* data = context;
 
     if(!is_short) {
@@ -127,7 +127,7 @@ static bool dallas_ds1971_reset_callback(bool is_short, void* context) {
 }
 
 static bool dallas_ds1971_command_callback(uint8_t command, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DS1971ProtocolData* data = context;
     OneWireSlave* bus = data->state.bus;
 
@@ -209,7 +209,7 @@ bool dallas_ds1971_save(FlipperFormat* ff, const iButtonProtocolData* protocol_d
     return success;
 }
 
-void dallas_ds1971_render_data(FuriString* result, const iButtonProtocolData* protocol_data) {
+void dallas_ds1971_render_data(FurryString* result, const iButtonProtocolData* protocol_data) {
     const DS1971ProtocolData* data = protocol_data;
     pretty_format_bytes_hex_canonical(
         result,
@@ -219,13 +219,13 @@ void dallas_ds1971_render_data(FuriString* result, const iButtonProtocolData* pr
         DS1971_EEPROM_DATA_SIZE);
 }
 
-void dallas_ds1971_render_brief_data(FuriString* result, const iButtonProtocolData* protocol_data) {
+void dallas_ds1971_render_brief_data(FurryString* result, const iButtonProtocolData* protocol_data) {
     const DS1971ProtocolData* data = protocol_data;
     dallas_common_render_brief_data(
         result, &data->rom_data, data->eeprom_data, DS1971_EEPROM_DATA_SIZE, DS1971_MEMORY_TYPE);
 }
 
-void dallas_ds1971_render_error(FuriString* result, const iButtonProtocolData* protocol_data) {
+void dallas_ds1971_render_error(FurryString* result, const iButtonProtocolData* protocol_data) {
     const DS1971ProtocolData* data = protocol_data;
 
     if(!dallas_common_is_valid_crc(&data->rom_data)) {

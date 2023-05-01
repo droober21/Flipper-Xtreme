@@ -2,7 +2,7 @@
 
 #include <microtar.h>
 #include <storage/storage.h>
-#include <furi.h>
+#include <furry.h>
 #include <toolbox/path.h>
 
 #define TAG "TarArch"
@@ -51,7 +51,7 @@ const struct mtar_ops filesystem_ops = {
 };
 
 TarArchive* tar_archive_alloc(Storage* storage) {
-    furi_check(storage);
+    furry_check(storage);
     TarArchive* archive = malloc(sizeof(TarArchive));
     archive->storage = storage;
     archive->unpack_cb = NULL;
@@ -59,7 +59,7 @@ TarArchive* tar_archive_alloc(Storage* storage) {
 }
 
 bool tar_archive_open(TarArchive* archive, const char* path, TarOpenMode mode) {
-    furi_assert(archive);
+    furry_assert(archive);
     FS_AccessMode access_mode;
     FS_OpenMode open_mode;
     int mtar_access = 0;
@@ -90,7 +90,7 @@ bool tar_archive_open(TarArchive* archive, const char* path, TarOpenMode mode) {
 }
 
 void tar_archive_free(TarArchive* archive) {
-    furi_assert(archive);
+    furry_assert(archive);
     if(mtar_is_open(&archive->tar)) {
         mtar_close(&archive->tar);
     }
@@ -98,7 +98,7 @@ void tar_archive_free(TarArchive* archive) {
 }
 
 void tar_archive_set_file_callback(TarArchive* archive, tar_unpack_file_cb callback, void* context) {
-    furi_assert(archive);
+    furry_assert(archive);
     archive->unpack_cb = callback;
     archive->unpack_cb_context = context;
 }
@@ -106,7 +106,7 @@ void tar_archive_set_file_callback(TarArchive* archive, tar_unpack_file_cb callb
 static int tar_archive_entry_counter(mtar_t* tar, const mtar_header_t* header, void* param) {
     UNUSED(tar);
     UNUSED(header);
-    furi_assert(param);
+    furry_assert(param);
     int32_t* counter = param;
     (*counter)++;
     return 0;
@@ -121,12 +121,12 @@ int32_t tar_archive_get_entries_count(TarArchive* archive) {
 }
 
 bool tar_archive_dir_add_element(TarArchive* archive, const char* dirpath) {
-    furi_assert(archive);
+    furry_assert(archive);
     return (mtar_write_dir_header(&archive->tar, dirpath) == MTAR_ESUCCESS);
 }
 
 bool tar_archive_finalize(TarArchive* archive) {
-    furi_assert(archive);
+    furry_assert(archive);
     return (mtar_finalize(&archive->tar) == MTAR_ESUCCESS);
 }
 
@@ -135,7 +135,7 @@ bool tar_archive_store_data(
     const char* path,
     const uint8_t* data,
     const int32_t data_len) {
-    furi_assert(archive);
+    furry_assert(archive);
 
     return (
         tar_archive_file_add_header(archive, path, data_len) &&
@@ -144,7 +144,7 @@ bool tar_archive_store_data(
 }
 
 bool tar_archive_file_add_header(TarArchive* archive, const char* path, const int32_t data_len) {
-    furi_assert(archive);
+    furry_assert(archive);
 
     return (mtar_write_file_header(&archive->tar, path, data_len) == MTAR_ESUCCESS);
 }
@@ -153,13 +153,13 @@ bool tar_archive_file_add_data_block(
     TarArchive* archive,
     const uint8_t* data_block,
     const int32_t block_len) {
-    furi_assert(archive);
+    furry_assert(archive);
 
     return (mtar_write_data(&archive->tar, data_block, block_len) == block_len);
 }
 
 bool tar_archive_file_finalize(TarArchive* archive) {
-    furi_assert(archive);
+    furry_assert(archive);
     return (mtar_end_data(&archive->tar) == MTAR_ESUCCESS);
 }
 
@@ -181,9 +181,9 @@ static bool archive_extract_current_file(TarArchive* archive, const char* dst_pa
             if(storage_file_open(out_file, dst_path, FSAM_WRITE, FSOM_CREATE_ALWAYS)) {
                 break;
             }
-            FURI_LOG_W(TAG, "Failed to open '%s', reties: %d", dst_path, n_tries);
+            FURRY_LOG_W(TAG, "Failed to open '%s', reties: %d", dst_path, n_tries);
             storage_file_close(out_file);
-            furi_delay_ms(FILE_OPEN_RETRY_DELAY);
+            furry_delay_ms(FILE_OPEN_RETRY_DELAY);
         }
 
         if(!storage_file_is_open(out_file)) {
@@ -217,41 +217,41 @@ static int archive_extract_foreach_cb(mtar_t* tar, const mtar_header_t* header, 
     }
 
     if(skip_entry) {
-        FURI_LOG_W(TAG, "filter: skipping entry \"%s\"", header->name);
+        FURRY_LOG_W(TAG, "filter: skipping entry \"%s\"", header->name);
         return 0;
     }
 
-    FuriString* full_extracted_fname;
+    FurryString* full_extracted_fname;
     if(header->type == MTAR_TDIR) {
-        full_extracted_fname = furi_string_alloc();
+        full_extracted_fname = furry_string_alloc();
         path_concat(op_params->work_dir, header->name, full_extracted_fname);
 
         bool create_res =
-            storage_simply_mkdir(archive->storage, furi_string_get_cstr(full_extracted_fname));
-        furi_string_free(full_extracted_fname);
+            storage_simply_mkdir(archive->storage, furry_string_get_cstr(full_extracted_fname));
+        furry_string_free(full_extracted_fname);
         return create_res ? 0 : -1;
     }
 
     if(header->type != MTAR_TREG) {
-        FURI_LOG_W(TAG, "not extracting unsupported type \"%s\"", header->name);
+        FURRY_LOG_W(TAG, "not extracting unsupported type \"%s\"", header->name);
         return 0;
     }
 
-    FURI_LOG_D(TAG, "Extracting %u bytes to '%s'", header->size, header->name);
+    FURRY_LOG_D(TAG, "Extracting %u bytes to '%s'", header->size, header->name);
 
-    FuriString* converted_fname = furi_string_alloc_set(header->name);
+    FurryString* converted_fname = furry_string_alloc_set(header->name);
     if(op_params->converter) {
         op_params->converter(converted_fname);
     }
 
-    full_extracted_fname = furi_string_alloc();
-    path_concat(op_params->work_dir, furi_string_get_cstr(converted_fname), full_extracted_fname);
+    full_extracted_fname = furry_string_alloc();
+    path_concat(op_params->work_dir, furry_string_get_cstr(converted_fname), full_extracted_fname);
 
     bool success =
-        archive_extract_current_file(archive, furi_string_get_cstr(full_extracted_fname));
+        archive_extract_current_file(archive, furry_string_get_cstr(full_extracted_fname));
 
-    furi_string_free(converted_fname);
-    furi_string_free(full_extracted_fname);
+    furry_string_free(converted_fname);
+    furry_string_free(full_extracted_fname);
     return success ? 0 : -1;
 }
 
@@ -259,14 +259,14 @@ bool tar_archive_unpack_to(
     TarArchive* archive,
     const char* destination,
     Storage_name_converter converter) {
-    furi_assert(archive);
+    furry_assert(archive);
     TarArchiveDirectoryOpParams param = {
         .archive = archive,
         .work_dir = destination,
         .converter = converter,
     };
 
-    FURI_LOG_I(TAG, "Restoring '%s'", destination);
+    FURRY_LOG_I(TAG, "Restoring '%s'", destination);
 
     return (mtar_foreach(&archive->tar, archive_extract_foreach_cb, &param) == MTAR_ESUCCESS);
 };
@@ -276,7 +276,7 @@ bool tar_archive_add_file(
     const char* fs_file_path,
     const char* archive_fname,
     const int32_t file_size) {
-    furi_assert(archive);
+    furry_assert(archive);
     uint8_t* file_buffer = malloc(FILE_BLOCK_SIZE);
     bool success = false;
     File* src_file = storage_file_alloc(archive->storage);
@@ -286,9 +286,9 @@ bool tar_archive_add_file(
             if(storage_file_open(src_file, fs_file_path, FSAM_READ, FSOM_OPEN_EXISTING)) {
                 break;
             }
-            FURI_LOG_W(TAG, "Failed to open '%s', reties: %d", fs_file_path, n_tries);
+            FURRY_LOG_W(TAG, "Failed to open '%s', reties: %d", fs_file_path, n_tries);
             storage_file_close(src_file);
-            furi_delay_ms(FILE_OPEN_RETRY_DELAY);
+            furry_delay_ms(FILE_OPEN_RETRY_DELAY);
         }
 
         if(!storage_file_is_open(src_file) ||
@@ -314,12 +314,12 @@ bool tar_archive_add_file(
 }
 
 bool tar_archive_add_dir(TarArchive* archive, const char* fs_full_path, const char* path_prefix) {
-    furi_assert(archive);
-    furi_check(path_prefix);
+    furry_assert(archive);
+    furry_check(path_prefix);
     File* directory = storage_file_alloc(archive->storage);
     FileInfo file_info;
 
-    FURI_LOG_I(TAG, "Backing up '%s', '%s'", fs_full_path, path_prefix);
+    FURRY_LOG_I(TAG, "Backing up '%s', '%s'", fs_full_path, path_prefix);
     char* name = malloc(MAX_NAME_LEN);
     bool success = false;
 
@@ -334,32 +334,32 @@ bool tar_archive_add_dir(TarArchive* archive, const char* fs_full_path, const ch
                 break;
             }
 
-            FuriString* element_name = furi_string_alloc();
-            FuriString* element_fs_abs_path = furi_string_alloc();
+            FurryString* element_name = furry_string_alloc();
+            FurryString* element_fs_abs_path = furry_string_alloc();
 
             path_concat(fs_full_path, name, element_fs_abs_path);
             if(strlen(path_prefix)) {
                 path_concat(path_prefix, name, element_name);
             } else {
-                furi_string_set(element_name, name);
+                furry_string_set(element_name, name);
             }
 
             if(file_info_is_dir(&file_info)) {
                 success =
-                    tar_archive_dir_add_element(archive, furi_string_get_cstr(element_name)) &&
+                    tar_archive_dir_add_element(archive, furry_string_get_cstr(element_name)) &&
                     tar_archive_add_dir(
                         archive,
-                        furi_string_get_cstr(element_fs_abs_path),
-                        furi_string_get_cstr(element_name));
+                        furry_string_get_cstr(element_fs_abs_path),
+                        furry_string_get_cstr(element_name));
             } else {
                 success = tar_archive_add_file(
                     archive,
-                    furi_string_get_cstr(element_fs_abs_path),
-                    furi_string_get_cstr(element_name),
+                    furry_string_get_cstr(element_fs_abs_path),
+                    furry_string_get_cstr(element_name),
                     file_info.size);
             }
-            furi_string_free(element_name);
-            furi_string_free(element_fs_abs_path);
+            furry_string_free(element_name);
+            furry_string_free(element_fs_abs_path);
 
             if(!success) {
                 break;
@@ -376,9 +376,9 @@ bool tar_archive_unpack_file(
     TarArchive* archive,
     const char* archive_fname,
     const char* destination) {
-    furi_assert(archive);
-    furi_assert(archive_fname);
-    furi_assert(destination);
+    furry_assert(archive);
+    furry_assert(archive_fname);
+    furry_assert(destination);
     if(mtar_find(&archive->tar, archive_fname) != MTAR_ESUCCESS) {
         return false;
     }

@@ -2,7 +2,7 @@
 #include "subbrute_scene.h"
 
 void subbrute_scene_save_success_on_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubBruteState* instance = context;
 
     // Setup view
@@ -17,7 +17,7 @@ void subbrute_scene_save_success_on_enter(void* context) {
 }
 
 bool subbrute_scene_save_success_on_event(void* context, SceneManagerEvent event) {
-    furi_assert(context);
+    furry_assert(context);
 
     SubBruteState* instance = (SubBruteState*)context;
     //SubBruteMainView* view = instance->view_main;
@@ -35,7 +35,7 @@ bool subbrute_scene_save_success_on_event(void* context, SceneManagerEvent event
 }
 
 void subbrute_scene_save_success_on_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     SubBruteState* instance = (SubBruteState*)context;
 

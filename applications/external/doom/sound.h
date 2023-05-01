@@ -1,7 +1,7 @@
 #ifndef sound_h
 #define sound_h
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <stdint.h>
 #include "doom_music_player_worker.h"
 
@@ -28,7 +28,7 @@ typedef struct {
 typedef struct {
     MusicPlayerModel* model;
     MusicPlayerWorker* worker;
-    FuriMutex** model_mutex;
+    FurryMutex** model_mutex;
 } MusicPlayer;
 
 #endif

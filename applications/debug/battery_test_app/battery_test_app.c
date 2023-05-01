@@ -3,7 +3,7 @@
 #include <notification/notification_messages.h>
 
 void battery_test_dialog_callback(DialogExResult result, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     BatteryTestApp* app = context;
     if(result == DialogExResultLeft) {
         view_dispatcher_stop(app->view_dispatcher);
@@ -35,9 +35,9 @@ BatteryTestApp* battery_test_alloc() {
     BatteryTestApp* app = malloc(sizeof(BatteryTestApp));
 
     // Records
-    app->gui = furi_record_open(RECORD_GUI);
-    app->power = furi_record_open(RECORD_POWER);
-    app->notifications = furi_record_open(RECORD_NOTIFICATION);
+    app->gui = furry_record_open(RECORD_GUI);
+    app->power = furry_record_open(RECORD_POWER);
+    app->notifications = furry_record_open(RECORD_NOTIFICATION);
 
     // View dispatcher
     app->view_dispatcher = view_dispatcher_alloc();
@@ -72,7 +72,7 @@ BatteryTestApp* battery_test_alloc() {
 }
 
 void battery_test_free(BatteryTestApp* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     // Views
     view_dispatcher_remove_view(app->view_dispatcher, BatteryTestAppViewBatteryInfo);
@@ -82,9 +82,9 @@ void battery_test_free(BatteryTestApp* app) {
     // View dispatcher
     view_dispatcher_free(app->view_dispatcher);
     // Records
-    furi_record_close(RECORD_POWER);
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_POWER);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
     free(app);
 }
 

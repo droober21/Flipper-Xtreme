@@ -82,11 +82,11 @@ UnitempStatus unitemp_AM2320_I2C_update(Sensor* sensor) {
 
     //Wake up
     unitemp_i2c_isDeviceReady(i2c_sensor);
-    furi_delay_ms(1);
+    furry_delay_ms(1);
 
     //Запрос
     if(!unitemp_i2c_writeArray(i2c_sensor, 3, data)) return UT_SENSORSTATUS_TIMEOUT;
-    furi_delay_ms(2);
+    furry_delay_ms(2);
     //Ответ
     if(!unitemp_i2c_readArray(i2c_sensor, 8, data)) return UT_SENSORSTATUS_TIMEOUT;
 

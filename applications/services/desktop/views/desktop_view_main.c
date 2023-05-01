@@ -2,7 +2,7 @@
 #include <gui/view.h>
 #include <gui/elements.h>
 #include <gui/canvas.h>
-#include <furi.h>
+#include <furry.h>
 #include <input/input.h>
 #include <dolphin/dolphin.h>
 
@@ -27,20 +27,20 @@ void desktop_main_set_callback(
     DesktopMainView* main_view,
     DesktopMainViewCallback callback,
     void* context) {
-    furi_assert(main_view);
-    furi_assert(callback);
+    furry_assert(main_view);
+    furry_assert(callback);
     main_view->callback = callback;
     main_view->context = context;
 }
 
 View* desktop_main_get_view(DesktopMainView* main_view) {
-    furi_assert(main_view);
+    furry_assert(main_view);
     return main_view->view;
 }
 
 bool desktop_main_input_callback(InputEvent* event, void* context) {
-    furi_assert(event);
-    furi_assert(context);
+    furry_assert(event);
+    furry_assert(context);
 
     DesktopMainView* main_view = context;
 
@@ -99,8 +99,8 @@ DesktopMainView* desktop_main_alloc() {
 }
 
 void desktop_main_free(DesktopMainView* main_view) {
-    furi_assert(main_view);
+    furry_assert(main_view);
     view_free(main_view->view);
-    furi_timer_free(main_view->poweroff_timer);
+    furry_timer_free(main_view->poweroff_timer);
     free(main_view);
 }

@@ -1,4 +1,4 @@
-#include <furi_hal.h>
+#include <furry_hal.h>
 
 void tracker_speaker_init();
 
@@ -8,7 +8,7 @@ void tracker_speaker_play(float frequency, float pwm);
 
 void tracker_speaker_stop();
 
-void tracker_interrupt_init(float freq, FuriHalInterruptISR isr, void* context);
+void tracker_interrupt_init(float freq, FurryHalInterruptISR isr, void* context);
 
 void tracker_interrupt_deinit();
 

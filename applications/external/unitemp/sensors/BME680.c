@@ -272,14 +272,14 @@ static bool BME680_readCalValues(I2CSensor* i2c_sensor) {
     bme680_instance->gas_cal.dig_GH3 = (int8_t)coeff_array[BME680_GH3_REG];
 
 #ifdef UNITEMP_DEBUG
-    FURI_LOG_D(
+    FURRY_LOG_D(
         APP_NAME,
         "Sensor BME680 T1-T3: %d, %d, %d",
         bme680_instance->temp_cal.dig_T1,
         bme680_instance->temp_cal.dig_T2,
         bme680_instance->temp_cal.dig_T3);
 
-    FURI_LOG_D(
+    FURRY_LOG_D(
         APP_NAME,
         "Sensor BME680: P1-P10: %d, %d, %d, %d, %d, %d, %d, %d, %d, %d",
         bme680_instance->press_cal.dig_P1,
@@ -293,7 +293,7 @@ static bool BME680_readCalValues(I2CSensor* i2c_sensor) {
         bme680_instance->press_cal.dig_P9,
         bme680_instance->press_cal.dig_P10);
 
-    FURI_LOG_D(
+    FURRY_LOG_D(
         APP_NAME,
         "Sensor BME680: H1-H7: %d, %d, %d, %d, %d, %d, %d",
         bme680_instance->hum_cal.dig_H1,
@@ -304,7 +304,7 @@ static bool BME680_readCalValues(I2CSensor* i2c_sensor) {
         bme680_instance->hum_cal.dig_H6,
         bme680_instance->hum_cal.dig_H7);
 
-    FURI_LOG_D(
+    FURRY_LOG_D(
         APP_NAME,
         "Sensor BME680 GH1-GH3: %d, %d, %d",
         bme680_instance->gas_cal.dig_GH1,
@@ -313,7 +313,7 @@ static bool BME680_readCalValues(I2CSensor* i2c_sensor) {
 
 #endif
 
-    bme680_instance->last_cal_update_time = furi_get_tick();
+    bme680_instance->last_cal_update_time = furry_get_tick();
     return true;
 }
 static bool BME680_isMeasuring(Sensor* sensor) {
@@ -326,7 +326,7 @@ bool unitemp_BME680_alloc(Sensor* sensor, char* args) {
     I2CSensor* i2c_sensor = (I2CSensor*)sensor->instance;
     BME680_instance* bme680_instance = malloc(sizeof(BME680_instance));
     if(bme680_instance == NULL) {
-        FURI_LOG_E(APP_NAME, "Failed to allocation sensor %s instance", sensor->name);
+        FURRY_LOG_E(APP_NAME, "Failed to allocation sensor %s instance", sensor->name);
         return false;
     }
 
@@ -346,7 +346,7 @@ bool unitemp_BME680_init(Sensor* sensor) {
     //Чтение ID датчика
     uint8_t id = unitemp_i2c_readReg(i2c_sensor, 0xD0);
     if(id != BME680_ID) {
-        FURI_LOG_E(
+        FURRY_LOG_E(
             APP_NAME,
             "Sensor %s returned wrong ID 0x%02X, expected 0x%02X",
             sensor->name,
@@ -368,7 +368,7 @@ bool unitemp_BME680_init(Sensor* sensor) {
         i2c_sensor, BME680_REG_CONFIG, BME680_FILTER_COEFF_16 | BME680_SPI_3W_DISABLE);
     //Чтение калибровочных значений
     if(!BME680_readCalValues(i2c_sensor)) {
-        FURI_LOG_E(APP_NAME, "Failed to read calibration values sensor %s", sensor->name);
+        FURRY_LOG_E(APP_NAME, "Failed to read calibration values sensor %s", sensor->name);
         return false;
     }
     return true;
@@ -385,13 +385,13 @@ UnitempStatus unitemp_BME680_update(Sensor* sensor) {
     I2CSensor* i2c_sensor = (I2CSensor*)sensor->instance;
     BME680_instance* instance = i2c_sensor->sensorInstance;
 
-    uint32_t t = furi_get_tick();
+    uint32_t t = furry_get_tick();
 
     uint8_t buff[3];
     //Проверка инициализированности датчика
     unitemp_i2c_readRegArray(i2c_sensor, 0xF4, 2, buff);
     if(buff[0] == 0) {
-        FURI_LOG_W(APP_NAME, "Sensor %s is not initialized!", sensor->name);
+        FURRY_LOG_W(APP_NAME, "Sensor %s is not initialized!", sensor->name);
         return UT_SENSORSTATUS_ERROR;
     }
 
@@ -401,12 +401,12 @@ UnitempStatus unitemp_BME680_update(Sensor* sensor) {
         unitemp_i2c_readReg(i2c_sensor, BME680_REG_CTRL_MEAS) | 1);
 
     while(BME680_isMeasuring(sensor)) {
-        if(furi_get_tick() - t > 100) {
+        if(furry_get_tick() - t > 100) {
             return UT_SENSORSTATUS_TIMEOUT;
         }
     }
 
-    if(furi_get_tick() - instance->last_cal_update_time > BOSCH_CAL_UPDATE_INTERVAL) {
+    if(furry_get_tick() - instance->last_cal_update_time > BOSCH_CAL_UPDATE_INTERVAL) {
         BME680_readCalValues(i2c_sensor);
     }
 

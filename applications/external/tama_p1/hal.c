@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <stdlib.h>
 #include <stm32wbxx_ll_tim.h>
 #include "tama.h"
@@ -36,46 +36,46 @@ static bool_t tama_p1_hal_is_log_enabled(log_level_t level) {
 static void tama_p1_hal_log(log_level_t level, char* buff, ...) {
     if(!tama_p1_hal_is_log_enabled(level)) return;
 
-    FuriString* string = furi_string_alloc();
+    FurryString* string = furry_string_alloc();
     va_list args;
     va_start(args, buff);
-    furi_string_cat_vprintf(string, buff, args);
+    furry_string_cat_vprintf(string, buff, args);
     va_end(args);
 
     switch(level) {
     case LOG_ERROR:
-        FURI_LOG_E(TAG_HAL, "%s", furi_string_get_cstr(string));
+        FURRY_LOG_E(TAG_HAL, "%s", furry_string_get_cstr(string));
         break;
     case LOG_INFO:
-        FURI_LOG_I(TAG_HAL, "%s", furi_string_get_cstr(string));
+        FURRY_LOG_I(TAG_HAL, "%s", furry_string_get_cstr(string));
         break;
     case LOG_MEMORY:
         break;
     case LOG_CPU:
-        FURI_LOG_D(TAG_HAL, "%s", furi_string_get_cstr(string));
+        FURRY_LOG_D(TAG_HAL, "%s", furry_string_get_cstr(string));
         break;
     default:
-        FURI_LOG_D(TAG_HAL, "%s", furi_string_get_cstr(string));
+        FURRY_LOG_D(TAG_HAL, "%s", furry_string_get_cstr(string));
         break;
     }
 
-    furi_string_free(string);
+    furry_string_free(string);
 }
 
 static void tama_p1_hal_sleep_until(timestamp_t ts) {
     while(true) {
         uint32_t count = LL_TIM_GetCounter(TIM2);
         uint32_t delay = ts - count;
-        // FURI_LOG_D(TAG, "delay: %x", delay);
-        // Stolen from furi_delay_until_tick
+        // FURRY_LOG_D(TAG, "delay: %x", delay);
+        // Stolen from furry_delay_until_tick
         if(delay != 0 && 0 == (delay >> (8 * sizeof(uint32_t) - 1))) {
             // Not the best place to release mutex, but this is the only place we know whether
             // we're ahead or behind, otherwise around the step call we'll always have to
             // delay a tick and run more and more behind.
-            furi_mutex_release(g_state_mutex);
-            furi_delay_tick(1);
-            while(furi_mutex_acquire(g_state_mutex, FuriWaitForever) != FuriStatusOk)
-                furi_delay_tick(1);
+            furry_mutex_release(g_state_mutex);
+            furry_delay_tick(1);
+            while(furry_mutex_acquire(g_state_mutex, FurryWaitForever) != FurryStatusOk)
+                furry_delay_tick(1);
         } else {
             break;
         }
@@ -106,13 +106,13 @@ static void tama_p1_hal_set_lcd_icon(u8_t icon, bool_t val) {
 
 static void tama_p1_hal_play_frequency(bool_t en) {
     if(en) {
-        if(furi_hal_speaker_is_mine() || furi_hal_speaker_acquire(30)) {
-            furi_hal_speaker_start(g_ctx->frequency, 0.5f);
+        if(furry_hal_speaker_is_mine() || furry_hal_speaker_acquire(30)) {
+            furry_hal_speaker_start(g_ctx->frequency, 0.5f);
         }
     } else {
-        if(furi_hal_speaker_is_mine()) {
-            furi_hal_speaker_stop();
-            furi_hal_speaker_release();
+        if(furry_hal_speaker_is_mine()) {
+            furry_hal_speaker_stop();
+            furry_hal_speaker_release();
         }
     }
 

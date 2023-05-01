@@ -6,7 +6,7 @@
 #include <gui/view.h>
 #include <input/input.h>
 
-#include <furi.h>
+#include <furry.h>
 #include <assets_icons.h>
 #include <stdint.h>
 
@@ -35,12 +35,12 @@ static void loading_draw_callback(Canvas* canvas, void* _model) {
 
 static bool loading_input_callback(InputEvent* event, void* context) {
     UNUSED(event);
-    furi_assert(context);
+    furry_assert(context);
     return true;
 }
 
 static void loading_enter_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Loading* instance = context;
     LoadingModel* model = view_get_model(instance->view);
     /* using Loading View in conjunction with several
@@ -53,7 +53,7 @@ static void loading_enter_callback(void* context) {
 }
 
 static void loading_exit_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Loading* instance = context;
     LoadingModel* model = view_get_model(instance->view);
     icon_animation_stop(model->icon);
@@ -83,13 +83,13 @@ void loading_free(Loading* instance) {
     icon_animation_free(model->icon);
     view_commit_model(instance->view, false);
 
-    furi_assert(instance);
+    furry_assert(instance);
     view_free(instance->view);
     free(instance);
 }
 
 View* loading_get_view(Loading* instance) {
-    furi_assert(instance);
-    furi_assert(instance->view);
+    furry_assert(instance);
+    furry_assert(instance->view);
     return instance->view;
 }

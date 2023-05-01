@@ -4,14 +4,14 @@
 #include <assets_icons.h>
 #include <gui/icon_i.h>
 #include <gui/icon_animation_i.h>
-#include <furi.h>
+#include <furry.h>
 #include <m-array.h>
 #include <xtreme.h>
 #include <m-string.h>
 
 struct Menu {
     View* view;
-    FuriTimer* scroll_timer;
+    FurryTimer* scroll_timer;
 };
 
 typedef struct {
@@ -49,7 +49,7 @@ static void menu_draw_callback(Canvas* canvas, void* _model) {
         MenuItem* item;
         size_t shift_position;
         if(XTREME_SETTINGS()->wii_menu) {
-            FuriString* name = furi_string_alloc();
+            FurryString* name = furry_string_alloc();
             if(position < 2) {
                 shift_position = 0;
             } else if(position >= items_count - 2 + (items_count % 2)) {
@@ -84,11 +84,11 @@ static void menu_draw_callback(Canvas* canvas, void* _model) {
                         (20 - item->icon->icon->height) / 2 + y_off,
                         item->icon);
                 }
-                furi_string_set(name, item->label);
-                if(furi_string_start_with_str(name, "[")) {
-                    size_t trim = furi_string_search_str(name, "] ", 1);
+                furry_string_set(name, item->label);
+                if(furry_string_start_with_str(name, "[")) {
+                    size_t trim = furry_string_search_str(name, "] ", 1);
                     if(trim != STRING_FAILURE) {
-                        furi_string_right(name, trim + 2);
+                        furry_string_right(name, trim + 2);
                     }
                 }
                 elements_scrollable_text_line(
@@ -99,7 +99,7 @@ static void menu_draw_callback(Canvas* canvas, void* _model) {
                     elements_frame(canvas, 0 + x_off, 0 + y_off, 40, 30);
                 }
             }
-            furi_string_free(name);
+            furry_string_free(name);
         } else {
             // First line
             canvas_set_font(canvas, FontSecondary);
@@ -228,7 +228,7 @@ static void menu_enter(void* context) {
             model->scroll_counter = 0;
         },
         true);
-    furi_timer_start(menu->scroll_timer, 333);
+    furry_timer_start(menu->scroll_timer, 333);
 }
 
 static void menu_exit(void* context) {
@@ -243,7 +243,7 @@ static void menu_exit(void* context) {
             }
         },
         false);
-    furi_timer_stop(menu->scroll_timer);
+    furry_timer_stop(menu->scroll_timer);
 }
 
 Menu* menu_alloc() {
@@ -256,7 +256,7 @@ Menu* menu_alloc() {
     view_set_enter_callback(menu->view, menu_enter);
     view_set_exit_callback(menu->view, menu_exit);
 
-    menu->scroll_timer = furi_timer_alloc(menu_scroll_timer_callback, FuriTimerTypePeriodic, menu);
+    menu->scroll_timer = furry_timer_alloc(menu_scroll_timer_callback, FurryTimerTypePeriodic, menu);
 
     with_view_model(
         menu->view,
@@ -271,17 +271,17 @@ Menu* menu_alloc() {
 }
 
 void menu_free(Menu* menu) {
-    furi_assert(menu);
+    furry_assert(menu);
     menu_reset(menu);
     with_view_model(
         menu->view, MenuModel * model, { MenuItemArray_clear(model->items); }, false);
     view_free(menu->view);
-    furi_timer_free(menu->scroll_timer);
+    furry_timer_free(menu->scroll_timer);
     free(menu);
 }
 
 View* menu_get_view(Menu* menu) {
-    furi_assert(menu);
+    furry_assert(menu);
     return (menu->view);
 }
 
@@ -292,8 +292,8 @@ void menu_add_item(
     uint32_t index,
     MenuItemCallback callback,
     void* context) {
-    furi_assert(menu);
-    furi_assert(label);
+    furry_assert(menu);
+    furry_assert(label);
 
     MenuItem* item = NULL;
     with_view_model(
@@ -312,7 +312,7 @@ void menu_add_item(
 }
 
 void menu_reset(Menu* menu) {
-    furi_assert(menu);
+    furry_assert(menu);
     with_view_model(
         menu->view,
         MenuModel * model,

@@ -19,16 +19,16 @@
 
 static uint8_t sensors_count = 0;
 
-void unitemp_i2c_acquire(FuriHalI2cBusHandle* handle) {
-    furi_hal_i2c_acquire(handle);
+void unitemp_i2c_acquire(FurryHalI2cBusHandle* handle) {
+    furry_hal_i2c_acquire(handle);
     LL_GPIO_SetPinPull(gpio_ext_pc1.port, gpio_ext_pc1.pin, LL_GPIO_PULL_UP);
     LL_GPIO_SetPinPull(gpio_ext_pc0.port, gpio_ext_pc0.pin, LL_GPIO_PULL_UP);
 }
 
 bool unitemp_i2c_isDeviceReady(I2CSensor* i2c_sensor) {
     unitemp_i2c_acquire(i2c_sensor->i2c);
-    bool status = furi_hal_i2c_is_device_ready(i2c_sensor->i2c, i2c_sensor->currentI2CAdr, 10);
-    furi_hal_i2c_release(i2c_sensor->i2c);
+    bool status = furry_hal_i2c_is_device_ready(i2c_sensor->i2c, i2c_sensor->currentI2CAdr, 10);
+    furry_hal_i2c_release(i2c_sensor->i2c);
     return status;
 }
 
@@ -36,23 +36,23 @@ uint8_t unitemp_i2c_readReg(I2CSensor* i2c_sensor, uint8_t reg) {
     //Блокировка шины
     unitemp_i2c_acquire(i2c_sensor->i2c);
     uint8_t buff[1] = {0};
-    furi_hal_i2c_read_mem(i2c_sensor->i2c, i2c_sensor->currentI2CAdr, reg, buff, 1, 10);
-    furi_hal_i2c_release(i2c_sensor->i2c);
+    furry_hal_i2c_read_mem(i2c_sensor->i2c, i2c_sensor->currentI2CAdr, reg, buff, 1, 10);
+    furry_hal_i2c_release(i2c_sensor->i2c);
     return buff[0];
 }
 
 bool unitemp_i2c_readArray(I2CSensor* i2c_sensor, uint8_t len, uint8_t* data) {
     unitemp_i2c_acquire(i2c_sensor->i2c);
-    bool status = furi_hal_i2c_rx(i2c_sensor->i2c, i2c_sensor->currentI2CAdr, data, len, 10);
-    furi_hal_i2c_release(i2c_sensor->i2c);
+    bool status = furry_hal_i2c_rx(i2c_sensor->i2c, i2c_sensor->currentI2CAdr, data, len, 10);
+    furry_hal_i2c_release(i2c_sensor->i2c);
     return status;
 }
 
 bool unitemp_i2c_readRegArray(I2CSensor* i2c_sensor, uint8_t startReg, uint8_t len, uint8_t* data) {
     unitemp_i2c_acquire(i2c_sensor->i2c);
     bool status =
-        furi_hal_i2c_read_mem(i2c_sensor->i2c, i2c_sensor->currentI2CAdr, startReg, data, len, 10);
-    furi_hal_i2c_release(i2c_sensor->i2c);
+        furry_hal_i2c_read_mem(i2c_sensor->i2c, i2c_sensor->currentI2CAdr, startReg, data, len, 10);
+    furry_hal_i2c_release(i2c_sensor->i2c);
     return status;
 }
 
@@ -61,24 +61,24 @@ bool unitemp_i2c_writeReg(I2CSensor* i2c_sensor, uint8_t reg, uint8_t value) {
     unitemp_i2c_acquire(i2c_sensor->i2c);
     uint8_t buff[1] = {value};
     bool status =
-        furi_hal_i2c_write_mem(i2c_sensor->i2c, i2c_sensor->currentI2CAdr, reg, buff, 1, 10);
-    furi_hal_i2c_release(i2c_sensor->i2c);
+        furry_hal_i2c_write_mem(i2c_sensor->i2c, i2c_sensor->currentI2CAdr, reg, buff, 1, 10);
+    furry_hal_i2c_release(i2c_sensor->i2c);
     return status;
 }
 
 bool unitemp_i2c_writeArray(I2CSensor* i2c_sensor, uint8_t len, uint8_t* data) {
     unitemp_i2c_acquire(i2c_sensor->i2c);
-    bool status = furi_hal_i2c_tx(i2c_sensor->i2c, i2c_sensor->currentI2CAdr, data, len, 10);
-    furi_hal_i2c_release(i2c_sensor->i2c);
+    bool status = furry_hal_i2c_tx(i2c_sensor->i2c, i2c_sensor->currentI2CAdr, data, len, 10);
+    furry_hal_i2c_release(i2c_sensor->i2c);
     return status;
 }
 
 bool unitemp_i2c_writeRegArray(I2CSensor* i2c_sensor, uint8_t startReg, uint8_t len, uint8_t* data) {
     //Блокировка шины
     unitemp_i2c_acquire(i2c_sensor->i2c);
-    bool status = furi_hal_i2c_write_mem(
+    bool status = furry_hal_i2c_write_mem(
         i2c_sensor->i2c, i2c_sensor->currentI2CAdr, startReg, data, len, 10);
-    furi_hal_i2c_release(i2c_sensor->i2c);
+    furry_hal_i2c_release(i2c_sensor->i2c);
     return status;
 }
 
@@ -86,10 +86,10 @@ bool unitemp_I2C_sensor_alloc(Sensor* sensor, char* args) {
     bool status = false;
     I2CSensor* instance = malloc(sizeof(I2CSensor));
     if(instance == NULL) {
-        FURI_LOG_E(APP_NAME, "Sensor %s instance allocation error", sensor->name);
+        FURRY_LOG_E(APP_NAME, "Sensor %s instance allocation error", sensor->name);
         return false;
     }
-    instance->i2c = &furi_hal_i2c_handle_external;
+    instance->i2c = &furry_hal_i2c_handle_external;
     sensor->instance = instance;
 
     //Указание функций инициализации, деинициализации и обновления данных, а так же адреса на шине I2C

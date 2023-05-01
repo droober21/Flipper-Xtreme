@@ -19,18 +19,18 @@ ViewPort* gui_view_port_find_enabled(ViewPortArray_t array) {
 }
 
 void gui_update(Gui* gui) {
-    furi_assert(gui);
-    if(!gui->direct_draw) furi_thread_flags_set(gui->thread_id, GUI_THREAD_FLAG_DRAW);
+    furry_assert(gui);
+    if(!gui->direct_draw) furry_thread_flags_set(gui->thread_id, GUI_THREAD_FLAG_DRAW);
 }
 
 void gui_input_events_callback(const void* value, void* ctx) {
-    furi_assert(value);
-    furi_assert(ctx);
+    furry_assert(value);
+    furry_assert(ctx);
 
     Gui* gui = ctx;
 
-    furi_message_queue_put(gui->input_queue, value, FuriWaitForever);
-    furi_thread_flags_set(gui->thread_id, GUI_THREAD_FLAG_INPUT);
+    furry_message_queue_put(gui->input_queue, value, FurryWaitForever);
+    furry_thread_flags_set(gui->thread_id, GUI_THREAD_FLAG_INPUT);
 }
 
 // Only Fullscreen supports vertical display for now
@@ -53,7 +53,7 @@ static void gui_redraw_status_bar(Gui* gui, bool need_attention) {
     uint8_t right_used = 0;
     uint8_t width;
 
-    if(furi_hal_rtc_is_flag_set(FuriHalRtcFlagHandOrient)) {
+    if(furry_hal_rtc_is_flag_set(FurryHalRtcFlagHandOrient)) {
         canvas_set_orientation(gui->canvas, CanvasOrientationHorizontalFlip);
     } else {
         canvas_set_orientation(gui->canvas, CanvasOrientationHorizontal);
@@ -256,7 +256,7 @@ static bool gui_redraw_desktop(Gui* gui) {
 }
 
 static void gui_redraw(Gui* gui) {
-    furi_assert(gui);
+    furry_assert(gui);
     gui_lock(gui);
 
     do {
@@ -296,8 +296,8 @@ static void gui_redraw(Gui* gui) {
 }
 
 static void gui_input(Gui* gui, InputEvent* input_event) {
-    furi_assert(gui);
-    furi_assert(input_event);
+    furry_assert(gui);
+    furry_assert(input_event);
 
     // Check input complementarity
     uint8_t key_bit = (1 << input_event->key);
@@ -306,7 +306,7 @@ static void gui_input(Gui* gui, InputEvent* input_event) {
     } else if(input_event->type == InputTypePress) {
         gui->ongoing_input |= key_bit;
     } else if(!(gui->ongoing_input & key_bit)) {
-        FURI_LOG_D(
+        FURRY_LOG_D(
             TAG,
             "non-complementary input, discarding key: %s type: %s, sequence: %p",
             input_get_key_name(input_event->key),
@@ -339,7 +339,7 @@ static void gui_input(Gui* gui, InputEvent* input_event) {
         if(view_port && view_port == gui->ongoing_input_view_port) {
             view_port_input(view_port, input_event);
         } else if(gui->ongoing_input_view_port && input_event->type == InputTypeRelease) {
-            FURI_LOG_D(
+            FURRY_LOG_D(
                 TAG,
                 "ViewPort changed while key press %p -> %p. Sending key: %s, type: %s, sequence: %p to previous view port",
                 gui->ongoing_input_view_port,
@@ -349,7 +349,7 @@ static void gui_input(Gui* gui, InputEvent* input_event) {
                 (void*)input_event->sequence);
             view_port_input(gui->ongoing_input_view_port, input_event);
         } else {
-            FURI_LOG_D(
+            FURRY_LOG_D(
                 TAG,
                 "ViewPort changed while key press %p -> %p. Discarding key: %s, type: %s, sequence: %p",
                 gui->ongoing_input_view_port,
@@ -364,21 +364,21 @@ static void gui_input(Gui* gui, InputEvent* input_event) {
 }
 
 void gui_lock(Gui* gui) {
-    furi_assert(gui);
-    furi_check(furi_mutex_acquire(gui->mutex, FuriWaitForever) == FuriStatusOk);
+    furry_assert(gui);
+    furry_check(furry_mutex_acquire(gui->mutex, FurryWaitForever) == FurryStatusOk);
 }
 
 void gui_unlock(Gui* gui) {
-    furi_assert(gui);
-    furi_check(furi_mutex_release(gui->mutex) == FuriStatusOk);
+    furry_assert(gui);
+    furry_check(furry_mutex_release(gui->mutex) == FurryStatusOk);
 }
 
 void gui_add_view_port(Gui* gui, ViewPort* view_port, GuiLayer layer) {
-    furi_assert(gui);
-    furi_assert(view_port);
-    furi_check(layer < GuiLayerMAX);
+    furry_assert(gui);
+    furry_assert(view_port);
+    furry_check(layer < GuiLayerMAX);
     // Only fullscreen supports Vertical orientation for now
-    furi_assert(
+    furry_assert(
         (layer == GuiLayerFullscreen) ||
         ((view_port->orientation != ViewPortOrientationVertical) &&
          (view_port->orientation != ViewPortOrientationVerticalFlip)));
@@ -389,7 +389,7 @@ void gui_add_view_port(Gui* gui, ViewPort* view_port, GuiLayer layer) {
     for(size_t i = 0; i < GuiLayerMAX; i++) {
         ViewPortArray_it(it, gui->layers[i]);
         while(!ViewPortArray_end_p(it)) {
-            furi_assert(*ViewPortArray_ref(it) != view_port);
+            furry_assert(*ViewPortArray_ref(it) != view_port);
             ViewPortArray_next(it);
         }
     }
@@ -403,8 +403,8 @@ void gui_add_view_port(Gui* gui, ViewPort* view_port, GuiLayer layer) {
 }
 
 void gui_remove_view_port(Gui* gui, ViewPort* view_port) {
-    furi_assert(gui);
-    furi_assert(view_port);
+    furry_assert(gui);
+    furry_assert(view_port);
 
     gui_lock(gui);
     view_port_gui_set(view_port, NULL);
@@ -429,8 +429,8 @@ void gui_remove_view_port(Gui* gui, ViewPort* view_port) {
 }
 
 void gui_view_port_send_to_front(Gui* gui, ViewPort* view_port) {
-    furi_assert(gui);
-    furi_assert(view_port);
+    furry_assert(gui);
+    furry_assert(view_port);
 
     gui_lock(gui);
     // Remove
@@ -441,14 +441,14 @@ void gui_view_port_send_to_front(Gui* gui, ViewPort* view_port) {
         while(!ViewPortArray_end_p(it)) {
             if(*ViewPortArray_ref(it) == view_port) {
                 ViewPortArray_remove(gui->layers[i], it);
-                furi_assert(layer == GuiLayerMAX);
+                furry_assert(layer == GuiLayerMAX);
                 layer = i;
             } else {
                 ViewPortArray_next(it);
             }
         }
     }
-    furi_assert(layer != GuiLayerMAX);
+    furry_assert(layer != GuiLayerMAX);
     // Return to the top
     ViewPortArray_push_back(gui->layers[layer], view_port);
     gui_unlock(gui);
@@ -458,8 +458,8 @@ void gui_view_port_send_to_front(Gui* gui, ViewPort* view_port) {
 }
 
 void gui_view_port_send_to_back(Gui* gui, ViewPort* view_port) {
-    furi_assert(gui);
-    furi_assert(view_port);
+    furry_assert(gui);
+    furry_assert(view_port);
 
     gui_lock(gui);
     // Remove
@@ -470,14 +470,14 @@ void gui_view_port_send_to_back(Gui* gui, ViewPort* view_port) {
         while(!ViewPortArray_end_p(it)) {
             if(*ViewPortArray_ref(it) == view_port) {
                 ViewPortArray_remove(gui->layers[i], it);
-                furi_assert(layer == GuiLayerMAX);
+                furry_assert(layer == GuiLayerMAX);
                 layer = i;
             } else {
                 ViewPortArray_next(it);
             }
         }
     }
-    furi_assert(layer != GuiLayerMAX);
+    furry_assert(layer != GuiLayerMAX);
     // Return to the top
     ViewPortArray_push_at(gui->layers[layer], 0, view_port);
     gui_unlock(gui);
@@ -487,12 +487,12 @@ void gui_view_port_send_to_back(Gui* gui, ViewPort* view_port) {
 }
 
 void gui_add_framebuffer_callback(Gui* gui, GuiCanvasCommitCallback callback, void* context) {
-    furi_assert(gui);
+    furry_assert(gui);
 
     const CanvasCallbackPair p = {callback, context};
 
     gui_lock(gui);
-    furi_assert(!CanvasCallbackPairArray_count(gui->canvas_callback_pair, p));
+    furry_assert(!CanvasCallbackPairArray_count(gui->canvas_callback_pair, p));
     CanvasCallbackPairArray_push_back(gui->canvas_callback_pair, p);
     gui_unlock(gui);
 
@@ -501,23 +501,23 @@ void gui_add_framebuffer_callback(Gui* gui, GuiCanvasCommitCallback callback, vo
 }
 
 void gui_remove_framebuffer_callback(Gui* gui, GuiCanvasCommitCallback callback, void* context) {
-    furi_assert(gui);
+    furry_assert(gui);
 
     const CanvasCallbackPair p = {callback, context};
 
     gui_lock(gui);
-    furi_assert(CanvasCallbackPairArray_count(gui->canvas_callback_pair, p) == 1);
+    furry_assert(CanvasCallbackPairArray_count(gui->canvas_callback_pair, p) == 1);
     CanvasCallbackPairArray_remove_val(gui->canvas_callback_pair, p);
     gui_unlock(gui);
 }
 
 size_t gui_get_framebuffer_size(const Gui* gui) {
-    furi_assert(gui);
+    furry_assert(gui);
     return canvas_get_buffer_size(gui->canvas);
 }
 
 void gui_set_hide_statusbar(Gui* gui, bool hidden) {
-    furi_assert(gui);
+    furry_assert(gui);
 
     gui_lock(gui);
     if(hidden) {
@@ -532,7 +532,7 @@ void gui_set_hide_statusbar(Gui* gui, bool hidden) {
 }
 
 void gui_set_lockdown(Gui* gui, bool lockdown) {
-    furi_assert(gui);
+    furry_assert(gui);
 
     gui_lock(gui);
     gui->lockdown = lockdown;
@@ -543,7 +543,7 @@ void gui_set_lockdown(Gui* gui, bool lockdown) {
 }
 
 Canvas* gui_direct_draw_acquire(Gui* gui) {
-    furi_assert(gui);
+    furry_assert(gui);
     gui_lock(gui);
     gui->direct_draw = true;
     gui_unlock(gui);
@@ -555,7 +555,7 @@ Canvas* gui_direct_draw_acquire(Gui* gui) {
 }
 
 void gui_direct_draw_release(Gui* gui) {
-    furi_assert(gui);
+    furry_assert(gui);
 
     canvas_reset(gui->canvas);
     canvas_commit(gui->canvas);
@@ -570,10 +570,10 @@ void gui_direct_draw_release(Gui* gui) {
 Gui* gui_alloc() {
     Gui* gui = malloc(sizeof(Gui));
     // Thread ID
-    gui->thread_id = furi_thread_get_current_id();
+    gui->thread_id = furry_thread_get_current_id();
     // Allocate mutex
-    gui->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
-    furi_check(gui->mutex);
+    gui->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
+    furry_check(gui->mutex);
     // Layers
     for(size_t i = 0; i < GuiLayerMAX; i++) {
         ViewPortArray_init(gui->layers[i]);
@@ -583,11 +583,11 @@ Gui* gui_alloc() {
     CanvasCallbackPairArray_init(gui->canvas_callback_pair);
 
     // Input
-    gui->input_queue = furi_message_queue_alloc(8, sizeof(InputEvent));
-    gui->input_events = furi_record_open(RECORD_INPUT_EVENTS);
+    gui->input_queue = furry_message_queue_alloc(8, sizeof(InputEvent));
+    gui->input_events = furry_record_open(RECORD_INPUT_EVENTS);
 
-    furi_check(gui->input_events);
-    furi_pubsub_subscribe(gui->input_events, gui_input_events_callback, gui);
+    furry_check(gui->input_events);
+    furry_pubsub_subscribe(gui->input_events, gui_input_events_callback, gui);
 
     return gui;
 }
@@ -596,23 +596,23 @@ int32_t gui_srv(void* p) {
     UNUSED(p);
     Gui* gui = gui_alloc();
 
-    furi_record_create(RECORD_GUI, gui);
+    furry_record_create(RECORD_GUI, gui);
 
     while(1) {
         uint32_t flags =
-            furi_thread_flags_wait(GUI_THREAD_FLAG_ALL, FuriFlagWaitAny, FuriWaitForever);
+            furry_thread_flags_wait(GUI_THREAD_FLAG_ALL, FurryFlagWaitAny, FurryWaitForever);
         // Process and dispatch input
         if(flags & GUI_THREAD_FLAG_INPUT) {
             // Process till queue become empty
             InputEvent input_event;
-            while(furi_message_queue_get(gui->input_queue, &input_event, 0) == FuriStatusOk) {
+            while(furry_message_queue_get(gui->input_queue, &input_event, 0) == FurryStatusOk) {
                 gui_input(gui, &input_event);
             }
         }
         // Process and dispatch draw call
         if(flags & GUI_THREAD_FLAG_DRAW) {
             // Clear flags that arrived on input step
-            furi_thread_flags_clear(GUI_THREAD_FLAG_DRAW);
+            furry_thread_flags_clear(GUI_THREAD_FLAG_DRAW);
             gui_redraw(gui);
         }
     }

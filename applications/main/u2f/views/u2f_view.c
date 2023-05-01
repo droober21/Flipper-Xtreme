@@ -75,7 +75,7 @@ static void u2f_view_draw_callback(Canvas* canvas, void* _model) {
 }
 
 static bool u2f_view_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     U2fView* u2f = context;
     bool consumed = false;
 
@@ -102,19 +102,19 @@ U2fView* u2f_view_alloc() {
 }
 
 void u2f_view_free(U2fView* u2f) {
-    furi_assert(u2f);
+    furry_assert(u2f);
     view_free(u2f->view);
     free(u2f);
 }
 
 View* u2f_view_get_view(U2fView* u2f) {
-    furi_assert(u2f);
+    furry_assert(u2f);
     return u2f->view;
 }
 
 void u2f_view_set_ok_callback(U2fView* u2f, U2fOkCallback callback, void* context) {
-    furi_assert(u2f);
-    furi_assert(callback);
+    furry_assert(u2f);
+    furry_assert(callback);
     with_view_model(
         u2f->view,
         U2fModel * model,

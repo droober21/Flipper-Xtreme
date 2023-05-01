@@ -2,19 +2,19 @@
 #include <dolphin/dolphin.h>
 
 static bool lfrfid_debug_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     LfRfid* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool lfrfid_debug_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     LfRfid* app = context;
     return scene_manager_handle_back_event(app->scene_manager);
 }
 
 static void rpc_command_callback(RpcAppSystemEvent rpc_event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     LfRfid* app = (LfRfid*)context;
 
     if(rpc_event == RpcAppEventSessionClose) {
@@ -34,12 +34,12 @@ static void rpc_command_callback(RpcAppSystemEvent rpc_event, void* context) {
 static LfRfid* lfrfid_alloc() {
     LfRfid* lfrfid = malloc(sizeof(LfRfid));
 
-    lfrfid->storage = furi_record_open(RECORD_STORAGE);
-    lfrfid->dialogs = furi_record_open(RECORD_DIALOGS);
+    lfrfid->storage = furry_record_open(RECORD_STORAGE);
+    lfrfid->dialogs = furry_record_open(RECORD_DIALOGS);
 
-    lfrfid->file_name = furi_string_alloc();
-    lfrfid->raw_file_name = furi_string_alloc();
-    lfrfid->file_path = furi_string_alloc_set(LFRFID_APP_FOLDER);
+    lfrfid->file_name = furry_string_alloc();
+    lfrfid->raw_file_name = furry_string_alloc();
+    lfrfid->file_path = furry_string_alloc_set(LFRFID_APP_FOLDER);
 
     lfrfid->dict = protocol_dict_alloc(lfrfid_protocols, LFRFIDProtocolMax);
 
@@ -59,10 +59,10 @@ static LfRfid* lfrfid_alloc() {
         lfrfid->view_dispatcher, lfrfid_debug_back_event_callback);
 
     // Open GUI record
-    lfrfid->gui = furi_record_open(RECORD_GUI);
+    lfrfid->gui = furry_record_open(RECORD_GUI);
 
     // Open Notification record
-    lfrfid->notifications = furi_record_open(RECORD_NOTIFICATION);
+    lfrfid->notifications = furry_record_open(RECORD_NOTIFICATION);
 
     // Submenu
     lfrfid->submenu = submenu_alloc();
@@ -103,11 +103,11 @@ static LfRfid* lfrfid_alloc() {
 } //-V773
 
 static void lfrfid_free(LfRfid* lfrfid) {
-    furi_assert(lfrfid);
+    furry_assert(lfrfid);
 
-    furi_string_free(lfrfid->raw_file_name);
-    furi_string_free(lfrfid->file_name);
-    furi_string_free(lfrfid->file_path);
+    furry_string_free(lfrfid->raw_file_name);
+    furry_string_free(lfrfid->file_name);
+    furry_string_free(lfrfid->file_path);
     protocol_dict_free(lfrfid->dict);
 
     lfrfid_worker_free(lfrfid->lfworker);
@@ -155,15 +155,15 @@ static void lfrfid_free(LfRfid* lfrfid) {
     scene_manager_free(lfrfid->scene_manager);
 
     // GUI
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     lfrfid->gui = NULL;
 
     // Notifications
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_NOTIFICATION);
     lfrfid->notifications = NULL;
 
-    furi_record_close(RECORD_STORAGE);
-    furi_record_close(RECORD_DIALOGS);
+    furry_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_DIALOGS);
 
     free(lfrfid);
 }
@@ -185,7 +185,7 @@ int32_t lfrfid_app(void* p) {
             scene_manager_next_scene(app->scene_manager, LfRfidSceneRpc);
             DOLPHIN_DEED(DolphinDeedRfidEmulate);
         } else {
-            furi_string_set(app->file_path, args);
+            furry_string_set(app->file_path, args);
             lfrfid_load_key_data(app, app->file_path, true);
             view_dispatcher_attach_to_gui(
                 app->view_dispatcher, app->gui, ViewDispatcherTypeFullscreen);
@@ -207,26 +207,26 @@ int32_t lfrfid_app(void* p) {
 }
 
 bool lfrfid_save_key(LfRfid* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     bool result = false;
 
     lfrfid_make_app_folder(app);
 
-    if(furi_string_end_with(app->file_path, LFRFID_APP_EXTENSION)) {
-        size_t filename_start = furi_string_search_rchar(app->file_path, '/');
-        furi_string_left(app->file_path, filename_start);
+    if(furry_string_end_with(app->file_path, LFRFID_APP_EXTENSION)) {
+        size_t filename_start = furry_string_search_rchar(app->file_path, '/');
+        furry_string_left(app->file_path, filename_start);
     }
 
-    furi_string_cat_printf(
-        app->file_path, "/%s%s", furi_string_get_cstr(app->file_name), LFRFID_APP_EXTENSION);
+    furry_string_cat_printf(
+        app->file_path, "/%s%s", furry_string_get_cstr(app->file_name), LFRFID_APP_EXTENSION);
 
     result = lfrfid_save_key_data(app, app->file_path);
     return result;
 }
 
 bool lfrfid_load_key_from_file_select(LfRfid* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     DialogsFileBrowserOptions browser_options;
     dialog_file_browser_set_basic_options(&browser_options, LFRFID_APP_EXTENSION, &I_125_10px);
@@ -244,7 +244,7 @@ bool lfrfid_load_key_from_file_select(LfRfid* app) {
 }
 
 bool lfrfid_load_raw_key_from_file_select(LfRfid* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     DialogsFileBrowserOptions browser_options;
     dialog_file_browser_set_basic_options(
@@ -265,16 +265,16 @@ bool lfrfid_load_raw_key_from_file_select(LfRfid* app) {
 }
 
 bool lfrfid_delete_key(LfRfid* app) {
-    furi_assert(app);
+    furry_assert(app);
 
-    return storage_simply_remove(app->storage, furi_string_get_cstr(app->file_path));
+    return storage_simply_remove(app->storage, furry_string_get_cstr(app->file_path));
 }
 
-bool lfrfid_load_key_data(LfRfid* app, FuriString* path, bool show_dialog) {
+bool lfrfid_load_key_data(LfRfid* app, FurryString* path, bool show_dialog) {
     bool result = false;
 
     do {
-        app->protocol_id = lfrfid_dict_file_load(app->dict, furi_string_get_cstr(path));
+        app->protocol_id = lfrfid_dict_file_load(app->dict, furry_string_get_cstr(path));
         if(app->protocol_id == PROTOCOL_NO) break;
 
         path_extract_filename(path, app->file_name, true);
@@ -288,8 +288,8 @@ bool lfrfid_load_key_data(LfRfid* app, FuriString* path, bool show_dialog) {
     return result;
 }
 
-bool lfrfid_save_key_data(LfRfid* app, FuriString* path) {
-    bool result = lfrfid_dict_file_save(app->dict, app->protocol_id, furi_string_get_cstr(path));
+bool lfrfid_save_key_data(LfRfid* app, FurryString* path) {
+    bool result = lfrfid_dict_file_save(app->dict, app->protocol_id, furry_string_get_cstr(path));
 
     if(!result) {
         dialog_message_show_storage_error(app->dialogs, "Cannot save\nkey file");
@@ -299,7 +299,7 @@ bool lfrfid_save_key_data(LfRfid* app, FuriString* path) {
 }
 
 void lfrfid_make_app_folder(LfRfid* app) {
-    furi_assert(app);
+    furry_assert(app);
 
     if(!storage_simply_mkdir(app->storage, LFRFID_APP_FOLDER)) {
         dialog_message_show_storage_error(app->dialogs, "Cannot create\napp folder");
@@ -307,7 +307,7 @@ void lfrfid_make_app_folder(LfRfid* app) {
 }
 
 void lfrfid_text_store_set(LfRfid* app, const char* text, ...) {
-    furi_assert(app);
+    furry_assert(app);
     va_list args;
     va_start(args, text);
 
@@ -317,7 +317,7 @@ void lfrfid_text_store_set(LfRfid* app, const char* text, ...) {
 }
 
 void lfrfid_text_store_clear(LfRfid* app) {
-    furi_assert(app);
+    furry_assert(app);
     memset(app->text_store, 0, sizeof(app->text_store));
 }
 

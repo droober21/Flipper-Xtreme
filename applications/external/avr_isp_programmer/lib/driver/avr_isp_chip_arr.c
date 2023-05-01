@@ -1,6 +1,6 @@
 #include "avr_isp_chip_arr.h"
 
-#include <furi.h>
+#include <furry.h>
 
 //https://github.com/avrdudes/avrdude/blob/master/src/avrintel.c
 

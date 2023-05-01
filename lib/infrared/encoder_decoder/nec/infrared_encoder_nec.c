@@ -12,8 +12,8 @@ static const uint32_t repeat_timings[] = {
 };
 
 void infrared_encoder_nec_reset(void* encoder_ptr, const InfraredMessage* message) {
-    furi_assert(encoder_ptr);
-    furi_assert(message);
+    furry_assert(encoder_ptr);
+    furry_assert(message);
 
     InfraredCommonEncoder* encoder = encoder_ptr;
     infrared_common_encoder_reset(encoder);
@@ -48,7 +48,7 @@ void infrared_encoder_nec_reset(void* encoder_ptr, const InfraredMessage* messag
         *data2 = (message->command & 0xFFC0) >> 6;
         encoder->bits_to_encode = 42;
     } else {
-        furi_assert(0);
+        furry_assert(0);
     }
 }
 
@@ -56,13 +56,13 @@ InfraredStatus infrared_encoder_nec_encode_repeat(
     InfraredCommonEncoder* encoder,
     uint32_t* duration,
     bool* level) {
-    furi_assert(encoder);
+    furry_assert(encoder);
 
     /* space + 2 timings preambule + payload + stop bit */
     uint32_t timings_encoded_up_to_repeat = 1 + 2 + encoder->bits_to_encode * 2 + 1;
     uint32_t repeat_cnt = encoder->timings_encoded - timings_encoded_up_to_repeat;
 
-    furi_assert(encoder->timings_encoded >= timings_encoded_up_to_repeat);
+    furry_assert(encoder->timings_encoded >= timings_encoded_up_to_repeat);
 
     if(repeat_cnt > 0) {
         *duration = repeat_timings[repeat_cnt % COUNT_OF(repeat_timings)];

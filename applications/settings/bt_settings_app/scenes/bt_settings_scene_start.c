@@ -1,5 +1,5 @@
 #include "../bt_settings_app.h"
-#include <furi_hal_bt.h>
+#include <furry_hal_bt.h>
 
 enum BtSetting {
     BtSettingOff,
@@ -26,7 +26,7 @@ static void bt_settings_scene_start_var_list_change_callback(VariableItem* item)
 }
 
 static void bt_settings_scene_start_var_list_enter_callback(void* context, uint32_t index) {
-    furi_assert(context);
+    furry_assert(context);
     BtSettingsApp* app = context;
     if(index == BtSettingIndexForgetDev) {
         view_dispatcher_send_custom_event(
@@ -39,7 +39,7 @@ void bt_settings_scene_start_on_enter(void* context) {
     VariableItemList* var_item_list = app->var_item_list;
     VariableItem* item;
 
-    if(furi_hal_bt_is_ble_gatt_gap_supported()) {
+    if(furry_hal_bt_is_ble_gatt_gap_supported()) {
         item = variable_item_list_add(
             var_item_list,
             "Bluetooth",
@@ -70,12 +70,12 @@ bool bt_settings_scene_start_on_event(void* context, SceneManagerEvent event) {
 
     if(event.type == SceneManagerEventTypeCustom) {
         if(event.event == BtSettingOn) {
-            furi_hal_bt_start_advertising();
+            furry_hal_bt_start_advertising();
             app->bt->bt_settings.enabled = true;
             consumed = true;
         } else if(event.event == BtSettingOff) {
             app->bt->bt_settings.enabled = false;
-            furi_hal_bt_stop_advertising();
+            furry_hal_bt_stop_advertising();
             consumed = true;
         } else if(event.event == BtSettingsCustomEventForgetDevices) {
             scene_manager_next_scene(app->scene_manager, BtSettingsAppSceneForgetDevConfirm);

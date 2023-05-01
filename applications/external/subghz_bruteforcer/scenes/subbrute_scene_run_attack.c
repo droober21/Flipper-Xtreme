@@ -4,7 +4,7 @@
 #define TAG "SubBruteSceneRunAttack"
 
 static void subbrute_scene_run_attack_callback(SubBruteCustomEvent event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
     SubBruteState* instance = (SubBruteState*)context;
     view_dispatcher_send_custom_event(instance->view_dispatcher, event);
@@ -12,7 +12,7 @@ static void subbrute_scene_run_attack_callback(SubBruteCustomEvent event, void* 
 
 static void
     subbrute_scene_run_attack_device_state_changed(void* context, SubBruteWorkerState state) {
-    furi_assert(context);
+    furry_assert(context);
 
     SubBruteState* instance = (SubBruteState*)context;
 
@@ -25,7 +25,7 @@ static void
     }
 }
 void subbrute_scene_run_attack_on_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubBruteState* instance = (SubBruteState*)context;
 
     notification_message(instance->notifications, &sequence_blink_stop);
@@ -33,7 +33,7 @@ void subbrute_scene_run_attack_on_exit(void* context) {
 }
 
 void subbrute_scene_run_attack_on_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     SubBruteState* instance = (SubBruteState*)context;
     SubBruteAttackView* view = instance->view_attack;
 

@@ -15,8 +15,8 @@
 #define TAG RECORD_STORAGE
 
 static void storage_app_sd_icon_draw_callback(Canvas* canvas, void* context) {
-    furi_assert(canvas);
-    furi_assert(context);
+    furry_assert(canvas);
+    furry_assert(context);
     Storage* app = context;
 
     // here we don't care about thread race when reading / writing status
@@ -34,15 +34,15 @@ static void storage_app_sd_icon_draw_callback(Canvas* canvas, void* context) {
 
 Storage* storage_app_alloc() {
     Storage* app = malloc(sizeof(Storage));
-    app->message_queue = furi_message_queue_alloc(8, sizeof(StorageMessage));
-    app->pubsub = furi_pubsub_alloc();
+    app->message_queue = furry_message_queue_alloc(8, sizeof(StorageMessage));
+    app->pubsub = furry_pubsub_alloc();
 
     for(uint8_t i = 0; i < STORAGE_COUNT; i++) {
         storage_data_init(&app->storage[i]);
         storage_data_timestamp(&app->storage[i]);
     }
 
-#ifndef FURI_RAM_EXEC
+#ifndef FURRY_RAM_EXEC
     storage_int_init(&app->storage[ST_INT]);
 #endif
     storage_ext_init(&app->storage[ST_EXT]);
@@ -54,9 +54,9 @@ Storage* storage_app_alloc() {
     view_port_draw_callback_set(app->sd_gui.view_port, storage_app_sd_icon_draw_callback, app);
     view_port_enabled_set(app->sd_gui.view_port, false);
 
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, app->sd_gui.view_port, GuiLayerStatusBarLeft);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
 
     return app;
 }
@@ -74,9 +74,9 @@ void storage_tick(Storage* app) {
         app->sd_gui.enabled = false;
         view_port_enabled_set(app->sd_gui.view_port, false);
 
-        FURI_LOG_I(TAG, "SD card unmount");
+        FURRY_LOG_I(TAG, "SD card unmount");
         StorageEvent event = {.type = StorageEventTypeCardUnmount};
-        furi_pubsub_publish(app->pubsub, &event);
+        furry_pubsub_publish(app->pubsub, &event);
     }
 
     // storage enabled (or in error state) but was not enabled (sd card mount)
@@ -90,13 +90,13 @@ void storage_tick(Storage* app) {
         view_port_enabled_set(app->sd_gui.view_port, true);
 
         if(app->storage[ST_EXT].status == StorageStatusOK) {
-            FURI_LOG_I(TAG, "SD card mount");
+            FURRY_LOG_I(TAG, "SD card mount");
             StorageEvent event = {.type = StorageEventTypeCardMount};
-            furi_pubsub_publish(app->pubsub, &event);
+            furry_pubsub_publish(app->pubsub, &event);
         } else {
-            FURI_LOG_I(TAG, "SD card mount error");
+            FURRY_LOG_I(TAG, "SD card mount error");
             StorageEvent event = {.type = StorageEventTypeCardMountError};
-            furi_pubsub_publish(app->pubsub, &event);
+            furry_pubsub_publish(app->pubsub, &event);
         }
     }
 }
@@ -104,11 +104,11 @@ void storage_tick(Storage* app) {
 int32_t storage_srv(void* p) {
     UNUSED(p);
     Storage* app = storage_app_alloc();
-    furi_record_create(RECORD_STORAGE, app);
+    furry_record_create(RECORD_STORAGE, app);
 
     StorageMessage message;
     while(1) {
-        if(furi_message_queue_get(app->message_queue, &message, STORAGE_TICK) == FuriStatusOk) {
+        if(furry_message_queue_get(app->message_queue, &message, STORAGE_TICK) == FurryStatusOk) {
             storage_process_message(app, &message);
         } else {
             storage_tick(app);

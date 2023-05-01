@@ -42,7 +42,7 @@ bool unitemp_MAX6675_free(Sensor* sensor) {
 
 bool unitemp_MAX6675_init(Sensor* sensor) {
     SPISensor* instance = sensor->instance;
-    furi_hal_spi_bus_handle_init(instance->spi);
+    furry_hal_spi_bus_handle_init(instance->spi);
     UNUSED(instance);
     return true;
 }
@@ -55,13 +55,13 @@ bool unitemp_MAX6675_deinit(Sensor* sensor) {
 UnitempStatus unitemp_MAX6675_update(Sensor* sensor) {
     SPISensor* instance = sensor->instance;
 
-    furi_hal_spi_acquire(instance->spi);
-    furi_hal_gpio_write(instance->CS_pin->pin, false);
+    furry_hal_spi_acquire(instance->spi);
+    furry_hal_gpio_write(instance->CS_pin->pin, false);
 
     uint8_t buff[2] = {0};
 
-    furi_hal_spi_bus_rx(instance->spi, buff, 2, 0xFF);
-    furi_hal_spi_release(instance->spi);
+    furry_hal_spi_bus_rx(instance->spi, buff, 2, 0xFF);
+    furry_hal_spi_release(instance->spi);
 
     uint32_t raw = (buff[0] << 8) | buff[1];
 

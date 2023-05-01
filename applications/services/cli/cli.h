@@ -4,7 +4,7 @@
  */
 
 #pragma once
-#include <furi.h>
+#include <furry.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,7 +42,7 @@ typedef struct Cli Cli;
  * @param      args     string with what was passed after command
  * @param      context  pointer to whatever you gave us on cli_add_command
  */
-typedef void (*CliCallback)(Cli* cli, FuriString* args, void* context);
+typedef void (*CliCallback)(Cli* cli, FurryString* args, void* context);
 
 /** Add cli command Registers you command callback
  *

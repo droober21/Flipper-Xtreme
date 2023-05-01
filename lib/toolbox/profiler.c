@@ -1,8 +1,8 @@
 #include "profiler.h"
 #include <stdlib.h>
 #include <m-dict.h>
-#include <furi.h>
-#include <furi_hal_gpio.h>
+#include <furry.h>
+#include <furry_hal_gpio.h>
 
 typedef struct {
     uint32_t start;
@@ -45,13 +45,13 @@ void profiler_start(Profiler* profiler, const char* key) {
         record = ProfilerRecordDict_get(profiler->records, key);
     }
 
-    furi_check(record->start == 0);
+    furry_check(record->start == 0);
     record->start = DWT->CYCCNT;
 }
 
 void profiler_stop(Profiler* profiler, const char* key) {
     ProfilerRecord* record = ProfilerRecordDict_get(profiler->records, key);
-    furi_check(record != NULL);
+    furry_check(record != NULL);
 
     record->length += DWT->CYCCNT - record->start;
     record->start = 0;

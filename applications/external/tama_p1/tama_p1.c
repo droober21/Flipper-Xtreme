@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <storage/storage.h>
@@ -9,7 +9,7 @@
 #include "compiled/assets_icons.h"
 
 TamaApp* g_ctx;
-FuriMutex* g_state_mutex;
+FurryMutex* g_state_mutex;
 uint8_t layout_mode = 0; // 3: portrait => 4: portrait <=
 // 0: landscape (small) 1: landscape (big) 2: landscape (full)
 bool in_menu = false;
@@ -77,7 +77,7 @@ static void speed_down() {
 
 // static void draw_landscape(Canvas* const canvas, void* cb_ctx)
 static void draw_landscape(Canvas* const canvas, uint8_t scale) {
-    // FURI_LOG_D(TAG, "Drawing frame");
+    // FURRY_LOG_D(TAG, "Drawing frame");
     // Calculate positioning
     uint16_t canv_width = canvas_width(canvas);
     uint16_t canv_height = canvas_height(canvas);
@@ -151,7 +151,7 @@ static void draw_landscape(Canvas* const canvas, uint8_t scale) {
 }
 // static void draw_portrait_right(Canvas* const canvas, void* cb_ctx)
 static void draw_portrait_right(Canvas* const canvas, uint8_t scale) {
-    // FURI_LOG_D(TAG, "Drawing frame");
+    // FURRY_LOG_D(TAG, "Drawing frame");
     // Calculate positioning
     // uint16_t canv_width = canvas_width(canvas);
     uint16_t canv_height = canvas_height(canvas);
@@ -210,7 +210,7 @@ static void draw_portrait_right(Canvas* const canvas, uint8_t scale) {
     }
 }
 static void draw_portrait_left(Canvas* const canvas, uint8_t scale) {
-    // FURI_LOG_D(TAG, "Drawing frame");
+    // FURRY_LOG_D(TAG, "Drawing frame");
     // Calculate positioning
     // uint16_t canv_width = canvas_width(canvas);
     // uint16_t canv_height = canvas_height(canvas);
@@ -416,10 +416,10 @@ static void draw_menu(Canvas* const canvas) {
 }
 
 static void tama_p1_draw_callback(Canvas* const canvas, void* cb_ctx) {
-    furi_assert(cb_ctx);
+    furry_assert(cb_ctx);
 
-    FuriMutex* const mutex = cb_ctx;
-    if(furi_mutex_acquire(mutex, 25) != FuriStatusOk) return;
+    FurryMutex* const mutex = cb_ctx;
+    if(furry_mutex_acquire(mutex, 25) != FurryStatusOk) return;
 
     if(g_ctx->rom == NULL) {
         canvas_set_font(canvas, FontPrimary);
@@ -454,21 +454,21 @@ static void tama_p1_draw_callback(Canvas* const canvas, void* cb_ctx) {
             }
         }
     }
-    furi_mutex_release(mutex);
+    furry_mutex_release(mutex);
 }
 
-static void tama_p1_input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void tama_p1_input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     TamaEvent event = {.type = EventTypeInput, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
-static void tama_p1_update_timer_callback(FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void tama_p1_update_timer_callback(FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     TamaEvent event = {.type = EventTypeTick};
-    furi_message_queue_put(event_queue, &event, 0);
+    furry_message_queue_put(event_queue, &event, 0);
 }
 
 static void tama_p1_load_state() {
@@ -477,23 +477,23 @@ static void tama_p1_load_state() {
     bool error = false;
     state = tamalib_get_state();
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     File* file = storage_file_alloc(storage);
     if(storage_file_open(file, TAMA_SAVE_PATH, FSAM_READ, FSOM_OPEN_EXISTING)) {
         storage_file_read(file, &buf, 4);
         if(buf[0] != (uint8_t)STATE_FILE_MAGIC[0] || buf[1] != (uint8_t)STATE_FILE_MAGIC[1] ||
            buf[2] != (uint8_t)STATE_FILE_MAGIC[2] || buf[3] != (uint8_t)STATE_FILE_MAGIC[3]) {
-            FURI_LOG_E(TAG, "FATAL: Wrong state file magic in \"%s\" !\n", TAMA_SAVE_PATH);
+            FURRY_LOG_E(TAG, "FATAL: Wrong state file magic in \"%s\" !\n", TAMA_SAVE_PATH);
             error = true;
         }
 
         storage_file_read(file, &buf, 1);
         if(buf[0] != STATE_FILE_VERSION) {
-            FURI_LOG_E(TAG, "FATAL: Unsupported version");
+            FURRY_LOG_E(TAG, "FATAL: Unsupported version");
             error = true;
         }
         if(!error) {
-            FURI_LOG_D(TAG, "Reading save.bin");
+            FURRY_LOG_D(TAG, "Reading save.bin");
 
             storage_file_read(file, &buf, 2);
             *(state->pc) = buf[0] | ((buf[1] & 0x1F) << 8);
@@ -542,7 +542,7 @@ static void tama_p1_load_state() {
             storage_file_read(file, &buf, 4);
             *(state->call_depth) = buf[0] | (buf[1] << 8) | (buf[2] << 16) | (buf[3] << 24);
 
-            FURI_LOG_D(TAG, "Restoring Interupts");
+            FURRY_LOG_D(TAG, "Restoring Interupts");
             for(uint32_t i = 0; i < INT_SLOT_NUM; i++) {
                 storage_file_read(file, &buf, 1);
                 state->interrupts[i].factor_flag_reg = buf[0] & 0xF;
@@ -555,37 +555,37 @@ static void tama_p1_load_state() {
             }
 
             /* First 640 half bytes correspond to the RAM */
-            FURI_LOG_D(TAG, "Restoring RAM");
+            FURRY_LOG_D(TAG, "Restoring RAM");
             for(uint32_t i = 0; i < MEM_RAM_SIZE; i++) {
                 storage_file_read(file, &buf, 1);
                 SET_RAM_MEMORY(state->memory, i + MEM_RAM_ADDR, buf[0] & 0xF);
             }
 
             /* I/Os are from 0xF00 to 0xF7F */
-            FURI_LOG_D(TAG, "Restoring I/O");
+            FURRY_LOG_D(TAG, "Restoring I/O");
             for(uint32_t i = 0; i < MEM_IO_SIZE; i++) {
                 storage_file_read(file, &buf, 1);
                 SET_IO_MEMORY(state->memory, i + MEM_IO_ADDR, buf[0] & 0xF);
             }
-            FURI_LOG_D(TAG, "Refreshing Hardware");
+            FURRY_LOG_D(TAG, "Refreshing Hardware");
             tamalib_refresh_hw();
         }
     }
 
     storage_file_close(file);
     storage_file_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 }
 
 static void tama_p1_save_state() {
     // Saving state
-    FURI_LOG_D(TAG, "Saving Gamestate");
+    FURRY_LOG_D(TAG, "Saving Gamestate");
     uint8_t buf[4];
     state_t* state;
     uint32_t offset = 0;
     state = tamalib_get_state();
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     File* file = storage_file_alloc(storage);
 
     if(storage_file_open(file, TAMA_SAVE_PATH, FSAM_WRITE, FSOM_CREATE_ALWAYS)) {
@@ -683,15 +683,15 @@ static void tama_p1_save_state() {
     }
     storage_file_close(file);
     storage_file_free(file);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
-    FURI_LOG_D(TAG, "Finished Writing %lu", offset);
+    FURRY_LOG_D(TAG, "Finished Writing %lu", offset);
 }
 
 static int32_t tama_p1_worker(void* context) {
     bool running = true;
-    FuriMutex* mutex = context;
-    while(furi_mutex_acquire(mutex, FuriWaitForever) != FuriStatusOk) furi_delay_tick(1);
+    FurryMutex* mutex = context;
+    while(furry_mutex_acquire(mutex, FurryWaitForever) != FurryStatusOk) furry_delay_tick(1);
 
     cpu_sync_ref_timestamp();
     LL_TIM_EnableCounter(TIM2);
@@ -699,16 +699,16 @@ static int32_t tama_p1_worker(void* context) {
     tama_p1_load_state();
 
     while(running) {
-        if(furi_thread_flags_get()) {
+        if(furry_thread_flags_get()) {
             running = false;
         } else {
-            // FURI_LOG_D(TAG, "Stepping"); // enabling this cause blank screen somehow
+            // FURRY_LOG_D(TAG, "Stepping"); // enabling this cause blank screen somehow
             // for (int i = 0; i < 100; ++i)
             tamalib_step(); // tamalib_mainloop();
         }
     }
     LL_TIM_DisableCounter(TIM2);
-    furi_mutex_release(mutex);
+    furry_mutex_release(mutex);
     return 0;
 }
 
@@ -718,7 +718,7 @@ static void tama_p1_init(TamaApp* const ctx) {
     tama_p1_hal_init(&ctx->hal);
 
     // Load ROM
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FileInfo fi;
     if(storage_common_stat(storage, TAMA_ROM_PATH, &fi) == FSE_OK) {
         File* rom_file = storage_file_alloc(storage);
@@ -745,7 +745,7 @@ static void tama_p1_init(TamaApp* const ctx) {
         storage_file_close(rom_file);
         storage_file_free(rom_file);
     }
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     if(ctx->rom != NULL) {
         // Init TIM2
@@ -769,19 +769,19 @@ static void tama_p1_init(TamaApp* const ctx) {
         // ctx->fast_forward_done = true;
 
         // Start stepping thread
-        ctx->thread = furi_thread_alloc();
-        furi_thread_set_name(ctx->thread, "TamaLIB");
-        furi_thread_set_stack_size(ctx->thread, 2 * 1024);
-        furi_thread_set_callback(ctx->thread, tama_p1_worker);
-        furi_thread_set_context(ctx->thread, g_state_mutex);
-        furi_thread_start(ctx->thread);
+        ctx->thread = furry_thread_alloc();
+        furry_thread_set_name(ctx->thread, "TamaLIB");
+        furry_thread_set_stack_size(ctx->thread, 2 * 1024);
+        furry_thread_set_callback(ctx->thread, tama_p1_worker);
+        furry_thread_set_context(ctx->thread, g_state_mutex);
+        furry_thread_start(ctx->thread);
     }
 }
 
 static void tama_p1_deinit(TamaApp* const ctx) {
     if(ctx->rom != NULL) {
         tamalib_release();
-        furi_thread_free(ctx->thread);
+        furry_thread_free(ctx->thread);
         free(ctx->rom);
     }
 }
@@ -790,37 +790,37 @@ int32_t tama_p1_app(void* p) {
     UNUSED(p);
 
     TamaApp* ctx = malloc(sizeof(TamaApp));
-    g_state_mutex = furi_mutex_alloc(FuriMutexTypeRecursive);
+    g_state_mutex = furry_mutex_alloc(FurryMutexTypeRecursive);
     tama_p1_init(ctx);
 
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(TamaEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(TamaEvent));
 
     ViewPort* view_port = view_port_alloc();
     view_port_draw_callback_set(view_port, tama_p1_draw_callback, g_state_mutex);
     view_port_input_callback_set(view_port, tama_p1_input_callback, event_queue);
 
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
-    FuriTimer* timer =
-        furi_timer_alloc(tama_p1_update_timer_callback, FuriTimerTypePeriodic, event_queue);
-    furi_timer_start(timer, furi_kernel_get_tick_frequency() / 30);
+    FurryTimer* timer =
+        furry_timer_alloc(tama_p1_update_timer_callback, FurryTimerTypePeriodic, event_queue);
+    furry_timer_start(timer, furry_kernel_get_tick_frequency() / 30);
 
     // in_menu = false;
     // menu_cursor = 2;
 
     for(bool running = true; running;) {
         TamaEvent event;
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, FuriWaitForever);
-        if(event_status == FuriStatusOk) {
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, FurryWaitForever);
+        if(event_status == FurryStatusOk) {
             // Local override with acquired context
-            if(furi_mutex_acquire(g_state_mutex, FuriWaitForever) != FuriStatusOk) continue;
+            if(furry_mutex_acquire(g_state_mutex, FurryWaitForever) != FurryStatusOk) continue;
 
             if(event.type == EventTypeTick) {
-                // FURI_LOG_D(TAG, "EventTypeTick");
+                // FURRY_LOG_D(TAG, "EventTypeTick");
                 view_port_update(view_port);
             } else if(event.type == EventTypeInput) {
-                FURI_LOG_D(
+                FURRY_LOG_D(
                     TAG,
                     "EventTypeInput: %ld %d %d",
                     event.input.sequence,
@@ -1099,17 +1099,17 @@ int32_t tama_p1_app(void* p) {
                                         uint8_t temp = speed;
                                         speed = 1;
                                         tamalib_set_speed(speed);
-                                        furi_timer_stop(timer);
+                                        furry_timer_stop(timer);
                                         tama_p1_save_state();
-                                        furi_timer_start(
-                                            timer, furi_kernel_get_tick_frequency() / 30);
+                                        furry_timer_start(
+                                            timer, furry_kernel_get_tick_frequency() / 30);
                                         speed = temp;
                                         tamalib_set_speed(speed);
                                     } else {
-                                        furi_timer_stop(timer);
+                                        furry_timer_stop(timer);
                                         tama_p1_save_state();
-                                        furi_timer_start(
-                                            timer, furi_kernel_get_tick_frequency() / 30);
+                                        furry_timer_start(
+                                            timer, furry_kernel_get_tick_frequency() / 30);
                                     }
                                     break;
                                 case 2: // Save & Exit
@@ -1117,7 +1117,7 @@ int32_t tama_p1_app(void* p) {
                                         speed = 1;
                                         tamalib_set_speed(speed);
                                     }
-                                    furi_timer_stop(timer);
+                                    furry_timer_stop(timer);
                                     tama_p1_save_state();
                                     running = false;
                                     break;
@@ -1134,7 +1134,7 @@ int32_t tama_p1_app(void* p) {
                             speed = 1;
                             tamalib_set_speed(speed);
                         }
-                        furi_timer_stop(timer);
+                        furry_timer_stop(timer);
                         tama_p1_save_state();
                         running = false;
                     } else if(
@@ -1162,24 +1162,24 @@ int32_t tama_p1_app(void* p) {
                     }
                 }
             }
-            furi_mutex_release(g_state_mutex);
+            furry_mutex_release(g_state_mutex);
         }
         // else {
         //     // Timeout
-        //     FURI_LOG_D(TAG, "Timed out");
+        //     FURRY_LOG_D(TAG, "Timed out");
         // }
     }
     if(ctx->rom != NULL) {
-        furi_thread_flags_set(furi_thread_get_id(ctx->thread), 1);
-        furi_thread_join(ctx->thread);
+        furry_thread_flags_set(furry_thread_get_id(ctx->thread), 1);
+        furry_thread_join(ctx->thread);
     }
-    furi_timer_free(timer);
+    furry_timer_free(timer);
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
+    furry_record_close(RECORD_GUI);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_mutex_free(g_state_mutex);
+    furry_message_queue_free(event_queue);
+    furry_mutex_free(g_state_mutex);
     tama_p1_deinit(ctx);
     free(ctx);
     return 0;

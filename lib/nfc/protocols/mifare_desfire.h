@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <furi_hal_nfc.h>
+#include <furry_hal_nfc.h>
 
 #define MF_DF_GET_VERSION (0x60)
 #define MF_DF_GET_FREE_MEMORY (0x6E)
@@ -119,16 +119,16 @@ typedef struct {
 
 void mf_df_clear(MifareDesfireData* data);
 
-void mf_df_cat_data(MifareDesfireData* data, FuriString* out);
-void mf_df_cat_card_info(MifareDesfireData* data, FuriString* out);
-void mf_df_cat_version(MifareDesfireVersion* version, FuriString* out);
-void mf_df_cat_free_mem(MifareDesfireFreeMemory* free_mem, FuriString* out);
-void mf_df_cat_key_settings(MifareDesfireKeySettings* ks, FuriString* out);
-void mf_df_cat_application_info(MifareDesfireApplication* app, FuriString* out);
-void mf_df_cat_application(MifareDesfireApplication* app, FuriString* out);
-void mf_df_cat_file(MifareDesfireFile* file, FuriString* out);
+void mf_df_cat_data(MifareDesfireData* data, FurryString* out);
+void mf_df_cat_card_info(MifareDesfireData* data, FurryString* out);
+void mf_df_cat_version(MifareDesfireVersion* version, FurryString* out);
+void mf_df_cat_free_mem(MifareDesfireFreeMemory* free_mem, FurryString* out);
+void mf_df_cat_key_settings(MifareDesfireKeySettings* ks, FurryString* out);
+void mf_df_cat_application_info(MifareDesfireApplication* app, FurryString* out);
+void mf_df_cat_application(MifareDesfireApplication* app, FurryString* out);
+void mf_df_cat_file(MifareDesfireFile* file, FurryString* out);
 
-bool mf_df_check_card_type(FuriHalNfcADevData* data);
+bool mf_df_check_card_type(FurryHalNfcADevData* data);
 
 uint16_t mf_df_prepare_get_version(uint8_t* dest);
 bool mf_df_parse_get_version_response(uint8_t* buf, uint16_t len, MifareDesfireVersion* out);
@@ -165,4 +165,4 @@ uint16_t mf_df_prepare_get_value(uint8_t* dest, uint8_t file_id);
 uint16_t mf_df_prepare_read_records(uint8_t* dest, uint8_t file_id, uint32_t offset, uint32_t len);
 bool mf_df_parse_read_data_response(uint8_t* buf, uint16_t len, MifareDesfireFile* out);
 
-bool mf_df_read_card(FuriHalNfcTxRxContext* tx_rx, MifareDesfireData* data);
+bool mf_df_read_card(FurryHalNfcTxRxContext* tx_rx, MifareDesfireData* data);

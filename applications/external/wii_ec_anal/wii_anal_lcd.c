@@ -47,7 +47,7 @@ const image_t* img_5x7[16] = {
 //	{
 //		// Acquire a handle for the system notification queue
 //		// Do this ONCE ... at plugin startup
-//		NotificationApp* notifications = furi_record_open(RECORD_NOTIFICATION);
+//		NotificationApp* notifications = furry_record_open(RECORD_NOTIFICATION);
 //
 //		// Pat the backlight watchdog
 //		// Send the (predefined) message sequence {backlight_on, end}
@@ -56,7 +56,7 @@ const image_t* img_5x7[16] = {
 //
 //		// Release the handle for the system notification queue
 //		// Do this ONCE ... at plugin quit
-//		furi_record_close(RECORD_NOTIFICATION);
+//		furry_record_close(RECORD_NOTIFICATION);
 //	}
 void patBacklight(state_t* state) {
     notification_message(state->notify, &sequence_display_backlight_on);

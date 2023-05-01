@@ -1,10 +1,10 @@
 #include "../bad_kb_app.h"
-#include <furi_hal_power.h>
-#include <furi_hal_usb.h>
+#include <furry_hal_power.h>
+#include <furry_hal_usb.h>
 #include <storage/storage.h>
 
 static bool bad_kb_file_select(BadKbApp* bad_kb) {
-    furi_assert(bad_kb);
+    furry_assert(bad_kb);
 
     DialogsFileBrowserOptions browser_options;
     dialog_file_browser_set_basic_options(

@@ -110,13 +110,13 @@ void* ws_protocol_decoder_oregon_v1_alloc(SubGhzEnvironment* environment) {
 }
 
 void ws_protocol_decoder_oregon_v1_free(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderOregon_V1* instance = context;
     free(instance);
 }
 
 void ws_protocol_decoder_oregon_v1_reset(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderOregon_V1* instance = context;
     instance->decoder.parser_step = Oregon_V1DecoderStepReset;
 }
@@ -154,7 +154,7 @@ static void ws_protocol_oregon_v1_remote_controller(WSBlockGeneric* instance) {
 }
 
 void ws_protocol_decoder_oregon_v1_feed(void* context, bool level, uint32_t duration) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderOregon_V1* instance = context;
     ManchesterEvent event = ManchesterEventReset;
     switch(instance->decoder.parser_step) {
@@ -277,7 +277,7 @@ void ws_protocol_decoder_oregon_v1_feed(void* context, bool level, uint32_t dura
 }
 
 uint8_t ws_protocol_decoder_oregon_v1_get_hash_data(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderOregon_V1* instance = context;
     return subghz_protocol_blocks_get_hash_data(
         &instance->decoder, (instance->decoder.decode_count_bit / 8) + 1);
@@ -287,23 +287,23 @@ SubGhzProtocolStatus ws_protocol_decoder_oregon_v1_serialize(
     void* context,
     FlipperFormat* flipper_format,
     SubGhzRadioPreset* preset) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderOregon_V1* instance = context;
     return ws_block_generic_serialize(&instance->generic, flipper_format, preset);
 }
 
 SubGhzProtocolStatus
     ws_protocol_decoder_oregon_v1_deserialize(void* context, FlipperFormat* flipper_format) {
-    furi_assert(context);
+    furry_assert(context);
     WSProtocolDecoderOregon_V1* instance = context;
     return ws_block_generic_deserialize_check_count_bit(
         &instance->generic, flipper_format, ws_protocol_oregon_v1_const.min_count_bit_for_found);
 }
 
-void ws_protocol_decoder_oregon_v1_get_string(void* context, FuriString* output) {
-    furi_assert(context);
+void ws_protocol_decoder_oregon_v1_get_string(void* context, FurryString* output) {
+    furry_assert(context);
     WSProtocolDecoderOregon_V1* instance = context;
-    furi_string_printf(
+    furry_string_printf(
         output,
         "%s %dbit\r\n"
         "Key:0x%lX%08lX\r\n"

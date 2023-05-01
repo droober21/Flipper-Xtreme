@@ -19,7 +19,7 @@
 /* USER CODE END Header */
 
 #include "user_diskio.h"
-#include <furi_hal.h>
+#include <furry_hal.h>
 #include "sector_cache.h"
 
 static DSTATUS driver_check_status(BYTE lun) {
@@ -70,24 +70,24 @@ static inline void sd_cache_invalidate_all() {
 static bool sd_device_read(uint32_t* buff, uint32_t sector, uint32_t count) {
     bool result = false;
 
-    furi_hal_spi_acquire(&furi_hal_spi_bus_handle_sd_fast);
-    furi_hal_sd_spi_handle = &furi_hal_spi_bus_handle_sd_fast;
+    furry_hal_spi_acquire(&furry_hal_spi_bus_handle_sd_fast);
+    furry_hal_sd_spi_handle = &furry_hal_spi_bus_handle_sd_fast;
 
     if(sd_read_blocks(buff, sector, count, SD_TIMEOUT_MS) == SdSpiStatusOK) {
-        FuriHalCortexTimer timer = furi_hal_cortex_timer_get(SD_TIMEOUT_MS * 1000);
+        FurryHalCortexTimer timer = furry_hal_cortex_timer_get(SD_TIMEOUT_MS * 1000);
 
         /* wait until the read operation is finished */
         result = true;
         while(sd_get_card_state() != SdSpiStatusOK) {
-            if(furi_hal_cortex_timer_is_expired(timer)) {
+            if(furry_hal_cortex_timer_is_expired(timer)) {
                 result = false;
                 break;
             }
         }
     }
 
-    furi_hal_sd_spi_handle = NULL;
-    furi_hal_spi_release(&furi_hal_spi_bus_handle_sd_fast);
+    furry_hal_sd_spi_handle = NULL;
+    furry_hal_spi_release(&furry_hal_spi_bus_handle_sd_fast);
 
     return result;
 }
@@ -95,16 +95,16 @@ static bool sd_device_read(uint32_t* buff, uint32_t sector, uint32_t count) {
 static bool sd_device_write(uint32_t* buff, uint32_t sector, uint32_t count) {
     bool result = false;
 
-    furi_hal_spi_acquire(&furi_hal_spi_bus_handle_sd_fast);
-    furi_hal_sd_spi_handle = &furi_hal_spi_bus_handle_sd_fast;
+    furry_hal_spi_acquire(&furry_hal_spi_bus_handle_sd_fast);
+    furry_hal_sd_spi_handle = &furry_hal_spi_bus_handle_sd_fast;
 
     if(sd_write_blocks(buff, sector, count, SD_TIMEOUT_MS) == SdSpiStatusOK) {
-        FuriHalCortexTimer timer = furi_hal_cortex_timer_get(SD_TIMEOUT_MS * 1000);
+        FurryHalCortexTimer timer = furry_hal_cortex_timer_get(SD_TIMEOUT_MS * 1000);
 
         /* wait until the Write operation is finished */
         result = true;
         while(sd_get_card_state() != SdSpiStatusOK) {
-            if(furi_hal_cortex_timer_is_expired(timer)) {
+            if(furry_hal_cortex_timer_is_expired(timer)) {
                 sd_cache_invalidate_all();
 
                 result = false;
@@ -113,8 +113,8 @@ static bool sd_device_write(uint32_t* buff, uint32_t sector, uint32_t count) {
         }
     }
 
-    furi_hal_sd_spi_handle = NULL;
-    furi_hal_spi_release(&furi_hal_spi_bus_handle_sd_fast);
+    furry_hal_sd_spi_handle = NULL;
+    furry_hal_spi_release(&furry_hal_spi_bus_handle_sd_fast);
 
     return result;
 }
@@ -135,13 +135,13 @@ static DSTATUS driver_initialize(BYTE pdrv) {
   * @retval DSTATUS: Operation status
   */
 static DSTATUS driver_status(BYTE pdrv) {
-    furi_hal_spi_acquire(&furi_hal_spi_bus_handle_sd_fast);
-    furi_hal_sd_spi_handle = &furi_hal_spi_bus_handle_sd_fast;
+    furry_hal_spi_acquire(&furry_hal_spi_bus_handle_sd_fast);
+    furry_hal_sd_spi_handle = &furry_hal_spi_bus_handle_sd_fast;
 
     DSTATUS status = driver_check_status(pdrv);
 
-    furi_hal_sd_spi_handle = NULL;
-    furi_hal_spi_release(&furi_hal_spi_bus_handle_sd_fast);
+    furry_hal_sd_spi_handle = NULL;
+    furry_hal_spi_release(&furry_hal_spi_bus_handle_sd_fast);
 
     return status;
 }
@@ -245,8 +245,8 @@ static DRESULT driver_ioctl(BYTE pdrv, BYTE cmd, void* buff) {
     DRESULT res = RES_ERROR;
     SD_CardInfo CardInfo;
 
-    furi_hal_spi_acquire(&furi_hal_spi_bus_handle_sd_fast);
-    furi_hal_sd_spi_handle = &furi_hal_spi_bus_handle_sd_fast;
+    furry_hal_spi_acquire(&furry_hal_spi_bus_handle_sd_fast);
+    furry_hal_sd_spi_handle = &furry_hal_spi_bus_handle_sd_fast;
 
     DSTATUS status = driver_check_status(pdrv);
     if(status & STA_NOINIT) return RES_NOTRDY;
@@ -282,8 +282,8 @@ static DRESULT driver_ioctl(BYTE pdrv, BYTE cmd, void* buff) {
         res = RES_PARERR;
     }
 
-    furi_hal_sd_spi_handle = NULL;
-    furi_hal_spi_release(&furi_hal_spi_bus_handle_sd_fast);
+    furry_hal_sd_spi_handle = NULL;
+    furry_hal_spi_release(&furry_hal_spi_bus_handle_sd_fast);
 
     return res;
 }

@@ -18,7 +18,7 @@ static void
     } else if(type == InputTypeShort) {
         custom_type = InfraredCustomEventTypeMenuSelected;
     } else {
-        furi_crash("Unexpected input type");
+        furry_crash("Unexpected input type");
     }
 
     view_dispatcher_send_custom_event(
@@ -86,14 +86,14 @@ bool infrared_scene_remote_on_event(void* context, SceneManagerEvent event) {
         const int16_t button_index = infrared_custom_event_get_value(event.event);
 
         if(custom_type == InfraredCustomEventTypeTransmitStarted) {
-            furi_assert(button_index >= 0);
+            furry_assert(button_index >= 0);
             infrared_tx_start_button_index(infrared, button_index);
             consumed = true;
         } else if(custom_type == InfraredCustomEventTypeTransmitStopped) {
             infrared_tx_stop(infrared);
             consumed = true;
         } else if(custom_type == InfraredCustomEventTypeMenuSelected) {
-            furi_assert(button_index < 0);
+            furry_assert(button_index < 0);
             if(is_transmitter_idle) {
                 scene_manager_set_scene_state(
                     scene_manager, InfraredSceneRemote, (unsigned)button_index);

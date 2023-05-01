@@ -35,7 +35,7 @@ static void gpio_test_draw_callback(Canvas* canvas, void* _model) {
 }
 
 static bool gpio_test_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     GpioTest* gpio_test = context;
     bool consumed = false;
 
@@ -124,19 +124,19 @@ GpioTest* gpio_test_alloc(GPIOItems* gpio_items) {
 }
 
 void gpio_test_free(GpioTest* gpio_test) {
-    furi_assert(gpio_test);
+    furry_assert(gpio_test);
     view_free(gpio_test->view);
     free(gpio_test);
 }
 
 View* gpio_test_get_view(GpioTest* gpio_test) {
-    furi_assert(gpio_test);
+    furry_assert(gpio_test);
     return gpio_test->view;
 }
 
 void gpio_test_set_ok_callback(GpioTest* gpio_test, GpioTestOkCallback callback, void* context) {
-    furi_assert(gpio_test);
-    furi_assert(callback);
+    furry_assert(gpio_test);
+    furry_assert(callback);
     with_view_model(
         gpio_test->view,
         GpioTestModel * model,

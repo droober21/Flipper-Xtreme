@@ -1,13 +1,13 @@
-#include <furi.h>
+#include <furry.h>
 #include <gui/gui.h>
 #include <dialogs/dialogs.h>
 #include <input/input.h>
 #include <stdlib.h>
-#include <furi_hal.h>
-#include <furi_hal_gpio.h>
-#include <furi_hal_spi.h>
-#include <furi_hal_interrupt.h>
-#include <furi_hal_resources.h>
+#include <furry_hal.h>
+#include <furry_hal_gpio.h>
+#include <furry_hal_spi.h>
+#include <furry_hal_interrupt.h>
+#include <furry_hal_resources.h>
 #include <nrf24.h>
 #include "mousejacker_ducky.h"
 #include <NRF24_Mouse_Jacker_icons.h>
@@ -41,9 +41,9 @@ char target_address_str[12] = "None";
 char target_text[30];
 
 static void render_callback(Canvas* const canvas, void* ctx) {
-    furi_assert(ctx);
+    furry_assert(ctx);
     const PluginState* plugin_state = ctx;
-    furi_mutex_acquire(plugin_state->mutex, FuriWaitForever);
+    furry_mutex_acquire(plugin_state->mutex, FurryWaitForever);
 
     // border around the edge of the screen
     canvas_draw_frame(canvas, 0, 0, 128, 64);
@@ -83,14 +83,14 @@ static void render_callback(Canvas* const canvas, void* ctx) {
         canvas_draw_str_aligned(canvas, 3, 30, AlignLeft, AlignBottom, "to exit");
     }
 
-    furi_mutex_release(plugin_state->mutex);
+    furry_mutex_release(plugin_state->mutex);
 }
 
-static void input_callback(InputEvent* input_event, FuriMessageQueue* event_queue) {
-    furi_assert(event_queue);
+static void input_callback(InputEvent* input_event, FurryMessageQueue* event_queue) {
+    furry_assert(event_queue);
 
     PluginEvent event = {.type = EventTypeKey, .input = *input_event};
-    furi_message_queue_put(event_queue, &event, FuriWaitForever);
+    furry_message_queue_put(event_queue, &event, FurryWaitForever);
 }
 
 static void mousejacker_state_init(PluginState* const plugin_state) {
@@ -104,11 +104,11 @@ static void hexlify(uint8_t* in, uint8_t size, char* out) {
 }
 
 static bool open_ducky_script(Stream* stream, PluginState* plugin_state) {
-    DialogsApp* dialogs = furi_record_open("dialogs");
+    DialogsApp* dialogs = furry_record_open("dialogs");
     bool result = false;
-    FuriString* path;
-    path = furi_string_alloc();
-    furi_string_set(path, MOUSEJACKER_APP_PATH_FOLDER);
+    FurryString* path;
+    path = furry_string_alloc();
+    furry_string_set(path, MOUSEJACKER_APP_PATH_FOLDER);
 
     DialogsFileBrowserOptions browser_options;
     dialog_file_browser_set_basic_options(
@@ -117,15 +117,15 @@ static bool open_ducky_script(Stream* stream, PluginState* plugin_state) {
 
     bool ret = dialog_file_browser_show(dialogs, path, path, &browser_options);
 
-    furi_record_close("dialogs");
+    furry_record_close("dialogs");
     if(ret) {
-        if(!file_stream_open(stream, furi_string_get_cstr(path), FSAM_READ, FSOM_OPEN_EXISTING)) {
-            FURI_LOG_D(TAG, "Cannot open file \"%s\"", furi_string_get_cstr(path));
+        if(!file_stream_open(stream, furry_string_get_cstr(path), FSAM_READ, FSOM_OPEN_EXISTING)) {
+            FURRY_LOG_D(TAG, "Cannot open file \"%s\"", furry_string_get_cstr(path));
         } else {
             result = true;
         }
     }
-    furi_string_free(path);
+    furry_string_free(path);
 
     plugin_state->is_ducky_running = true;
 
@@ -133,11 +133,11 @@ static bool open_ducky_script(Stream* stream, PluginState* plugin_state) {
 }
 
 static bool open_addrs_file(Stream* stream) {
-    DialogsApp* dialogs = furi_record_open("dialogs");
+    DialogsApp* dialogs = furry_record_open("dialogs");
     bool result = false;
-    FuriString* path;
-    path = furi_string_alloc();
-    furi_string_set(path, NRFSNIFF_APP_PATH_FOLDER);
+    FurryString* path;
+    path = furry_string_alloc();
+    furry_string_set(path, NRFSNIFF_APP_PATH_FOLDER);
 
     DialogsFileBrowserOptions browser_options;
     dialog_file_browser_set_basic_options(
@@ -146,15 +146,15 @@ static bool open_addrs_file(Stream* stream) {
 
     bool ret = dialog_file_browser_show(dialogs, path, path, &browser_options);
 
-    furi_record_close("dialogs");
+    furry_record_close("dialogs");
     if(ret) {
-        if(!file_stream_open(stream, furi_string_get_cstr(path), FSAM_READ, FSOM_OPEN_EXISTING)) {
-            FURI_LOG_D(TAG, "Cannot open file \"%s\"", furi_string_get_cstr(path));
+        if(!file_stream_open(stream, furry_string_get_cstr(path), FSAM_READ, FSOM_OPEN_EXISTING)) {
+            FURRY_LOG_D(TAG, "Cannot open file \"%s\"", furry_string_get_cstr(path));
         } else {
             result = true;
         }
     }
-    furi_string_free(path);
+    furry_string_free(path);
     return result;
 }
 
@@ -168,11 +168,11 @@ static bool process_ducky_file(
     size_t bytes_read = 0;
     uint8_t* file_buf;
     bool loaded = false;
-    FURI_LOG_D(TAG, "opening ducky script");
+    FURRY_LOG_D(TAG, "opening ducky script");
     if(open_ducky_script(file_stream, plugin_state)) {
         file_size = stream_size(file_stream);
         if(file_size == (size_t)0) {
-            FURI_LOG_D(TAG, "load failed. file_size: %d", file_size);
+            FURRY_LOG_D(TAG, "load failed. file_size: %d", file_size);
             plugin_state->is_ducky_running = false;
             return loaded;
         }
@@ -180,13 +180,13 @@ static bool process_ducky_file(
         memset(file_buf, 0, file_size);
         bytes_read = stream_read(file_stream, file_buf, file_size);
         if(bytes_read == file_size) {
-            FURI_LOG_D(TAG, "executing ducky script");
+            FURRY_LOG_D(TAG, "executing ducky script");
             mj_process_ducky_script(
                 nrf24_HANDLE, addr, addr_size, rate, (char*)file_buf, plugin_state);
-            FURI_LOG_D(TAG, "finished execution");
+            FURRY_LOG_D(TAG, "finished execution");
             loaded = true;
         } else {
-            FURI_LOG_D(TAG, "load failed. file size: %d", file_size);
+            FURRY_LOG_D(TAG, "load failed. file size: %d", file_size);
         }
         free(file_buf);
     }
@@ -206,19 +206,19 @@ static bool load_addrs_file(Stream* file_stream) {
     uint32_t i_addr_lo = 0;
     uint32_t i_addr_hi = 0;
     bool loaded = false;
-    FURI_LOG_D(TAG, "opening addrs file");
+    FURRY_LOG_D(TAG, "opening addrs file");
     addrs_count = 0;
     if(open_addrs_file(file_stream)) {
         file_size = stream_size(file_stream);
         if(file_size == (size_t)0) {
-            FURI_LOG_D(TAG, "load failed. file_size: %d", file_size);
+            FURRY_LOG_D(TAG, "load failed. file_size: %d", file_size);
             return loaded;
         }
         file_buf = malloc(file_size);
         memset(file_buf, 0, file_size);
         bytes_read = stream_read(file_stream, file_buf, file_size);
         if(bytes_read == file_size) {
-            FURI_LOG_D(TAG, "loading addrs file");
+            FURRY_LOG_D(TAG, "loading addrs file");
             char* line = strtok((char*)file_buf, "\n");
 
             while(line != NULL) {
@@ -238,7 +238,7 @@ static bool load_addrs_file(Stream* file_stream) {
                 loaded = true;
             }
         } else {
-            FURI_LOG_D(TAG, "load failed. file size: %d", file_size);
+            FURRY_LOG_D(TAG, "load failed. file size: %d", file_size);
         }
         free(file_buf);
     }
@@ -280,21 +280,21 @@ static int32_t mj_worker_thread(void* ctx) {
 
 void start_mjthread(PluginState* plugin_state) {
     if(!plugin_state->is_thread_running) {
-        furi_thread_start(plugin_state->mjthread);
+        furry_thread_start(plugin_state->mjthread);
     }
 }
 
 int32_t mousejacker_app(void* p) {
     UNUSED(p);
-    FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(PluginEvent));
+    FurryMessageQueue* event_queue = furry_message_queue_alloc(8, sizeof(PluginEvent));
     DOLPHIN_DEED(DolphinDeedPluginStart);
 
     PluginState* plugin_state = malloc(sizeof(PluginState));
     mousejacker_state_init(plugin_state);
-    plugin_state->mutex = furi_mutex_alloc(FuriMutexTypeNormal);
+    plugin_state->mutex = furry_mutex_alloc(FurryMutexTypeNormal);
     if(!plugin_state->mutex) {
-        FURI_LOG_E("mousejacker", "cannot create mutex\r\n");
-        furi_message_queue_free(event_queue);
+        FURRY_LOG_E("mousejacker", "cannot create mutex\r\n");
+        furry_message_queue_free(event_queue);
         free(plugin_state);
         return 255;
     }
@@ -305,18 +305,18 @@ int32_t mousejacker_app(void* p) {
     view_port_input_callback_set(view_port, input_callback, event_queue);
 
     // Open GUI and register view_port
-    Gui* gui = furi_record_open(RECORD_GUI);
+    Gui* gui = furry_record_open(RECORD_GUI);
     gui_add_view_port(gui, view_port, GuiLayerFullscreen);
 
-    plugin_state->storage = furi_record_open(RECORD_STORAGE);
+    plugin_state->storage = furry_record_open(RECORD_STORAGE);
     storage_common_mkdir(plugin_state->storage, MOUSEJACKER_APP_PATH_FOLDER);
     plugin_state->file_stream = file_stream_alloc(plugin_state->storage);
 
-    plugin_state->mjthread = furi_thread_alloc();
-    furi_thread_set_name(plugin_state->mjthread, "MJ Worker");
-    furi_thread_set_stack_size(plugin_state->mjthread, 2048);
-    furi_thread_set_context(plugin_state->mjthread, plugin_state);
-    furi_thread_set_callback(plugin_state->mjthread, mj_worker_thread);
+    plugin_state->mjthread = furry_thread_alloc();
+    furry_thread_set_name(plugin_state->mjthread, "MJ Worker");
+    furry_thread_set_stack_size(plugin_state->mjthread, 2048);
+    furry_thread_set_context(plugin_state->mjthread, plugin_state);
+    furry_thread_set_callback(plugin_state->mjthread, mj_worker_thread);
 
     // spawn load file dialog to choose sniffed addresses file
     if(load_addrs_file(plugin_state->file_stream)) {
@@ -331,10 +331,10 @@ int32_t mousejacker_app(void* p) {
 
     PluginEvent event;
     for(bool processing = true; processing;) {
-        FuriStatus event_status = furi_message_queue_get(event_queue, &event, 100);
-        furi_mutex_acquire(plugin_state->mutex, FuriWaitForever);
+        FurryStatus event_status = furry_message_queue_get(event_queue, &event, 100);
+        furry_mutex_acquire(plugin_state->mutex, FurryWaitForever);
 
-        if(event_status == FuriStatusOk) {
+        if(event_status == FurryStatusOk) {
             // press events
             if(event.type == EventTypeKey) {
                 if(event.input.type == InputTypePress) {
@@ -368,7 +368,7 @@ int32_t mousejacker_app(void* p) {
                     case InputKeyBack:
                         plugin_state->close_thread_please = true;
                         if(plugin_state->is_thread_running && plugin_state->mjthread) {
-                            furi_thread_join(
+                            furry_thread_join(
                                 plugin_state->mjthread); // wait until thread is finished
                         }
                         plugin_state->close_thread_please = false;
@@ -382,18 +382,18 @@ int32_t mousejacker_app(void* p) {
         }
 
         view_port_update(view_port);
-        furi_mutex_release(plugin_state->mutex);
+        furry_mutex_release(plugin_state->mutex);
     }
 
-    furi_thread_free(plugin_state->mjthread);
+    furry_thread_free(plugin_state->mjthread);
     nrf24_deinit();
     view_port_enabled_set(view_port, false);
     gui_remove_view_port(gui, view_port);
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_STORAGE);
     view_port_free(view_port);
-    furi_message_queue_free(event_queue);
-    furi_mutex_free(plugin_state->mutex);
+    furry_message_queue_free(event_queue);
+    furry_mutex_free(plugin_state->mutex);
     free(plugin_state);
 
     return 0;

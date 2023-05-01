@@ -88,17 +88,17 @@ void power_get_info(Power* power, PowerInfo* info);
  *
  * @param power     Power instance
  *
- * @return          FuriPubSub instance
+ * @return          FurryPubSub instance
  */
-FuriPubSub* power_get_pubsub(Power* power);
+FurryPubSub* power_get_pubsub(Power* power);
 
 /** Get power settings events pubsub handler
  *
  * @param power     Power instance
  *
- * @return          FuriPubSub instance
+ * @return          FurryPubSub instance
  */
-FuriPubSub* power_get_settings_events_pubsub(Power* power);
+FurryPubSub* power_get_settings_events_pubsub(Power* power);
 
 /** Check battery health
  *

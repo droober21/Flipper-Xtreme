@@ -4,26 +4,26 @@
 #define DAP_GUI_TICK 250
 
 static bool dap_gui_custom_event_callback(void* context, uint32_t event) {
-    furi_assert(context);
+    furry_assert(context);
     DapGuiApp* app = context;
     return scene_manager_handle_custom_event(app->scene_manager, event);
 }
 
 static bool dap_gui_back_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DapGuiApp* app = context;
     return scene_manager_handle_back_event(app->scene_manager);
 }
 
 static void dap_gui_tick_event_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DapGuiApp* app = context;
     scene_manager_handle_tick_event(app->scene_manager);
 }
 
 DapGuiApp* dap_gui_alloc() {
     DapGuiApp* app = malloc(sizeof(DapGuiApp));
-    app->gui = furi_record_open(RECORD_GUI);
+    app->gui = furry_record_open(RECORD_GUI);
     app->view_dispatcher = view_dispatcher_alloc();
     app->scene_manager = scene_manager_alloc(&dap_scene_handlers, app);
     view_dispatcher_enable_queue(app->view_dispatcher);
@@ -37,7 +37,7 @@ DapGuiApp* dap_gui_alloc() {
 
     view_dispatcher_attach_to_gui(app->view_dispatcher, app->gui, ViewDispatcherTypeFullscreen);
 
-    app->notifications = furi_record_open(RECORD_NOTIFICATION);
+    app->notifications = furry_record_open(RECORD_NOTIFICATION);
 
     app->var_item_list = variable_item_list_alloc();
     view_dispatcher_add_view(
@@ -73,8 +73,8 @@ void dap_gui_free(DapGuiApp* app) {
     scene_manager_free(app->scene_manager);
 
     // Close records
-    furi_record_close(RECORD_GUI);
-    furi_record_close(RECORD_NOTIFICATION);
+    furry_record_close(RECORD_GUI);
+    furry_record_close(RECORD_NOTIFICATION);
 
     free(app);
 }

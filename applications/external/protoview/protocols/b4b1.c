@@ -32,7 +32,7 @@ static bool decode(uint8_t* bits, uint32_t numbytes, uint32_t numbits, ProtoView
         if(off != BITMAP_SEEK_NOT_FOUND) break;
     }
     if(off == BITMAP_SEEK_NOT_FOUND) return false;
-    if(DEBUG_MSG) FURI_LOG_E(TAG, "B4B1 preamble id:%d at: %lu", j, off);
+    if(DEBUG_MSG) FURRY_LOG_E(TAG, "B4B1 preamble id:%d at: %lu", j, off);
     info->start_off = off;
 
     // Seek data setction. Why -5? Last 5 half-bit-times are data.
@@ -41,7 +41,7 @@ static bool decode(uint8_t* bits, uint32_t numbytes, uint32_t numbits, ProtoView
     uint8_t d[3]; /* 24 bits of data. */
     uint32_t decoded = convert_from_line_code(d, sizeof(d), bits, numbytes, off, "1000", "1110");
 
-    if(DEBUG_MSG) FURI_LOG_E(TAG, "B4B1 decoded: %lu", decoded);
+    if(DEBUG_MSG) FURRY_LOG_E(TAG, "B4B1 decoded: %lu", decoded);
     if(decoded < 24) return false;
 
     off += 24 * 4; // seek to end symbol offset to calculate the length.

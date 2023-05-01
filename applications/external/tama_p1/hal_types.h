@@ -20,7 +20,7 @@
 #ifndef _HAL_TYPES_H_
 #define _HAL_TYPES_H_
 
-#include <furi.h>
+#include <furry.h>
 
 typedef bool bool_t;
 typedef uint8_t u4_t;

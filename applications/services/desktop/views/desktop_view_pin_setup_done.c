@@ -1,5 +1,5 @@
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <gui/elements.h>
 #include <gui/canvas.h>
 #include <toolbox/version.h>
@@ -17,7 +17,7 @@ struct DesktopViewPinSetupDone {
 };
 
 static void desktop_view_pin_done_draw(Canvas* canvas, void* model) {
-    furi_assert(canvas);
+    furry_assert(canvas);
     UNUSED(model);
 
     canvas_set_font(canvas, FontPrimary);
@@ -32,8 +32,8 @@ static void desktop_view_pin_done_draw(Canvas* canvas, void* model) {
 }
 
 static bool desktop_view_pin_done_input(InputEvent* event, void* context) {
-    furi_assert(event);
-    furi_assert(context);
+    furry_assert(event);
+    furry_assert(context);
 
     DesktopViewPinSetupDone* instance = context;
     bool consumed = false;
@@ -50,8 +50,8 @@ void desktop_view_pin_done_set_callback(
     DesktopViewPinSetupDone* instance,
     DesktopViewPinSetupDoneDoneCallback callback,
     void* context) {
-    furi_assert(instance);
-    furi_assert(callback);
+    furry_assert(instance);
+    furry_assert(callback);
     instance->callback = callback;
     instance->context = context;
 }
@@ -67,13 +67,13 @@ DesktopViewPinSetupDone* desktop_view_pin_done_alloc() {
 }
 
 void desktop_view_pin_done_free(DesktopViewPinSetupDone* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     view_free(instance->view);
     free(instance);
 }
 
 View* desktop_view_pin_done_get_view(DesktopViewPinSetupDone* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     return instance->view;
 }

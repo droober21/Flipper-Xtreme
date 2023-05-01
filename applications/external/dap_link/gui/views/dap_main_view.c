@@ -94,7 +94,7 @@ static void dap_main_view_draw_callback(Canvas* canvas, void* _model) {
 }
 
 static bool dap_main_view_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     DapMainView* dap_main_view = context;
     bool consumed = false;
 

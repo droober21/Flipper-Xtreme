@@ -1,6 +1,6 @@
 #include "main_view.h"
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <gui/elements.h>
 #include "../../lightmeter.h"
 #include "../../lightmeter_helper.h"
@@ -91,7 +91,7 @@ void lightmeter_main_view_set_left_callback(
 }
 
 static void main_view_draw_callback(Canvas* canvas, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     MainViewModel* model = context;
 
     canvas_clear(canvas);
@@ -181,7 +181,7 @@ static void main_view_process(MainView* main_view, InputEvent* event) {
 }
 
 static bool main_view_input_callback(InputEvent* event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     MainView* main_view = context;
     bool consumed = false;
 
@@ -211,72 +211,72 @@ MainView* main_view_alloc() {
 }
 
 void main_view_free(MainView* main_view) {
-    furi_assert(main_view);
+    furry_assert(main_view);
     view_free(main_view->view);
     free(main_view);
 }
 
 View* main_view_get_view(MainView* main_view) {
-    furi_assert(main_view);
+    furry_assert(main_view);
     return main_view->view;
 }
 
 void main_view_set_lux(MainView* main_view, float val) {
-    furi_assert(main_view);
+    furry_assert(main_view);
     with_view_model(
         main_view->view, MainViewModel * model, { model->lux = val; }, true);
 }
 
 void main_view_set_EV(MainView* main_view, float val) {
-    furi_assert(main_view);
+    furry_assert(main_view);
     with_view_model(
         main_view->view, MainViewModel * model, { model->EV = val; }, true);
 }
 
 void main_view_set_response(MainView* main_view, bool val) {
-    furi_assert(main_view);
+    furry_assert(main_view);
     with_view_model(
         main_view->view, MainViewModel * model, { model->response = val; }, true);
 }
 
 void main_view_set_iso(MainView* main_view, int iso) {
-    furi_assert(main_view);
+    furry_assert(main_view);
     with_view_model(
         main_view->view, MainViewModel * model, { model->iso = iso; }, true);
 }
 
 void main_view_set_nd(MainView* main_view, int nd) {
-    furi_assert(main_view);
+    furry_assert(main_view);
     with_view_model(
         main_view->view, MainViewModel * model, { model->nd = nd; }, true);
 }
 
 void main_view_set_aperture(MainView* main_view, int aperture) {
-    furi_assert(main_view);
+    furry_assert(main_view);
     with_view_model(
         main_view->view, MainViewModel * model, { model->aperture = aperture; }, true);
 }
 
 void main_view_set_speed(MainView* main_view, int speed) {
-    furi_assert(main_view);
+    furry_assert(main_view);
     with_view_model(
         main_view->view, MainViewModel * model, { model->speed = speed; }, true);
 }
 
 void main_view_set_dome(MainView* main_view, bool dome) {
-    furi_assert(main_view);
+    furry_assert(main_view);
     with_view_model(
         main_view->view, MainViewModel * model, { model->dome = dome; }, true);
 }
 
 void main_view_set_lux_only(MainView* main_view, bool lux_only) {
-    furi_assert(main_view);
+    furry_assert(main_view);
     with_view_model(
         main_view->view, MainViewModel * model, { model->lux_only = lux_only; }, true);
 }
 
 bool main_view_get_dome(MainView* main_view) {
-    furi_assert(main_view);
+    furry_assert(main_view);
     bool val = false;
     with_view_model(
         main_view->view, MainViewModel * model, { val = model->dome; }, true);

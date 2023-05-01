@@ -2,7 +2,7 @@
 #include <core/check.h>
 
 void infrared_encoder_kaseikyo_reset(void* encoder_ptr, const InfraredMessage* message) {
-    furi_assert(encoder_ptr);
+    furry_assert(encoder_ptr);
 
     InfraredCommonEncoder* encoder = encoder_ptr;
     infrared_common_encoder_reset(encoder);

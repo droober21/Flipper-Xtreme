@@ -57,25 +57,25 @@ static void totp_cli_command_automation_print_method(AutomationMethod method, co
     }
 }
 
-void totp_cli_command_automation_handle(PluginState* plugin_state, FuriString* args, Cli* cli) {
+void totp_cli_command_automation_handle(PluginState* plugin_state, FurryString* args, Cli* cli) {
     if(!totp_cli_ensure_authenticated(plugin_state, cli)) {
         return;
     }
 
-    FuriString* temp_str = furi_string_alloc();
+    FurryString* temp_str = furry_string_alloc();
     bool new_method_provided = false;
     AutomationMethod new_method = AutomationMethodNone;
     bool args_valid = true;
     while(args_read_string_and_trim(args, temp_str)) {
-        if(furi_string_cmpi_str(temp_str, TOTP_CLI_COMMAND_AUTOMATION_METHOD_NONE) == 0) {
+        if(furry_string_cmpi_str(temp_str, TOTP_CLI_COMMAND_AUTOMATION_METHOD_NONE) == 0) {
             new_method_provided = true;
             new_method = AutomationMethodNone;
-        } else if(furi_string_cmpi_str(temp_str, TOTP_CLI_COMMAND_AUTOMATION_METHOD_USB) == 0) {
+        } else if(furry_string_cmpi_str(temp_str, TOTP_CLI_COMMAND_AUTOMATION_METHOD_USB) == 0) {
             new_method_provided = true;
             new_method |= AutomationMethodBadUsb;
         }
 #ifdef TOTP_BADBT_TYPE_ENABLED
-        else if(furi_string_cmpi_str(temp_str, TOTP_CLI_COMMAND_AUTOMATION_METHOD_BT) == 0) {
+        else if(furry_string_cmpi_str(temp_str, TOTP_CLI_COMMAND_AUTOMATION_METHOD_BT) == 0) {
             new_method_provided = true;
             new_method |= AutomationMethodBadBt;
         }
@@ -121,5 +121,5 @@ void totp_cli_command_automation_handle(PluginState* plugin_state, FuriString* a
         }
     } while(false);
 
-    furi_string_free(temp_str);
+    furry_string_free(temp_str);
 }

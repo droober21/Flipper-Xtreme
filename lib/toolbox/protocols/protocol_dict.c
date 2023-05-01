@@ -1,4 +1,4 @@
-#include <furi.h>
+#include <furry.h>
 #include "protocol_dict.h"
 
 struct ProtocolDict {
@@ -34,11 +34,11 @@ void protocol_dict_set_data(
     size_t protocol_index,
     const uint8_t* data,
     size_t data_size) {
-    furi_assert(protocol_index < dict->count);
-    furi_assert(dict->base[protocol_index]->get_data != NULL);
+    furry_assert(protocol_index < dict->count);
+    furry_assert(dict->base[protocol_index]->get_data != NULL);
     uint8_t* protocol_data = dict->base[protocol_index]->get_data(dict->data[protocol_index]);
     size_t protocol_data_size = dict->base[protocol_index]->data_size;
-    furi_check(data_size >= protocol_data_size);
+    furry_check(data_size >= protocol_data_size);
     memcpy(protocol_data, data, protocol_data_size);
 }
 
@@ -47,16 +47,16 @@ void protocol_dict_get_data(
     size_t protocol_index,
     uint8_t* data,
     size_t data_size) {
-    furi_assert(protocol_index < dict->count);
-    furi_assert(dict->base[protocol_index]->get_data != NULL);
+    furry_assert(protocol_index < dict->count);
+    furry_assert(dict->base[protocol_index]->get_data != NULL);
     uint8_t* protocol_data = dict->base[protocol_index]->get_data(dict->data[protocol_index]);
     size_t protocol_data_size = dict->base[protocol_index]->data_size;
-    furi_check(data_size >= protocol_data_size);
+    furry_check(data_size >= protocol_data_size);
     memcpy(data, protocol_data, protocol_data_size);
 }
 
 size_t protocol_dict_get_data_size(ProtocolDict* dict, size_t protocol_index) {
-    furi_assert(protocol_index < dict->count);
+    furry_assert(protocol_index < dict->count);
     return dict->base[protocol_index]->data_size;
 }
 
@@ -73,12 +73,12 @@ size_t protocol_dict_get_max_data_size(ProtocolDict* dict) {
 }
 
 const char* protocol_dict_get_name(ProtocolDict* dict, size_t protocol_index) {
-    furi_assert(protocol_index < dict->count);
+    furry_assert(protocol_index < dict->count);
     return dict->base[protocol_index]->name;
 }
 
 const char* protocol_dict_get_manufacturer(ProtocolDict* dict, size_t protocol_index) {
-    furi_assert(protocol_index < dict->count);
+    furry_assert(protocol_index < dict->count);
     return dict->base[protocol_index]->manufacturer;
 }
 
@@ -93,7 +93,7 @@ void protocol_dict_decoders_start(ProtocolDict* dict) {
 }
 
 uint32_t protocol_dict_get_features(ProtocolDict* dict, size_t protocol_index) {
-    furi_assert(protocol_index < dict->count);
+    furry_assert(protocol_index < dict->count);
     return dict->base[protocol_index]->features;
 }
 
@@ -149,7 +149,7 @@ ProtocolId protocol_dict_decoders_feed_by_id(
     size_t protocol_index,
     bool level,
     uint32_t duration) {
-    furi_assert(protocol_index < dict->count);
+    furry_assert(protocol_index < dict->count);
 
     ProtocolId ready_protocol_id = PROTOCOL_NO;
     ProtocolDecoderFeed fn = dict->base[protocol_index]->decoder.feed;
@@ -164,7 +164,7 @@ ProtocolId protocol_dict_decoders_feed_by_id(
 }
 
 bool protocol_dict_encoder_start(ProtocolDict* dict, size_t protocol_index) {
-    furi_assert(protocol_index < dict->count);
+    furry_assert(protocol_index < dict->count);
     ProtocolEncoderStart fn = dict->base[protocol_index]->encoder.start;
 
     if(fn) {
@@ -175,7 +175,7 @@ bool protocol_dict_encoder_start(ProtocolDict* dict, size_t protocol_index) {
 }
 
 LevelDuration protocol_dict_encoder_yield(ProtocolDict* dict, size_t protocol_index) {
-    furi_assert(protocol_index < dict->count);
+    furry_assert(protocol_index < dict->count);
     ProtocolEncoderYield fn = dict->base[protocol_index]->encoder.yield;
 
     if(fn) {
@@ -185,8 +185,8 @@ LevelDuration protocol_dict_encoder_yield(ProtocolDict* dict, size_t protocol_in
     }
 }
 
-void protocol_dict_render_data(ProtocolDict* dict, FuriString* result, size_t protocol_index) {
-    furi_assert(protocol_index < dict->count);
+void protocol_dict_render_data(ProtocolDict* dict, FurryString* result, size_t protocol_index) {
+    furry_assert(protocol_index < dict->count);
     ProtocolRenderData fn = dict->base[protocol_index]->render_data;
 
     if(fn) {
@@ -194,8 +194,8 @@ void protocol_dict_render_data(ProtocolDict* dict, FuriString* result, size_t pr
     }
 }
 
-void protocol_dict_render_brief_data(ProtocolDict* dict, FuriString* result, size_t protocol_index) {
-    furi_assert(protocol_index < dict->count);
+void protocol_dict_render_brief_data(ProtocolDict* dict, FurryString* result, size_t protocol_index) {
+    furry_assert(protocol_index < dict->count);
     ProtocolRenderData fn = dict->base[protocol_index]->render_brief_data;
 
     if(fn) {
@@ -204,7 +204,7 @@ void protocol_dict_render_brief_data(ProtocolDict* dict, FuriString* result, siz
 }
 
 uint32_t protocol_dict_get_validate_count(ProtocolDict* dict, size_t protocol_index) {
-    furi_assert(protocol_index < dict->count);
+    furry_assert(protocol_index < dict->count);
     return dict->base[protocol_index]->validate_count;
 }
 
@@ -218,9 +218,9 @@ ProtocolId protocol_dict_get_protocol_by_name(ProtocolDict* dict, const char* na
 }
 
 bool protocol_dict_get_write_data(ProtocolDict* dict, size_t protocol_index, void* data) {
-    furi_assert(protocol_index < dict->count);
+    furry_assert(protocol_index < dict->count);
     ProtocolWriteData fn = dict->base[protocol_index]->write_data;
 
-    furi_assert(fn);
+    furry_assert(fn);
     return fn(dict->data[protocol_index], data);
 }

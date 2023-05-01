@@ -56,7 +56,7 @@ bool totp_cli_ensure_authenticated(const PluginState* plugin_state, Cli* cli);
  * @brief Forces application to be instantly closed
  * @param event_queue main app queue
  */
-void totp_cli_force_close_app(FuriMessageQueue* event_queue);
+void totp_cli_force_close_app(FurryMessageQueue* event_queue);
 
 /**
  * @brief Reads line of characters from console
@@ -65,7 +65,7 @@ void totp_cli_force_close_app(FuriMessageQueue* event_queue);
  * @param mask_user_input whether to mask input characters in console or not
  * @return \c true if line successfully read and confirmed; \c false otherwise
  */
-bool totp_cli_read_line(Cli* cli, FuriString* out_str, bool mask_user_input);
+bool totp_cli_read_line(Cli* cli, FurryString* out_str, bool mask_user_input);
 
 /**
  * @brief Extracts \c uint8_t value and trims arguments string
@@ -73,13 +73,13 @@ bool totp_cli_read_line(Cli* cli, FuriString* out_str, bool mask_user_input);
  * @param[out] value parsed value
  * @return \c true if value successfully read and parsed as \c uint8_t ; \c false otherwise
  */
-bool args_read_uint8_and_trim(FuriString* args, uint8_t* value);
+bool args_read_uint8_and_trim(FurryString* args, uint8_t* value);
 
 /**
- * @brief Free \c FuriString instance in a secure manner by clearing it first
+ * @brief Free \c FurryString instance in a secure manner by clearing it first
  * @param str instance to free
  */
-void furi_string_secure_free(FuriString* str);
+void furry_string_secure_free(FurryString* str);
 
 /**
  * @brief Deletes last printed line in console

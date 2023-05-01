@@ -2,13 +2,13 @@
 
 #include <stdbool.h>
 #include <stdarg.h>
-#include <furi/core/check.h>
-#include <furi/core/thread.h>
-#include <furi/core/common_defines.h>
+#include <furry/core/check.h>
+#include <furry/core/thread.h>
+#include <furry/core/common_defines.h>
 #include "printf_tiny.h"
 
 void _putchar(char character) {
-    furi_thread_stdout_write(&character, 1);
+    furry_thread_stdout_write(&character, 1);
 }
 
 int __wrap_printf(const char* format, ...) {
@@ -25,19 +25,19 @@ int __wrap_vsnprintf(char* str, size_t size, const char* format, va_list args) {
 }
 
 int __wrap_puts(const char* str) {
-    size_t size = furi_thread_stdout_write(str, strlen(str));
-    size += furi_thread_stdout_write("\n", 1);
+    size_t size = furry_thread_stdout_write(str, strlen(str));
+    size += furry_thread_stdout_write("\n", 1);
     return size;
 }
 
 int __wrap_putchar(int ch) {
-    size_t size = furi_thread_stdout_write((char*)&ch, 1);
+    size_t size = furry_thread_stdout_write((char*)&ch, 1);
     return size;
 }
 
 int __wrap_putc(int ch, FILE* stream) {
     UNUSED(stream);
-    size_t size = furi_thread_stdout_write((char*)&ch, 1);
+    size_t size = furry_thread_stdout_write((char*)&ch, 1);
     return size;
 }
 
@@ -52,7 +52,7 @@ int __wrap_snprintf(char* str, size_t size, const char* format, ...) {
 
 int __wrap_fflush(FILE* stream) {
     UNUSED(stream);
-    furi_thread_stdout_flush();
+    furry_thread_stdout_flush();
     return 0;
 }
 
@@ -60,7 +60,7 @@ __attribute__((__noreturn__)) void __wrap___assert(const char* file, int line, c
     UNUSED(file);
     UNUSED(line);
     // TODO: message file and line number
-    furi_crash(e);
+    furry_crash(e);
 }
 
 __attribute__((__noreturn__)) void
@@ -69,5 +69,5 @@ __attribute__((__noreturn__)) void
     UNUSED(line);
     UNUSED(func);
     // TODO: message file and line number
-    furi_crash(e);
+    furry_crash(e);
 }

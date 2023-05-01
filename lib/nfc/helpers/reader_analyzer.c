@@ -2,7 +2,7 @@
 #include <lib/nfc/protocols/nfc_util.h>
 #include <lib/nfc/protocols/mifare_classic.h>
 #include <m-array.h>
-#include <furi_hal_random.h>
+#include <furry_hal_random.h>
 
 #include "mfkey32.h"
 #include "nfc_debug_pcap.h"
@@ -23,11 +23,11 @@ typedef enum {
 } ReaderAnalyzerNfcData;
 
 struct ReaderAnalyzer {
-    FuriHalNfcDevData nfc_data;
+    FurryHalNfcDevData nfc_data;
 
     bool alive;
-    FuriStreamBuffer* stream;
-    FuriThread* thread;
+    FurryStreamBuffer* stream;
+    FurryThread* thread;
 
     ReaderAnalyzerParseDataCallback callback;
     void* context;
@@ -38,11 +38,11 @@ struct ReaderAnalyzer {
     NfcDebugPcap* pcap;
 };
 
-static FuriHalNfcDevData reader_analyzer_nfc_data[] = {
+static FurryHalNfcDevData reader_analyzer_nfc_data[] = {
     //XXX
     [ReaderAnalyzerNfcDataMfClassic] =
-        {.interface = FuriHalNfcInterfaceRf,
-         .type = FuriHalNfcTypeA,
+        {.interface = FurryHalNfcInterfaceRf,
+         .type = FurryHalNfcTypeA,
          .uid_len = 7,
          .uid = {0x04, 0x77, 0x70, 0x2A, 0x23, 0x4F, 0x80},
          .a_data = {.sak = 0x08, .atqa = {0x44, 0x00}, .cuid = 0x2A234F80}},
@@ -85,8 +85,8 @@ int32_t reader_analyzer_thread(void* context) {
     ReaderAnalyzer* reader_analyzer = context;
     uint8_t buffer[READER_ANALYZER_MAX_BUFF_SIZE] = {};
 
-    while(reader_analyzer->alive || !furi_stream_buffer_is_empty(reader_analyzer->stream)) {
-        size_t ret = furi_stream_buffer_receive(
+    while(reader_analyzer->alive || !furry_stream_buffer_is_empty(reader_analyzer->stream)) {
+        size_t ret = furry_stream_buffer_receive(
             reader_analyzer->stream, buffer, READER_ANALYZER_MAX_BUFF_SIZE, 50);
         if(ret) {
             reader_analyzer_parse(reader_analyzer, buffer, ret);
@@ -99,22 +99,22 @@ int32_t reader_analyzer_thread(void* context) {
 ReaderAnalyzer* reader_analyzer_alloc() {
     ReaderAnalyzer* instance = malloc(sizeof(ReaderAnalyzer));
     reader_analyzer_nfc_data[ReaderAnalyzerNfcDataMfClassic].a_data.cuid = rand(); //XXX
-    furi_hal_random_fill_buf(
+    furry_hal_random_fill_buf(
         (uint8_t*)&reader_analyzer_nfc_data[ReaderAnalyzerNfcDataMfClassic].uid, 7);
     instance->nfc_data = reader_analyzer_nfc_data[ReaderAnalyzerNfcDataMfClassic];
     instance->alive = false;
     instance->stream =
-        furi_stream_buffer_alloc(READER_ANALYZER_MAX_BUFF_SIZE, sizeof(ReaderAnalyzerHeader));
+        furry_stream_buffer_alloc(READER_ANALYZER_MAX_BUFF_SIZE, sizeof(ReaderAnalyzerHeader));
 
     instance->thread =
-        furi_thread_alloc_ex("ReaderAnalyzerWorker", 2048, reader_analyzer_thread, instance);
-    furi_thread_set_priority(instance->thread, FuriThreadPriorityLow);
+        furry_thread_alloc_ex("ReaderAnalyzerWorker", 2048, reader_analyzer_thread, instance);
+    furry_thread_set_priority(instance->thread, FurryThreadPriorityLow);
 
     return instance;
 }
 
 static void reader_analyzer_mfkey_callback(Mfkey32Event event, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     ReaderAnalyzer* instance = context;
 
     if(event == Mfkey32EventParamCollected) {
@@ -125,9 +125,9 @@ static void reader_analyzer_mfkey_callback(Mfkey32Event event, void* context) {
 }
 
 void reader_analyzer_start(ReaderAnalyzer* instance, ReaderAnalyzerMode mode) {
-    furi_assert(instance);
+    furry_assert(instance);
 
-    furi_stream_buffer_reset(instance->stream);
+    furry_stream_buffer_reset(instance->stream);
     if(mode & ReaderAnalyzerModeDebugLog) {
         instance->debug_log = nfc_debug_log_alloc();
     }
@@ -142,14 +142,14 @@ void reader_analyzer_start(ReaderAnalyzer* instance, ReaderAnalyzerMode mode) {
     }
 
     instance->alive = true;
-    furi_thread_start(instance->thread);
+    furry_thread_start(instance->thread);
 }
 
 void reader_analyzer_stop(ReaderAnalyzer* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     instance->alive = false;
-    furi_thread_join(instance->thread);
+    furry_thread_join(instance->thread);
 
     if(instance->debug_log) {
         nfc_debug_log_free(instance->debug_log);
@@ -166,11 +166,11 @@ void reader_analyzer_stop(ReaderAnalyzer* instance) {
 }
 
 void reader_analyzer_free(ReaderAnalyzer* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     reader_analyzer_stop(instance);
-    furi_thread_free(instance->thread);
-    furi_stream_buffer_free(instance->stream);
+    furry_thread_free(instance->thread);
+    furry_stream_buffer_free(instance->stream);
     free(instance);
 }
 
@@ -178,8 +178,8 @@ void reader_analyzer_set_callback(
     ReaderAnalyzer* instance,
     ReaderAnalyzerParseDataCallback callback,
     void* context) {
-    furi_assert(instance);
-    furi_assert(callback);
+    furry_assert(instance);
+    furry_assert(callback);
 
     instance->callback = callback;
     instance->context = context;
@@ -187,8 +187,8 @@ void reader_analyzer_set_callback(
 
 NfcProtocol
     reader_analyzer_guess_protocol(ReaderAnalyzer* instance, uint8_t* buff_rx, uint16_t len) {
-    furi_assert(instance);
-    furi_assert(buff_rx);
+    furry_assert(instance);
+    furry_assert(buff_rx);
     UNUSED(len);
     NfcProtocol protocol = NfcDeviceProtocolUnknown;
 
@@ -199,17 +199,17 @@ NfcProtocol
     return protocol;
 }
 
-FuriHalNfcDevData* reader_analyzer_get_nfc_data(ReaderAnalyzer* instance) {
-    furi_assert(instance);
+FurryHalNfcDevData* reader_analyzer_get_nfc_data(ReaderAnalyzer* instance) {
+    furry_assert(instance);
     instance->nfc_data = reader_analyzer_nfc_data[ReaderAnalyzerNfcDataMfClassic];
     return &instance->nfc_data;
 }
 
-void reader_analyzer_set_nfc_data(ReaderAnalyzer* instance, FuriHalNfcDevData* nfc_data) {
-    furi_assert(instance);
-    furi_assert(nfc_data);
+void reader_analyzer_set_nfc_data(ReaderAnalyzer* instance, FurryHalNfcDevData* nfc_data) {
+    furry_assert(instance);
+    furry_assert(nfc_data);
 
-    memcpy(&instance->nfc_data, nfc_data, sizeof(FuriHalNfcDevData));
+    memcpy(&instance->nfc_data, nfc_data, sizeof(FurryHalNfcDevData));
 }
 
 static void reader_analyzer_write(
@@ -221,14 +221,14 @@ static void reader_analyzer_write(
     ReaderAnalyzerHeader header = {
         .reader_to_tag = reader_to_tag, .crc_dropped = crc_dropped, .len = len};
     size_t data_sent = 0;
-    data_sent = furi_stream_buffer_send(
-        instance->stream, &header, sizeof(ReaderAnalyzerHeader), FuriWaitForever);
+    data_sent = furry_stream_buffer_send(
+        instance->stream, &header, sizeof(ReaderAnalyzerHeader), FurryWaitForever);
     if(data_sent != sizeof(ReaderAnalyzerHeader)) {
-        FURI_LOG_W(TAG, "Sent %zu out of %zu bytes", data_sent, sizeof(ReaderAnalyzerHeader));
+        FURRY_LOG_W(TAG, "Sent %zu out of %zu bytes", data_sent, sizeof(ReaderAnalyzerHeader));
     }
-    data_sent = furi_stream_buffer_send(instance->stream, data, len, FuriWaitForever);
+    data_sent = furry_stream_buffer_send(instance->stream, data, len, FurryWaitForever);
     if(data_sent != len) {
-        FURI_LOG_W(TAG, "Sent %zu out of %u bytes", data_sent, len);
+        FURRY_LOG_W(TAG, "Sent %zu out of %u bytes", data_sent, len);
     }
 }
 
@@ -250,10 +250,10 @@ static void
 
 void reader_analyzer_prepare_tx_rx(
     ReaderAnalyzer* instance,
-    FuriHalNfcTxRxContext* tx_rx,
+    FurryHalNfcTxRxContext* tx_rx,
     bool is_picc) {
-    furi_assert(instance);
-    furi_assert(tx_rx);
+    furry_assert(instance);
+    furry_assert(tx_rx);
 
     if(is_picc) {
         tx_rx->sniff_tx = reader_analyzer_write_rx;

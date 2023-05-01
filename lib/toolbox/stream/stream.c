@@ -7,22 +7,22 @@
 #define STREAM_BUFFER_SIZE (32U)
 
 void stream_free(Stream* stream) {
-    furi_assert(stream);
+    furry_assert(stream);
     stream->vtable->free(stream);
 }
 
 void stream_clean(Stream* stream) {
-    furi_assert(stream);
+    furry_assert(stream);
     stream->vtable->clean(stream);
 }
 
 bool stream_eof(Stream* stream) {
-    furi_assert(stream);
+    furry_assert(stream);
     return stream->vtable->eof(stream);
 }
 
 bool stream_seek(Stream* stream, int32_t offset, StreamOffset offset_type) {
-    furi_assert(stream);
+    furry_assert(stream);
     return stream->vtable->seek(stream, offset, offset_type);
 }
 
@@ -67,14 +67,14 @@ static bool stream_seek_to_char_backward(Stream* stream, char c) {
         }
 
         anchor -= to_read;
-        furi_check(stream_seek(stream, anchor, StreamOffsetFromStart));
+        furry_check(stream_seek(stream, anchor, StreamOffsetFromStart));
 
         size_t ret = stream_read(stream, buffer, to_read);
         for(size_t i = 0; i < ret; i++) {
             size_t cursor = ret - i - 1;
             if(buffer[cursor] == c) {
                 result = true;
-                furi_check(stream_seek(stream, anchor + cursor, StreamOffsetFromStart));
+                furry_check(stream_seek(stream, anchor + cursor, StreamOffsetFromStart));
                 break;
             } else {
             }
@@ -103,22 +103,22 @@ bool stream_seek_to_char(Stream* stream, char c, StreamDirection direction) {
 }
 
 size_t stream_tell(Stream* stream) {
-    furi_assert(stream);
+    furry_assert(stream);
     return stream->vtable->tell(stream);
 }
 
 size_t stream_size(Stream* stream) {
-    furi_assert(stream);
+    furry_assert(stream);
     return stream->vtable->size(stream);
 }
 
 size_t stream_write(Stream* stream, const uint8_t* data, size_t size) {
-    furi_assert(stream);
+    furry_assert(stream);
     return stream->vtable->write(stream, data, size);
 }
 
 size_t stream_read(Stream* stream, uint8_t* data, size_t size) {
-    furi_assert(stream);
+    furry_assert(stream);
     return stream->vtable->read(stream, data, size);
 }
 
@@ -127,7 +127,7 @@ bool stream_delete_and_insert(
     size_t delete_size,
     StreamWriteCB write_callback,
     const void* ctx) {
-    furi_assert(stream);
+    furry_assert(stream);
     return stream->vtable->delete_and_insert(stream, delete_size, write_callback, ctx);
 }
 
@@ -139,14 +139,14 @@ typedef struct {
 } StreamWriteData;
 
 static bool stream_write_struct(Stream* stream, const void* context) {
-    furi_assert(stream);
-    furi_assert(context);
+    furry_assert(stream);
+    furry_assert(context);
     const StreamWriteData* write_data = context;
     return (stream_write(stream, write_data->data, write_data->size) == write_data->size);
 }
 
-bool stream_read_line(Stream* stream, FuriString* str_result) {
-    furi_string_reset(str_result);
+bool stream_read_line(Stream* stream, FurryString* str_result) {
+    furry_string_reset(str_result);
     uint8_t buffer[STREAM_BUFFER_SIZE];
 
     do {
@@ -161,13 +161,13 @@ bool stream_read_line(Stream* stream, FuriString* str_result) {
                     error = true;
                     break;
                 }
-                furi_string_push_back(str_result, buffer[i]);
+                furry_string_push_back(str_result, buffer[i]);
                 result = true;
                 break;
             } else if(buffer[i] == '\r') {
                 // Ignore
             } else {
-                furi_string_push_back(str_result, buffer[i]);
+                furry_string_push_back(str_result, buffer[i]);
             }
         }
 
@@ -176,32 +176,32 @@ bool stream_read_line(Stream* stream, FuriString* str_result) {
         }
     } while(true);
 
-    return furi_string_size(str_result) != 0;
+    return furry_string_size(str_result) != 0;
 }
 
 bool stream_rewind(Stream* stream) {
-    furi_assert(stream);
+    furry_assert(stream);
     return stream_seek(stream, 0, StreamOffsetFromStart);
 }
 
 size_t stream_write_char(Stream* stream, char c) {
-    furi_assert(stream);
+    furry_assert(stream);
     return stream_write(stream, (const uint8_t*)&c, 1);
 }
 
-size_t stream_write_string(Stream* stream, FuriString* string) {
-    furi_assert(stream);
+size_t stream_write_string(Stream* stream, FurryString* string) {
+    furry_assert(stream);
     return stream_write(
-        stream, (const uint8_t*)furi_string_get_cstr(string), furi_string_size(string));
+        stream, (const uint8_t*)furry_string_get_cstr(string), furry_string_size(string));
 }
 
 size_t stream_write_cstring(Stream* stream, const char* string) {
-    furi_assert(stream);
+    furry_assert(stream);
     return stream_write(stream, (const uint8_t*)string, strlen(string));
 }
 
 size_t stream_write_format(Stream* stream, const char* format, ...) {
-    furi_assert(stream);
+    furry_assert(stream);
     size_t size;
     va_list args;
     va_start(args, format);
@@ -211,38 +211,38 @@ size_t stream_write_format(Stream* stream, const char* format, ...) {
 }
 
 size_t stream_write_vaformat(Stream* stream, const char* format, va_list args) {
-    furi_assert(stream);
-    FuriString* data;
-    data = furi_string_alloc_vprintf(format, args);
+    furry_assert(stream);
+    FurryString* data;
+    data = furry_string_alloc_vprintf(format, args);
     size_t size = stream_write_string(stream, data);
-    furi_string_free(data);
+    furry_string_free(data);
 
     return size;
 }
 
 bool stream_insert(Stream* stream, const uint8_t* data, size_t size) {
-    furi_assert(stream);
+    furry_assert(stream);
     StreamWriteData write_data = {.data = data, .size = size};
     return stream_delete_and_insert(stream, 0, stream_write_struct, &write_data);
 }
 
 bool stream_insert_char(Stream* stream, char c) {
-    furi_assert(stream);
+    furry_assert(stream);
     return stream_delete_and_insert_char(stream, 0, c);
 }
 
-bool stream_insert_string(Stream* stream, FuriString* string) {
-    furi_assert(stream);
+bool stream_insert_string(Stream* stream, FurryString* string) {
+    furry_assert(stream);
     return stream_delete_and_insert_string(stream, 0, string);
 }
 
 bool stream_insert_cstring(Stream* stream, const char* string) {
-    furi_assert(stream);
+    furry_assert(stream);
     return stream_delete_and_insert_cstring(stream, 0, string);
 }
 
 bool stream_insert_format(Stream* stream, const char* format, ...) {
-    furi_assert(stream);
+    furry_assert(stream);
     va_list args;
     va_start(args, format);
     bool result = stream_insert_vaformat(stream, format, args);
@@ -252,31 +252,31 @@ bool stream_insert_format(Stream* stream, const char* format, ...) {
 }
 
 bool stream_insert_vaformat(Stream* stream, const char* format, va_list args) {
-    furi_assert(stream);
+    furry_assert(stream);
     return stream_delete_and_insert_vaformat(stream, 0, format, args);
 }
 
 bool stream_delete_and_insert_char(Stream* stream, size_t delete_size, char c) {
-    furi_assert(stream);
+    furry_assert(stream);
     StreamWriteData write_data = {.data = (uint8_t*)&c, .size = 1};
     return stream_delete_and_insert(stream, delete_size, stream_write_struct, &write_data);
 }
 
-bool stream_delete_and_insert_string(Stream* stream, size_t delete_size, FuriString* string) {
-    furi_assert(stream);
+bool stream_delete_and_insert_string(Stream* stream, size_t delete_size, FurryString* string) {
+    furry_assert(stream);
     StreamWriteData write_data = {
-        .data = (uint8_t*)furi_string_get_cstr(string), .size = furi_string_size(string)};
+        .data = (uint8_t*)furry_string_get_cstr(string), .size = furry_string_size(string)};
     return stream_delete_and_insert(stream, delete_size, stream_write_struct, &write_data);
 }
 
 bool stream_delete_and_insert_cstring(Stream* stream, size_t delete_size, const char* string) {
-    furi_assert(stream);
+    furry_assert(stream);
     StreamWriteData write_data = {.data = (uint8_t*)string, .size = strlen(string)};
     return stream_delete_and_insert(stream, delete_size, stream_write_struct, &write_data);
 }
 
 bool stream_delete_and_insert_format(Stream* stream, size_t delete_size, const char* format, ...) {
-    furi_assert(stream);
+    furry_assert(stream);
     va_list args;
     va_start(args, format);
     bool result = stream_delete_and_insert_vaformat(stream, delete_size, format, args);
@@ -290,19 +290,19 @@ bool stream_delete_and_insert_vaformat(
     size_t delete_size,
     const char* format,
     va_list args) {
-    furi_assert(stream);
-    FuriString* data;
-    data = furi_string_alloc_vprintf(format, args);
+    furry_assert(stream);
+    FurryString* data;
+    data = furry_string_alloc_vprintf(format, args);
     StreamWriteData write_data = {
-        .data = (uint8_t*)furi_string_get_cstr(data), .size = furi_string_size(data)};
+        .data = (uint8_t*)furry_string_get_cstr(data), .size = furry_string_size(data)};
     bool result = stream_delete_and_insert(stream, delete_size, stream_write_struct, &write_data);
-    furi_string_free(data);
+    furry_string_free(data);
 
     return result;
 }
 
 bool stream_delete(Stream* stream, size_t size) {
-    furi_assert(stream);
+    furry_assert(stream);
     return stream_delete_and_insert(stream, size, NULL, NULL);
 }
 

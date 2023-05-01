@@ -57,6 +57,6 @@ i2cMainView* i2c_main_view_alloc() {
 }
 
 void i2c_main_view_free(i2cMainView* main_view) {
-    furi_assert(main_view);
+    furry_assert(main_view);
     free(main_view);
 }

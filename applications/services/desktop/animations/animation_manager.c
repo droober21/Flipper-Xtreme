@@ -1,7 +1,7 @@
 #include <gui/view_stack.h>
 #include <stdint.h>
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <portmacro.h>
 #include <dolphin/dolphin.h>
 #include <power/power_service/power.h>
@@ -42,17 +42,17 @@ struct AnimationManager {
     bool levelup_pending;
     bool levelup_active;
     AnimationManagerState state;
-    FuriPubSubSubscription* pubsub_subscription_storage;
-    FuriPubSubSubscription* pubsub_subscription_dolphin;
+    FurryPubSubSubscription* pubsub_subscription_storage;
+    FurryPubSubSubscription* pubsub_subscription_dolphin;
     BubbleAnimationView* animation_view;
     OneShotView* one_shot_view;
-    FuriTimer* idle_animation_timer;
+    FurryTimer* idle_animation_timer;
     StorageAnimation* current_animation;
     AnimationManagerInteractCallback interact_callback;
     AnimationManagerSetNewIdleAnimationCallback new_idle_callback;
     AnimationManagerSetNewIdleAnimationCallback check_blocking_callback;
     void* context;
-    FuriString* freezed_animation_name;
+    FurryString* freezed_animation_name;
     int32_t freezed_animation_time_left;
     ViewStack* view_stack;
 };
@@ -72,28 +72,28 @@ static void animation_manager_switch_to_one_shot_view(AnimationManager* animatio
 static void animation_manager_switch_to_animation_view(AnimationManager* animation_manager);
 
 void animation_manager_set_context(AnimationManager* animation_manager, void* context) {
-    furi_assert(animation_manager);
+    furry_assert(animation_manager);
     animation_manager->context = context;
 }
 
 void animation_manager_set_new_idle_callback(
     AnimationManager* animation_manager,
     AnimationManagerSetNewIdleAnimationCallback callback) {
-    furi_assert(animation_manager);
+    furry_assert(animation_manager);
     animation_manager->new_idle_callback = callback;
 }
 
 void animation_manager_set_check_callback(
     AnimationManager* animation_manager,
     AnimationManagerCheckBlockingCallback callback) {
-    furi_assert(animation_manager);
+    furry_assert(animation_manager);
     animation_manager->check_blocking_callback = callback;
 }
 
 void animation_manager_set_interact_callback(
     AnimationManager* animation_manager,
     AnimationManagerInteractCallback callback) {
-    furi_assert(animation_manager);
+    furry_assert(animation_manager);
     animation_manager->interact_callback = callback;
 }
 
@@ -104,7 +104,7 @@ static void animation_manager_check_blocking_callback(const void* message, void*
     case StorageEventTypeCardMount:
     case StorageEventTypeCardUnmount:
     case StorageEventTypeCardMountError:
-        furi_assert(context);
+        furry_assert(context);
         AnimationManager* animation_manager = context;
         if(animation_manager->check_blocking_callback) {
             animation_manager->check_blocking_callback(animation_manager->context);
@@ -117,7 +117,7 @@ static void animation_manager_check_blocking_callback(const void* message, void*
 }
 
 static void animation_manager_timer_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     AnimationManager* animation_manager = context;
     if(animation_manager->new_idle_callback) {
         animation_manager->new_idle_callback(animation_manager->context);
@@ -125,7 +125,7 @@ static void animation_manager_timer_callback(void* context) {
 }
 
 static void animation_manager_interact_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     AnimationManager* animation_manager = context;
     if(animation_manager->interact_callback) {
         animation_manager->interact_callback(animation_manager->context);
@@ -134,15 +134,15 @@ static void animation_manager_interact_callback(void* context) {
 
 /* reaction to animation_manager->check_blocking_callback() */
 void animation_manager_check_blocking_process(AnimationManager* animation_manager) {
-    furi_assert(animation_manager);
+    furry_assert(animation_manager);
 
     if(animation_manager->state == AnimationManagerStateIdle) {
         bool blocked = animation_manager_check_blocking(animation_manager);
 
         if(!blocked) {
-            Dolphin* dolphin = furi_record_open(RECORD_DOLPHIN);
+            Dolphin* dolphin = furry_record_open(RECORD_DOLPHIN);
             DolphinStats stats = dolphin_stats(dolphin);
-            furi_record_close(RECORD_DOLPHIN);
+            furry_record_close(RECORD_DOLPHIN);
 
             const StorageAnimationManifestInfo* manifest_info =
                 animation_storage_get_meta(animation_manager->current_animation);
@@ -158,7 +158,7 @@ void animation_manager_check_blocking_process(AnimationManager* animation_manage
 
 /* reaction to animation_manager->new_idle_callback() */
 void animation_manager_new_idle_process(AnimationManager* animation_manager) {
-    furi_assert(animation_manager);
+    furry_assert(animation_manager);
 
     if(animation_manager->state == AnimationManagerStateIdle) {
         animation_manager_start_new_idle(animation_manager);
@@ -167,16 +167,16 @@ void animation_manager_new_idle_process(AnimationManager* animation_manager) {
 
 /* reaction to animation_manager->interact_callback() */
 bool animation_manager_interact_process(AnimationManager* animation_manager) {
-    furi_assert(animation_manager);
+    furry_assert(animation_manager);
     bool consumed = true;
 
     if(animation_manager->levelup_pending) {
         animation_manager->levelup_pending = false;
         animation_manager->levelup_active = true;
         animation_manager_switch_to_one_shot_view(animation_manager);
-        Dolphin* dolphin = furi_record_open(RECORD_DOLPHIN);
+        Dolphin* dolphin = furry_record_open(RECORD_DOLPHIN);
         dolphin_upgrade_level(dolphin);
-        furi_record_close(RECORD_DOLPHIN);
+        furry_record_close(RECORD_DOLPHIN);
     } else if(animation_manager->levelup_active) {
         animation_manager->levelup_active = false;
         animation_manager_start_new_idle(animation_manager);
@@ -195,7 +195,7 @@ bool animation_manager_interact_process(AnimationManager* animation_manager) {
 }
 
 static void animation_manager_start_new_idle(AnimationManager* animation_manager) {
-    furi_assert(animation_manager);
+    furry_assert(animation_manager);
 
     StorageAnimation* new_animation = animation_manager_select_idle_animation(animation_manager);
     animation_manager_replace_current_animation(animation_manager, new_animation);
@@ -205,59 +205,59 @@ static void animation_manager_start_new_idle(AnimationManager* animation_manager
     XtremeSettings* xtreme_settings = XTREME_SETTINGS();
     int32_t duration = (xtreme_settings->cycle_anims == 0) ? (bubble_animation->duration) :
                                                              (xtreme_settings->cycle_anims);
-    furi_timer_start(
+    furry_timer_start(
         animation_manager->idle_animation_timer, (duration > 0) ? (duration * 1000) : 0);
 }
 
 static bool animation_manager_check_blocking(AnimationManager* animation_manager) {
-    furi_assert(animation_manager);
+    furry_assert(animation_manager);
 
     StorageAnimation* blocking_animation = NULL;
-    Storage* storage = furi_record_open(RECORD_STORAGE);
+    Storage* storage = furry_record_open(RECORD_STORAGE);
     FS_Error sd_status = storage_sd_status(storage);
 
     if(sd_status == FSE_INTERNAL) {
         blocking_animation = animation_storage_find_animation(BAD_SD_ANIMATION_NAME, false);
-        furi_assert(blocking_animation);
+        furry_assert(blocking_animation);
     } else if(sd_status == FSE_NOT_READY) {
         animation_manager->sd_shown_sd_ok = false;
         animation_manager->sd_shown_no_db = false;
     } else if(sd_status == FSE_OK) {
         if(!animation_manager->sd_shown_sd_ok) {
             blocking_animation = animation_storage_find_animation(SD_OK_ANIMATION_NAME, false);
-            furi_assert(blocking_animation);
+            furry_assert(blocking_animation);
             animation_manager->sd_shown_sd_ok = true;
         } else if(!animation_manager->sd_shown_no_db) {
             if(!storage_file_exists(storage, EXT_PATH("Manifest"))) {
                 blocking_animation = animation_storage_find_animation(NO_DB_ANIMATION_NAME, false);
-                furi_assert(blocking_animation);
+                furry_assert(blocking_animation);
                 animation_manager->sd_shown_no_db = true;
                 animation_manager->sd_show_url = true;
             }
         } else if(animation_manager->sd_show_url) {
             blocking_animation = animation_storage_find_animation(URL_ANIMATION_NAME, false);
-            furi_assert(blocking_animation);
+            furry_assert(blocking_animation);
             animation_manager->sd_show_url = false;
         }
     }
 
-    Dolphin* dolphin = furi_record_open(RECORD_DOLPHIN);
+    Dolphin* dolphin = furry_record_open(RECORD_DOLPHIN);
     DolphinStats stats = dolphin_stats(dolphin);
-    furi_record_close(RECORD_DOLPHIN);
+    furry_record_close(RECORD_DOLPHIN);
     if(!blocking_animation && stats.level_up_is_pending) {
         blocking_animation = animation_storage_find_animation(NEW_MAIL_ANIMATION_NAME, false);
-        furi_check(blocking_animation);
+        furry_check(blocking_animation);
         animation_manager->levelup_pending = true;
     }
 
     if(blocking_animation) {
-        furi_timer_stop(animation_manager->idle_animation_timer);
+        furry_timer_stop(animation_manager->idle_animation_timer);
         animation_manager_replace_current_animation(animation_manager, blocking_animation);
         /* no timer starting because this is blocking animation */
         animation_manager->state = AnimationManagerStateBlocked;
     }
 
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
     return !!blocking_animation;
 }
@@ -265,13 +265,13 @@ static bool animation_manager_check_blocking(AnimationManager* animation_manager
 static void animation_manager_replace_current_animation(
     AnimationManager* animation_manager,
     StorageAnimation* storage_animation) {
-    furi_assert(storage_animation);
+    furry_assert(storage_animation);
     StorageAnimation* previous_animation = animation_manager->current_animation;
 
     const BubbleAnimation* animation = animation_storage_get_bubble_animation(storage_animation);
     bubble_animation_view_set_animation(animation_manager->animation_view, animation);
     const char* new_name = animation_storage_get_meta(storage_animation)->name;
-    FURI_LOG_I(TAG, "Select \'%s\' animation", new_name);
+    FURRY_LOG_I(TAG, "Select \'%s\' animation", new_name);
     animation_manager->current_animation = storage_animation;
 
     if(previous_animation) {
@@ -285,22 +285,22 @@ AnimationManager* animation_manager_alloc(void) {
     animation_manager->view_stack = view_stack_alloc();
     View* animation_view = bubble_animation_get_view(animation_manager->animation_view);
     view_stack_add_view(animation_manager->view_stack, animation_view);
-    animation_manager->freezed_animation_name = furi_string_alloc();
+    animation_manager->freezed_animation_name = furry_string_alloc();
 
     animation_manager->idle_animation_timer =
-        furi_timer_alloc(animation_manager_timer_callback, FuriTimerTypeOnce, animation_manager);
+        furry_timer_alloc(animation_manager_timer_callback, FurryTimerTypeOnce, animation_manager);
     bubble_animation_view_set_interact_callback(
         animation_manager->animation_view, animation_manager_interact_callback, animation_manager);
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
-    animation_manager->pubsub_subscription_storage = furi_pubsub_subscribe(
+    Storage* storage = furry_record_open(RECORD_STORAGE);
+    animation_manager->pubsub_subscription_storage = furry_pubsub_subscribe(
         storage_get_pubsub(storage), animation_manager_check_blocking_callback, animation_manager);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
-    Dolphin* dolphin = furi_record_open(RECORD_DOLPHIN);
-    animation_manager->pubsub_subscription_dolphin = furi_pubsub_subscribe(
+    Dolphin* dolphin = furry_record_open(RECORD_DOLPHIN);
+    animation_manager->pubsub_subscription_dolphin = furry_pubsub_subscribe(
         dolphin_get_pubsub(dolphin), animation_manager_check_blocking_callback, animation_manager);
-    furi_record_close(RECORD_DOLPHIN);
+    furry_record_close(RECORD_DOLPHIN);
 
     animation_manager->sd_shown_sd_ok = true;
     if(!animation_manager_check_blocking(animation_manager)) {
@@ -311,27 +311,27 @@ AnimationManager* animation_manager_alloc(void) {
 }
 
 void animation_manager_free(AnimationManager* animation_manager) {
-    furi_assert(animation_manager);
+    furry_assert(animation_manager);
 
-    Dolphin* dolphin = furi_record_open(RECORD_DOLPHIN);
-    furi_pubsub_unsubscribe(
+    Dolphin* dolphin = furry_record_open(RECORD_DOLPHIN);
+    furry_pubsub_unsubscribe(
         dolphin_get_pubsub(dolphin), animation_manager->pubsub_subscription_dolphin);
-    furi_record_close(RECORD_DOLPHIN);
+    furry_record_close(RECORD_DOLPHIN);
 
-    Storage* storage = furi_record_open(RECORD_STORAGE);
-    furi_pubsub_unsubscribe(
+    Storage* storage = furry_record_open(RECORD_STORAGE);
+    furry_pubsub_unsubscribe(
         storage_get_pubsub(storage), animation_manager->pubsub_subscription_storage);
-    furi_record_close(RECORD_STORAGE);
+    furry_record_close(RECORD_STORAGE);
 
-    furi_string_free(animation_manager->freezed_animation_name);
+    furry_string_free(animation_manager->freezed_animation_name);
     View* animation_view = bubble_animation_get_view(animation_manager->animation_view);
     view_stack_remove_view(animation_manager->view_stack, animation_view);
     bubble_animation_view_free(animation_manager->animation_view);
-    furi_timer_free(animation_manager->idle_animation_timer);
+    furry_timer_free(animation_manager->idle_animation_timer);
 }
 
 View* animation_manager_get_animation_view(AnimationManager* animation_manager) {
-    furi_assert(animation_manager);
+    furry_assert(animation_manager);
 
     return view_stack_get_view(animation_manager->view_stack);
 }
@@ -340,22 +340,22 @@ static bool animation_manager_is_valid_idle_animation(
     const StorageAnimationManifestInfo* info,
     const DolphinStats* stats,
     const bool unlock) {
-    furi_assert(info);
-    furi_assert(info->name);
+    furry_assert(info);
+    furry_assert(info->name);
 
     bool result = true;
 
     if(!strcmp(info->name, BAD_BATTERY_ANIMATION_NAME)) {
-        Power* power = furi_record_open(RECORD_POWER);
+        Power* power = furry_record_open(RECORD_POWER);
         bool battery_is_well = power_is_battery_healthy(power);
-        furi_record_close(RECORD_POWER);
+        furry_record_close(RECORD_POWER);
 
         result = !battery_is_well;
     }
     if(!strcmp(info->name, NO_SD_ANIMATION_NAME)) {
-        Storage* storage = furi_record_open(RECORD_STORAGE);
+        Storage* storage = furry_record_open(RECORD_STORAGE);
         FS_Error sd_status = storage_sd_status(storage);
-        furi_record_close(RECORD_STORAGE);
+        furry_record_close(RECORD_STORAGE);
 
         result = (sd_status == FSE_NOT_READY);
     }
@@ -383,9 +383,9 @@ static StorageAnimation*
     StorageAnimationList_init(animation_list);
     animation_storage_fill_animation_list(&animation_list);
 
-    Dolphin* dolphin = furi_record_open(RECORD_DOLPHIN);
+    Dolphin* dolphin = furry_record_open(RECORD_DOLPHIN);
     DolphinStats stats = dolphin_stats(dolphin);
-    furi_record_close(RECORD_DOLPHIN);
+    furry_record_close(RECORD_DOLPHIN);
     uint32_t whole_weight = 0;
 
     bool fallback = XTREME_SETTINGS()->fallback_anim;
@@ -421,7 +421,7 @@ static StorageAnimation*
         }
     }
 
-    uint32_t lucky_number = furi_hal_random_get() % whole_weight;
+    uint32_t lucky_number = furry_hal_random_get() % whole_weight;
     uint32_t weight = 0;
 
     StorageAnimation* selected = NULL;
@@ -445,17 +445,17 @@ static StorageAnimation*
 
     /* cache animation, if failed - choose reliable animation */
     if(selected == NULL) {
-        FURI_LOG_E(TAG, "Can't find valid animation in manifest");
+        FURRY_LOG_E(TAG, "Can't find valid animation in manifest");
         selected = animation_storage_find_animation(HARDCODED_ANIMATION_NAME, false);
     } else if(!animation_storage_get_bubble_animation(selected)) {
         const char* name = animation_storage_get_meta(selected)->name;
-        FURI_LOG_E(TAG, "Can't upload animation described in manifest: \'%s\'", name);
+        FURRY_LOG_E(TAG, "Can't upload animation described in manifest: \'%s\'", name);
         animation_storage_free_storage_animation(&selected);
         selected = animation_storage_find_animation(HARDCODED_ANIMATION_NAME, false);
     } else {
-        FuriHalRtcDateTime date;
-        furi_hal_rtc_get_datetime(&date);
-        if(date.month == 4 && date.day == 1 && furi_hal_random_get() % 2) {
+        FurryHalRtcDateTime date;
+        furry_hal_rtc_get_datetime(&date);
+        if(date.month == 4 && date.day == 1 && furry_hal_random_get() % 2) {
             animation_storage_free_storage_animation(&selected);
             selected = animation_storage_find_animation("L3_Sunflower_128x64", true);
             if(selected == NULL) {
@@ -464,20 +464,20 @@ static StorageAnimation*
         }
     }
 
-    furi_assert(selected);
+    furry_assert(selected);
     return selected;
 }
 
 bool animation_manager_is_animation_loaded(AnimationManager* animation_manager) {
-    furi_assert(animation_manager);
+    furry_assert(animation_manager);
     return animation_manager->current_animation;
 }
 
 void animation_manager_unload_and_stall_animation(AnimationManager* animation_manager) {
-    furi_assert(animation_manager);
-    furi_assert(animation_manager->current_animation);
-    furi_assert(!furi_string_size(animation_manager->freezed_animation_name));
-    furi_assert(
+    furry_assert(animation_manager);
+    furry_assert(animation_manager->current_animation);
+    furry_assert(!furry_string_size(animation_manager->freezed_animation_name));
+    furry_assert(
         (animation_manager->state == AnimationManagerStateIdle) ||
         (animation_manager->state == AnimationManagerStateBlocked));
 
@@ -491,12 +491,12 @@ void animation_manager_unload_and_stall_animation(AnimationManager* animation_ma
         if(animation_manager->freezed_animation_time_left < 0) {
             animation_manager->freezed_animation_time_left = 0;
         }
-        furi_timer_stop(animation_manager->idle_animation_timer);
+        furry_timer_stop(animation_manager->idle_animation_timer);
     } else {
-        furi_assert(0);
+        furry_assert(0);
     }
 
-    FURI_LOG_I(
+    FURRY_LOG_I(
         TAG,
         "Unload animation \'%s\'",
         animation_storage_get_meta(animation_manager->current_animation)->name);
@@ -504,26 +504,26 @@ void animation_manager_unload_and_stall_animation(AnimationManager* animation_ma
     StorageAnimationManifestInfo* meta =
         animation_storage_get_meta(animation_manager->current_animation);
     /* copy str, not move, because it can be internal animation */
-    furi_string_set(animation_manager->freezed_animation_name, meta->name);
+    furry_string_set(animation_manager->freezed_animation_name, meta->name);
 
     bubble_animation_freeze(animation_manager->animation_view);
     animation_storage_free_storage_animation(&animation_manager->current_animation);
 }
 
 void animation_manager_load_and_continue_animation(AnimationManager* animation_manager) {
-    furi_assert(animation_manager);
-    furi_assert(!animation_manager->current_animation);
-    furi_assert(furi_string_size(animation_manager->freezed_animation_name));
-    furi_assert(
+    furry_assert(animation_manager);
+    furry_assert(!animation_manager->current_animation);
+    furry_assert(furry_string_size(animation_manager->freezed_animation_name));
+    furry_assert(
         (animation_manager->state == AnimationManagerStateFreezedIdle) ||
         (animation_manager->state == AnimationManagerStateFreezedBlocked));
 
     if(animation_manager->state == AnimationManagerStateFreezedBlocked) {
         StorageAnimation* restore_animation = animation_storage_find_animation(
-            furi_string_get_cstr(animation_manager->freezed_animation_name), false);
+            furry_string_get_cstr(animation_manager->freezed_animation_name), false);
         /* all blocked animations must be in flipper -> we can
          * always find blocking animation */
-        furi_assert(restore_animation);
+        furry_assert(restore_animation);
         animation_manager_replace_current_animation(animation_manager, restore_animation);
         animation_manager->state = AnimationManagerStateBlocked;
     } else if(animation_manager->state == AnimationManagerStateFreezedIdle) { //-V547
@@ -532,11 +532,11 @@ void animation_manager_load_and_continue_animation(AnimationManager* animation_m
         if(!blocked) {
             /* if no blocking - try restore last one idle */
             StorageAnimation* restore_animation = animation_storage_find_animation(
-                furi_string_get_cstr(animation_manager->freezed_animation_name), false);
+                furry_string_get_cstr(animation_manager->freezed_animation_name), false);
             if(restore_animation) {
-                Dolphin* dolphin = furi_record_open(RECORD_DOLPHIN);
+                Dolphin* dolphin = furry_record_open(RECORD_DOLPHIN);
                 DolphinStats stats = dolphin_stats(dolphin);
-                furi_record_close(RECORD_DOLPHIN);
+                furry_record_close(RECORD_DOLPHIN);
                 const StorageAnimationManifestInfo* manifest_info =
                     animation_storage_get_meta(restore_animation);
                 bool valid = animation_manager_is_valid_idle_animation(
@@ -547,7 +547,7 @@ void animation_manager_load_and_continue_animation(AnimationManager* animation_m
                     animation_manager->state = AnimationManagerStateIdle;
 
                     if(animation_manager->freezed_animation_time_left) {
-                        furi_timer_start(
+                        furry_timer_start(
                             animation_manager->idle_animation_timer,
                             animation_manager->freezed_animation_time_left);
                     } else {
@@ -558,40 +558,40 @@ void animation_manager_load_and_continue_animation(AnimationManager* animation_m
                         int32_t duration = (xtreme_settings->cycle_anims == 0) ?
                                                (bubble_animation->duration) :
                                                (xtreme_settings->cycle_anims);
-                        furi_timer_start(
+                        furry_timer_start(
                             animation_manager->idle_animation_timer,
                             (duration > 0) ? (duration * 1000) : 0);
                     }
                 }
             } else {
-                FURI_LOG_E(
+                FURRY_LOG_E(
                     TAG,
                     "Failed to restore \'%s\'",
-                    furi_string_get_cstr(animation_manager->freezed_animation_name));
+                    furry_string_get_cstr(animation_manager->freezed_animation_name));
             }
         }
     } else {
         /* Unknown state is an error. But not in release version.*/
-        furi_assert(0);
+        furry_assert(0);
     }
 
     /* if can't restore previous animation - select new */
     if(!animation_manager->current_animation) {
         animation_manager_start_new_idle(animation_manager);
     }
-    FURI_LOG_I(
+    FURRY_LOG_I(
         TAG,
         "Load animation \'%s\'",
         animation_storage_get_meta(animation_manager->current_animation)->name);
 
     bubble_animation_unfreeze(animation_manager->animation_view);
-    furi_string_reset(animation_manager->freezed_animation_name);
-    furi_assert(animation_manager->current_animation);
+    furry_string_reset(animation_manager->freezed_animation_name);
+    furry_assert(animation_manager->current_animation);
 }
 
 static void animation_manager_switch_to_one_shot_view(AnimationManager* animation_manager) {
-    furi_assert(animation_manager);
-    furi_assert(!animation_manager->one_shot_view);
+    furry_assert(animation_manager);
+    furry_assert(!animation_manager->one_shot_view);
 
     animation_manager->one_shot_view = one_shot_view_alloc();
     one_shot_view_set_interact_callback(
@@ -605,8 +605,8 @@ static void animation_manager_switch_to_one_shot_view(AnimationManager* animatio
 }
 
 static void animation_manager_switch_to_animation_view(AnimationManager* animation_manager) {
-    furi_assert(animation_manager);
-    furi_assert(animation_manager->one_shot_view);
+    furry_assert(animation_manager);
+    furry_assert(animation_manager->one_shot_view);
 
     View* prev_view = one_shot_view_get_view(animation_manager->one_shot_view);
     View* next_view = bubble_animation_get_view(animation_manager->animation_view);

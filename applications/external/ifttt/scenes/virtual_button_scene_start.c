@@ -6,7 +6,7 @@ enum VirtualButtonSubmenuIndex {
 };
 
 static void virtual_button_scene_start_submenu_callback(void* context, uint32_t index) {
-    furi_assert(context);
+    furry_assert(context);
     VirtualButtonApp* app = context;
     view_dispatcher_send_custom_event(app->view_dispatcher, index);
 }

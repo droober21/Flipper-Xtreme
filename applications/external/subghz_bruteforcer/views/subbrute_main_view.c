@@ -46,8 +46,8 @@ void subbrute_main_view_set_callback(
     SubBruteMainView* instance,
     SubBruteMainViewCallback callback,
     void* context) {
-    furi_assert(instance);
-    furi_assert(callback);
+    furry_assert(instance);
+    furry_assert(callback);
 
     instance->callback = callback;
     instance->context = context;
@@ -115,8 +115,8 @@ void subbrute_main_view_draw(Canvas* canvas, SubBruteMainViewModel* model) {
     uint16_t screen_height = canvas_height(canvas);
 
     if(model->is_select_byte) {
-#ifdef FURI_DEBUG
-        //FURI_LOG_D(TAG, "key_from_file: %s", model->key_from_file);
+#ifdef FURRY_DEBUG
+        //FURRY_LOG_D(TAG, "key_from_file: %s", model->key_from_file);
 #endif
         //char msg_index[18];
         //snprintf(msg_index, sizeof(msg_index), "Field index: %d", model->index);
@@ -126,10 +126,10 @@ void subbrute_main_view_draw(Canvas* canvas, SubBruteMainViewModel* model) {
 
         subbrute_main_view_center_displayed_key(
             canvas, model->key_from_file, model->index, model->two_bytes);
-        //const char* line = furi_string_get_cstr(menu_items);
+        //const char* line = furry_string_get_cstr(menu_items);
         //canvas_set_font(canvas, FontSecondary);
         //canvas_draw_str_aligned(
-        //    canvas, 64, 37, AlignCenter, AlignTop, furi_string_get_cstr(menu_items));
+        //    canvas, 64, 37, AlignCenter, AlignTop, furry_string_get_cstr(menu_items));
 
         elements_button_center(canvas, "Select");
         if(model->index > 0) {
@@ -157,8 +157,8 @@ void subbrute_main_view_draw(Canvas* canvas, SubBruteMainViewModel* model) {
         canvas_set_font(canvas, FontSecondary);
         const uint8_t item_height = 16;
 
-#ifdef FURI_DEBUG
-        //FURI_LOG_D(TAG, "window_position: %d, index: %d", model->window_position, model->index);
+#ifdef FURRY_DEBUG
+        //FURRY_LOG_D(TAG, "window_position: %d, index: %d", model->window_position, model->index);
 #endif
         for(uint8_t position = 0; position < SubBruteAttackTotalCount; ++position) {
             uint8_t item_position = position - model->window_position;
@@ -216,19 +216,19 @@ void subbrute_main_view_draw(Canvas* canvas, SubBruteMainViewModel* model) {
 }
 
 bool subbrute_main_view_input(InputEvent* event, void* context) {
-    furi_assert(event);
-    furi_assert(context);
+    furry_assert(event);
+    furry_assert(context);
 
     if(event->key == InputKeyBack && event->type == InputTypeShort) {
-#ifdef FURI_DEBUG
-        FURI_LOG_I(TAG, "InputKey: BACK");
+#ifdef FURRY_DEBUG
+        FURRY_LOG_I(TAG, "InputKey: BACK");
 #endif
         return false;
     }
 
     SubBruteMainView* instance = context;
-#ifdef FURI_DEBUG
-    FURI_LOG_D(TAG, "InputKey: %d, extra_repeats: %d", event->key, instance->extra_repeats);
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(TAG, "InputKey: %d, extra_repeats: %d", event->key, instance->extra_repeats);
 #endif
     const uint8_t min_value = 0;
     const uint8_t correct_total = SubBruteAttackTotalCount - 1;
@@ -343,18 +343,18 @@ bool subbrute_main_view_input(InputEvent* event, void* context) {
 }
 
 void subbrute_main_view_enter(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
-#ifdef FURI_DEBUG
-    FURI_LOG_D(TAG, "subbrute_main_view_enter");
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(TAG, "subbrute_main_view_enter");
 #endif
 }
 
 void subbrute_main_view_exit(void* context) {
-    furi_assert(context);
+    furry_assert(context);
 
-#ifdef FURI_DEBUG
-    FURI_LOG_D(TAG, "subbrute_main_view_exit");
+#ifdef FURRY_DEBUG
+    FURRY_LOG_D(TAG, "subbrute_main_view_exit");
 #endif
 }
 
@@ -391,14 +391,14 @@ SubBruteMainView* subbrute_main_view_alloc() {
 }
 
 void subbrute_main_view_free(SubBruteMainView* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
 
     view_free(instance->view);
     free(instance);
 }
 
 View* subbrute_main_view_get_view(SubBruteMainView* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     return instance->view;
 }
 
@@ -408,10 +408,10 @@ void subbrute_main_view_set_index(
     bool is_select_byte,
     bool two_bytes,
     uint64_t key_from_file) {
-    furi_assert(instance);
-    furi_assert(idx < SubBruteAttackTotalCount);
-#ifdef FURI_DEBUG
-    FURI_LOG_I(TAG, "Set index: %d, is_select_byte: %d", idx, is_select_byte);
+    furry_assert(instance);
+    furry_assert(idx < SubBruteAttackTotalCount);
+#ifdef FURRY_DEBUG
+    FURRY_LOG_I(TAG, "Set index: %d, is_select_byte: %d", idx, is_select_byte);
 #endif
     instance->is_select_byte = is_select_byte;
     instance->two_bytes = two_bytes;
@@ -448,16 +448,16 @@ void subbrute_main_view_set_index(
 }
 
 SubBruteAttacks subbrute_main_view_get_index(SubBruteMainView* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     return instance->index;
 }
 
 uint8_t subbrute_main_view_get_extra_repeats(SubBruteMainView* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     return instance->extra_repeats;
 }
 
 bool subbrute_main_view_get_two_bytes(SubBruteMainView* instance) {
-    furi_assert(instance);
+    furry_assert(instance);
     return instance->two_bytes;
 }

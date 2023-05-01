@@ -18,7 +18,7 @@ const uint32_t hopping_value[HOPPING_COUNT] = {
 };
 
 uint8_t pocsag_pager_scene_receiver_config_next_frequency(const uint32_t value, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     POCSAGPagerApp* app = context;
     uint8_t index = 0;
     for(uint8_t i = 0; i < subghz_setting_get_frequency_count(app->setting); i++) {
@@ -33,7 +33,7 @@ uint8_t pocsag_pager_scene_receiver_config_next_frequency(const uint32_t value, 
 }
 
 uint8_t pocsag_pager_scene_receiver_config_next_preset(const char* preset_name, void* context) {
-    furi_assert(context);
+    furry_assert(context);
     POCSAGPagerApp* app = context;
     uint8_t index = 0;
     for(uint8_t i = 0; i < subghz_setting_get_preset_count(app->setting); i++) {
@@ -52,7 +52,7 @@ uint8_t pocsag_pager_scene_receiver_config_hopper_value_index(
     const uint32_t values[],
     uint8_t values_count,
     void* context) {
-    furi_assert(context);
+    furry_assert(context);
     UNUSED(values_count);
     POCSAGPagerApp* app = context;
 
@@ -138,7 +138,7 @@ static void pocsag_pager_scene_receiver_config_set_hopping_running(VariableItem*
 
 static void
     pocsag_pager_scene_receiver_config_var_list_enter_callback(void* context, uint32_t index) {
-    furi_assert(context);
+    furry_assert(context);
     POCSAGPagerApp* app = context;
     if(index == PCSGSettingIndexLock) {
         view_dispatcher_send_custom_event(app->view_dispatcher, PCSGCustomEventSceneSettingLock);
@@ -188,7 +188,7 @@ void pocsag_pager_scene_receiver_config_on_enter(void* context) {
         pocsag_pager_scene_receiver_config_set_preset,
         app);
     value_index = pocsag_pager_scene_receiver_config_next_preset(
-        furi_string_get_cstr(app->txrx->preset->name), app);
+        furry_string_get_cstr(app->txrx->preset->name), app);
     variable_item_set_current_value_index(item, value_index);
     variable_item_set_current_value_text(
         item, subghz_setting_get_preset_name(app->setting, value_index));

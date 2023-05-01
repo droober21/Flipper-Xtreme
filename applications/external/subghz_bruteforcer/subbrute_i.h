@@ -1,7 +1,7 @@
 #pragma once
 
-#include <furi.h>
-#include <furi_hal.h>
+#include <furry.h>
+#include <furry_hal.h>
 #include <input/input.h>
 
 #include <notification/notification.h>
@@ -31,7 +31,7 @@
 
 #define SUBBRUTEFORCER_VER "Sub-GHz BruteForcer 3.5"
 
-#ifdef FURI_DEBUG
+#ifdef FURRY_DEBUG
 //#define SUBBRUTE_FAST_TRACK false
 #endif
 
@@ -59,7 +59,7 @@ struct SubBruteState {
 
     // Text store
     char text_store[SUBBRUTE_MAX_LEN_NAME];
-    FuriString* file_path;
+    FurryString* file_path;
 
     // Views
     SubBruteMainView* view_main;

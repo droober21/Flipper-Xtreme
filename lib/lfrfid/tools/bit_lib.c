@@ -20,8 +20,8 @@ void bit_lib_set_bit(uint8_t* data, size_t position, bool bit) {
 }
 
 void bit_lib_set_bits(uint8_t* data, size_t position, uint8_t byte, uint8_t length) {
-    furi_check(length <= 8);
-    furi_check(length > 0);
+    furry_check(length <= 8);
+    furry_check(length > 0);
 
     for(uint8_t i = 0; i < length; ++i) {
         uint8_t shift = (length - 1) - i;
@@ -88,7 +88,7 @@ bool bit_lib_test_parity_32(uint32_t bits, BitLibParity parity) {
     case BitLibParityOdd:
         return !__builtin_parity(bits);
     default:
-        furi_crash("Unknown parity");
+        furry_crash("Unknown parity");
     }
 #endif
 }

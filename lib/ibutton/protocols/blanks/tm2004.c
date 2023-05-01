@@ -24,9 +24,9 @@ bool tm2004_write(OneWireHost* host, const uint8_t* data, size_t data_size) {
         // TODO: check answer CRC
 
         // pulse indicating that data is correct
-        furi_delay_us(600);
+        furry_delay_us(600);
         onewire_host_write_bit(host, true);
-        furi_delay_us(50000);
+        furry_delay_us(50000);
 
         // read written key byte
         answer = onewire_host_read(host); //-V519

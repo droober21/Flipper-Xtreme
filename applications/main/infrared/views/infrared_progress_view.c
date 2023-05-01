@@ -7,8 +7,8 @@
 #include <gui/modules/button_panel.h>
 #include <input/input.h>
 
-#include <furi.h>
-#include <furi_hal_resources.h>
+#include <furry.h>
+#include <furry_hal_resources.h>
 #include <core/check.h>
 #include <stdint.h>
 
@@ -24,7 +24,7 @@ typedef struct {
 } InfraredProgressViewModel;
 
 bool infrared_progress_view_increase_progress(InfraredProgressView* progress) {
-    furi_assert(progress);
+    furry_assert(progress);
     bool result = false;
 
     InfraredProgressViewModel* model = view_get_model(progress->view);
@@ -67,7 +67,7 @@ static void infrared_progress_view_draw_callback(Canvas* canvas, void* _model) {
 void infrared_progress_view_set_progress_total(
     InfraredProgressView* progress,
     uint16_t progress_total) {
-    furi_assert(progress);
+    furry_assert(progress);
     InfraredProgressViewModel* model = view_get_model(progress->view);
     model->progress = 0;
     model->progress_total = progress_total;
@@ -110,13 +110,13 @@ void infrared_progress_view_set_back_callback(
     InfraredProgressView* instance,
     InfraredProgressViewBackCallback callback,
     void* context) {
-    furi_assert(instance);
+    furry_assert(instance);
     instance->back_callback = callback;
     instance->context = context;
 }
 
 View* infrared_progress_view_get_view(InfraredProgressView* instance) {
-    furi_assert(instance);
-    furi_assert(instance->view);
+    furry_assert(instance);
+    furry_assert(instance->view);
     return instance->view;
 }

@@ -3,53 +3,53 @@
 
 #include <assets_icons.h>
 #include <gui/elements.h>
-#include <furi.h>
+#include <furry.h>
 #include <m-array.h>
 
 struct Submenu {
     View* view;
-    FuriTimer* locked_timer;
+    FurryTimer* locked_timer;
 };
 
 typedef struct {
-    FuriString* label;
+    FurryString* label;
     uint32_t index;
     SubmenuItemCallback callback;
     void* callback_context;
     bool locked;
-    FuriString* locked_message;
+    FurryString* locked_message;
 } SubmenuItem;
 
 static void SubmenuItem_init(SubmenuItem* item) {
-    item->label = furi_string_alloc();
+    item->label = furry_string_alloc();
     item->index = 0;
     item->callback = NULL;
     item->callback_context = NULL;
     item->locked = false;
-    item->locked_message = furi_string_alloc();
+    item->locked_message = furry_string_alloc();
 }
 
 static void SubmenuItem_init_set(SubmenuItem* item, const SubmenuItem* src) {
-    item->label = furi_string_alloc_set(src->label);
+    item->label = furry_string_alloc_set(src->label);
     item->index = src->index;
     item->callback = src->callback;
     item->callback_context = src->callback_context;
     item->locked = src->locked;
-    item->locked_message = furi_string_alloc_set(src->locked_message);
+    item->locked_message = furry_string_alloc_set(src->locked_message);
 }
 
 static void SubmenuItem_set(SubmenuItem* item, const SubmenuItem* src) {
-    furi_string_set(item->label, src->label);
+    furry_string_set(item->label, src->label);
     item->index = src->index;
     item->callback = src->callback;
     item->callback_context = src->callback_context;
     item->locked = src->locked;
-    furi_string_set(item->locked_message, src->locked_message);
+    furry_string_set(item->locked_message, src->locked_message);
 }
 
 static void SubmenuItem_clear(SubmenuItem* item) {
-    furi_string_free(item->label);
-    furi_string_free(item->locked_message);
+    furry_string_free(item->label);
+    furry_string_free(item->locked_message);
 }
 
 ARRAY_DEF(
@@ -62,7 +62,7 @@ ARRAY_DEF(
 
 typedef struct {
     SubmenuItemArray_t items;
-    FuriString* header;
+    FurryString* header;
     size_t position;
     size_t window_position;
     bool locked_message_visible;
@@ -85,9 +85,9 @@ static void submenu_view_draw_callback(Canvas* canvas, void* _model) {
 
     canvas_clear(canvas);
 
-    if(!furi_string_empty(model->header)) {
+    if(!furry_string_empty(model->header)) {
         canvas_set_font(canvas, FontPrimary);
-        canvas_draw_str(canvas, 4, 11, furi_string_get_cstr(model->header));
+        canvas_draw_str(canvas, 4, 11, furry_string_get_cstr(model->header));
     }
 
     canvas_set_font(canvas, FontSecondary);
@@ -97,8 +97,8 @@ static void submenu_view_draw_callback(Canvas* canvas, void* _model) {
     for(SubmenuItemArray_it(it, model->items); !SubmenuItemArray_end_p(it);
         SubmenuItemArray_next(it)) {
         const size_t item_position = position - model->window_position;
-        const size_t items_on_screen = furi_string_empty(model->header) ? 4 : 3;
-        uint8_t y_offset = furi_string_empty(model->header) ? 0 : 16;
+        const size_t items_on_screen = furry_string_empty(model->header) ? 4 : 3;
+        uint8_t y_offset = furry_string_empty(model->header) ? 0 : 16;
 
         if(item_position < items_on_screen) {
             if(position == model->position) {
@@ -122,8 +122,8 @@ static void submenu_view_draw_callback(Canvas* canvas, void* _model) {
                     &I_Lock_7x8);
             }
 
-            FuriString* disp_str;
-            disp_str = furi_string_alloc_set(SubmenuItemArray_cref(it)->label);
+            FurryString* disp_str;
+            disp_str = furry_string_alloc_set(SubmenuItemArray_cref(it)->label);
             elements_string_fit_width(
                 canvas, disp_str, item_width - (SubmenuItemArray_cref(it)->locked ? 25 : 11));
 
@@ -131,9 +131,9 @@ static void submenu_view_draw_callback(Canvas* canvas, void* _model) {
                 canvas,
                 6,
                 y_offset + (item_position * item_height) + item_height - 4,
-                furi_string_get_cstr(disp_str));
+                furry_string_get_cstr(disp_str));
 
-            furi_string_free(disp_str);
+            furry_string_free(disp_str);
         }
 
         position++;
@@ -154,14 +154,14 @@ static void submenu_view_draw_callback(Canvas* canvas, void* _model) {
             32,
             AlignCenter,
             AlignCenter,
-            furi_string_get_cstr(
+            furry_string_get_cstr(
                 SubmenuItemArray_get(model->items, model->position)->locked_message));
     }
 }
 
 static bool submenu_view_input_callback(InputEvent* event, void* context) {
     Submenu* submenu = context;
-    furi_assert(submenu);
+    furry_assert(submenu);
     bool consumed = false;
 
     bool locked_message_visible = false;
@@ -207,7 +207,7 @@ static bool submenu_view_input_callback(InputEvent* event, void* context) {
 }
 
 void submenu_timer_callback(void* context) {
-    furi_assert(context);
+    furry_assert(context);
     Submenu* submenu = context;
 
     with_view_model(
@@ -222,7 +222,7 @@ Submenu* submenu_alloc() {
     view_set_draw_callback(submenu->view, submenu_view_draw_callback);
     view_set_input_callback(submenu->view, submenu_view_input_callback);
 
-    submenu->locked_timer = furi_timer_alloc(submenu_timer_callback, FuriTimerTypeOnce, submenu);
+    submenu->locked_timer = furry_timer_alloc(submenu_timer_callback, FurryTimerTypeOnce, submenu);
 
     with_view_model(
         submenu->view,
@@ -231,7 +231,7 @@ Submenu* submenu_alloc() {
             SubmenuItemArray_init(model->items);
             model->position = 0;
             model->window_position = 0;
-            model->header = furi_string_alloc();
+            model->header = furry_string_alloc();
         },
         true);
 
@@ -239,24 +239,24 @@ Submenu* submenu_alloc() {
 }
 
 void submenu_free(Submenu* submenu) {
-    furi_assert(submenu);
+    furry_assert(submenu);
 
     with_view_model(
         submenu->view,
         SubmenuModel * model,
         {
-            furi_string_free(model->header);
+            furry_string_free(model->header);
             SubmenuItemArray_clear(model->items);
         },
         true);
-    furi_timer_stop(submenu->locked_timer);
-    furi_timer_free(submenu->locked_timer);
+    furry_timer_stop(submenu->locked_timer);
+    furry_timer_free(submenu->locked_timer);
     view_free(submenu->view);
     free(submenu);
 }
 
 View* submenu_get_view(Submenu* submenu) {
-    furi_assert(submenu);
+    furry_assert(submenu);
     return submenu->view;
 }
 
@@ -278,10 +278,10 @@ void submenu_add_lockable_item(
     bool locked,
     const char* locked_message) {
     SubmenuItem* item = NULL;
-    furi_assert(label);
-    furi_assert(submenu);
+    furry_assert(label);
+    furry_assert(submenu);
     if(locked) {
-        furi_assert(locked_message);
+        furry_assert(locked_message);
     }
 
     with_view_model(
@@ -289,20 +289,20 @@ void submenu_add_lockable_item(
         SubmenuModel * model,
         {
             item = SubmenuItemArray_push_new(model->items);
-            furi_string_set_str(item->label, label);
+            furry_string_set_str(item->label, label);
             item->index = index;
             item->callback = callback;
             item->callback_context = callback_context;
             item->locked = locked;
             if(locked) {
-                furi_string_set_str(item->locked_message, locked_message);
+                furry_string_set_str(item->locked_message, locked_message);
             }
         },
         true);
 }
 
 void submenu_reset(Submenu* submenu) {
-    furi_assert(submenu);
+    furry_assert(submenu);
 
     with_view_model(
         submenu->view,
@@ -311,7 +311,7 @@ void submenu_reset(Submenu* submenu) {
             SubmenuItemArray_reset(model->items);
             model->position = 0;
             model->window_position = 0;
-            furi_string_reset(model->header);
+            furry_string_reset(model->header);
         },
         true);
 }
@@ -344,7 +344,7 @@ void submenu_set_selected_item(Submenu* submenu, uint32_t index) {
                 model->window_position -= 1;
             }
 
-            const size_t items_on_screen = furi_string_empty(model->header) ? 4 : 3;
+            const size_t items_on_screen = furry_string_empty(model->header) ? 4 : 3;
 
             if(items_size <= items_on_screen) {
                 model->window_position = 0;
@@ -363,7 +363,7 @@ void submenu_process_up(Submenu* submenu) {
         submenu->view,
         SubmenuModel * model,
         {
-            const size_t items_on_screen = furi_string_empty(model->header) ? 4 : 3;
+            const size_t items_on_screen = furry_string_empty(model->header) ? 4 : 3;
             const size_t items_size = SubmenuItemArray_size(model->items);
 
             if(model->position > 0) {
@@ -386,7 +386,7 @@ void submenu_process_down(Submenu* submenu) {
         submenu->view,
         SubmenuModel * model,
         {
-            const size_t items_on_screen = furi_string_empty(model->header) ? 4 : 3;
+            const size_t items_on_screen = furry_string_empty(model->header) ? 4 : 3;
             const size_t items_size = SubmenuItemArray_size(model->items);
 
             if(model->position < items_size - 1) {
@@ -416,7 +416,7 @@ void submenu_process_ok(Submenu* submenu) {
             }
             if(item && item->locked) {
                 model->locked_message_visible = true;
-                furi_timer_start(submenu->locked_timer, furi_kernel_get_tick_frequency() * 3);
+                furry_timer_start(submenu->locked_timer, furry_kernel_get_tick_frequency() * 3);
             }
         },
         true);
@@ -427,16 +427,16 @@ void submenu_process_ok(Submenu* submenu) {
 }
 
 void submenu_set_header(Submenu* submenu, const char* header) {
-    furi_assert(submenu);
+    furry_assert(submenu);
 
     with_view_model(
         submenu->view,
         SubmenuModel * model,
         {
             if(header == NULL) {
-                furi_string_reset(model->header);
+                furry_string_reset(model->header);
             } else {
-                furi_string_set_str(model->header, header);
+                furry_string_set_str(model->header, header);
             }
         },
         true);

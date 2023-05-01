@@ -1,6 +1,6 @@
 {
     "include_paths": [
-        "ble_glue",
+        "bl_igloo",
         "fatfs",
         "furry_hal",
         "inc"

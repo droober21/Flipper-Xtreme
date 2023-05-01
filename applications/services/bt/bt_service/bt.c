@@ -471,7 +471,7 @@ int32_t bt_srv(void* p) {
 
     if(!furry_hal_is_normal_boot()) {
         FURRY_LOG_W(TAG, "Skipping start in special boot mode");
-        ble_glue_wait_for_c2_start(FURRY_HAL_BT_C2_START_TIMEOUT);
+        bl_igloo_wait_for_c2_start(FURRY_HAL_BT_C2_START_TIMEOUT);
         furry_record_create(RECORD_BT, bt);
         return 0;
     }

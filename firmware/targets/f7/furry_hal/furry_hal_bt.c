@@ -87,7 +87,7 @@ void furry_hal_bt_init() {
     furry_check(LL_HSEM_1StepLock(HSEM, CFG_HW_CLK48_CONFIG_SEMID) == 0);
 
     // Start Core2
-    ble_glue_init();
+    bl_igloo_init();
 }
 
 void furry_hal_bt_lock_core2() {
@@ -100,7 +100,7 @@ void furry_hal_bt_unlock_core2() {
     furry_check(furry_mutex_release(furry_hal_bt_core2_mtx) == FurryStatusOk);
 }
 
-static bool furry_hal_bt_radio_stack_is_supported(const BleGlueC2Info* info) {
+static bool furry_hal_bt_radio_stack_is_supported(const BlIglooC2Info* info) {
     bool supported = false;
     if(info->StackType == INFO_STACK_TYPE_BLE_LIGHT) {
         if(info->VersionMajor >= FURRY_HAL_BT_STACK_VERSION_MAJOR &&
@@ -131,28 +131,28 @@ bool furry_hal_bt_start_radio_stack() {
 
     do {
         // Wait until C2 is started or timeout
-        if(!ble_glue_wait_for_c2_start(FURRY_HAL_BT_C2_START_TIMEOUT)) {
+        if(!bl_igloo_wait_for_c2_start(FURRY_HAL_BT_C2_START_TIMEOUT)) {
             FURRY_LOG_E(TAG, "Core2 start failed");
-            ble_glue_thread_stop();
+            bl_igloo_thread_stop();
             break;
         }
 
         // If C2 is running, start radio stack fw
-        if(!furry_hal_bt_ensure_c2_mode(BleGlueC2ModeStack)) {
+        if(!furry_hal_bt_ensure_c2_mode(BlIglooC2ModeStack)) {
             break;
         }
 
         // Check whether we support radio stack
-        const BleGlueC2Info* c2_info = ble_glue_get_c2_info();
+        const BlIglooC2Info* c2_info = bl_igloo_get_c2_info();
         if(!furry_hal_bt_radio_stack_is_supported(c2_info)) {
             FURRY_LOG_E(TAG, "Unsupported radio stack");
             // Don't stop SHCI for crypto enclave support
             break;
         }
         // Starting radio stack
-        if(!ble_glue_start()) {
+        if(!bl_igloo_start()) {
             FURRY_LOG_E(TAG, "Failed to start radio stack");
-            ble_glue_thread_stop();
+            bl_igloo_thread_stop();
             ble_app_thread_stop();
             break;
         }
@@ -189,7 +189,7 @@ bool furry_hal_bt_start_app(FurryHalBtProfile profile, GapEventCallback event_cb
     bool ret = false;
 
     do {
-        if(!ble_glue_is_radio_stack_ready()) {
+        if(!bl_igloo_is_radio_stack_ready()) {
             FURRY_LOG_E(TAG, "Can't start BLE App - radio stack did not start");
             break;
         }
@@ -258,10 +258,10 @@ void furry_hal_bt_reinit() {
     gap_thread_stop();
 
     FURRY_LOG_I(TAG, "Reset SHCI");
-    furry_check(ble_glue_reinit_c2());
+    furry_check(bl_igloo_reinit_c2());
 
     furry_delay_ms(100);
-    ble_glue_thread_stop();
+    bl_igloo_thread_stop();
 
     FURRY_LOG_I(TAG, "Start BT initialization");
     furry_hal_bt_init();
@@ -323,10 +323,10 @@ void furry_hal_bt_get_key_storage_buff(uint8_t** key_buff_addr, uint16_t* key_bu
 }
 
 void furry_hal_bt_set_key_storage_change_callback(
-    BleGlueKeyStorageChangedCallback callback,
+    BlIglooKeyStorageChangedCallback callback,
     void* context) {
     furry_assert(callback);
-    ble_glue_set_key_storage_changed_callback(callback, context);
+    bl_igloo_set_key_storage_changed_callback(callback, context);
 }
 
 void furry_hal_bt_nvm_sram_sem_acquire() {
@@ -375,7 +375,7 @@ void furry_hal_bt_dump_state(FurryString* buffer) {
 }
 
 bool furry_hal_bt_is_alive() {
-    return ble_glue_is_alive();
+    return bl_igloo_is_alive();
 }
 
 void furry_hal_bt_start_tone_tx(uint8_t channel, uint8_t power) {
@@ -454,11 +454,11 @@ void furry_hal_bt_stop_rx() {
     aci_hal_rx_stop();
 }
 
-bool furry_hal_bt_ensure_c2_mode(BleGlueC2Mode mode) {
-    BleGlueCommandResult fw_start_res = ble_glue_force_c2_mode(mode);
-    if(fw_start_res == BleGlueCommandResultOK) {
+bool furry_hal_bt_ensure_c2_mode(BlIglooC2Mode mode) {
+    BlIglooCommandResult fw_start_res = bl_igloo_force_c2_mode(mode);
+    if(fw_start_res == BlIglooCommandResultOK) {
         return true;
-    } else if(fw_start_res == BleGlueCommandResultRestartPending) {
+    } else if(fw_start_res == BlIglooCommandResultRestartPending) {
         // Do nothing and wait for system reset
         furry_delay_ms(C2_MODE_SWITCH_TIMEOUT);
         furry_crash("Waiting for FUS->radio stack transition");

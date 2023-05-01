@@ -9,7 +9,7 @@
 #include <stdbool.h>
 #include <gap.h>
 #include <serial_service.h>
-#include <ble_glue.h>
+#include <bl_igloo.h>
 #include <ble_app.h>
 
 #include <furry_hal_bt_serial.h>
@@ -157,11 +157,11 @@ bool furry_hal_bt_clear_white_list();
 
 /** Set key storage change callback
  *
- * @param       callback    BleGlueKeyStorageChangedCallback instance
+ * @param       callback    BlIglooKeyStorageChangedCallback instance
  * @param       context     pointer to context
  */
 void furry_hal_bt_set_key_storage_change_callback(
-    BleGlueKeyStorageChangedCallback callback,
+    BlIglooKeyStorageChangedCallback callback,
     void* context);
 
 /** Start ble tone tx at given channel and power
@@ -222,7 +222,7 @@ uint32_t furry_hal_bt_get_transmitted_packets();
  *
  * @param[in]  mode  mode to switch into
  */
-bool furry_hal_bt_ensure_c2_mode(BleGlueC2Mode mode);
+bool furry_hal_bt_ensure_c2_mode(BlIglooC2Mode mode);
 
 /** Modify profile advertisement name and restart bluetooth
  * @param[in] profile   profile type

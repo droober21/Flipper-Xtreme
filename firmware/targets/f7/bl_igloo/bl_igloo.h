@@ -8,14 +8,14 @@ extern "C" {
 #endif
 
 typedef enum {
-    BleGlueC2ModeUnknown = 0,
-    BleGlueC2ModeFUS,
-    BleGlueC2ModeStack,
-} BleGlueC2Mode;
+    BlIglooC2ModeUnknown = 0,
+    BlIglooC2ModeFUS,
+    BlIglooC2ModeStack,
+} BlIglooC2Mode;
 
-#define BLE_GLUE_MAX_VERSION_STRING_LEN 20
+#define BL_IGLOO_MAX_VERSION_STRING_LEN 20
 typedef struct {
-    BleGlueC2Mode mode;
+    BlIglooC2Mode mode;
     /**
      * Wireless Info
      */
@@ -29,7 +29,7 @@ typedef struct {
     uint8_t MemorySizeSram1; /*< Multiple of 1K */
     uint8_t MemorySizeFlash; /*< Multiple of 4K */
     uint8_t StackType;
-    char StackTypeString[BLE_GLUE_MAX_VERSION_STRING_LEN];
+    char StackTypeString[BL_IGLOO_MAX_VERSION_STRING_LEN];
     /**
      * Fus Info
      */
@@ -39,87 +39,87 @@ typedef struct {
     uint8_t FusMemorySizeSram2B; /*< Multiple of 1K */
     uint8_t FusMemorySizeSram2A; /*< Multiple of 1K */
     uint8_t FusMemorySizeFlash; /*< Multiple of 4K */
-} BleGlueC2Info;
+} BlIglooC2Info;
 
 typedef enum {
     // Stage 1: core2 startup and FUS
-    BleGlueStatusStartup,
-    BleGlueStatusBroken,
-    BleGlueStatusC2Started,
+    BlIglooStatusStartup,
+    BlIglooStatusBroken,
+    BlIglooStatusC2Started,
     // Stage 2: radio stack
-    BleGlueStatusRadioStackRunning,
-    BleGlueStatusRadioStackMissing
-} BleGlueStatus;
+    BlIglooStatusRadioStackRunning,
+    BlIglooStatusRadioStackMissing
+} BlIglooStatus;
 
 typedef void (
-    *BleGlueKeyStorageChangedCallback)(uint8_t* change_addr_start, uint16_t size, void* context);
+    *BlIglooKeyStorageChangedCallback)(uint8_t* change_addr_start, uint16_t size, void* context);
 
 /** Initialize start core2 and initialize transport */
-void ble_glue_init();
+void bl_igloo_init();
 
 /** Start Core2 Radio stack
  *
  * @return     true on success
  */
-bool ble_glue_start();
+bool bl_igloo_start();
 
 /** Is core2 alive and at least FUS is running
  * 
  * @return     true if core2 is alive
  */
-bool ble_glue_is_alive();
+bool bl_igloo_is_alive();
 
 /** Waits for C2 to reports its mode to callback
  *
  * @return     true if it reported before reaching timeout
  */
-bool ble_glue_wait_for_c2_start(int32_t timeout);
+bool bl_igloo_wait_for_c2_start(int32_t timeout);
 
-BleGlueStatus ble_glue_get_c2_status();
+BlIglooStatus bl_igloo_get_c2_status();
 
-const BleGlueC2Info* ble_glue_get_c2_info();
+const BlIglooC2Info* bl_igloo_get_c2_info();
 
 /** Is core2 radio stack present and ready
  *
  * @return     true if present and ready
  */
-bool ble_glue_is_radio_stack_ready();
+bool bl_igloo_is_radio_stack_ready();
 
 /** Set callback for NVM in RAM changes
  *
  * @param[in]  callback  The callback to call on NVM change
  * @param      context   The context for callback
  */
-void ble_glue_set_key_storage_changed_callback(
-    BleGlueKeyStorageChangedCallback callback,
+void bl_igloo_set_key_storage_changed_callback(
+    BlIglooKeyStorageChangedCallback callback,
     void* context);
 
 /** Stop SHCI thread */
-void ble_glue_thread_stop();
+void bl_igloo_thread_stop();
 
-bool ble_glue_reinit_c2();
+bool bl_igloo_reinit_c2();
 
 typedef enum {
-    BleGlueCommandResultUnknown,
-    BleGlueCommandResultOK,
-    BleGlueCommandResultError,
-    BleGlueCommandResultRestartPending,
-    BleGlueCommandResultOperationOngoing,
-} BleGlueCommandResult;
+    BlIglooCommandResultUnknown,
+    BlIglooCommandResultOK,
+    BlIglooCommandResultError,
+    BlIglooCommandResultRestartPending,
+    BlIglooCommandResultOperationOngoing,
+} BlIglooCommandResult;
 
 /** Restart MCU to launch radio stack firmware if necessary
  *
  * @return      true on radio stack start command
  */
-BleGlueCommandResult ble_glue_force_c2_mode(BleGlueC2Mode mode);
+BlIglooCommandResult bl_igloo_force_c2_mode(BlIglooC2Mode mode);
 
-BleGlueCommandResult ble_glue_fus_stack_delete();
+BlIglooCommandResult bl_igloo_fus_stack_delete();
 
-BleGlueCommandResult ble_glue_fus_stack_install(uint32_t src_addr, uint32_t dst_addr);
+BlIglooCommandResult bl_igloo_fus_stack_install(uint32_t src_addr, uint32_t dst_addr);
 
-BleGlueCommandResult ble_glue_fus_get_status();
+BlIglooCommandResult bl_igloo_fus_get_status();
 
-BleGlueCommandResult ble_glue_fus_wait_operation();
+BlIglooCommandResult bl_igloo_fus_wait_operation();
 
 #ifdef __cplusplus
 }

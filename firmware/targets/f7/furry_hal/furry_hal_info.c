@@ -164,7 +164,7 @@ void furry_hal_info_get(PropertyValueCallback out, char sep, void* context) {
     }
 
     if(furry_hal_bt_is_alive()) {
-        const BleGlueC2Info* ble_c2_info = ble_glue_get_c2_info();
+        const BlIglooC2Info* ble_c2_info = bl_igloo_get_c2_info();
         property_value_out(&property_context, NULL, 2, "radio", "alive", "true");
         property_value_out(
             &property_context,
@@ -172,7 +172,7 @@ void furry_hal_info_get(PropertyValueCallback out, char sep, void* context) {
             2,
             "radio",
             "mode",
-            ble_c2_info->mode == BleGlueC2ModeFUS ? "FUS" : "Stack");
+            ble_c2_info->mode == BlIglooC2ModeFUS ? "FUS" : "Stack");
 
         // FUS Info
         property_value_out(

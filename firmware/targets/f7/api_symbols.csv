@@ -581,21 +581,21 @@ Function,+,bit_lib_test_parity_32,_Bool,"uint32_t, BitLibParity"
 Function,+,ble_app_get_key_storage_buff,void,"uint8_t**, uint16_t*"
 Function,+,ble_app_init,_Bool,
 Function,+,ble_app_thread_stop,void,
-Function,+,ble_glue_force_c2_mode,BleGlueCommandResult,BleGlueC2Mode
-Function,-,ble_glue_fus_get_status,BleGlueCommandResult,
-Function,-,ble_glue_fus_stack_delete,BleGlueCommandResult,
-Function,-,ble_glue_fus_stack_install,BleGlueCommandResult,"uint32_t, uint32_t"
-Function,-,ble_glue_fus_wait_operation,BleGlueCommandResult,
-Function,+,ble_glue_get_c2_info,const BleGlueC2Info*,
-Function,-,ble_glue_get_c2_status,BleGlueStatus,
-Function,+,ble_glue_init,void,
-Function,+,ble_glue_is_alive,_Bool,
-Function,+,ble_glue_is_radio_stack_ready,_Bool,
-Function,+,ble_glue_reinit_c2,_Bool,
-Function,+,ble_glue_set_key_storage_changed_callback,void,"BleGlueKeyStorageChangedCallback, void*"
-Function,+,ble_glue_start,_Bool,
-Function,+,ble_glue_thread_stop,void,
-Function,+,ble_glue_wait_for_c2_start,_Bool,int32_t
+Function,+,bl_igloo_force_c2_mode,BlIglooCommandResult,BlIglooC2Mode
+Function,-,bl_igloo_fus_get_status,BlIglooCommandResult,
+Function,-,bl_igloo_fus_stack_delete,BlIglooCommandResult,
+Function,-,bl_igloo_fus_stack_install,BlIglooCommandResult,"uint32_t, uint32_t"
+Function,-,bl_igloo_fus_wait_operation,BlIglooCommandResult,
+Function,+,bl_igloo_get_c2_info,const BlIglooC2Info*,
+Function,-,bl_igloo_get_c2_status,BlIglooStatus,
+Function,+,bl_igloo_init,void,
+Function,+,bl_igloo_is_alive,_Bool,
+Function,+,bl_igloo_is_radio_stack_ready,_Bool,
+Function,+,bl_igloo_reinit_c2,_Bool,
+Function,+,bl_igloo_set_key_storage_changed_callback,void,"BlIglooKeyStorageChangedCallback, void*"
+Function,+,bl_igloo_start,_Bool,
+Function,+,bl_igloo_thread_stop,void,
+Function,+,bl_igloo_wait_for_c2_start,_Bool,int32_t
 Function,-,bsearch,void*,"const void*, const void*, size_t, size_t, __compar_fn_t"
 Function,+,bt_disable_peer_key_update,void,Bt*
 Function,+,bt_disconnect,void,Bt*
@@ -1082,7 +1082,7 @@ Function,+,furry_get_tick,uint32_t,
 Function,+,furry_hal_bt_change_app,_Bool,"FurryHalBtProfile, GapEventCallback, void*"
 Function,+,furry_hal_bt_clear_white_list,_Bool,
 Function,+,furry_hal_bt_dump_state,void,FurryString*
-Function,+,furry_hal_bt_ensure_c2_mode,_Bool,BleGlueC2Mode
+Function,+,furry_hal_bt_ensure_c2_mode,_Bool,BlIglooC2Mode
 Function,+,furry_hal_bt_get_conn_rssi,uint32_t,uint8_t*
 Function,+,furry_hal_bt_get_key_storage_buff,void,"uint8_t**, uint16_t*"
 Function,+,furry_hal_bt_get_profile_adv_name,const char*,FurryHalBtProfile
@@ -1121,7 +1121,7 @@ Function,+,furry_hal_bt_serial_set_rpc_status,void,FurryHalBtSerialRpcStatus
 Function,+,furry_hal_bt_serial_start,void,
 Function,+,furry_hal_bt_serial_stop,void,
 Function,+,furry_hal_bt_serial_tx,_Bool,"uint8_t*, uint16_t"
-Function,+,furry_hal_bt_set_key_storage_change_callback,void,"BleGlueKeyStorageChangedCallback, void*"
+Function,+,furry_hal_bt_set_key_storage_change_callback,void,"BlIglooKeyStorageChangedCallback, void*"
 Function,+,furry_hal_bt_set_profile_adv_name,void,"FurryHalBtProfile, const char[( 18 + 1 )]"
 Function,+,furry_hal_bt_set_profile_mac_addr,void,"FurryHalBtProfile, const uint8_t[( 6 )]"
 Function,+,furry_hal_bt_set_profile_pairing_method,void,"FurryHalBtProfile, GapPairing"

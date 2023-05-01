@@ -30,16 +30,16 @@ void furry_hal_memory_init() {
         return;
     }
 
-    if(!ble_glue_wait_for_c2_start(FURRY_HAL_BT_C2_START_TIMEOUT)) {
+    if(!bl_igloo_wait_for_c2_start(FURRY_HAL_BT_C2_START_TIMEOUT)) {
         FURRY_LOG_E(TAG, "C2 start timeout");
         return;
     }
 
     FurryHalMemory* memory = malloc(sizeof(FurryHalMemory));
 
-    const BleGlueC2Info* c2_ver = ble_glue_get_c2_info();
+    const BlIglooC2Info* c2_ver = bl_igloo_get_c2_info();
 
-    if(c2_ver->mode == BleGlueC2ModeStack) {
+    if(c2_ver->mode == BlIglooC2ModeStack) {
         uint32_t sram2a_busy_size = (uint32_t)&__sram2a_free__ - (uint32_t)&__sram2a_start__;
         uint32_t sram2a_unprotected_size = (32 - c2_ver->MemorySizeSram2A) * 1024;
         uint32_t sram2b_unprotected_size = (32 - c2_ver->MemorySizeSram2B) * 1024;

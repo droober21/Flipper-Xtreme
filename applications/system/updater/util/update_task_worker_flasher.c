@@ -155,9 +155,9 @@ static bool update_task_write_stack(UpdateTask* update_task) {
         CHECK_RESULT(update_task_write_stack_data(update_task));
         update_task_set_progress(update_task, UpdateTaskStageRadioInstall, 0);
         CHECK_RESULT(
-            ble_glue_fus_stack_install(manifest->radio_address, 0) != BleGlueCommandResultError);
+            bl_igloo_fus_stack_install(manifest->radio_address, 0) != BlIglooCommandResultError);
         update_task_set_progress(update_task, UpdateTaskStageRadioInstall, 80);
-        CHECK_RESULT(ble_glue_fus_wait_operation() == BleGlueCommandResultOK);
+        CHECK_RESULT(bl_igloo_fus_wait_operation() == BlIglooCommandResultOK);
         update_task_set_progress(update_task, UpdateTaskStageRadioInstall, 100);
         /* ...system will restart here. */
         update_task_wait_for_restart(update_task);
@@ -169,9 +169,9 @@ static bool update_task_remove_stack(UpdateTask* update_task) {
     do {
         FURRY_LOG_W(TAG, "Removing stack");
         update_task_set_progress(update_task, UpdateTaskStageRadioErase, 30);
-        CHECK_RESULT(ble_glue_fus_stack_delete() != BleGlueCommandResultError);
+        CHECK_RESULT(bl_igloo_fus_stack_delete() != BlIglooCommandResultError);
         update_task_set_progress(update_task, UpdateTaskStageRadioErase, 80);
-        CHECK_RESULT(ble_glue_fus_wait_operation() == BleGlueCommandResultOK);
+        CHECK_RESULT(bl_igloo_fus_wait_operation() == BlIglooCommandResultOK);
         update_task_set_progress(update_task, UpdateTaskStageRadioErase, 100);
         /* ...system will restart here. */
         update_task_wait_for_restart(update_task);
@@ -182,9 +182,9 @@ static bool update_task_remove_stack(UpdateTask* update_task) {
 static bool update_task_manage_radiostack(UpdateTask* update_task) {
     bool success = false;
     do {
-        CHECK_RESULT(ble_glue_wait_for_c2_start(FURRY_HAL_BT_C2_START_TIMEOUT));
+        CHECK_RESULT(bl_igloo_wait_for_c2_start(FURRY_HAL_BT_C2_START_TIMEOUT));
 
-        const BleGlueC2Info* c2_state = ble_glue_get_c2_info();
+        const BlIglooC2Info* c2_state = bl_igloo_get_c2_info();
 
         const UpdateManifestRadioVersion* radio_ver = &update_task->manifest->radio_version;
         bool stack_version_match = (c2_state->VersionMajor == radio_ver->version.major) &&
@@ -194,7 +194,7 @@ static bool update_task_manage_radiostack(UpdateTask* update_task) {
                                    (c2_state->VersionReleaseType == radio_ver->version.release);
         bool stack_missing = (c2_state->VersionMajor == 0) && (c2_state->VersionMinor == 0);
 
-        if(c2_state->mode == BleGlueC2ModeStack) {
+        if(c2_state->mode == BlIglooC2ModeStack) {
             /* Stack type is not available when we have FUS running. */
             bool total_stack_match = stack_version_match &&
                                      (c2_state->StackType == radio_ver->version.type);
@@ -208,15 +208,15 @@ static bool update_task_manage_radiostack(UpdateTask* update_task) {
                 /* Version or type mismatch. Let's boot to FUS and start updating. */
                 FURRY_LOG_W(TAG, "Restarting to FUS");
                 furry_hal_rtc_set_flag(FurryHalRtcFlagC2Update);
-                CHECK_RESULT(furry_hal_bt_ensure_c2_mode(BleGlueC2ModeFUS));
+                CHECK_RESULT(furry_hal_bt_ensure_c2_mode(BlIglooC2ModeFUS));
                 /* ...system will restart here. */
                 update_task_wait_for_restart(update_task);
             }
-        } else if(c2_state->mode == BleGlueC2ModeFUS) {
+        } else if(c2_state->mode == BlIglooC2ModeFUS) {
             /* OK, we're in FUS mode. */
             update_task_set_progress(update_task, UpdateTaskStageRadioBusy, 10);
             FURRY_LOG_W(TAG, "Waiting for FUS to settle");
-            ble_glue_fus_wait_operation();
+            bl_igloo_fus_wait_operation();
             if(stack_version_match) {
                 /* We can't check StackType with FUS, but partial version matches */
                 if(furry_hal_rtc_is_flag_set(FurryHalRtcFlagC2Update)) {
@@ -231,7 +231,7 @@ static bool update_task_manage_radiostack(UpdateTask* update_task) {
                      * Let's start it up to check its version */
                     FURRY_LOG_W(TAG, "Starting stack to check full version");
                     update_task_set_progress(update_task, UpdateTaskStageRadioBusy, 40);
-                    CHECK_RESULT(furry_hal_bt_ensure_c2_mode(BleGlueC2ModeStack));
+                    CHECK_RESULT(furry_hal_bt_ensure_c2_mode(BlIglooC2ModeStack));
                     /* ...system will restart here. */
                     update_task_wait_for_restart(update_task);
                 }

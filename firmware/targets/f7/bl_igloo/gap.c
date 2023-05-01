@@ -507,7 +507,7 @@ static void gap_advetise_timer_callback(void* context) {
 }
 
 bool gap_init(GapConfig* config, GapEventCallback on_event_cb, void* context) {
-    if(!ble_glue_is_radio_stack_ready()) {
+    if(!bl_igloo_is_radio_stack_ready()) {
         return false;
     }
 

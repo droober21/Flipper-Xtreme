@@ -128,9 +128,9 @@ static DialogMessageButton fw_version_screen(DialogsApp* dialogs, DialogMessage*
     FurryString* buffer;
     buffer = furry_string_alloc();
     const Version* ver = furry_hal_version_get_firmware_version();
-    const BleGlueC2Info* c2_ver = NULL;
+    const BlIglooC2Info* c2_ver = NULL;
 #ifdef SRV_BT
-    c2_ver = ble_glue_get_c2_info();
+    c2_ver = bl_igloo_get_c2_info();
 #endif
 
     if(!ver) { //-V1051

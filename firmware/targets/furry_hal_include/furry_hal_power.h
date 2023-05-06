@@ -56,11 +56,11 @@ void furry_hal_power_insomnia_exit();
  *
  * @return     true if available
  */
-bool furry_hal_power_sleep_available();
+bool furry_hal_nappy_nap_available();
 
 /** Go to sleep
  */
-void furry_hal_power_sleep();
+void furry_hal_nappy_nap();
 
 /** Get predicted remaining battery capacity in percents
  *

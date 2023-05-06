@@ -15,10 +15,13 @@
 #define FURRY_HAL_IDLE_TIMER_CLK_HZ 32768
 #define FURRY_HAL_OS_TICK_HZ configTICK_RATE_HZ
 
-#define FURRY_HAL_OS_IDLE_CNT_TO_TICKS(x) (((x)*FURRY_HAL_OS_TICK_HZ) / FURRY_HAL_IDLE_TIMER_CLK_HZ)
-#define FURRY_HAL_OS_TICKS_TO_IDLE_CNT(x) (((x)*FURRY_HAL_IDLE_TIMER_CLK_HZ) / FURRY_HAL_OS_TICK_HZ)
+#define FURRY_HAL_OS_IDLE_CNT_TO_TICKS(x) \
+    (((x)*FURRY_HAL_OS_TICK_HZ) / FURRY_HAL_IDLE_TIMER_CLK_HZ)
+#define FURRY_HAL_OS_TICKS_TO_IDLE_CNT(x) \
+    (((x)*FURRY_HAL_IDLE_TIMER_CLK_HZ) / FURRY_HAL_OS_TICK_HZ)
 
-#define FURRY_HAL_IDLE_TIMER_TICK_PER_EPOCH (FURRY_HAL_OS_IDLE_CNT_TO_TICKS(FURRY_HAL_IDLE_TIMER_MAX))
+#define FURRY_HAL_IDLE_TIMER_TICK_PER_EPOCH \
+    (FURRY_HAL_OS_IDLE_CNT_TO_TICKS(FURRY_HAL_IDLE_TIMER_MAX))
 #define FURRY_HAL_OS_MAX_SLEEP (FURRY_HAL_IDLE_TIMER_TICK_PER_EPOCH - 1)
 
 #define FURRY_HAL_OS_NVIC_IS_PENDING() (NVIC->ISPR[0] || NVIC->ISPR[1])
@@ -141,14 +144,15 @@ static inline uint32_t furry_hal_os_sleep(TickType_t expected_idle_ticks) {
 #endif
 
     // Go to sleep mode
-    furry_hal_power_sleep();
+    furry_hal_nappy_nap();
 
 #ifdef FURRY_HAL_OS_DEBUG
     furry_hal_gpio_write(FURRY_HAL_OS_DEBUG_AWAKE_GPIO, 1);
 #endif
 
     // Calculate how much time we spent in the sleep
-    uint32_t after_cnt = furry_hal_idle_timer_get_cnt() + furry_hal_os_skew + FURRY_HAL_OS_EXTRA_CNT;
+    uint32_t after_cnt =
+        furry_hal_idle_timer_get_cnt() + furry_hal_os_skew + FURRY_HAL_OS_EXTRA_CNT;
     uint32_t after_tick = FURRY_HAL_OS_IDLE_CNT_TO_TICKS(after_cnt);
     furry_hal_os_skew = after_cnt - FURRY_HAL_OS_TICKS_TO_IDLE_CNT(after_tick);
 
@@ -165,7 +169,7 @@ static inline uint32_t furry_hal_os_sleep(TickType_t expected_idle_ticks) {
 }
 
 void vPortSuppressTicksAndSleep(TickType_t expected_idle_ticks) {
-    if(!furry_hal_power_sleep_available()) {
+    if(!furry_hal_nappy_nap_available()) {
         __WFI();
         return;
     }

@@ -147,7 +147,7 @@ void furry_hal_power_insomnia_exit() {
     FURRY_CRITICAL_EXIT();
 }
 
-bool furry_hal_power_sleep_available() {
+bool furry_hal_nappy_nap_available() {
     return furry_hal_power.insomnia == 0;
 }
 
@@ -224,7 +224,7 @@ static inline void furry_hal_power_deep_sleep() {
     furry_hal_rtc_sync_shadow();
 }
 
-void furry_hal_power_sleep() {
+void furry_hal_nappy_nap() {
     if(furry_hal_power_deep_sleep_available()) {
 #ifdef FURRY_HAL_POWER_DEBUG
         furry_hal_gpio_write(FURRY_HAL_POWER_DEBUG_STOP_GPIO, 1);

@@ -1338,8 +1338,8 @@ Function,+,furry_hal_power_off,void,
 Function,+,furry_hal_power_reset,void,
 Function,+,furry_hal_power_set_battery_charge_voltage_limit,void,float
 Function,+,furry_hal_power_shutdown,void,
-Function,+,furry_hal_power_sleep,void,
-Function,+,furry_hal_power_sleep_available,_Bool,
+Function,+,furry_hal_nappy_nap,void,
+Function,+,furry_hal_nappy_nap_available,_Bool,
 Function,+,furry_hal_power_suppress_charge_enter,void,
 Function,+,furry_hal_power_suppress_charge_exit,void,
 Function,+,furry_hal_pwm_set_params,void,"FurryHalPwmOutputId, uint32_t, uint8_t"

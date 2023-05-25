@@ -2,6 +2,7 @@
  * See the LICENSE file for information about the license. */
 
 #include "app.h"
+#include <dolphin/dolphin.h>
 
 RawSamplesBuffer *RawSamples, *DetectedSamples;
 extern const SubGhzProtocolRegistry protoview_protocol_registry;
@@ -172,7 +173,8 @@ ProtoViewApp* protoview_app_alloc() {
     // Auto switch to internal radio if external radio is not available
     furi_delay_ms(15);
     if(!furi_hal_subghz_check_radio()) {
-        furi_hal_subghz_set_radio_type(SubGhzRadioInternal);
+        furi_hal_subghz_select_radio_type(SubGhzRadioInternal);
+        furi_hal_subghz_init_radio_type(SubGhzRadioInternal);
     }
 
     furi_hal_power_suppress_charge_enter();
@@ -192,6 +194,8 @@ void protoview_app_free(ProtoViewApp* app) {
 
     // Disable power for External CC1101 if it was enabled and module is connected
     furi_hal_subghz_disable_ext_power();
+    // Reinit SPI handles for internal radio / nfc
+    furi_hal_subghz_init_radio_type(SubGhzRadioInternal);
 
     // View related.
     view_port_enabled_set(app->view_port, false);
@@ -258,6 +262,7 @@ static bool keyboard_view_dispatcher_navigation_callback(void* ctx) {
 int32_t protoview_app_entry(void* p) {
     UNUSED(p);
     ProtoViewApp* app = protoview_app_alloc();
+    DOLPHIN_DEED(DolphinDeedPluginStart);
 
     /* Create a timer. We do data analysis in the callback. */
     FuriTimer* timer = furi_timer_alloc(timer_callback, FuriTimerTypePeriodic, app);

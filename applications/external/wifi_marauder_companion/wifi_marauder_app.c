@@ -2,6 +2,7 @@
 
 #include <furi.h>
 #include <furi_hal.h>
+#include <dolphin/dolphin.h>
 
 static bool wifi_marauder_app_custom_event_callback(void* context, uint32_t event) {
     furi_assert(context);
@@ -23,11 +24,15 @@ static void wifi_marauder_app_tick_event_callback(void* context) {
 
 WifiMarauderApp* wifi_marauder_app_alloc() {
     WifiMarauderApp* app = malloc(sizeof(WifiMarauderApp));
+    DOLPHIN_DEED(DolphinDeedPluginStart);
 
     app->gui = furi_record_open(RECORD_GUI);
     app->dialogs = furi_record_open(RECORD_DIALOGS);
     app->storage = furi_record_open(RECORD_STORAGE);
     app->capture_file = storage_file_alloc(app->storage);
+    app->log_file = storage_file_alloc(app->storage);
+    app->save_pcap_setting_file = storage_file_alloc(app->storage);
+    app->save_logs_setting_file = storage_file_alloc(app->storage);
 
     app->view_dispatcher = view_dispatcher_alloc();
     app->scene_manager = scene_manager_alloc(&wifi_marauder_scene_handlers, app);
@@ -61,9 +66,27 @@ WifiMarauderApp* wifi_marauder_app_alloc() {
     app->text_box_store = furi_string_alloc();
     furi_string_reserve(app->text_box_store, WIFI_MARAUDER_TEXT_BOX_STORE_SIZE);
 
-    app->text_input = text_input_alloc();
+    app->text_input = wifi_text_input_alloc();
     view_dispatcher_add_view(
-        app->view_dispatcher, WifiMarauderAppViewTextInput, text_input_get_view(app->text_input));
+        app->view_dispatcher,
+        WifiMarauderAppViewTextInput,
+        wifi_text_input_get_view(app->text_input));
+
+    app->widget = widget_alloc();
+    view_dispatcher_add_view(
+        app->view_dispatcher, WifiMarauderAppViewWidget, widget_get_view(app->widget));
+
+    app->has_saved_logs_this_session = false;
+
+    // if user hasn't confirmed whether to save pcaps and logs to sdcard, then prompt when scene starts
+    app->need_to_prompt_settings_init =
+        (!storage_file_exists(app->storage, SAVE_PCAP_SETTING_FILEPATH) ||
+         !storage_file_exists(app->storage, SAVE_LOGS_SETTING_FILEPATH));
+
+    // Submenu
+    app->submenu = submenu_alloc();
+    view_dispatcher_add_view(
+        app->view_dispatcher, WifiMarauderAppViewSubmenu, submenu_get_view(app->submenu));
 
     scene_manager_next_scene(app->scene_manager, WifiMarauderSceneStart);
 
@@ -76,6 +99,42 @@ void wifi_marauder_make_app_folder(WifiMarauderApp* app) {
     if(!storage_simply_mkdir(app->storage, MARAUDER_APP_FOLDER)) {
         dialog_message_show_storage_error(app->dialogs, "Cannot create\napp folder");
     }
+
+    if(!storage_simply_mkdir(app->storage, MARAUDER_APP_FOLDER_PCAPS)) {
+        dialog_message_show_storage_error(app->dialogs, "Cannot create\npcaps folder");
+    }
+
+    if(!storage_simply_mkdir(app->storage, MARAUDER_APP_FOLDER_LOGS)) {
+        dialog_message_show_storage_error(app->dialogs, "Cannot create\npcaps folder");
+    }
+
+    if(!storage_simply_mkdir(app->storage, MARAUDER_APP_FOLDER_SCRIPTS)) {
+        dialog_message_show_storage_error(app->dialogs, "Cannot create\nscripts folder");
+    }
+}
+
+void wifi_marauder_load_settings(WifiMarauderApp* app) {
+    if(storage_file_open(
+           app->save_pcap_setting_file,
+           SAVE_PCAP_SETTING_FILEPATH,
+           FSAM_READ,
+           FSOM_OPEN_EXISTING)) {
+        char ok[1];
+        storage_file_read(app->save_pcap_setting_file, ok, sizeof(ok));
+        app->ok_to_save_pcaps = ok[0] == 'Y';
+    }
+    storage_file_close(app->save_pcap_setting_file);
+
+    if(storage_file_open(
+           app->save_logs_setting_file,
+           SAVE_LOGS_SETTING_FILEPATH,
+           FSAM_READ,
+           FSOM_OPEN_EXISTING)) {
+        char ok[1];
+        storage_file_read(app->save_logs_setting_file, ok, sizeof(ok));
+        app->ok_to_save_logs = ok[0] == 'Y';
+    }
+    storage_file_close(app->save_logs_setting_file);
 }
 
 void wifi_marauder_app_free(WifiMarauderApp* app) {
@@ -85,10 +144,19 @@ void wifi_marauder_app_free(WifiMarauderApp* app) {
     view_dispatcher_remove_view(app->view_dispatcher, WifiMarauderAppViewVarItemList);
     view_dispatcher_remove_view(app->view_dispatcher, WifiMarauderAppViewConsoleOutput);
     view_dispatcher_remove_view(app->view_dispatcher, WifiMarauderAppViewTextInput);
+    view_dispatcher_remove_view(app->view_dispatcher, WifiMarauderAppViewWidget);
+    view_dispatcher_remove_view(app->view_dispatcher, WifiMarauderAppViewSubmenu);
+
+    widget_free(app->widget);
     text_box_free(app->text_box);
     furi_string_free(app->text_box_store);
-    text_input_free(app->text_input);
+    wifi_text_input_free(app->text_input);
+    submenu_free(app->submenu);
+    variable_item_list_free(app->var_item_list);
     storage_file_free(app->capture_file);
+    storage_file_free(app->log_file);
+    storage_file_free(app->save_pcap_setting_file);
+    storage_file_free(app->save_logs_setting_file);
 
     // View dispatcher
     view_dispatcher_free(app->view_dispatcher);
@@ -118,6 +186,7 @@ int32_t wifi_marauder_app(void* p) {
     WifiMarauderApp* wifi_marauder_app = wifi_marauder_app_alloc();
 
     wifi_marauder_make_app_folder(wifi_marauder_app);
+    wifi_marauder_load_settings(wifi_marauder_app);
 
     wifi_marauder_app->uart = wifi_marauder_usart_init(wifi_marauder_app);
     wifi_marauder_app->lp_uart = wifi_marauder_lp_uart_init(wifi_marauder_app);

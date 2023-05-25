@@ -23,8 +23,7 @@
 #include <notification/notification_app.h>
 #include <rgb_backlight/rgb_backlight.h>
 #include <m-array.h>
-#include "xtreme/settings.h"
-#include "xtreme/assets.h"
+#include <xtreme.h>
 
 #define XTREME_SUBGHZ_FREQ_BUFFER_SIZE 6
 
@@ -64,6 +63,7 @@ typedef struct {
     bool save_level;
     bool save_backlight;
     bool save_settings;
+    bool show_slideshow;
     bool require_reboot;
 } XtremeApp;
 
@@ -72,3 +72,5 @@ typedef enum {
     XtremeAppViewTextInput,
     XtremeAppViewPopup,
 } XtremeAppView;
+
+bool xtreme_app_apply(XtremeApp* app);

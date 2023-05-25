@@ -1,7 +1,7 @@
 #include <furi.h>
 #include <gui/elements.h>
 #include <assets_icons.h>
-#include <xtreme/settings.h>
+#include <xtreme.h>
 #include <furi_hal_rtc.h>
 
 #include "../desktop_i.h"
@@ -41,7 +41,18 @@ void desktop_lock_menu_set_pin_state(DesktopLockMenuView* lock_menu, bool pin_is
     with_view_model(
         lock_menu->view,
         DesktopLockMenuViewModel * model,
-        { model->pin_is_set = pin_is_set; },
+        {
+            model->pin_is_set = pin_is_set;
+            model->pin_lock = pin_is_set;
+        },
+        true);
+}
+
+void desktop_lock_menu_set_stealth_mode_state(DesktopLockMenuView* lock_menu, bool stealth_mode) {
+    with_view_model(
+        lock_menu->view,
+        DesktopLockMenuViewModel * model,
+        { model->stealth_mode = stealth_mode; },
         true);
 }
 
@@ -81,37 +92,37 @@ void desktop_lock_menu_draw_callback(Canvas* canvas, void* model) {
         }
 
         switch(i) {
-            case DesktopLockMenuIndexLefthandedMode:
-                icon = &I_CC_LefthandedMode_16x16;
-                enabled = furi_hal_rtc_is_flag_set(FuriHalRtcFlagHandOrient);
-                break;
-            case DesktopLockMenuIndexSettings:
-                icon = &I_CC_Settings_16x16;
-                break;
-            case DesktopLockMenuIndexDarkMode:
-                icon = &I_CC_DarkMode_16x16;
-                enabled = XTREME_SETTINGS()->dark_mode;
-                break;
-            case DesktopLockMenuIndexLock:
-                icon = &I_CC_Lock_16x16;
-                break;
-            case DesktopLockMenuIndexBluetooth:
-                icon = &I_CC_Bluetooth_16x16;
-                enabled = m->lock_menu->bt->bt_settings.enabled;
-                break;
-            case DesktopLockMenuIndexXtreme:
-                icon = &I_CC_Xtreme_16x16;
-                break;
-            case DesktopLockMenuIndexBrightness:
-                icon = &I_Pin_star_7x7;
-                value = total - m->lock_menu->notification->settings.display_brightness * total;
-                break;
-            case DesktopLockMenuIndexVolume:
-                icon = &I_Volup_8x6;
-                value = total - m->lock_menu->notification->settings.speaker_volume * total;
-                break;
-            default:
-                break;
+        case DesktopLockMenuIndexLefthandedMode:
+            icon = &I_CC_LefthandedMode_16x16;
+            enabled = furi_hal_rtc_is_flag_set(FuriHalRtcFlagHandOrient);
+            break;
+        case DesktopLockMenuIndexSettings:
+            icon = &I_CC_Settings_16x16;
+            break;
+        case DesktopLockMenuIndexDarkMode:
+            icon = &I_CC_DarkMode_16x16;
+            enabled = XTREME_SETTINGS()->dark_mode;
+            break;
+        case DesktopLockMenuIndexLock:
+            icon = &I_CC_Lock_16x16;
+            break;
+        case DesktopLockMenuIndexBluetooth:
+            icon = &I_CC_Bluetooth_16x16;
+            enabled = m->lock_menu->bt->bt_settings.enabled;
+            break;
+        case DesktopLockMenuIndexXtreme:
+            icon = &I_CC_Xtreme_16x16;
+            break;
+        case DesktopLockMenuIndexBrightness:
+            icon = &I_Pin_star_7x7;
+            value = total - m->lock_menu->notification->settings.display_brightness * total;
+            break;
+        case DesktopLockMenuIndexVolume:
+            icon = m->stealth_mode ? &I_Muted_8x8 : &I_Volup_8x6;
+            value = total - m->lock_menu->notification->settings.speaker_volume * total;
+            break;
+        default:
+            break;
         }
 
         if(selected) {
@@ -125,12 +136,20 @@ void desktop_lock_menu_draw_callback(Canvas* canvas, void* model) {
                 canvas_draw_rbox(canvas, x, y, w, h, 5);
                 canvas_set_color(canvas, ColorWhite);
             }
-            canvas_draw_icon(canvas, x + (w - icon_get_width(icon)) / 2, y + (h - icon_get_height(icon)) / 2, icon);
+            canvas_draw_icon(
+                canvas,
+                x + (w - icon_get_width(icon)) / 2,
+                y + (h - icon_get_height(icon)) / 2,
+                icon);
             if(enabled) {
                 canvas_set_color(canvas, ColorBlack);
             }
         } else {
-            canvas_draw_icon(canvas, x + (w - icon_get_width(icon)) / 2, y + (h - icon_get_height(icon)) / 2, icon);
+            canvas_draw_icon(
+                canvas,
+                x + (w - icon_get_width(icon)) / 2,
+                y + (h - icon_get_height(icon)) / 2,
+                icon);
             canvas_set_color(canvas, ColorXOR);
             canvas_draw_box(canvas, x + 1, y + 1 + value, w - 2, h - 2 - value);
             if(selected) {
@@ -146,6 +165,15 @@ void desktop_lock_menu_draw_callback(Canvas* canvas, void* model) {
             canvas_draw_rframe(canvas, x, y, w, h, 5);
         }
     }
+
+    if(m->show_lock_menu) {
+        canvas_set_font(canvas, FontSecondary);
+        elements_bold_rounded_frame(canvas, 24, 4, 80, 56);
+        canvas_draw_str_aligned(canvas, 64, 16, AlignCenter, AlignCenter, "Keypad Lock");
+        canvas_draw_str_aligned(canvas, 64, 32, AlignCenter, AlignCenter, "PIN Code Lock");
+        canvas_draw_str_aligned(canvas, 64, 48, AlignCenter, AlignCenter, "PIN Lock + OFF");
+        elements_frame(canvas, 28, 8 + m->pin_lock * 16, 72, 15);
+    }
 }
 
 View* desktop_lock_menu_get_view(DesktopLockMenuView* lock_menu) {
@@ -159,87 +187,129 @@ bool desktop_lock_menu_input_callback(InputEvent* event, void* context) {
 
     DesktopLockMenuView* lock_menu = context;
     uint8_t idx = 0;
+    int pin_lock = 0;
+    bool show_lock_menu = false;
+    bool stealth_mode = false;
     bool consumed = true;
 
     with_view_model(
         lock_menu->view,
         DesktopLockMenuViewModel * model,
         {
+            show_lock_menu = model->show_lock_menu;
+            stealth_mode = model->stealth_mode;
             if((event->type == InputTypeShort) || (event->type == InputTypeRepeat)) {
-                if(model->idx < 6) {
-                    if(event->key == InputKeyUp || event->key == InputKeyDown) {
-                        if(model->idx % 2) {
-                            model->idx--;
-                        } else {
-                            model->idx++;
+                if(model->show_lock_menu) {
+                    if(event->key == InputKeyUp) {
+                        model->pin_lock--;
+                        if(model->pin_lock < 0) {
+                            model->pin_lock = 2;
                         }
-                    } else if(event->key == InputKeyLeft) {
-                        if(model->idx < 2) {
-                            model->idx = 7;
-                        } else {
-                            model->idx -= 2;
+                    } else if(event->key == InputKeyDown) {
+                        model->pin_lock++;
+                        if(model->pin_lock > 2) {
+                            model->pin_lock = 0;
                         }
-                    } else if(event->key == InputKeyRight) {
-                        if(model->idx >= 4) {
-                            model->idx = 6;
-                        } else {
-                            model->idx += 2;
-                        }
+                    } else if(event->key == InputKeyBack || event->key == InputKeyOk) {
+                        model->show_lock_menu = false;
                     }
                 } else {
-                    if(event->key == InputKeyLeft) {
-                        model->idx--;
-                    } else if(event->key == InputKeyRight) {
-                        if(model->idx >= 7) {
-                            model->idx = 1;
-                        } else {
-                            model->idx++;
+                    if(model->idx == DesktopLockMenuIndexLock && event->key == InputKeyOk) {
+                        model->show_lock_menu = true;
+                    } else if(model->idx < 6) {
+                        if(event->key == InputKeyUp || event->key == InputKeyDown) {
+                            if(model->idx % 2) {
+                                model->idx--;
+                            } else {
+                                model->idx++;
+                            }
+                        } else if(event->key == InputKeyLeft) {
+                            if(model->idx < 2) {
+                                model->idx = 7;
+                            } else {
+                                model->idx -= 2;
+                            }
+                        } else if(event->key == InputKeyRight) {
+                            if(model->idx >= 4) {
+                                model->idx = 6;
+                            } else {
+                                model->idx += 2;
+                            }
+                        }
+                    } else {
+                        if(event->key == InputKeyLeft) {
+                            model->idx--;
+                        } else if(event->key == InputKeyRight) {
+                            if(model->idx >= 7) {
+                                model->idx = 1;
+                            } else {
+                                model->idx++;
+                            }
                         }
                     }
                 }
             }
             idx = model->idx;
+            pin_lock = model->pin_lock;
         },
         true);
 
-    UNUSED(idx);
-    if(event->key == InputKeyBack) {
-        consumed = false;
-    } else if(event->type == InputTypeShort) {
-        if(event->key == InputKeyOk) {
-            DesktopEvent event = 0;
+    DesktopEvent desktop_event = 0;
+    if(show_lock_menu) {
+        if(event->key == InputKeyOk && event->type == InputTypeShort) {
+            switch(pin_lock) {
+            case 0:
+                desktop_event = DesktopLockMenuEventLock;
+                break;
+            case 1:
+                desktop_event = DesktopLockMenuEventLockPin;
+                break;
+            case 2:
+                desktop_event = DesktopLockMenuEventLockPinOff;
+                break;
+            default:
+                break;
+            }
+        }
+    } else {
+        if(event->key == InputKeyBack) {
+            consumed = false;
+        } else if(event->key == InputKeyOk && event->type == InputTypeShort) {
             switch(idx) {
-                case DesktopLockMenuIndexLefthandedMode:
-                    if(furi_hal_rtc_is_flag_set(FuriHalRtcFlagHandOrient)) {
-                        furi_hal_rtc_reset_flag(FuriHalRtcFlagHandOrient);
-                    } else {
-                        furi_hal_rtc_set_flag(FuriHalRtcFlagHandOrient);
-                    }
-                    break;
-                case DesktopLockMenuIndexSettings:
-                    event = DesktopLockMenuEventSettings;
-                    break;
-                case DesktopLockMenuIndexDarkMode:
-                    XTREME_SETTINGS()->dark_mode = !XTREME_SETTINGS()->dark_mode;
-                    XTREME_SETTINGS_SAVE();
-                    break;
-                case DesktopLockMenuIndexLock:
-                    event = DesktopLockMenuEventLock;
-                    break;
-                case DesktopLockMenuIndexBluetooth:
-                    lock_menu->bt->bt_settings.enabled = !lock_menu->bt->bt_settings.enabled;
-                    bt_settings_save(&lock_menu->bt->bt_settings);
-                    break;
-                case DesktopLockMenuIndexXtreme:
-                    event = DesktopLockMenuEventXtreme;
-                    break;
-                default:
-                    break;
+            case DesktopLockMenuIndexLefthandedMode:
+                if(furi_hal_rtc_is_flag_set(FuriHalRtcFlagHandOrient)) {
+                    furi_hal_rtc_reset_flag(FuriHalRtcFlagHandOrient);
+                } else {
+                    furi_hal_rtc_set_flag(FuriHalRtcFlagHandOrient);
+                }
+                break;
+            case DesktopLockMenuIndexSettings:
+                desktop_event = DesktopLockMenuEventSettings;
+                break;
+            case DesktopLockMenuIndexDarkMode:
+                XTREME_SETTINGS()->dark_mode = !XTREME_SETTINGS()->dark_mode;
+                lock_menu->save_xtreme = true;
+                break;
+            case DesktopLockMenuIndexBluetooth:
+                lock_menu->bt->bt_settings.enabled = !lock_menu->bt->bt_settings.enabled;
+                if(lock_menu->bt->bt_settings.enabled) {
+                    furi_hal_bt_start_advertising();
+                } else {
+                    furi_hal_bt_stop_advertising();
+                }
+                lock_menu->save_bt = true;
+                break;
+            case DesktopLockMenuIndexXtreme:
+                desktop_event = DesktopLockMenuEventXtreme;
+                break;
+            case DesktopLockMenuIndexVolume:
+                desktop_event = stealth_mode ? DesktopLockMenuEventStealthModeOff :
+                                               DesktopLockMenuEventStealthModeOn;
+                break;
+            default:
+                break;
             }
-            if(event) {
-                lock_menu->callback(event, lock_menu->context);
-            }
-        } else if(idx >= 6) {
+        } else if(idx >= 6 && (event->type == InputTypeShort || event->type == InputTypeRepeat)) {
             int8_t offset = 0;
             if(event->key == InputKeyUp) {
                 offset = 1;
@@ -249,23 +319,28 @@ bool desktop_lock_menu_input_callback(InputEvent* event, void* context) {
             if(offset) {
                 float value;
                 switch(idx) {
-                    case DesktopLockMenuIndexBrightness:
-                        value = lock_menu->notification->settings.display_brightness + 0.05 * offset;
-                        lock_menu->notification->settings.display_brightness = value < 0.00f ? 0.00f : (value > 1.00f ? 1.00f : value);
-                        notification_message_save_settings(lock_menu->notification);
-                        notification_message(lock_menu->notification, &sequence_display_backlight_on);
-                        break;
-                    case DesktopLockMenuIndexVolume:
-                        value = lock_menu->notification->settings.speaker_volume + 0.05 * offset;
-                        lock_menu->notification->settings.speaker_volume = value < 0.00f ? 0.00f : (value > 1.00f ? 1.00f : value);
-                        notification_message_save_settings(lock_menu->notification);
-                        notification_message(lock_menu->notification, &sequence_note_c);
-                        break;
-                    default:
-                        break;
+                case DesktopLockMenuIndexBrightness:
+                    value = lock_menu->notification->settings.display_brightness + 0.05 * offset;
+                    lock_menu->notification->settings.display_brightness =
+                        value < 0.00f ? 0.00f : (value > 1.00f ? 1.00f : value);
+                    lock_menu->save_notification = true;
+                    notification_message(lock_menu->notification, &sequence_display_backlight_on);
+                    break;
+                case DesktopLockMenuIndexVolume:
+                    value = lock_menu->notification->settings.speaker_volume + 0.05 * offset;
+                    lock_menu->notification->settings.speaker_volume =
+                        value < 0.00f ? 0.00f : (value > 1.00f ? 1.00f : value);
+                    lock_menu->save_notification = true;
+                    notification_message(lock_menu->notification, &sequence_note_c);
+                    break;
+                default:
+                    break;
                 }
             }
         }
+    }
+    if(desktop_event) {
+        lock_menu->callback(desktop_event, lock_menu->context);
     }
 
     return consumed;

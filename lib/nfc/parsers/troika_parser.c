@@ -43,8 +43,8 @@ bool troika_parser_read(NfcWorker* nfc_worker, FuriHalNfcTxRxContext* tx_rx) {
     furi_assert(nfc_worker);
 
     MfClassicReader reader = {};
-    FuriHalNfcDevData* nfc_data = &nfc_worker->dev_data->nfc_data;
-    reader.type = mf_classic_get_classic_type(nfc_data->atqa[0], nfc_data->atqa[1], nfc_data->sak);
+    FuriHalNfcADevData* nfc_a_data = &nfc_worker->dev_data->nfc_data.a_data;
+    reader.type = mf_classic_get_classic_type(nfc_a_data);
 
     for(size_t i = 0; i < COUNT_OF(troika_keys); i++) {
         mf_classic_reader_add_sector(
@@ -70,13 +70,14 @@ bool troika_parser_parse(NfcDeviceData* dev_data) {
         // Parse data
         uint8_t* temp_ptr = &data->block[8 * 4 + 1].value[5];
         uint16_t balance = ((temp_ptr[0] << 8) | temp_ptr[1]) / 25;
-        temp_ptr = &data->block[8 * 4].value[3];
+        temp_ptr = &data->block[8 * 4].value[2];
         uint32_t number = 0;
-        for(size_t i = 0; i < 4; i++) {
+        for(size_t i = 1; i < 5; i++) {
             number <<= 8;
             number |= temp_ptr[i];
         }
         number >>= 4;
+        number |= (temp_ptr[0] & 0xf) << 28;
 
         furi_string_printf(
             dev_data->parsed_data, "\e#Troika\nNum: %lu\nBalance: %u rur.", number, balance);

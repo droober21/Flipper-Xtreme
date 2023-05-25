@@ -10,6 +10,8 @@
 #include "../blocks/generic.h"
 #include "../blocks/math.h"
 
+#include "../blocks/custom_btn.h"
+
 #define TAG "SubGhzProtocolKeeloq"
 
 static const SubGhzBlockConst subghz_protocol_keeloq_const = {
@@ -86,27 +88,14 @@ const SubGhzProtocol subghz_protocol_keeloq = {
 
 static const char* mfname;
 static uint8_t kl_type;
-static uint8_t btn_temp_id;
-static uint8_t btn_temp_id_original;
-static bool bft_prog_mode;
+static uint8_t klq_prog_mode;
 static uint16_t temp_counter;
 
-void keeloq_set_btn(uint8_t b) {
-    btn_temp_id = b;
-}
-
-uint8_t keeloq_get_original_btn() {
-    return btn_temp_id_original;
-}
-
-uint8_t keeloq_get_custom_btn() {
-    return btn_temp_id;
-}
-
 void keeloq_reset_original_btn() {
-    btn_temp_id_original = 0;
+    subghz_custom_btn_set_original(0);
+    subghz_custom_btn_set_max(0);
     temp_counter = 0;
-    bft_prog_mode = false;
+    klq_prog_mode = 0;
 }
 
 void keeloq_reset_mfname() {
@@ -173,16 +162,27 @@ static bool subghz_protocol_keeloq_gen_data(
 
     // BFT programming mode on / off conditions
     if((strcmp(instance->manufacture_name, "BFT") == 0) && (btn == 0xF)) {
-        bft_prog_mode = true;
+        klq_prog_mode = 1;
     }
-    if((strcmp(instance->manufacture_name, "BFT") == 0) && (btn != 0xF) && bft_prog_mode) {
-        bft_prog_mode = false;
+    if((strcmp(instance->manufacture_name, "BFT") == 0) && (btn != 0xF) && (klq_prog_mode == 1)) {
+        klq_prog_mode = 0;
+    }
+    // Aprimatic programming mode on / off conditions
+    if((strcmp(instance->manufacture_name, "Aprimatic") == 0) && (btn == 0xF)) {
+        klq_prog_mode = 2;
+    }
+    if((strcmp(instance->manufacture_name, "Aprimatic") == 0) && (btn != 0xF) &&
+       (klq_prog_mode == 2)) {
+        klq_prog_mode = 0;
     }
     // If we using BFT programming mode we will trasmit its seed in hop part like original remote
-    if(bft_prog_mode) {
+    if(klq_prog_mode == 1) {
         hop = instance->generic.seed;
+    } else if(klq_prog_mode == 2) {
+        // If we using Aprimatic programming mode we will trasmit some strange looking hop value, why? cuz manufacturer did it this way :)
+        hop = 0x1A2B3C4D;
     }
-    if(counter_up && !bft_prog_mode) {
+    if(counter_up && klq_prog_mode == 0) {
         if(instance->generic.cnt < 0xFFFF) {
             if((instance->generic.cnt + furi_hal_subghz_get_rolling_counter_mult()) >= 0xFFFF) {
                 instance->generic.cnt = 0;
@@ -193,11 +193,28 @@ static bool subghz_protocol_keeloq_gen_data(
             instance->generic.cnt = 0;
         }
     }
-    if(!bft_prog_mode) {
+    if(klq_prog_mode == 0) {
         uint32_t decrypt = (uint32_t)btn << 28 |
                            (instance->generic.serial & 0x3FF)
                                << 16 | //ToDo in some protocols the discriminator is 0
                            instance->generic.cnt;
+
+        if(strcmp(instance->manufacture_name, "Aprimatic") == 0) {
+            // Aprimatic uses 12bit serial number + 2bit APR1 "parity" bit in front of it replacing first 2 bits of serial
+            // Thats in theory! We need to check if this is true for all Aprimatic remotes but we got only 3 recordings to test
+            // For now lets assume that this is true for all Aprimatic remotes, if not we will need to add some more code here
+            uint32_t apri_serial = instance->generic.serial;
+            uint8_t apr1 = 0;
+            for(uint16_t i = 1; i != 0b10000000000; i <<= 1) {
+                if(apri_serial & i) apr1++;
+            }
+            apri_serial &= 0b00001111111111;
+            if(apr1 % 2 == 0) {
+                apri_serial |= 0b110000000000;
+            }
+            decrypt = btn << 28 | (apri_serial & 0xFFF) << 16 | instance->generic.cnt;
+        }
+
         // DTM Neo, Came_Space uses 12bit -> simple learning -- FAAC_RC,XT , Mutanco_Mutancode, Stilmatic(Schellenberg) -> 12bit normal learning
         if((strcmp(instance->manufacture_name, "DTM_Neo") == 0) ||
            (strcmp(instance->manufacture_name, "FAAC_RC,XT") == 0) ||
@@ -215,9 +232,9 @@ static bool subghz_protocol_keeloq_gen_data(
             decrypt = btn << 28 | (instance->generic.serial & 0xFF) << 16 | instance->generic.cnt;
         }
 
-        // Beninca -> 4bit serial - simple XOR
+        // Beninca / Allmatic -> no serial - simple XOR
         if(strcmp(instance->manufacture_name, "Beninca") == 0) {
-            decrypt = btn << 28 | (instance->generic.serial & 0xF) << 16 | instance->generic.cnt;
+            decrypt = btn << 28 | (0x000) << 16 | instance->generic.cnt;
         }
 
         if(strcmp(instance->manufacture_name, "Unknown") == 0) {
@@ -356,24 +373,29 @@ static bool
     furi_assert(instance);
 
     // Save original button
-    if(btn_temp_id_original == 0) {
-        btn_temp_id_original = btn;
+    if(subghz_custom_btn_get_original() == 0) {
+        subghz_custom_btn_set_original(btn);
     }
 
     if(instance->manufacture_name == 0x0) {
         instance->manufacture_name = "";
     }
-    if(bft_prog_mode) {
+    if(klq_prog_mode == 1) {
         instance->manufacture_name = "BFT";
+    } else if(klq_prog_mode == 2) {
+        instance->manufacture_name = "Aprimatic";
     }
     uint8_t klq_last_custom_btn = 0xA;
-    if(strcmp(instance->manufacture_name, "BFT") == 0) {
+    if((strcmp(instance->manufacture_name, "BFT") == 0) ||
+       (strcmp(instance->manufacture_name, "Aprimatic") == 0)) {
         klq_last_custom_btn = 0xF;
     }
 
+    uint8_t custom_btn_id = subghz_custom_btn_get();
+    uint8_t original_btn_num = subghz_custom_btn_get_original();
     // Set custom button
-    if(btn_temp_id == 1) {
-        switch(btn_temp_id_original) {
+    if(custom_btn_id == 1) {
+        switch(original_btn_num) {
         case 0x1:
             btn = 0x2;
             break;
@@ -398,8 +420,8 @@ static bool
             break;
         }
     }
-    if(btn_temp_id == 2) {
-        switch(btn_temp_id_original) {
+    if(custom_btn_id == 2) {
+        switch(original_btn_num) {
         case 0x1:
             btn = 0x4;
             break;
@@ -424,8 +446,8 @@ static bool
             break;
         }
     }
-    if(btn_temp_id == 3) {
-        switch(btn_temp_id_original) {
+    if(custom_btn_id == 3) {
+        switch(original_btn_num) {
         case 0x1:
             btn = 0x8;
             break;
@@ -450,8 +472,8 @@ static bool
             break;
         }
     }
-    if(btn_temp_id == 4) {
-        switch(btn_temp_id_original) {
+    if(custom_btn_id == 4) {
+        switch(original_btn_num) {
         case 0x1:
             btn = klq_last_custom_btn;
             break;
@@ -476,11 +498,9 @@ static bool
             break;
         }
     }
-
-    if((btn_temp_id == 0) && (btn_temp_id_original != 0)) {
-        btn = btn_temp_id_original;
+    if((custom_btn_id == 0) && (original_btn_num != 0)) {
+        btn = original_btn_num;
     }
-
     // Generate new key
 
     if(subghz_protocol_keeloq_gen_data(instance, btn, true)) {
@@ -649,7 +669,7 @@ void* subghz_protocol_decoder_keeloq_alloc(SubGhzEnvironment* environment) {
     instance->keystore = subghz_environment_get_keystore(environment);
     instance->manufacture_from_file = furi_string_alloc();
 
-    bft_prog_mode = false;
+    klq_prog_mode = 0;
 
     return instance;
 }
@@ -1151,7 +1171,7 @@ static void subghz_protocol_keeloq_check_remote_controller(
     uint32_t key_hop = key & 0x00000000ffffffff;
 
     // If we are in BFT programming mode we will set previous remembered counter and skip mf keys check
-    if(!bft_prog_mode) {
+    if(klq_prog_mode == 0) {
         // Check key AN-Motors
         if((key_hop >> 24) == ((key_hop >> 16) & 0x00ff) &&
            (key_fix >> 28) == ((key_hop >> 12) & 0x0f) && (key_hop & 0xFFF) == 0x404) {
@@ -1168,8 +1188,12 @@ static void subghz_protocol_keeloq_check_remote_controller(
         }
         temp_counter = instance->cnt;
 
-    } else {
+    } else if(klq_prog_mode == 1) {
         *manufacture_name = "BFT";
+        mfname = *manufacture_name;
+        instance->cnt = temp_counter;
+    } else if(klq_prog_mode == 2) {
+        *manufacture_name = "Aprimatic";
         mfname = *manufacture_name;
         instance->cnt = temp_counter;
     }
@@ -1178,9 +1202,10 @@ static void subghz_protocol_keeloq_check_remote_controller(
     instance->btn = key_fix >> 28;
 
     // Save original button for later use
-    if(btn_temp_id_original == 0) {
-        btn_temp_id_original = instance->btn;
+    if(subghz_custom_btn_get_original() == 0) {
+        subghz_custom_btn_set_original(instance->btn);
     }
+    subghz_custom_btn_set_max(4);
 }
 
 uint8_t subghz_protocol_decoder_keeloq_get_hash_data(void* context) {

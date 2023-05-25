@@ -1,6 +1,6 @@
-Import("env")
-
 from fbt.util import GLOB_FILE_EXCLUSION
+
+Import("env")
 
 env.Append(
     CPPPATH=[
@@ -11,6 +11,7 @@ env.Append(
         "#/lib/micro-ecc",
         "#/lib/nanopb",
         "#/lib/u8g2",
+        "#/lib/xtreme",
     ],
     CPPDEFINES=[
         "PB_ENABLE_MALLOC",
@@ -32,13 +33,13 @@ libs_recurse = [
     "micro-ecc",
     "u8g2",
     "update_util",
+    "xtreme",
 ]
 
 for lib in libs_recurse:
     sources += libenv.GlobRecursive("*.c*", lib)
 
 libs_plain = [
-    "heatshrink",
     "nanopb",
 ]
 
@@ -48,6 +49,12 @@ for lib in libs_plain:
         exclude=GLOB_FILE_EXCLUSION,
         source=True,
     )
+
+sources += Glob(
+    "heatshrink/heatshrink_*.c*",
+    exclude=GLOB_FILE_EXCLUSION,
+    source=True,
+)
 
 lib = libenv.StaticLibrary("${FW_LIB_NAME}", sources)
 libenv.Install("${LIB_DIST_DIR}", lib)

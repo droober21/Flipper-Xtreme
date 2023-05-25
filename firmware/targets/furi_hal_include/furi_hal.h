@@ -33,7 +33,6 @@ struct STOP_EXTERNING_ME {};
 #include <furi_hal_vibro.h>
 #include <furi_hal_usb.h>
 #include <furi_hal_usb_hid.h>
-#include <furi_hal_compress.h>
 #include <furi_hal_uart.h>
 #include <furi_hal_info.h>
 #include <furi_hal_random.h>
@@ -42,6 +41,12 @@ struct STOP_EXTERNING_ME {};
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** Set whether booting normally with all subsystems */
+void furi_hal_set_is_normal_boot(bool value);
+
+/** True if booting normally with all subsystems */
+bool furi_hal_is_normal_boot();
 
 /** Early FuriHal init, only essential subsystems */
 void furi_hal_init_early();

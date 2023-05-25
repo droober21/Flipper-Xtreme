@@ -374,8 +374,10 @@ bool mf_classic_is_value_block(MfClassicData* data, uint8_t block_num) {
                 data, block_num, MfClassicKeyB, MfClassicActionDataDec));
 }
 
-bool mf_classic_check_card_type(uint8_t ATQA0, uint8_t ATQA1, uint8_t SAK) {
-    UNUSED(ATQA1);
+bool mf_classic_check_card_type(FuriHalNfcADevData* data) {
+    uint8_t ATQA0 = data->atqa[0];
+    uint8_t ATQA1 = data->atqa[1];
+    uint8_t SAK = data->sak;
     if((ATQA0 == 0x44 || ATQA0 == 0x04) && (SAK == 0x08 || SAK == 0x88 || SAK == 0x09)) {
         return true;
     } else if((ATQA0 == 0x01) && (ATQA1 == 0x0F) && (SAK == 0x01)) {
@@ -388,8 +390,10 @@ bool mf_classic_check_card_type(uint8_t ATQA0, uint8_t ATQA1, uint8_t SAK) {
     }
 }
 
-MfClassicType mf_classic_get_classic_type(uint8_t ATQA0, uint8_t ATQA1, uint8_t SAK) {
-    UNUSED(ATQA1);
+MfClassicType mf_classic_get_classic_type(FuriHalNfcADevData* data) {
+    uint8_t ATQA0 = data->atqa[0];
+    uint8_t ATQA1 = data->atqa[1];
+    uint8_t SAK = data->sak;
     if((ATQA0 == 0x44 || ATQA0 == 0x04)) {
         if((SAK == 0x08 || SAK == 0x88)) {
             return MfClassicType1k;
@@ -659,7 +663,6 @@ void mf_classic_read_sector(FuriHalNfcTxRxContext* tx_rx, MfClassicData* data, u
 
         for(size_t i = start_block; i < start_block + total_blocks; i++) {
             if(!mf_classic_is_block_read(data, i)) {
-                if(!mf_classic_auth(tx_rx, i, key, MfClassicKeyA, &crypto, false, 0)) continue;
                 if(mf_classic_read_block(tx_rx, &crypto, i, &block_tmp)) {
                     mf_classic_set_block_read(data, i, &block_tmp);
                     blocks_read++;
@@ -676,7 +679,6 @@ void mf_classic_read_sector(FuriHalNfcTxRxContext* tx_rx, MfClassicData* data, u
                         blocks_read++;
                     }
                 }
-                furi_hal_nfc_sleep();
             } else {
                 blocks_read++;
             }
@@ -699,7 +701,6 @@ void mf_classic_read_sector(FuriHalNfcTxRxContext* tx_rx, MfClassicData* data, u
 
         for(size_t i = start_block; i < start_block + total_blocks; i++) {
             if(!mf_classic_is_block_read(data, i)) {
-                if(!mf_classic_auth(tx_rx, i, key, MfClassicKeyB, &crypto, false, 0)) continue;
                 if(mf_classic_read_block(tx_rx, &crypto, i, &block_tmp)) {
                     mf_classic_set_block_read(data, i, &block_tmp);
                     blocks_read++;
@@ -716,7 +717,6 @@ void mf_classic_read_sector(FuriHalNfcTxRxContext* tx_rx, MfClassicData* data, u
                         blocks_read++;
                     }
                 }
-                furi_hal_nfc_sleep();
             } else {
                 blocks_read++;
             }

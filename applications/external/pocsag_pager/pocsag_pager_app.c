@@ -4,6 +4,7 @@
 #include <furi_hal.h>
 #include <lib/flipper_format/flipper_format.h>
 #include "protocols/protocol_items.h"
+#include <dolphin/dolphin.h>
 
 static bool pocsag_pager_app_custom_event_callback(void* context, uint32_t event) {
     furi_assert(context);
@@ -127,7 +128,8 @@ POCSAGPagerApp* pocsag_pager_app_alloc() {
     // Auto switch to internal radio if external radio is not available
     furi_delay_ms(15);
     if(!furi_hal_subghz_check_radio()) {
-        furi_hal_subghz_set_radio_type(SubGhzRadioInternal);
+        furi_hal_subghz_select_radio_type(SubGhzRadioInternal);
+        furi_hal_subghz_init_radio_type(SubGhzRadioInternal);
     }
 
     furi_hal_power_suppress_charge_enter();
@@ -145,6 +147,8 @@ void pocsag_pager_app_free(POCSAGPagerApp* app) {
 
     // Disable power for External CC1101 if it was enabled and module is connected
     furi_hal_subghz_disable_ext_power();
+    // Reinit SPI handles for internal radio / nfc
+    furi_hal_subghz_init_radio_type(SubGhzRadioInternal);
 
     // Submenu
     view_dispatcher_remove_view(app->view_dispatcher, POCSAGPagerViewSubmenu);
@@ -198,6 +202,7 @@ int32_t pocsag_pager_app(void* p) {
     UNUSED(p);
     POCSAGPagerApp* pocsag_pager_app = pocsag_pager_app_alloc();
 
+    DOLPHIN_DEED(DolphinDeedPluginStart);
     view_dispatcher_run(pocsag_pager_app->view_dispatcher);
 
     pocsag_pager_app_free(pocsag_pager_app);

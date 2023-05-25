@@ -21,8 +21,7 @@
 #include <storage/storage.h>
 
 #define RGB_BACKLIGHT_SETTINGS_VERSION 5
-#define RGB_BACKLIGHT_SETTINGS_FILE_NAME ".rgb_backlight.settings"
-#define RGB_BACKLIGHT_SETTINGS_PATH EXT_PATH(RGB_BACKLIGHT_SETTINGS_FILE_NAME)
+#define RGB_BACKLIGHT_SETTINGS_PATH CFG_PATH("rgb_backlight.settings")
 
 #define COLOR_COUNT (sizeof(colors) / sizeof(RGBBacklightColor))
 
@@ -34,7 +33,7 @@ static RGBBacklightSettings rgb_settings = {
     .settings_is_loaded = false};
 
 static const RGBBacklightColor colors[] = {
-    {"Orange", 255, 165, 0},
+    {"Orange", 255, 69, 0},
     {"Red", 255, 0, 0},
     {"Maroon", 128, 0, 0},
     {"Yellow", 255, 255, 0},
@@ -49,9 +48,9 @@ static const RGBBacklightColor colors[] = {
     {"Navy", 0, 0, 128},
     {"Purple", 128, 0, 128},
     {"Fuchsia", 255, 0, 255},
-    {"Pink", 255, 192, 203},
+    {"Pink", 173, 31, 173},
     {"Brown", 165, 42, 42},
-    {"White", 255, 255, 255},
+    {"White", 255, 192, 203},
 };
 
 uint8_t rgb_backlight_get_color_count(void) {
@@ -64,8 +63,7 @@ const char* rgb_backlight_get_color_text(uint8_t index) {
 
 void rgb_backlight_load_settings(void) {
     //Не загружать данные из внутренней памяти при загрузке в режиме DFU
-    FuriHalRtcBootMode bm = furi_hal_rtc_get_boot_mode();
-    if(bm == FuriHalRtcBootModeDfu) {
+    if(!furi_hal_is_normal_boot()) {
         rgb_settings.settings_is_loaded = true;
         return;
     }
@@ -105,7 +103,7 @@ void rgb_backlight_load_settings(void) {
     storage_file_free(file);
     furi_record_close(RECORD_STORAGE);
     rgb_settings.settings_is_loaded = true;
-};
+}
 
 void rgb_backlight_save_settings(void) {
     RGBBacklightSettings settings;
@@ -136,7 +134,7 @@ void rgb_backlight_save_settings(void) {
     storage_file_close(file);
     storage_file_free(file);
     furi_record_close(RECORD_STORAGE);
-};
+}
 
 RGBBacklightSettings* rgb_backlight_get_settings(void) {
     if(!rgb_settings.settings_is_loaded) {

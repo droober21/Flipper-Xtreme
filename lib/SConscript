@@ -15,6 +15,7 @@ env.Append(
         Dir("u8g2"),
         Dir("update_util"),
         Dir("print"),
+        Dir("pulse_reader"),
     ],
 )
 
@@ -44,6 +45,7 @@ env.Append(
             )
         ),
         File("u8g2/u8g2.h"),
+        File("xtreme/xtreme.h"),
     ],
     CPPDEFINES=[
         '"M_MEMORY_FULL(x)=abort()"',
@@ -95,6 +97,7 @@ libs = env.BuildModules(
         "mbedtls",
         "subghz",
         "nfc",
+        "pulse_reader",
         "appframe",
         "misc",
         "lfrfid",

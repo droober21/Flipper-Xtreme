@@ -16,13 +16,19 @@ struct DesktopLockMenuView {
     DesktopLockMenuViewCallback callback;
     NotificationApp* notification;
     Bt* bt;
+    bool save_notification;
+    bool save_xtreme;
+    bool save_bt;
     void* context;
 };
 
 typedef struct {
     uint8_t idx;
     bool pin_is_set;
+    int pin_lock;
+    bool show_lock_menu;
     DesktopLockMenuView* lock_menu;
+    bool stealth_mode;
 } DesktopLockMenuViewModel;
 
 void desktop_lock_menu_set_callback(
@@ -32,6 +38,7 @@ void desktop_lock_menu_set_callback(
 
 View* desktop_lock_menu_get_view(DesktopLockMenuView* lock_menu);
 void desktop_lock_menu_set_pin_state(DesktopLockMenuView* lock_menu, bool pin_is_set);
+void desktop_lock_menu_set_stealth_mode_state(DesktopLockMenuView* lock_menu, bool stealth_mode);
 void desktop_lock_menu_set_idx(DesktopLockMenuView* lock_menu, uint8_t idx);
 DesktopLockMenuView* desktop_lock_menu_alloc();
 void desktop_lock_menu_free(DesktopLockMenuView* lock_menu);

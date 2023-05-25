@@ -1,6 +1,7 @@
 #include "nfc_i.h"
 #include <furi_hal_nfc.h>
 #include <dolphin/dolphin.h>
+#include <applications/main/archive/helpers/favorite_timeout.h>
 
 bool nfc_custom_event_callback(void* context, uint32_t event) {
     furi_assert(context);
@@ -87,13 +88,6 @@ Nfc* nfc_alloc() {
         nfc->view_dispatcher, NfcViewTextBox, text_box_get_view(nfc->text_box));
     nfc->text_box_store = furi_string_alloc();
 
-    // Variable Item List
-    nfc->variable_item_list = variable_item_list_alloc();
-    view_dispatcher_add_view(
-        nfc->view_dispatcher,
-        NfcViewVarItemList,
-        variable_item_list_get_view(nfc->variable_item_list));
-
     // Custom Widget
     nfc->widget = widget_alloc();
     view_dispatcher_add_view(nfc->view_dispatcher, NfcViewWidget, widget_get_view(nfc->widget));
@@ -165,10 +159,6 @@ void nfc_free(Nfc* nfc) {
     view_dispatcher_remove_view(nfc->view_dispatcher, NfcViewTextBox);
     text_box_free(nfc->text_box);
     furi_string_free(nfc->text_box_store);
-
-    // Variable Item List
-    view_dispatcher_remove_view(nfc->view_dispatcher, NfcViewVarItemList);
-    variable_item_list_free(nfc->variable_item_list);
 
     // Custom Widget
     view_dispatcher_remove_view(nfc->view_dispatcher, NfcViewWidget);
@@ -274,14 +264,14 @@ static bool nfc_is_hal_ready() {
     }
 }
 
-int32_t nfc_app(void* p) {
+int32_t nfc_app(char* p) {
     if(!nfc_is_hal_ready()) return 0;
 
     Nfc* nfc = nfc_alloc();
-    char* args = p;
 
     // Check argument and run corresponding scene
-    if(args && strlen(args)) {
+    bool is_favorite = process_favorite_launch(&p);
+    if(p && strlen(p)) {
         nfc_device_set_loading_callback(nfc->dev, nfc_show_loading_popup, nfc);
         uint32_t rpc_ctx = 0;
         if(sscanf(p, "RPC %lX", &rpc_ctx) == 1) {
@@ -302,10 +292,10 @@ int32_t nfc_app(void* p) {
                     scene_manager_next_scene(nfc->scene_manager, NfcSceneMfClassicEmulate);
                     DOLPHIN_DEED(DolphinDeedNfcEmulate);
                 } else if(nfc->dev->format == NfcDeviceSaveFormatNfcV) {
-                    scene_manager_next_scene(nfc->scene_manager, NfcSceneEmulateNfcV);
+                    scene_manager_next_scene(nfc->scene_manager, NfcSceneNfcVEmulate);
                     DOLPHIN_DEED(DolphinDeedNfcEmulate);
                 } else if(nfc->dev->format == NfcDeviceSaveFormatBankCard) {
-                    scene_manager_next_scene(nfc->scene_manager, NfcSceneEmulateUid);
+                    scene_manager_next_scene(nfc->scene_manager, NfcSceneDeviceInfo);
                 } else {
                     scene_manager_next_scene(nfc->scene_manager, NfcSceneEmulateUid);
                     DOLPHIN_DEED(DolphinDeedNfcEmulate);
@@ -322,7 +312,11 @@ int32_t nfc_app(void* p) {
         scene_manager_next_scene(nfc->scene_manager, NfcSceneStart);
     }
 
-    view_dispatcher_run(nfc->view_dispatcher);
+    if(is_favorite) {
+        favorite_timeout_run(nfc->view_dispatcher, nfc->scene_manager);
+    } else {
+        view_dispatcher_run(nfc->view_dispatcher);
+    }
 
     nfc_free(nfc);
 

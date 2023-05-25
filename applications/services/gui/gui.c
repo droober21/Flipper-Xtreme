@@ -1,4 +1,4 @@
-#include "xtreme/settings.h"
+#include <xtreme.h>
 #include "gui_i.h"
 #include <assets_icons.h>
 
@@ -47,6 +47,7 @@ static bool gui_redraw_fs(Gui* gui) {
 }
 
 static void gui_redraw_status_bar(Gui* gui, bool need_attention) {
+    if(gui->hide_statusbar_count > 0) return;
     ViewPortArray_it_t it;
     uint8_t left_used = 0;
     uint8_t right_used = 0;
@@ -74,7 +75,7 @@ static void gui_redraw_status_bar(Gui* gui, bool need_attention) {
         canvas_draw_box(gui->canvas, 89, 3, 38, 6);
         canvas_set_color(gui->canvas, ColorBlack);
         canvas_set_bitmap_mode(gui->canvas, 1);
-        canvas_draw_icon(gui->canvas, 0, 0, &I_Background_128x11);
+        canvas_draw_icon(gui->canvas, 0, 0, XTREME_ASSETS()->I_Background_128x11);
     } else {
         canvas_set_color(gui->canvas, ColorBlack);
     }
@@ -286,6 +287,7 @@ static void gui_redraw(Gui* gui) {
                 p->callback(
                     canvas_get_buffer(gui->canvas),
                     canvas_get_buffer_size(gui->canvas),
+                    canvas_get_orientation(gui->canvas),
                     p->context);
             }
     } while(false);
@@ -512,6 +514,21 @@ void gui_remove_framebuffer_callback(Gui* gui, GuiCanvasCommitCallback callback,
 size_t gui_get_framebuffer_size(const Gui* gui) {
     furi_assert(gui);
     return canvas_get_buffer_size(gui->canvas);
+}
+
+void gui_set_hide_statusbar(Gui* gui, bool hidden) {
+    furi_assert(gui);
+
+    gui_lock(gui);
+    if(hidden) {
+        gui->hide_statusbar_count++;
+    } else {
+        gui->hide_statusbar_count--;
+    }
+    gui_unlock(gui);
+
+    // Request redraw
+    gui_update(gui);
 }
 
 void gui_set_lockdown(Gui* gui, bool lockdown) {
